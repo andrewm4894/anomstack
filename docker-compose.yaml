@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yaml"
+    ports:
+      - 9090:9090
+    restart: unless-stopped
+    volumes:
+      - ./docker/prometheus:/etc/prometheus
+      - ./prom_data:/prometheus
+
+volumes:
+  prom_data:
