@@ -251,18 +251,18 @@ services:
       airflow-init:
         condition: service_completed_successfully
 
-  prometheus:
-    image: prom/prometheus
-    container_name: prometheus
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yaml"
-    ports:
-      - 9090:9090
-    restart: unless-stopped
+  influxdb:
+    image: influxdb:latest
+    container_name: influxdb2
+    env_file:
+      - .env
     volumes:
-      - ./docker/prometheus:/etc/prometheus
-      - ./prom_data:/prometheus
+      - /influxdb_data:/var/lib/influxdb2:rwx
+    ports:
+      - 8086:8086
+    restart: unless-stopped
 
 volumes:
   postgres-db-volume:
   prom_data:
+  influxdb_data:
