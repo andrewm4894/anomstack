@@ -264,5 +264,4 @@ services:
 
 volumes:
   postgres-db-volume:
-  prom_data:
   influxdb_data:
