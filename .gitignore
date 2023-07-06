@@ -160,10 +160,8 @@ cython_debug/
 #.idea/
 
 # ignore volumes created by docker-compose
-prom_data
 postgres-db-volume
 
-# airflow folders
-logs
-dags
-plugins
+# dagster
+tmp*
+dagster/data
