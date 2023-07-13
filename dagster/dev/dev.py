@@ -1,9 +1,10 @@
 from dagster import Definitions, AssetsDefinition, asset
 
-specs = [
-    {"name": "asset1", "upstream": [], "sql": "blah blah"},
-    {"name": "asset2", "upstream": ["asset1"], "sql": "blah blah"},
-]
+
+specs = {
+    'spec1':[{"name": "assetA1", "upstream": [], "sql": "blah blah"},{"name": "assetA2", "upstream": ["assetA1"], "sql": "blah blah"},],
+    'spec2':[{"name": "assetB1", "upstream": [], "sql": "blah blah"},{"name": "assetB2", "upstream": ["assetB1"], "sql": "blah blah"},],
+    }
 
 
 def execute_sql(sql: str) -> None:
@@ -11,11 +12,11 @@ def execute_sql(sql: str) -> None:
 
 
 def build_asset(spec) -> AssetsDefinition:
-    @asset(name=spec["name"], non_argument_deps=set(spec["upstreams"]))
+    @asset(name=spec["name"], non_argument_deps=set(spec["upstream"]))
     def _asset():
         execute_sql(spec["sql"])
 
     return _asset
 
 
-defs = Definitions(assets=[build_asset(spec) for spec in specs])
+defs = Definitions(assets=[build_asset(s) for spec in specs for s in specs[spec]])
