@@ -1,3 +1,6 @@
 dagster
 dagit
+dagster-gcp
+dagster-gcp-pandas
 pandas
+pandas-gbq
