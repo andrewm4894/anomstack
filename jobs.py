@@ -1,6 +1,8 @@
 import os
 import pandas as pd
-from dagster import get_dagster_logger, job, op, Definitions, ScheduleDefinition, JobDefinition, schedule
+from dagster import (
+    get_dagster_logger, job, op, Definitions, ScheduleDefinition, JobDefinition, schedule
+)
 
 
 specs = {
@@ -27,7 +29,7 @@ specs = {
 }
 
 
-def build_ingest_job(spec):
+def build_ingest_job(spec) -> JobDefinition:
     @job(
         name=spec["name"], 
     )
@@ -61,7 +63,7 @@ def build_ingest_job(spec):
     return _job
 
 
-def build_ingest_schedule(spec):
+def build_ingest_schedule(spec) -> ScheduleDefinition:
     @schedule(
         name=f"schedule_{spec['name']}",
         cron_schedule=spec['cron_schedule'],
