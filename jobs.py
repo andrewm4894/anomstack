@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from dagster import (
-    get_dagster_logger, job, op, Definitions, ScheduleDefinition, JobDefinition, schedule
+    get_dagster_logger, job, op, Definitions, ScheduleDefinition, JobDefinition, schedule, JobSelector
 )
 
 
@@ -73,7 +73,7 @@ def build_ingest_schedule(spec):
         
         ScheduleDefinition(
             name=f"schedule_{spec['name']}",
-            job=spec['name'],
+            job_name=spec['name'],
             cron_schedule=spec['cron_schedule'],
         )
     
