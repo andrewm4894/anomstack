@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from dagster import EnvVar, get_dagster_logger, job, op, Definitions, ScheduleDefinition, JobDefinition, schedule
+from dagster import get_dagster_logger, job, op, Definitions, ScheduleDefinition, JobDefinition, schedule
 
 
 specs = {
@@ -27,20 +27,22 @@ specs = {
 }
 
 
-def build_ingest_jobs(spec):
+def build_ingest_job(spec):
     @job(
         name=spec["name"], 
     )
     def _job():
         
+        logger = get_dagster_logger()
+        
         @op(
             name=f"create_table_{spec['name']}",
         )
-        def create_metrics(context):
+        def create_metrics():
             df = pd.read_gbq(
                 query=spec['sql'],
             )
-            context.log.info(f"df:\n{df}")
+            logger.info(f"df:\n{df}")
             return df
         
         @op(
@@ -59,7 +61,7 @@ def build_ingest_jobs(spec):
     return _job
 
 
-def build_schedule(spec):
+def build_ingest_schedule(spec):
     @schedule(
         name=f"schedule_{spec['name']}",
         cron_schedule=spec['cron_schedule'],
@@ -77,13 +79,13 @@ def build_schedule(spec):
 
 
 jobs = [
-    build_ingest_jobs(s) 
+    build_ingest_job(s) 
     for spec in specs 
     for s in specs[spec]
 ]
 
 schedules = [
-    build_schedule(s) 
+    build_ingest_schedule(s) 
     for spec in specs 
     for s in specs[spec]
 ]
