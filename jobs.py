@@ -40,7 +40,7 @@ def build_ingest_job(spec) -> JobDefinition:
         @op(
             name=f"create_table_{spec['name']}",
         )
-        def create_metrics():
+        def create_metrics() -> pd.DataFrame:
             df = pd.read_gbq(
                 query=spec['sql'],
             )
@@ -50,7 +50,7 @@ def build_ingest_job(spec) -> JobDefinition:
         @op(
             name=f"save_metrics_{spec['name']}",
         )
-        def save_metrics(df):
+        def save_metrics(df) -> pd.DataFrame:
             df.to_gbq(
                 destination_table=f"{spec['dataset']}.{spec['table']}",
                 project_id=spec['project_id'],
@@ -63,7 +63,7 @@ def build_ingest_job(spec) -> JobDefinition:
     return _job
 
 
-def build_ingest_schedule(spec) -> ScheduleDefinition:
+def build_ingest_schedule(spec):
     @schedule(
         name=f"schedule_{spec['name']}",
         cron_schedule=spec['cron_schedule'],
