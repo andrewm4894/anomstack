@@ -8,17 +8,27 @@ from dagster import (
 ingest_specs = {
     "m1": {
         "name": "m1", 
-        "sql": "select 111", 
+        "sql": """
+        select
+          current_timestamp() as timestamp,
+          'metric_1' as name,
+          rand() as value,
+        """, 
         "dataset": "tmp", 
-        "table": "test", 
+        "table": "metrics", 
         "project_id": os.getenv("GCP_PROJECT"),
         "cron_schedule": "*/2 * * * *",
     },   
     "m2": {
         "name": "m2", 
-        "sql": "select 222", 
+        "sql": """
+        select
+          current_timestamp() as timestamp,
+          'metric_2' as name,
+          rand() as value,
+        """,
         "dataset": "tmp", 
-        "table": "test", 
+        "table": "metrics", 
         "project_id": os.getenv("GCP_PROJECT"),
         "cron_schedule": "*/3 * * * *",
     },
