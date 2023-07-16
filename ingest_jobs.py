@@ -38,7 +38,7 @@ ingest_specs = {
 def build_ingest_job(spec) -> JobDefinition:
     """Builds a job definition for a given ingest spec."""
     
-    @job(name=spec["name"])
+    @job(name=f"{spec['name']}_ingest")
     def _job():
         """Job definition for a given ingest spec."""
         
@@ -67,22 +67,16 @@ def build_ingest_job(spec) -> JobDefinition:
 
 
 # generate jobs
-jobs = [
+ingest_jobs = [
     build_ingest_job(ingest_specs[ingest_spec]) 
     for ingest_spec in ingest_specs 
 ]
 
 # define schedules
-schedules = [
+ingest_schedules = [
     ScheduleDefinition(
-        job=job,
-        cron_schedule=ingest_specs[job.name]['cron_schedule'],
+        job=ingest_job,
+        cron_schedule=ingest_specs[ingest_job.name.replace('_ingest','')]['cron_schedule'],
     )
-    for job in jobs
+    for ingest_job in ingest_jobs
 ]
-
-# create defs
-defs = Definitions(
-    jobs=jobs,
-    schedules=schedules,
-)
