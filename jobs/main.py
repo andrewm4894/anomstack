@@ -1,5 +1,5 @@
-from ingest_jobs import ingest_jobs, ingest_schedules
-from train_jobs import train_jobs, train_schedules
+from jobs.ingest import ingest_jobs, ingest_schedules
+from jobs.train import train_jobs, train_schedules
 from dagster import Definitions
 
 
