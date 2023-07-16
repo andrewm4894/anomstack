@@ -1,8 +1,7 @@
 import os
 import pandas as pd
 from dagster import (
-    get_dagster_logger, job, op, Definitions, ScheduleDefinition, 
-    JobDefinition, schedule, JobSelector
+    get_dagster_logger, job, op, Definitions, ScheduleDefinition, JobDefinition
 )
 
 
@@ -33,13 +32,13 @@ def build_ingest_job(spec) -> JobDefinition:
         
         logger = get_dagster_logger()
         
-        @op(name=f"create_table_{spec['name']}")
+        @op(name=f"{spec['name']}_create_metrics")
         def create_metrics() -> pd.DataFrame:
             df = pd.read_gbq(query=spec['sql'])
             logger.info(f"df:\n{df}")
             return df
         
-        @op(name=f"save_metrics_{spec['name']}")
+        @op(name=f"{spec['name']}_save_metrics")
         def save_metrics(df) -> pd.DataFrame:
             df.to_gbq(
                 destination_table=f"{spec['dataset']}.{spec['table']}",
