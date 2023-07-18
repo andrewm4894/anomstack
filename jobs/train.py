@@ -1,8 +1,11 @@
 import os
+import time
 import pandas as pd
 from dagster import (
-    get_dagster_logger, job, op, Definitions, ScheduleDefinition, JobDefinition
+    get_dagster_logger, job, op, asset, Definitions, ScheduleDefinition, JobDefinition
 )
+from pyod.models.iforest import IForest
+from pyod.models.base import BaseDetector
 
 
 train_specs = {
@@ -53,11 +56,21 @@ def build_train_job(spec) -> JobDefinition:
             logger.info(f"df:\n{df}")
             return df
         
-        @op(name=f"{spec['name']}_train_model")
-        def train_model(df) -> pd.DataFrame:
+        @asset(
+            name=f"{spec['name']}_train_model",
+            io_manager_key="fs_io_manager",
+        )
+        def train_model(df) -> BaseDetector:
             """"""
-            logger.info(f"TODO: train model")
-            return df
+            X = df[['value']].sample(frac=1).reset_index(drop=True)
+            model = IForest()
+            time_start_train = time.time()
+            model.fit(X)
+            time_end_train = time.time()
+            train_time = time_end_train - time_start_train
+            logger.info(f'trained model (n={len(X)}, train_time={round(train_time,2)} secs)')
+            
+            return model
         
         train_model(get_train_data())
 
