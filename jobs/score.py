@@ -1,8 +1,9 @@
 import os
 import pandas as pd
+import pickle
+from google.cloud import storage
 from dagster import (
-    get_dagster_logger, job, op, Definitions, ScheduleDefinition, JobDefinition,
-    AssetIn
+    get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
 )
 
 
@@ -23,6 +24,7 @@ score_specs = {
         "table": "metrics", 
         "project_id": os.getenv("GCP_PROJECT"),
         "cron_schedule": "*/2 * * * *",
+        "bucket_name": os.getenv("GCS_BUCKET_NAME")
     },   
     "m2": {
         "name": "m2", 
@@ -40,6 +42,7 @@ score_specs = {
         "table": "metrics", 
         "project_id": os.getenv("GCP_PROJECT"),
         "cron_schedule": "*/3 * * * *",
+        "bucket_name": os.getenv("GCS_BUCKET_NAME")
     },
 }
 
@@ -57,14 +60,19 @@ def build_score_job(spec) -> JobDefinition:
             logger.info(f"df:\n{df}")
             return df
         
-        @op(
-            name=f"{spec['name']}_score_op",
-            #TODO: how to get model from upstream asset?
-            #ins={"upstream_asset": AssetIn(key_prefix=f"{spec['name']}_model")}
-        )
+        @op(name=f"{spec['name']}_score_op")
         def score(df) -> pd.DataFrame:
-            #TODO: how to get model from upstream asset?
-            logger.info(f"df:\n{df}")
+            model_name = f"{spec['name']}.pkl"
+            logger.info(f"loading {model_name} from GCS bucket {spec['bucket_name']}")
+            storage_client = storage.Client()
+            bucket = storage_client.get_bucket(spec['bucket_name'])    
+            blob = bucket.blob(f'models/{model_name}')
+            with blob.open('rb') as f:
+                model = pickle.load(f)
+            logger.info(model)
+            logger.info(df)
+            scores = model.predict_proba(df[['value']])
+            logger.info(scores)
             return df
         
         score(get_score_data())

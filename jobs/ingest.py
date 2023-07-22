@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from dagster import (
-    get_dagster_logger, job, op, Definitions, ScheduleDefinition, JobDefinition
+    get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
 )
 
 
