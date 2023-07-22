@@ -2,7 +2,8 @@ import os
 import time
 import pandas as pd
 from dagster import (
-    get_dagster_logger, job, op, asset, Definitions, ScheduleDefinition, JobDefinition
+    get_dagster_logger, job, op, asset, Definitions, ScheduleDefinition, JobDefinition,
+    define_asset_job, FreshnessPolicy, AutoMaterializePolicy
 )
 from pyod.models.iforest import IForest
 from pyod.models.base import BaseDetector
@@ -40,26 +41,27 @@ train_specs = {
 }
 
 
-def build_train_job(spec) -> JobDefinition:
+def build_model_asset(spec) -> JobDefinition:
     """Builds a job definition for a given train spec."""
     
-    @job(name=f"{spec['name']}_train")
-    def _job():
+    @asset(
+        group_name=f"{spec['name']}_model",
+        name=f"{spec['name']}_model", 
+        metadata={'metric': spec['name']},
+        auto_materialize_policy=AutoMaterializePolicy.eager(),
+        freshness_policy=FreshnessPolicy(maximum_lag_minutes=5)
+    )
+    def _model():
         """Job definition for a given train spec."""
         
         logger = get_dagster_logger()
         
-        @op(name=f"{spec['name']}_get_train_data")
         def get_train_data() -> pd.DataFrame:
             """"""
             df = pd.read_gbq(query=spec['sql'])
             logger.info(f"df:\n{df}")
             return df
         
-        @asset(
-            name=f"{spec['name']}_train_model",
-            io_manager_key="fs_io_manager",
-        )
         def train_model(df) -> BaseDetector:
             """"""
             X = df[['value']].sample(frac=1).reset_index(drop=True)
@@ -74,20 +76,11 @@ def build_train_job(spec) -> JobDefinition:
         
         train_model(get_train_data())
 
-    return _job
+    return _model
 
 
-# generate jobs
-train_jobs = [
-    build_train_job(train_specs[train_spec]) 
+# generate models
+models = [
+    build_model_asset(train_specs[train_spec]) 
     for train_spec in train_specs 
-]
-
-# define schedules
-train_schedules = [
-    ScheduleDefinition(
-        job=train_job,
-        cron_schedule=train_specs[train_job.name.replace('_train','')]['cron_schedule'],
-    )
-    for train_job in train_jobs
 ]

@@ -36,11 +36,9 @@ ingest_specs = {
 
 
 def build_ingest_job(spec) -> JobDefinition:
-    """Builds a job definition for a given ingest spec."""
     
     @job(name=f"{spec['name']}_ingest")
     def _job():
-        """Job definition for a given ingest spec."""
         
         logger = get_dagster_logger()
         
