@@ -21,7 +21,7 @@ def build_train_job(spec) -> JobDefinition:
         
         @op(name=f"{spec['name']}_get_train_data")
         def get_train_data() -> pd.DataFrame:
-            df = pd.read_gbq(query=spec['sql'])
+            df = pd.read_gbq(query=spec['train']['sql'])
             logger.info(f"df:\n{df}")
             return df
         
@@ -56,7 +56,7 @@ def build_train_job(spec) -> JobDefinition:
 
 # generate jobs
 train_jobs = [
-    build_train_job(specs[spec]['train']) 
+    build_train_job(specs[spec]) 
     for spec in specs 
 ]
 

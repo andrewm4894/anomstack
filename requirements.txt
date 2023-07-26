@@ -5,3 +5,4 @@ dagster-gcp-pandas
 pandas
 pandas-gbq
 pyod
+pyyaml

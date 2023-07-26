@@ -1,109 +1,28 @@
 import os
-from dagster import Config
+import yaml
+from pathlib import Path
 
-
-specs = {
-    "m1": {
-        "name": "m1",
-        "ingest": {
-            "name": "m1",
-            "sql": """
-            select
-                current_timestamp() as timestamp,
-                'metric_1' as name,
-                rand() as value,
-            """,
-            "cron_schedule": "*/2 * * * *",
-            "dataset": "tmp", 
-            "table": "metrics",
-            "bucket_name": os.getenv("GCS_BUCKET_NAME"),
-            "project_id": os.getenv("GCS_PROJECT_ID"),
-        },
-        "train": {
-            "name": "m1",
-            "sql": """
-            select
-                *
-            from
-                tmp.metrics
-            where
-                name = 'metric_1'
-            order by timestamp desc
-            limit 1000
-            """,
-            "cron_schedule": "*/4 * * * *",
-            "dataset": "tmp", 
-            "table": "metrics",
-            "bucket_name": os.getenv("GCS_BUCKET_NAME"),
-            "project_id": os.getenv("GCS_PROJECT_ID"),
-        },
-        "score": {
-            "name": "m1",
-            "sql": """
-            select
-                *
-            from
-                tmp.metrics
-            where
-                name = 'metric_1'
-            order by timestamp desc
-            limit 1
-            """,
-            "cron_schedule": "*/3 * * * *",
-            "dataset": "tmp", 
-            "table": "metrics",
-            "bucket_name": os.getenv("GCS_BUCKET_NAME"),
-            "project_id": os.getenv("GCS_PROJECT_ID"),
-        }
-    },
-    "m2": {
-        "name": "m2",
-        "ingest": {
-            "name": "m2",
-            "sql": """
-            select
-                current_timestamp() as timestamp,
-                'metric_2' as name,
-                rand() as value,
-            """,
-            "cron_schedule": "*/3 * * * *",
-            "dataset": "tmp", 
-            "table": "metrics",
-            "project_id": os.getenv("GCS_PROJECT_ID"),
-        },
-        "train": {
-            "name": "m2",
-            "sql": """
-            select
-                *
-            from
-                tmp.metrics
-            where
-                name = 'metric_2'
-            order by timestamp desc
-            limit 1000
-            """,
-            "cron_schedule": "*/5 * * * *",
-            "bucket_name": os.getenv("GCS_BUCKET_NAME"),
-            "project_id": os.getenv("GCS_PROJECT_ID"),
-        },
-        "score": {
-            "name": "m2",
-            "sql": """
-            select
-                *
-            from
-                tmp.metrics
-            where
-                name = 'metric_2'
-            order by timestamp desc
-            limit 1
-            """,
-            "cron_schedule": "*/4 * * * *",
-            "dataset": "tmp", 
-            "table": "metrics",
-            "bucket_name": os.getenv("GCS_BUCKET_NAME"),
-            "project_id": os.getenv("GCS_PROJECT_ID"),
-        }
-    },
+env_vars = {
+    'PROJECT_ID': 'project_id',
+    'BUCKET_NAME': 'bucket_name',
+    'DATASET': 'dataset',
+    'TABLE': 'table'
 }
+
+config_dir = Path("metrics")
+specs = {}
+
+with open(config_dir / 'defaults.yaml', 'r') as file:
+    defaults = yaml.safe_load(file)
+
+for yaml_file in config_dir.glob('*.yaml'):
+    if yaml_file.name == 'defaults.yaml':
+        continue
+    with open(yaml_file, 'r') as file:
+        metric_specs = yaml.safe_load(file)
+        metric_name = metric_specs["name"]
+        merged_specs = {**defaults, **metric_specs}
+        for env_var, key in env_vars.items():
+            if env_var in os.environ:
+                merged_specs[key] = os.getenv(env_var)
+        specs[metric_name] = merged_specs

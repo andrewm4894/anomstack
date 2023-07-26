@@ -17,7 +17,7 @@ def build_ingest_job(spec) -> JobDefinition:
         @op(name=f"{spec['name']}_create_metrics")
         def create_metrics() -> pd.DataFrame:
             """Creates metrics."""
-            df = pd.read_gbq(query=spec['sql'])
+            df = pd.read_gbq(query=spec['ingest']['sql'])
             logger.info(f"df:\n{df}")
             return df
         
@@ -38,7 +38,7 @@ def build_ingest_job(spec) -> JobDefinition:
 
 # generate jobs
 ingest_jobs = [
-    build_ingest_job(specs[spec]['ingest']) 
+    build_ingest_job(specs[spec]) 
     for spec in specs 
 ]
 

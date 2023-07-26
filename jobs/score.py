@@ -18,7 +18,7 @@ def build_score_job(spec) -> JobDefinition:
         
         @op(name=f"{spec['name']}_get_score_data")
         def get_score_data() -> pd.DataFrame:
-            df = pd.read_gbq(query=spec['sql'])
+            df = pd.read_gbq(query=spec['score']['sql'])
             logger.info(f"df:\n{df}")
             return df
         
@@ -44,7 +44,7 @@ def build_score_job(spec) -> JobDefinition:
 
 # generate jobs
 score_jobs = [
-    build_score_job(specs[spec]['score']) 
+    build_score_job(specs[spec]) 
     for spec in specs 
 ]
 

@@ -1,0 +1,30 @@
+name: "m1"
+ingest:
+  sql: >
+    select
+      current_timestamp() as timestamp,
+      'metric_1' as name,
+      rand() as value,
+  cron_schedule: "*/2 * * * *"
+train:
+  sql: >
+    select
+      *
+    from
+      tmp.metrics
+    where
+      name = 'metric_1'
+    order by timestamp desc
+    limit 1000
+  cron_schedule: "*/4 * * * *"
+score:
+  sql: >
+    select
+      *
+    from
+      tmp.metrics
+    where
+      name = 'metric_1'
+    order by timestamp desc
+    limit 1
+  cron_schedule: "*/3 * * * *"
