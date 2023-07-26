@@ -4,35 +4,7 @@ from dagster import (
     get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
 )
 
-
-ingest_specs = {
-    "m1": {
-        "name": "m1", 
-        "sql": """
-        select
-          current_timestamp() as timestamp,
-          'metric_1' as name,
-          rand() as value,
-        """, 
-        "dataset": "tmp", 
-        "table": "metrics", 
-        "project_id": os.getenv("GCP_PROJECT"),
-        "cron_schedule": "*/2 * * * *",
-    },   
-    "m2": {
-        "name": "m2", 
-        "sql": """
-        select
-          current_timestamp() as timestamp,
-          'metric_2' as name,
-          rand() as value,
-        """,
-        "dataset": "tmp", 
-        "table": "metrics", 
-        "project_id": os.getenv("GCP_PROJECT"),
-        "cron_schedule": "*/3 * * * *",
-    },
-}
+from jobs.config import specs
 
 
 def build_ingest_job(spec) -> JobDefinition:
@@ -66,15 +38,15 @@ def build_ingest_job(spec) -> JobDefinition:
 
 # generate jobs
 ingest_jobs = [
-    build_ingest_job(ingest_specs[ingest_spec]) 
-    for ingest_spec in ingest_specs 
+    build_ingest_job(specs[spec]['ingest']) 
+    for spec in specs 
 ]
 
 # define schedules
 ingest_schedules = [
     ScheduleDefinition(
         job=ingest_job,
-        cron_schedule=ingest_specs[ingest_job.name.replace('_ingest','')]['cron_schedule'],
+        cron_schedule=specs[ingest_job.name.replace('_ingest','')]['ingest']['cron_schedule'],
     )
     for ingest_job in ingest_jobs
 ]

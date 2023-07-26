@@ -6,45 +6,7 @@ from dagster import (
     get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
 )
 
-
-score_specs = {
-    "m1": {
-        "name": "m1", 
-        "sql": """
-        select
-          *
-        from
-          tmp.metrics
-        where
-          name = 'metric_1'
-        order by timestamp desc
-        limit 1
-        """, 
-        "dataset": "tmp", 
-        "table": "metrics", 
-        "project_id": os.getenv("GCP_PROJECT"),
-        "cron_schedule": "*/2 * * * *",
-        "bucket_name": os.getenv("GCS_BUCKET_NAME")
-    },   
-    "m2": {
-        "name": "m2", 
-        "sql": """
-        select
-          *
-        from
-          tmp.metrics
-        where
-          name = 'metric_2'
-        order by timestamp desc
-        limit 1
-        """,
-        "dataset": "tmp", 
-        "table": "metrics", 
-        "project_id": os.getenv("GCP_PROJECT"),
-        "cron_schedule": "*/3 * * * *",
-        "bucket_name": os.getenv("GCS_BUCKET_NAME")
-    },
-}
+from jobs.config import specs
 
 
 def build_score_job(spec) -> JobDefinition:
@@ -82,15 +44,15 @@ def build_score_job(spec) -> JobDefinition:
 
 # generate jobs
 score_jobs = [
-    build_score_job(score_specs[score_spec]) 
-    for score_spec in score_specs 
+    build_score_job(specs[spec]['score']) 
+    for spec in specs 
 ]
 
 # define schedules
 score_schedules = [
     ScheduleDefinition(
         job=score_job,
-        cron_schedule=score_specs[score_job.name.replace('_score','')]['cron_schedule'],
+        cron_schedule=specs[score_job.name.replace('_score','')]['score']['cron_schedule'],
     )
     for score_job in score_jobs
 ]

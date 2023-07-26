@@ -9,39 +9,7 @@ from dagster import (
 )
 from google.cloud import storage
 
-
-train_specs = {
-    "m1": {
-        "name": "m1", 
-        "sql": """
-        select
-          *
-        from
-          tmp.metrics
-        where
-          name = 'metric_1'
-        order by timestamp desc
-        limit 1000
-        """,
-        "cron_schedule": "*/4 * * * *",
-        "bucket_name": os.getenv("GCS_BUCKET_NAME")
-    },
-    "m2": {
-        "name": "m2", 
-        "sql": """
-        select
-          *
-        from
-          tmp.metrics
-        where
-          name = 'metric_2'
-        order by timestamp desc
-        limit 1000
-        """,
-        "cron_schedule": "*/5 * * * *",
-        "bucket_name": os.getenv("GCS_BUCKET_NAME")
-    },
-}
+from jobs.config import specs
 
 
 def build_train_job(spec) -> JobDefinition:
@@ -88,15 +56,15 @@ def build_train_job(spec) -> JobDefinition:
 
 # generate jobs
 train_jobs = [
-    build_train_job(train_specs[train_spec]) 
-    for train_spec in train_specs 
+    build_train_job(specs[spec]['train']) 
+    for spec in specs 
 ]
 
 # define schedules
 train_schedules = [
     ScheduleDefinition(
         job=train_job,
-        cron_schedule=train_specs[train_job.name.replace('_train','')]['cron_schedule'],
+        cron_schedule=specs[train_job.name.replace('_train','')]['train']['cron_schedule'],
     )
     for train_job in train_jobs
 ]
