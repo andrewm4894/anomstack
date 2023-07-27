@@ -9,14 +9,12 @@ from dagster import (
 )
 from google.cloud import storage
 import jinja2
-
 from jobs.config import specs
 
 
-environment = jinja2.Environment()
-
-
 def build_train_job(spec) -> JobDefinition:
+    
+    environment = jinja2.Environment()
     
     @job(name=f"{spec['batch']}_train")
     def _job():
@@ -25,10 +23,9 @@ def build_train_job(spec) -> JobDefinition:
         
         @op(name=f"{spec['batch']}_get_train_data")
         def get_train_data() -> pd.DataFrame:
-            sql = environment.from_string(spec['train']['sql'])
+            sql = environment.from_string(spec['train_sql'])
             sql = sql.render(
-                dataset=spec['dataset'],
-                table=spec['table'],
+                table_key=spec['table_key'],
                 batch=spec['batch'],
             )
             df = pd.read_gbq(query=sql)
@@ -78,7 +75,7 @@ train_jobs = [
 train_schedules = [
     ScheduleDefinition(
         job=train_job,
-        cron_schedule=specs[train_job.name.replace('_train','')]['train']['cron_schedule'],
+        cron_schedule=specs[train_job.name.replace('_train','')]['train_cron_schedule'],
     )
     for train_job in train_jobs
 ]

@@ -4,14 +4,12 @@ import jinja2
 from dagster import (
     get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
 )
-
 from jobs.config import specs
 
 
-environment = jinja2.Environment()
-
-
 def build_ingest_job(spec) -> JobDefinition:
+    
+    environment = jinja2.Environment()
     
     @job(name=f"{spec['batch']}_ingest")
     def _job():
@@ -20,12 +18,9 @@ def build_ingest_job(spec) -> JobDefinition:
         
         @op(name=f"{spec['batch']}_create_metrics")
         def create_metrics() -> pd.DataFrame:
-            """Creates metrics."""
-            sql = environment.from_string(spec['ingest']['sql'])
+            sql = environment.from_string(spec['ingest_sql'])
             sql = sql.render(
-                dataset=spec['dataset'],
-                table=spec['table'],
-                batch=spec['batch'],
+                table_key=spec['table_key'],
             )
             df = pd.read_gbq(query=sql)
             df['batch'] = spec['batch']
@@ -34,9 +29,8 @@ def build_ingest_job(spec) -> JobDefinition:
         
         @op(name=f"{spec['batch']}_save_metrics")
         def save_metrics(df) -> pd.DataFrame:
-            """Saves metrics."""
             df.to_gbq(
-                destination_table=f"{spec['dataset']}.{spec['table']}",
+                destination_table=f"{spec['table_key']}",
                 project_id=spec['project_id'],
                 if_exists='append'
             )
@@ -57,7 +51,7 @@ ingest_jobs = [
 ingest_schedules = [
     ScheduleDefinition(
         job=ingest_job,
-        cron_schedule=specs[ingest_job.name.replace('_ingest','')]['ingest']['cron_schedule'],
+        cron_schedule=specs[ingest_job.name.replace('_ingest','')]['ingest_cron_schedule'],
     )
     for ingest_job in ingest_jobs
 ]

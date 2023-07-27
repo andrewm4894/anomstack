@@ -21,7 +21,7 @@ def build_score_job(spec) -> JobDefinition:
         
         @op(name=f"{spec['batch']}_get_score_data")
         def get_score_data() -> pd.DataFrame:
-            sql = environment.from_string(spec['score']['sql'])
+            sql = environment.from_string(spec['score_sql'])
             sql = sql.render(
                 dataset=spec['dataset'],
                 table=spec['table'],
@@ -64,7 +64,7 @@ score_jobs = [
 score_schedules = [
     ScheduleDefinition(
         job=score_job,
-        cron_schedule=specs[score_job.name.replace('_score','')]['score']['cron_schedule'],
+        cron_schedule=specs[score_job.name.replace('_score','')]['score_cron_schedule'],
     )
     for score_job in score_jobs
 ]

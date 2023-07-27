@@ -1,22 +1,19 @@
-dataset: "tmp"
-table: "tmpmetrics"
-train:
-  sql: >
-    select
-      *
-    from
-      {{ dataset }}.{{ table }}
-    where
-      batch = '{{ batch }}'
-    order by timestamp desc
-    limit 1000;
-score:
-  sql: >
-    select
-      *
-    from
-      {{ dataset }}.{{ table }}
-    where
-      batch = '{{ batch }}'
-    order by timestamp desc
-    limit 100;
+table_key: "tmp.tmpmetrics"
+train_sql: >
+  select
+    *
+  from
+    {{ table_key }}
+  where
+    batch = '{{ batch }}'
+  order by timestamp desc
+  limit 1000;
+score_sql: >
+  select
+    *
+  from
+    {{ table_key }}
+  where
+    batch = '{{ batch }}'
+  order by timestamp desc
+  limit 100;
