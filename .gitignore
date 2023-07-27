@@ -159,9 +159,8 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-# ignore volumes created by docker-compose
-postgres-db-volume
-
 # dagster
 tmp*
-dagster/data
+
+.vscode/*
+!.vscode/settings.json
