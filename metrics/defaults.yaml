@@ -1,9 +1,13 @@
+# default values to be applied to all batches unless overridden
 table_key: "tmp.tmpmetrics"
+ingest_cron_schedule: "*/3 * * * *"
+train_cron_schedule: "*/5 * * * *"
+score_cron_schedule: "*/4 * * * *"
 train_sql: >
   select
     *
   from
-    {{ table_key }}
+    `{{ table_key }}`
   where
     batch = '{{ batch }}'
   order by timestamp desc
@@ -12,7 +16,7 @@ score_sql: >
   select
     *
   from
-    {{ table_key }}
+    `{{ table_key }}`
   where
     batch = '{{ batch }}'
   order by timestamp desc

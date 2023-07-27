@@ -1,3 +1,4 @@
+# a basic minimal example of a batch
 batch: "batch_1"
 ingest_cron_schedule: "*/2 * * * *"
 train_cron_schedule: "*/4 * * * *"

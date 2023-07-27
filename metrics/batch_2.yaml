@@ -1,19 +1,16 @@
+# this shows a jinja based template example
 batch: "batch_2"
-ingest_cron_schedule: "*/3 * * * *"
-train_cron_schedule: "*/5 * * * *"
-score_cron_schedule: "*/4 * * * *"
 ingest_sql: >
+  {% set metrics = ['metric_1', 'metric_2', 'metric_3'] %}
   select
     *
   from
   (
+  {% for metric in metrics %}
   select
     current_timestamp() as timestamp,
-    'metric_1' as name,
+    '{{ metric }}' as name,
     rand() as value
-  union all
-  select
-    current_timestamp() as timestamp,
-    'metric_2' as name,
-    rand() as value
+  {% if not loop.last %}union all{% endif %}
+  {% endfor %}
   );

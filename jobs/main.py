@@ -5,6 +5,6 @@ from dagster import Definitions
 
 
 defs = Definitions(
-    jobs = ingest_jobs + train_jobs + score_jobs,
-    schedules = ingest_schedules + train_schedules + score_schedules
+    jobs=ingest_jobs + train_jobs + score_jobs,
+    schedules=ingest_schedules + train_schedules + score_schedules,
 )

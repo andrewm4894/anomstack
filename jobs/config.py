@@ -1,24 +1,27 @@
+"""
+handle configuration for the jobs
+"""
 import os
 import yaml
 from pathlib import Path
 
 env_vars = {
-    'PROJECT_ID': 'project_id',
-    'BUCKET_NAME': 'bucket_name',
-    'DATASET': 'dataset',
-    'TABLE': 'table'
+    "PROJECT_ID": "project_id",
+    "BUCKET_NAME": "bucket_name",
+    "DATASET": "dataset",
+    "TABLE": "table",
 }
 
 config_dir = Path("metrics")
 specs = {}
 
-with open(config_dir / 'defaults.yaml', 'r') as file:
+with open(config_dir / "defaults.yaml", "r") as file:
     defaults = yaml.safe_load(file)
 
-for yaml_file in config_dir.glob('*.yaml'):
-    if yaml_file.name == 'defaults.yaml':
+for yaml_file in config_dir.glob("*.yaml"):
+    if yaml_file.name == "defaults.yaml":
         continue
-    with open(yaml_file, 'r') as file:
+    with open(yaml_file, "r") as file:
         metric_specs = yaml.safe_load(file)
         metric_batch = metric_specs["batch"]
         merged_specs = {**defaults, **metric_specs}
