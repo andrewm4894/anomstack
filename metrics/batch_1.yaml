@@ -1,0 +1,22 @@
+batch: "batch_1"
+ingest:
+  sql: >
+    select
+      *
+    from
+    (
+    select
+      current_timestamp() as timestamp,
+      'metric_1' as name,
+      rand() as value
+    union all
+    select
+      current_timestamp() as timestamp,
+      'metric_2' as name,
+      rand() as value
+    );
+  cron_schedule: "*/2 * * * *"
+train:
+  cron_schedule: "*/4 * * * *"
+score:
+  cron_schedule: "*/3 * * * *"

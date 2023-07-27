@@ -1,2 +1,22 @@
 dataset: "tmp"
-table: "metrics"
+table: "tmpmetrics"
+train:
+  sql: >
+    select
+      *
+    from
+      {{ dataset }}.{{ table }}
+    where
+      batch = '{{ batch }}'
+    order by timestamp desc
+    limit 1000;
+score:
+  sql: >
+    select
+      *
+    from
+      {{ dataset }}.{{ table }}
+    where
+      batch = '{{ batch }}'
+    order by timestamp desc
+    limit 100;

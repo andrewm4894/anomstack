@@ -6,3 +6,4 @@ pandas
 pandas-gbq
 pyod
 pyyaml
+Jinja2

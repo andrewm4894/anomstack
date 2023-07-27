@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import jinja2
 from dagster import (
     get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
 )
@@ -7,21 +8,31 @@ from dagster import (
 from jobs.config import specs
 
 
+environment = jinja2.Environment()
+
+
 def build_ingest_job(spec) -> JobDefinition:
     
-    @job(name=f"{spec['name']}_ingest")
+    @job(name=f"{spec['batch']}_ingest")
     def _job():
         
         logger = get_dagster_logger()
         
-        @op(name=f"{spec['name']}_create_metrics")
+        @op(name=f"{spec['batch']}_create_metrics")
         def create_metrics() -> pd.DataFrame:
             """Creates metrics."""
-            df = pd.read_gbq(query=spec['ingest']['sql'])
+            sql = environment.from_string(spec['ingest']['sql'])
+            sql = sql.render(
+                dataset=spec['dataset'],
+                table=spec['table'],
+                batch=spec['batch'],
+            )
+            df = pd.read_gbq(query=sql)
+            df['batch'] = spec['batch']
             logger.info(f"df:\n{df}")
             return df
         
-        @op(name=f"{spec['name']}_save_metrics")
+        @op(name=f"{spec['batch']}_save_metrics")
         def save_metrics(df) -> pd.DataFrame:
             """Saves metrics."""
             df.to_gbq(

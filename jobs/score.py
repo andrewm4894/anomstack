@@ -5,36 +5,48 @@ from google.cloud import storage
 from dagster import (
     get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
 )
-
+import jinja2
 from jobs.config import specs
+
+
+environment = jinja2.Environment()
 
 
 def build_score_job(spec) -> JobDefinition:
     
-    @job(name=f"{spec['name']}_score")
+    @job(name=f"{spec['batch']}_score")
     def _job():
         
         logger = get_dagster_logger()
         
-        @op(name=f"{spec['name']}_get_score_data")
+        @op(name=f"{spec['batch']}_get_score_data")
         def get_score_data() -> pd.DataFrame:
-            df = pd.read_gbq(query=spec['score']['sql'])
+            sql = environment.from_string(spec['score']['sql'])
+            sql = sql.render(
+                dataset=spec['dataset'],
+                table=spec['table'],
+                batch=spec['batch'],
+            )
+            df = pd.read_gbq(query=sql)
             logger.info(f"df:\n{df}")
             return df
         
-        @op(name=f"{spec['name']}_score_op")
+        @op(name=f"{spec['batch']}_score_op")
         def score(df) -> pd.DataFrame:
-            model_name = f"{spec['name']}.pkl"
-            logger.info(f"loading {model_name} from GCS bucket {spec['bucket_name']}")
-            storage_client = storage.Client()
-            bucket = storage_client.get_bucket(spec['bucket_name'])    
-            blob = bucket.blob(f'models/{model_name}')
-            with blob.open('rb') as f:
-                model = pickle.load(f)
-            logger.info(model)
-            logger.info(df)
-            scores = model.predict_proba(df[['value']])
-            logger.info(scores)
+            for metric in df['name'].unique():
+                df_metric = df[df['name'] == metric].head(1)
+                model_name = f"{metric}.pkl"
+                logger.info(f"loading {model_name} from GCS bucket {spec['bucket_name']}")
+                storage_client = storage.Client()
+                bucket = storage_client.get_bucket(spec['bucket_name'])    
+                blob = bucket.blob(f'models/{model_name}')
+                with blob.open('rb') as f:
+                    model = pickle.load(f)
+                logger.info(model)
+                logger.info(df_metric)
+                scores = model.predict_proba(df_metric[['value']])
+                logger.info(scores)
+                
             return df
         
         score(get_score_data())
