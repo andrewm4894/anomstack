@@ -25,10 +25,13 @@ def build_score_job(spec) -> JobDefinition:
         @op(name=f'{metric_batch}_score_op')
         def score(df) -> pd.DataFrame:
             
-            for metric in df['metric_name'].unique():
+            df_scores = pd.DataFrame()
+            
+            for metric_name in df['metric_name'].unique():
                 
-                df_metric = df[df['metric_name'] == metric].head(1)
-                model_name = f'{metric}.pkl'
+                df_metric = df[df['metric_name'] == metric_name].head(1)
+                
+                model_name = f'{metric_name}.pkl'
                 logger.info(f'loading {model_name} from GCS bucket {bucket_name}')
                 storage_client = storage.Client()
                 bucket = storage_client.get_bucket(bucket_name)
@@ -39,7 +42,14 @@ def build_score_job(spec) -> JobDefinition:
                     logger.info(model)
                     logger.info(df_metric)
                     scores = model.predict_proba(df_metric[['metric_value']])
-                    logger.info(scores)
+                    df_score = pd.DataFrame({
+                        'metric_timestamp': df_metric['metric_timestamp'].max(),
+                        'metric_name': metric_name,
+                        'anomaly_score': scores[0],
+                    })
+                    df_scores = pd.concat([df, pd.DataFrame([df_score])], ignore_index=True)
+            
+            logger.info(df_scores)
 
             return df
 
