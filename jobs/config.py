@@ -23,7 +23,7 @@ for yaml_file in config_dir.glob("*.yaml"):
         continue
     with open(yaml_file, "r") as file:
         metric_specs = yaml.safe_load(file)
-        metric_batch = metric_specs["batch"]
+        metric_batch = metric_specs["metric_batch"]
         merged_specs = {**defaults, **metric_specs}
         for env_var, key in env_vars.items():
             if env_var in os.environ:

@@ -14,16 +14,16 @@ from jobs.config import specs
 def build_train_job(spec) -> JobDefinition:
     environment = jinja2.Environment()
 
-    @job(name=f"{spec['batch']}_train")
+    @job(name=f"{spec['metric_batch']}_train")
     def _job():
         logger = get_dagster_logger()
 
-        @op(name=f"{spec['batch']}_get_train_data")
+        @op(name=f"{spec['metric_batch']}_get_train_data")
         def get_train_data() -> pd.DataFrame:
             sql = environment.from_string(spec["train_sql"])
             sql = sql.render(
                 table_key=spec["table_key"],
-                batch=spec["batch"],
+                metric_batch=spec["metric_batch"],
             )
             logger.info(f"sql:\n{sql}")
             df = pd.read_gbq(query=sql)
@@ -31,13 +31,13 @@ def build_train_job(spec) -> JobDefinition:
             return df
 
         @op(
-            name=f"{spec['batch']}_train_models",
+            name=f"{spec['metric_batch']}_train_models",
         )
         def train_models(df) -> List[Tuple[str, BaseDetector]]:
             models = []
-            for metric in df["name"].unique():
+            for metric in df["metric_name"].unique():
                 X = (
-                    df.query(f"name=='{metric}'")[["value"]]
+                    df.query(f"metric_name=='{metric}'")[["metric_value"]]
                     .sample(frac=1)
                     .reset_index(drop=True)
                 )
@@ -54,7 +54,7 @@ def build_train_job(spec) -> JobDefinition:
             return models
 
         @op(
-            name=f"{spec['batch']}_save_model",
+            name=f"{spec['metric_batch']}_save_model",
         )
         def save_models(models) -> List[Tuple[str, BaseDetector]]:
             for metric, model in models:

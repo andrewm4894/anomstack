@@ -1,20 +1,23 @@
 # a basic minimal example of a batch
-batch: "batch_1"
+metric_batch: "batch_1"
 ingest_cron_schedule: "*/2 * * * *"
 train_cron_schedule: "*/4 * * * *"
 score_cron_schedule: "*/3 * * * *"
+metric_descriptions:
+  metric_1: "this is metric 1"
+  metric_2: "this is metric 2"
 ingest_sql: >
   select
     *
   from
   (
   select
-    current_timestamp() as timestamp,
-    'metric_1' as name,
-    rand() as value
+    current_timestamp() as metric_timestamp,
+    'metric_1' as metric_name,
+    rand() as metric_value
   union all
   select
-    current_timestamp() as timestamp,
-    'metric_2' as name,
-    rand() as value
+    current_timestamp() as metric_timestamp,
+    'metric_2' as metric_name,
+    rand() as metric_value
   );

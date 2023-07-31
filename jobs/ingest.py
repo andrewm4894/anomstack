@@ -8,11 +8,11 @@ from jobs.config import specs
 def build_ingest_job(spec) -> JobDefinition:
     environment = jinja2.Environment()
 
-    @job(name=f"{spec['batch']}_ingest")
+    @job(name=f"{spec['metric_batch']}_ingest")
     def _job():
         logger = get_dagster_logger()
 
-        @op(name=f"{spec['batch']}_create_metrics")
+        @op(name=f"{spec['metric_batch']}_create_metrics")
         def create_metrics() -> pd.DataFrame:
             sql = environment.from_string(spec["ingest_sql"])
             sql = sql.render(
@@ -20,11 +20,11 @@ def build_ingest_job(spec) -> JobDefinition:
             )
             logger.info(f"sql:\n{sql}")
             df = pd.read_gbq(query=sql)
-            df["batch"] = spec["batch"]
+            df["metric_batch"] = spec["metric_batch"]
             logger.info(f"df:\n{df}")
             return df
 
-        @op(name=f"{spec['batch']}_save_metrics")
+        @op(name=f"{spec['metric_batch']}_save_metrics")
         def save_metrics(df) -> pd.DataFrame:
             df.to_gbq(
                 destination_table=f"{spec['table_key']}",

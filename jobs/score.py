@@ -11,26 +11,26 @@ environment = jinja2.Environment()
 
 
 def build_score_job(spec) -> JobDefinition:
-    @job(name=f"{spec['batch']}_score")
+    @job(name=f"{spec['metric_batch']}_score")
     def _job():
         logger = get_dagster_logger()
 
-        @op(name=f"{spec['batch']}_get_score_data")
+        @op(name=f"{spec['metric_batch']}_get_score_data")
         def get_score_data() -> pd.DataFrame:
             sql = environment.from_string(spec["score_sql"])
             sql = sql.render(
                 table_key=spec["table_key"],
-                batch=spec["batch"],
+                metric_batch=spec["metric_batch"],
             )
             logger.info(f"sql:\n{sql}")
             df = pd.read_gbq(query=sql)
             logger.info(f"df:\n{df}")
             return df
 
-        @op(name=f"{spec['batch']}_score_op")
+        @op(name=f"{spec['metric_batch']}_score_op")
         def score(df) -> pd.DataFrame:
-            for metric in df["name"].unique():
-                df_metric = df[df["name"] == metric].head(1)
+            for metric in df["metric_name"].unique():
+                df_metric = df[df["metric_name"] == metric].head(1)
                 model_name = f"{metric}.pkl"
                 logger.info(
                     f"loading {model_name} from GCS bucket {spec['bucket_name']}"
@@ -42,7 +42,7 @@ def build_score_job(spec) -> JobDefinition:
                     model = pickle.load(f)
                 logger.info(model)
                 logger.info(df_metric)
-                scores = model.predict_proba(df_metric[["value"]])
+                scores = model.predict_proba(df_metric[["metric_value"]])
                 logger.info(scores)
 
             return df

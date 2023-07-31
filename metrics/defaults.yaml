@@ -9,7 +9,7 @@ train_sql: >
   from
     `{{ table_key }}`
   where
-    batch = '{{ batch }}'
+    metric_batch = '{{ metric_batch }}'
   order by timestamp desc
   limit 1000;
 score_sql: >
@@ -18,6 +18,6 @@ score_sql: >
   from
     `{{ table_key }}`
   where
-    batch = '{{ batch }}'
+    metric_batch = '{{ metric_batch }}'
   order by timestamp desc
   limit 100;

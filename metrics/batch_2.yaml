@@ -1,5 +1,8 @@
 # this shows a jinja based template example
-batch: "batch_2"
+metric_batch: "batch_2"
+metric_descriptions:
+  metric_1: "this is metric 1"
+  metric_2: "this is metric 2"
 ingest_sql: >
   {% set metrics = ['metric_1', 'metric_2', 'metric_3'] %}
   select
@@ -8,9 +11,9 @@ ingest_sql: >
   (
   {% for metric in metrics %}
   select
-    current_timestamp() as timestamp,
-    '{{ metric }}' as name,
-    rand() as value
+    current_timestamp() as metric_timestamp,
+    '{{ metric }}' as metric_name,
+    rand() as metric_value
   {% if not loop.last %}union all{% endif %}
   {% endfor %}
   );
