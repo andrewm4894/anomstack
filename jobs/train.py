@@ -9,6 +9,7 @@ from google.cloud import storage
 import jinja2
 from typing import List, Tuple
 from jobs.config import specs
+from jobs.utils import render_sql, read_sql
 
 
 def build_train_job(spec) -> JobDefinition:
@@ -20,14 +21,7 @@ def build_train_job(spec) -> JobDefinition:
 
         @op(name=f"{spec['metric_batch']}_get_train_data")
         def get_train_data() -> pd.DataFrame:
-            sql = environment.from_string(spec["train_sql"])
-            sql = sql.render(
-                table_key=spec["table_key"],
-                metric_batch=spec["metric_batch"],
-            )
-            logger.info(f"sql:\n{sql}")
-            df = pd.read_gbq(query=sql)
-            logger.info(f"df:\n{df}")
+            df = read_sql(render_sql('train_sql', spec))
             return df
 
         @op(
