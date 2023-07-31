@@ -10,7 +10,7 @@ train_sql: >
     `{{ table_key }}`
   where
     metric_batch = '{{ metric_batch }}'
-  order by timestamp desc
+  order by metric_timestamp desc
   limit 1000;
 score_sql: >
   select
@@ -19,5 +19,5 @@ score_sql: >
     `{{ table_key }}`
   where
     metric_batch = '{{ metric_batch }}'
-  order by timestamp desc
+  order by metric_timestamp desc
   limit 100;

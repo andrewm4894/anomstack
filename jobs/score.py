@@ -3,17 +3,15 @@ import pandas as pd
 import pickle
 from google.cloud import storage
 from dagster import get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
-import jinja2
 from jobs.config import specs
 from jobs.utils import render_sql, read_sql
 
 
-environment = jinja2.Environment()
-
-
 def build_score_job(spec) -> JobDefinition:
+    
     @job(name=f"{spec['metric_batch']}_score")
     def _job():
+        
         logger = get_dagster_logger()
         
         metric_batch = spec['metric_batch']
@@ -26,19 +24,22 @@ def build_score_job(spec) -> JobDefinition:
 
         @op(name=f'{metric_batch}_score_op')
         def score(df) -> pd.DataFrame:
+            
             for metric in df['metric_name'].unique():
+                
                 df_metric = df[df['metric_name'] == metric].head(1)
                 model_name = f'{metric}.pkl'
                 logger.info(f'loading {model_name} from GCS bucket {bucket_name}')
                 storage_client = storage.Client()
                 bucket = storage_client.get_bucket(bucket_name)
                 blob = bucket.blob(f'models/{model_name}')
+                
                 with blob.open('rb') as f:
                     model = pickle.load(f)
-                logger.info(model)
-                logger.info(df_metric)
-                scores = model.predict_proba(df_metric[['metric_value']])
-                logger.info(scores)
+                    logger.info(model)
+                    logger.info(df_metric)
+                    scores = model.predict_proba(df_metric[['metric_value']])
+                    logger.info(scores)
 
             return df
 
