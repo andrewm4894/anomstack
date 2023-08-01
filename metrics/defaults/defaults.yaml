@@ -10,10 +10,10 @@ train_cron_schedule: "*/5 * * * *"
 score_cron_schedule: "*/4 * * * *"
 alert_cron_schedule: "*/5 * * * *"
 train_sql: >
-  {% include "./defaults/train.sql" %}
+  {% include "./defaults/sql/train.sql" %}
 score_sql: >
-  {% include "./defaults/score.sql" %}
+  {% include "./defaults/sql/score.sql" %}
 alert_sql: >
-  {% include "./defaults/alerts.sql" %}
+  {% include "./defaults/sql/alerts.sql" %}
 metric_sql: >
-  {% include "./defaults/metric.sql" %}
+  {% include "./defaults/sql/metric.sql" %}
