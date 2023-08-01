@@ -1,23 +1,55 @@
 # default values to be applied to all batches unless overridden
 table_key: "tmp.metrics"
+train_max_n: 1000
+score_max_n: 100
 ingest_cron_schedule: "*/3 * * * *"
 train_cron_schedule: "*/5 * * * *"
 score_cron_schedule: "*/4 * * * *"
 train_sql: >
+  with
+
+  data_ranked as
+  (
   select
-    *
+    *,
+    rank() over (partition by metric_type, metric_batch, metric_name order by metric_timestamp desc) as metric_recency_rank
   from
     `{{ table_key }}`
   where
     metric_batch = '{{ metric_batch }}'
-  order by metric_timestamp desc
-  limit 1000;
+    and
+    metric_type = 'metric'
+  )
+
+  select
+    *
+    except (metric_recency_rank)
+  from
+    data_ranked
+  where
+    metric_recency_rank <= {{ train_max_n }}
+  ;
 score_sql: >
+  with
+
+  data_ranked as
+  (
   select
-    *
+    *,
+    rank() over (partition by metric_type, metric_batch, metric_name order by metric_timestamp desc) as metric_recency_rank
   from
     `{{ table_key }}`
   where
     metric_batch = '{{ metric_batch }}'
-  order by metric_timestamp desc
-  limit 100;
+    and
+    metric_type = 'metric'
+  )
+
+  select
+    *
+    except (metric_recency_rank)
+  from
+    data_ranked
+  where
+    metric_recency_rank <= {{ score_max_n }}
+  ;

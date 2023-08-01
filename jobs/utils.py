@@ -17,7 +17,9 @@ def render_sql(sql_key, spec) -> str:
     sql = environment.from_string(spec[sql_key])
     sql = sql.render(
         table_key=spec.get('table_key'),
-        metric_batch=spec.get('metric_batch')
+        metric_batch=spec.get('metric_batch'),
+        train_max_n=spec.get('train_max_n'),
+        score_max_n=spec.get('score_max_n'),
     )
     
     return sql
