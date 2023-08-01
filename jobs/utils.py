@@ -50,3 +50,14 @@ def save_df(df, table_key, project_id, if_exists) -> pd.DataFrame:
         if_exists=if_exists,
     )
     return df
+
+
+def send_alert(df) -> pd.DataFrame:
+    """
+    Send alert.
+    """
+    
+    logger = get_dagster_logger()
+    logger.info(f'alerts to send: \n{df}')
+    
+    return df

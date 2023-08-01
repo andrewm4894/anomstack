@@ -5,7 +5,7 @@ Generate alert jobs and schedules.
 import pandas as pd
 from dagster import get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
 from jobs.config import specs
-from jobs.utils import render_sql, read_sql
+from jobs.utils import render_sql, read_sql, send_alert
 
 
 def build_alert_job(spec) -> JobDefinition:
@@ -40,7 +40,7 @@ def build_alert_job(spec) -> JobDefinition:
             if len(df_alerts) == 0:
                 logger.info('no alerts to send')
             else:
-                logger.info(f'alerts to send: \n{df_alerts}')
+                send_alert(df_alerts)
 
             return df_alerts
 
