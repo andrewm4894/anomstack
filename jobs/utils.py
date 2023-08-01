@@ -6,6 +6,9 @@ from dagster import get_dagster_logger
 import pandas as pd
 import jinja2
 from jinja2 import FileSystemLoader
+import requests
+import json
+import os
 
 
 def render_sql(sql_key, spec) -> str:
@@ -52,6 +55,19 @@ def save_df(df, table_key, project_id, if_exists) -> pd.DataFrame:
     return df
 
 
+def send_alert_slack(message='hello') -> requests.Response:
+    """
+    Send alert via slack.
+    """
+    
+    webhook_url = os.environ['SLACK_WEBHOOK_URL']
+    payload = {'text': message}
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(webhook_url, data=json.dumps(payload), headers=headers)
+    
+    return response
+    
+
 def send_alert(df) -> pd.DataFrame:
     """
     Send alert.
@@ -59,5 +75,6 @@ def send_alert(df) -> pd.DataFrame:
     
     logger = get_dagster_logger()
     logger.info(f'alerts to send: \n{df}')
+    _ = send_alert_slack(df.to_string())
     
     return df
