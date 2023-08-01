@@ -10,7 +10,6 @@ from pyod.models.iforest import IForest
 from pyod.models.base import BaseDetector
 from dagster import get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
 from google.cloud import storage
-import jinja2
 from typing import List, Tuple
 from jobs.config import specs
 from jobs.utils import render_sql, read_sql
