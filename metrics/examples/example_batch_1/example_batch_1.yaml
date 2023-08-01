@@ -1,5 +1,5 @@
 # a basic minimal example of a batch
-metric_batch: "batch_1"
+metric_batch: "example_batch_1"
 ingest_cron_schedule: "*/2 * * * *"
 train_cron_schedule: "*/4 * * * *"
 score_cron_schedule: "*/3 * * * *"

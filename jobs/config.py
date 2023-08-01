@@ -15,6 +15,7 @@ env_vars = {
 
 config_dir = Path('metrics')
 defaults_dir = Path('metrics/defaults')
+examples_dir = Path('metrics/examples')
 specs = {}
 
 def process_yaml_file(yaml_file):
@@ -33,6 +34,8 @@ with open(defaults_dir / 'defaults.yaml', 'r') as file:
 
 # process YAML files in all subdirectories
 for root, dirs, files in os.walk(config_dir):
+    if os.getenv('ANOMSTACK_IGNORE_EXAMPLES') == 'yes' and examples_dir in Path(root).parents:
+        continue
     for yaml_file in files:
         if yaml_file == 'defaults.yaml':
             continue
