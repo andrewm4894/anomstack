@@ -1,10 +1,17 @@
+"""
+Generate ingest jobs and schedules.
+"""
+
 import pandas as pd
 from dagster import get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
 from jobs.config import specs
-from jobs.utils import read_sql, render_sql
+from jobs.utils import read_sql, render_sql, save_df
 
 
 def build_ingest_job(spec) -> JobDefinition:
+    """
+    Build job definitions for ingest jobs.
+    """
     
     metric_batch = spec['metric_batch']
     table_key = spec['table_key']
@@ -13,20 +20,26 @@ def build_ingest_job(spec) -> JobDefinition:
 
     @job(name=f'{metric_batch}_ingest')
     def _job():
+        """
+        Run SQL to calculate metrics and save to db.
+        """
 
         @op(name=f'{metric_batch}_create_metrics')
         def create_metrics() -> pd.DataFrame:
+            """
+            Calculate metrics.
+            """
             df = read_sql(render_sql('ingest_sql', spec))
             df["metric_batch"] = metric_batch
+            df["metric_type"] = 'metric'
             return df
 
         @op(name=f'{metric_batch}_save_metrics')
         def save_metrics(df) -> pd.DataFrame:
-            df.to_gbq(
-                destination_table=table_key,
-                project_id=project_id,
-                if_exists=if_exists,
-            )
+            """
+            Save metrics to db.
+            """
+            df = save_df(df, table_key, project_id, if_exists)
             return df
 
         save_metrics(create_metrics())

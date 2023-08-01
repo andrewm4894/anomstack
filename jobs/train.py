@@ -1,3 +1,7 @@
+"""
+Generate train jobs and schedules.
+"""
+
 import os
 import time
 import pandas as pd
@@ -13,23 +17,38 @@ from jobs.utils import render_sql, read_sql
 
 
 def build_train_job(spec) -> JobDefinition:
-    environment = jinja2.Environment()
+    """
+    Build job definitions for train jobs.
+    """
 
     @job(name=f"{spec['metric_batch']}_train")
     def _job():
+        """
+        Get data for training and train models.
+        """
+        
         logger = get_dagster_logger()
 
         @op(name=f"{spec['metric_batch']}_get_train_data")
         def get_train_data() -> pd.DataFrame:
+            """
+            Get data for training.
+            """
+            
             df = read_sql(render_sql('train_sql', spec))
+            
             return df
 
-        @op(
-            name=f"{spec['metric_batch']}_train_models",
-        )
+        @op(name=f"{spec['metric_batch']}_train_models")
         def train_models(df) -> List[Tuple[str, BaseDetector]]:
+            """
+            Train models.
+            """
+            
             models = []
+            
             for metric in df["metric_name"].unique():
+                
                 X = (
                     df.query(f"metric_name=='{metric}'")[["metric_value"]]
                     .sample(frac=1)
@@ -47,21 +66,25 @@ def build_train_job(spec) -> JobDefinition:
 
             return models
 
-        @op(
-            name=f"{spec['metric_batch']}_save_model",
-        )
+        @op(name=f"{spec['metric_batch']}_save_model")
         def save_models(models) -> List[Tuple[str, BaseDetector]]:
+            """
+            Save trained models to bucket.
+            """
+            
             for metric, model in models:
+                
                 model_name = f"{metric}.pkl"
                 logger.info(f"saving {model_name} to GCS bucket {spec['bucket_name']}")
                 storage_client = storage.Client()
                 bucket = storage_client.get_bucket(spec["bucket_name"])
                 blob = bucket.blob(f"models/{model_name}")
+                
                 with blob.open("wb") as f:
                     pickle.dump(model, f)
 
             return models
-
+        
         save_models(train_models(get_train_data()))
 
     return _job

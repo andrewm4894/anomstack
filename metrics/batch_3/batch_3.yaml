@@ -1,0 +1,7 @@
+# this shows a jinja based template example using a local templated sql file
+metric_batch: "batch_3"
+metric_descriptions:
+  metric_1: "this is metric 1"
+  metric_2: "this is metric 2"
+ingest_sql: >
+  {% include "./batch_3/batch_3.sql" %}

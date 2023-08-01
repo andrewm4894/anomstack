@@ -1,29 +1,48 @@
+"""
+Generate score jobs and schedules.
+"""
+
 import os
 import pandas as pd
 import pickle
 from google.cloud import storage
 from dagster import get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
 from jobs.config import specs
-from jobs.utils import render_sql, read_sql
+from jobs.utils import render_sql, read_sql, save_df
 
 
 def build_score_job(spec) -> JobDefinition:
+    """
+    Build job definitions for score jobs.
+    """
+    
+    logger = get_dagster_logger()
+    
+    metric_batch = spec['metric_batch']
+    bucket_name = spec['bucket_name']
+    table_key = spec['table_key']
+    project_id = spec['project_id']
+    if_exists = spec.get('if_exists','append')
     
     @job(name=f"{spec['metric_batch']}_score")
     def _job():
-        
-        logger = get_dagster_logger()
-        
-        metric_batch = spec['metric_batch']
-        bucket_name = spec['bucket_name']
+        """
+        Get data for scoring and score data.
+        """
 
         @op(name=f'{metric_batch}_get_score_data')
         def get_score_data() -> pd.DataFrame:
+            """
+            Get data for scoring.
+            """
             df = read_sql(render_sql('score_sql', spec))
             return df
 
         @op(name=f'{metric_batch}_score_op')
         def score(df) -> pd.DataFrame:
+            """
+            Score data.
+            """
             
             df_scores = pd.DataFrame()
             
@@ -38,6 +57,7 @@ def build_score_job(spec) -> JobDefinition:
                 blob = bucket.blob(f'models/{model_name}')
                 
                 with blob.open('rb') as f:
+                    
                     model = pickle.load(f)
                     logger.info(model)
                     logger.info(df_metric)
@@ -45,15 +65,25 @@ def build_score_job(spec) -> JobDefinition:
                     df_score = pd.DataFrame({
                         'metric_timestamp': df_metric['metric_timestamp'].max(),
                         'metric_name': metric_name,
-                        'anomaly_score': scores[0],
+                        'metric_value': scores[0],
+                        'metric_batch': metric_batch,
+                        'metric_type': 'score'
                     })
-                    df_scores = pd.concat([df, pd.DataFrame([df_score])], ignore_index=True)
+                    df_scores = pd.concat([df_scores, df_score], ignore_index=True)
             
             logger.info(df_scores)
 
             return df
+        
+        @op(name=f'{metric_batch}_save_scores')
+        def save_scores(df) -> pd.DataFrame:
+            """
+            Save scores to db.
+            """
+            df = save_df(df, table_key, project_id, if_exists)
+            return df
 
-        score(get_score_data())
+        save_scores(score(get_score_data()))
 
     return _job
 
