@@ -61,7 +61,7 @@ def save_df(df, table_key, project_id, if_exists='append') -> pd.DataFrame:
     return df
 
 
-def send_alert_webhook(title='alert', message='hello', env_var_webhook_url='SLACK_WEBHOOK_URL') -> requests.Response:
+def send_alert_webhook(title='alert', message='hello', env_var_webhook_url='ANOMSTACK_SLACK_WEBHOOK_URL') -> requests.Response:
     """
     Send alert via webhook.
     """

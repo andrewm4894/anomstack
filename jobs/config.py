@@ -7,10 +7,10 @@ import yaml
 from pathlib import Path
 
 env_vars = {
-    'PROJECT_ID': 'project_id',
-    'BUCKET_NAME': 'bucket_name',
-    'DATASET': 'dataset',
-    'TABLE': 'table',
+    'ANOMSTACK_PROJECT_ID': 'project_id',
+    'ANOMSTACK_BUCKET_NAME': 'bucket_name',
+    'ANOMSTACK_DATASET': 'dataset',
+    'ANOMSTACK_TABLE': 'table',
 }
 
 config_dir = Path('metrics')
