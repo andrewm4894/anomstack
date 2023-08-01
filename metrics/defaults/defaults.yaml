@@ -1,0 +1,19 @@
+# default values to be applied to all batches unless overridden
+table_key: "tmp.metrics"
+train_max_n: 1000
+score_max_n: 100
+alert_max_n: 25
+alert_smooth_n: 3
+alert_threshold: 0.5
+ingest_cron_schedule: "*/3 * * * *"
+train_cron_schedule: "*/5 * * * *"
+score_cron_schedule: "*/4 * * * *"
+alert_cron_schedule: "*/5 * * * *"
+train_sql: >
+  {% include "./defaults/train.sql" %}
+score_sql: >
+  {% include "./defaults/score.sql" %}
+alert_sql: >
+  {% include "./defaults/alerts.sql" %}
+metric_sql: >
+  {% include "./defaults/metric.sql" %}

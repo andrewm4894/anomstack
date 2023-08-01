@@ -14,6 +14,7 @@ env_vars = {
 }
 
 config_dir = Path('metrics')
+defaults_dir = Path('metrics/defaults')
 specs = {}
 
 def process_yaml_file(yaml_file):
@@ -27,7 +28,7 @@ def process_yaml_file(yaml_file):
         specs[metric_batch] = merged_specs
 
 # load defaults.yaml
-with open(config_dir / 'defaults.yaml', 'r') as file:
+with open(defaults_dir / 'defaults.yaml', 'r') as file:
     defaults = yaml.safe_load(file)
 
 # process YAML files in all subdirectories
