@@ -16,7 +16,7 @@ def build_ingest_job(spec) -> JobDefinition:
     metric_batch = spec['metric_batch']
     table_key = spec['table_key']
     project_id = spec['project_id']
-    if_exists = spec.get('if_exists','append')
+
 
     @job(name=f'{metric_batch}_ingest')
     def _job():
@@ -39,7 +39,7 @@ def build_ingest_job(spec) -> JobDefinition:
             """
             Save metrics to db.
             """
-            df = save_df(df, table_key, project_id, if_exists)
+            df = save_df(df, table_key, project_id)
             return df
 
         save_metrics(create_metrics())

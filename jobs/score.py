@@ -22,7 +22,7 @@ def build_score_job(spec) -> JobDefinition:
     bucket_name = spec['bucket_name']
     table_key = spec['table_key']
     project_id = spec['project_id']
-    if_exists = spec.get('if_exists','append')
+
     
     @job(name=f"{spec['metric_batch']}_score")
     def _job():
@@ -81,7 +81,7 @@ def build_score_job(spec) -> JobDefinition:
             """
             Save scores to db.
             """
-            df = save_df(df, table_key, project_id, if_exists)
+            df = save_df(df, table_key, project_id)
             return df
 
         save_scores(score(get_score_data()))

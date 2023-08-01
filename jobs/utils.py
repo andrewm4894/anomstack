@@ -43,7 +43,7 @@ def read_sql(sql) -> pd.DataFrame:
     return df
 
 
-def save_df(df, table_key, project_id, if_exists) -> pd.DataFrame:
+def save_df(df, table_key, project_id, if_exists='append') -> pd.DataFrame:
     """
     Save df to db.
     """
