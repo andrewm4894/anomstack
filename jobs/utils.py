@@ -20,6 +20,8 @@ def render_sql(sql_key, spec) -> str:
         metric_batch=spec.get('metric_batch'),
         train_max_n=spec.get('train_max_n'),
         score_max_n=spec.get('score_max_n'),
+        alert_max_n=spec.get('alert_max_n'),
+        alert_threshold=spec.get('alert_threshold'),
     )
     
     return sql
