@@ -55,12 +55,12 @@ def save_df(df, table_key, project_id, if_exists) -> pd.DataFrame:
     return df
 
 
-def send_alert_slack(message='hello') -> requests.Response:
+def send_alert_webhook(message='hello', env_var_webhook_url='SLACK_WEBHOOK_URL') -> requests.Response:
     """
-    Send alert via slack.
+    Send alert via webhook.
     """
     
-    webhook_url = os.environ['SLACK_WEBHOOK_URL']
+    webhook_url = os.environ[env_var_webhook_url]
     payload = {'text': message}
     headers = {'Content-Type': 'application/json'}
     response = requests.post(webhook_url, data=json.dumps(payload), headers=headers)
@@ -75,6 +75,6 @@ def send_alert(df) -> pd.DataFrame:
     
     logger = get_dagster_logger()
     logger.info(f'alerts to send: \n{df}')
-    _ = send_alert_slack(df.to_string())
+    _ = send_alert_webhook(df.to_string())
     
     return df
