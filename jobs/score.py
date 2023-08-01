@@ -62,18 +62,19 @@ def build_score_job(spec) -> JobDefinition:
                     logger.info(model)
                     logger.info(df_metric)
                     scores = model.predict_proba(df_metric[['metric_value']])
-                    df_score = pd.DataFrame({
-                        'metric_timestamp': df_metric['metric_timestamp'].max(),
-                        'metric_name': metric_name,
-                        'metric_value': scores[0],
-                        'metric_batch': metric_batch,
-                        'metric_type': 'score'
-                    })
-                    df_scores = pd.concat([df_scores, df_score], ignore_index=True)
+
+                df_score = pd.DataFrame({
+                    'metric_timestamp': df_metric['metric_timestamp'].max(),
+                    'metric_name': metric_name,
+                    'metric_value': scores[0],
+                    'metric_batch': metric_batch,
+                    'metric_type': 'score'
+                })
+                df_scores = pd.concat([df_scores, df_score], ignore_index=True)
             
             logger.info(df_scores)
 
-            return df
+            return df_scores
         
         @op(name=f'{metric_batch}_save_scores')
         def save_scores(df) -> pd.DataFrame:
