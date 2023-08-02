@@ -9,6 +9,7 @@ from jinja2 import FileSystemLoader
 import requests
 import json
 import os
+from google.oauth2.service_account import Credentials
 
 
 def render_sql(sql_key, spec, params=None) -> str:
@@ -42,8 +43,14 @@ def read_sql(sql) -> pd.DataFrame:
     """
     
     logger = get_dagster_logger()
+    
+    logger.info(f'os.environ:\n{os.environ}')
+    
+    credentials = Credentials.from_service_account_file('/gcp_credentials.json')
+    #credentials = Credentials.from_service_account_file(os.environ['GOOGLE_APPLICATION_CREDENTIALS'])
+    
     logger.info(f'sql:\n{sql}')
-    df = pd.read_gbq(query=sql)
+    df = pd.read_gbq(query=sql, credentials=credentials)
     logger.info(f'df:\n{df}')
     
     return df

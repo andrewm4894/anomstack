@@ -10,3 +10,4 @@ pandas-gbq
 pyod
 pyyaml
 Jinja2
+google-cloud-bigquery
