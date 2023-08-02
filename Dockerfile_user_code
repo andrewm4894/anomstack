@@ -1,0 +1,18 @@
+FROM python:3.7-slim
+
+WORKDIR /opt/dagster/app
+
+COPY requirements.txt /opt/dagster/app/requirements.txt
+
+RUN pip install -r requirements.txt
+
+COPY jobs /opt/dagster/app/jobs
+
+COPY metrics /opt/dagster/app/metrics
+
+# Run dagster gRPC server on port 4000
+EXPOSE 4000
+
+# CMD allows this to be overridden from run launchers or executors that want
+# to run other commands against your repository
+CMD ["dagster", "api", "grpc", "-h", "0.0.0.0", "-p", "4000", "-f", "jobs/main.py"]

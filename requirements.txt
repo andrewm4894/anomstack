@@ -1,4 +1,6 @@
 dagster
+dagster-postgres
+dagster-docker
 dagit
 dagster-gcp
 dagster-gcp-pandas
