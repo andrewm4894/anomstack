@@ -20,7 +20,7 @@ run_launcher:
       - ANOMSTACK_BUCKET_NAME
       - ANOMSTACK_SLACK_WEBHOOK_URL
       - ANOMSTACK_IGNORE_EXAMPLES
-      - GOOGLE_APPLICATION_CREDENTIALS
+      - GOOGLE_CREDENTIALS_PATH
     network: docker_example_network
     container_kwargs:
       volumes: # Make docker client accessible to any launched containers as well
