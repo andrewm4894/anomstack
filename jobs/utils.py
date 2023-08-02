@@ -44,7 +44,7 @@ def read_sql(sql) -> pd.DataFrame:
     
     logger = get_dagster_logger()
     
-    logger.info(f'os.environ:\n{os.environ}')
+    #logger.info(f'os.environ:\n{os.environ}')
     
     credentials = Credentials.from_service_account_file('/gcp_credentials.json')
     #credentials = Credentials.from_service_account_file(os.environ['GOOGLE_APPLICATION_CREDENTIALS'])
