@@ -61,6 +61,7 @@ def save_df(df, table_key, project_id, if_exists='append') -> pd.DataFrame:
     Save df to db.
     """
     credentials = Credentials.from_service_account_file('/gcp_credentials.json')
+    #credentials = Credentials.from_service_account_file(os.environ['GOOGLE_APPLICATION_CREDENTIALS'])
     df.to_gbq(
         destination_table=table_key,
         project_id=project_id,
