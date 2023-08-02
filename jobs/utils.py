@@ -60,10 +60,12 @@ def save_df(df, table_key, project_id, if_exists='append') -> pd.DataFrame:
     """
     Save df to db.
     """
+    credentials = Credentials.from_service_account_file('/gcp_credentials.json')
     df.to_gbq(
         destination_table=table_key,
         project_id=project_id,
         if_exists=if_exists,
+        credentials=credentials,
     )
     return df
 

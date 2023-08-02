@@ -20,12 +20,12 @@ run_launcher:
       - ANOMSTACK_BUCKET_NAME
       - ANOMSTACK_SLACK_WEBHOOK_URL
       - ANOMSTACK_IGNORE_EXAMPLES
-      - GOOGLE_CREDENTIALS_PATH
+      #- GOOGLE_CREDENTIALS_PATH
     network: docker_example_network
     container_kwargs:
       volumes: # Make docker client accessible to any launched containers as well
-        #- C:/Users/andre/Documents/conf/andrewm4894-4d8b5a41b891.json:/gcp_credentials.json # <--works
-        - ${GOOGLE_CREDENTIALS_PATH}:/gcp_credentials.json # <--doesn't work
+        - C:/Users/andre/Documents/conf/andrewm4894-4d8b5a41b891.json:/gcp_credentials.json # <--works
+        #- ${GOOGLE_CREDENTIALS_PATH}:/gcp_credentials.json # <--doesn't work
         - /var/run/docker.sock:/var/run/docker.sock
         - /tmp/io_manager_storage:/tmp/io_manager_storage
 
