@@ -14,6 +14,12 @@ run_launcher:
       - DAGSTER_POSTGRES_USER
       - DAGSTER_POSTGRES_PASSWORD
       - DAGSTER_POSTGRES_DB
+      - ANOMSTACK_PROJECT_ID
+      - ANOMSTACK_DATASET
+      - ANOMSTACK_TABLE
+      - ANOMSTACK_BUCKET_NAME
+      - ANOMSTACK_SLACK_WEBHOOK_URL
+      - ANOMSTACK_IGNORE_EXAMPLES
     network: docker_example_network
     container_kwargs:
       volumes: # Make docker client accessible to any launched containers as well
