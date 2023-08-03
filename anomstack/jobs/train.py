@@ -10,8 +10,8 @@ from pyod.models.base import BaseDetector
 from dagster import get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
 from google.cloud import storage
 from typing import List, Tuple
-from anomstack.jobs.config import specs
-from anomstack.jobs.utils import render_sql, read_sql
+from anomstack.config import specs
+from anomstack.utils.sql import render_sql, read_sql
 
 
 def build_train_job(spec) -> JobDefinition:

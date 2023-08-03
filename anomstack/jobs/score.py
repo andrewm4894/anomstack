@@ -2,13 +2,12 @@
 Generate score jobs and schedules.
 """
 
-import os
 import pandas as pd
 import pickle
 from google.cloud import storage
 from dagster import get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
-from anomstack.jobs.config import specs
-from anomstack.jobs.utils import render_sql, read_sql, save_df
+from anomstack.config import specs
+from anomstack.utils.sql import render_sql, read_sql, save_df
 
 
 def build_score_job(spec) -> JobDefinition:
