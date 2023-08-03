@@ -162,5 +162,9 @@ cython_debug/
 # dagster
 tmp*
 
+# vscode
 .vscode/*
 !.vscode/settings.json
+
+# any local .db files
+*.db

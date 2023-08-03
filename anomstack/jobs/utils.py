@@ -58,8 +58,10 @@ def read_sql_duckdb(sql) -> pd.DataFrame:
     
     logger = get_dagster_logger()
     
+    conn = duckdb.connect('anomstack.db')
+    
     logger.info(f'sql:\n{sql}')
-    df = duckdb.sql(sql).df()
+    df = duckdb.query(connection=conn, query=sql).df()
     logger.info(f'df:\n{df}')
     
     return df
@@ -102,14 +104,16 @@ def save_df_duckdb(df, table_key) -> pd.DataFrame:
     """
     Save df to db.
     """
+    
+    conn = duckdb.connect('anomstack.db')
 
     try:
         if '.' in table_key:
             schema, _ = table_key.split('.')
-            duckdb.sql(f'CREATE SCHEMA IF NOT EXISTS {schema}')
-        duckdb.sql(f'INSERT INTO {table_key} SELECT * FROM df')
+            duckdb.query(connection=conn, query=f'CREATE SCHEMA IF NOT EXISTS {schema}')
+        duckdb.query(connection=conn, query=f'INSERT INTO {table_key} SELECT * FROM df')
     except:
-        duckdb.sql(f'CREATE TABLE {table_key} AS SELECT * FROM df')
+        duckdb.query(connection=conn, query=f'CREATE TABLE {table_key} AS SELECT * FROM df')
     
     return df
 
