@@ -21,7 +21,7 @@ run_launcher:
       - ANOMSTACK_SLACK_WEBHOOK_URL
       - ANOMSTACK_IGNORE_EXAMPLES
       - GOOGLE_APPLICATION_CREDENTIALS
-    network: docker_example_network
+    network: anomstack_network
     container_kwargs:
       volumes: # Make docker client accessible to any launched containers as well
         #- ${GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json # <--doesn't work
@@ -34,7 +34,7 @@ run_storage:
   class: PostgresRunStorage
   config:
     postgres_db:
-      hostname: docker_example_postgresql
+      hostname: anomstack_postgresql
       username:
         env: DAGSTER_POSTGRES_USER
       password:
@@ -48,7 +48,7 @@ schedule_storage:
   class: PostgresScheduleStorage
   config:
     postgres_db:
-      hostname: docker_example_postgresql
+      hostname: anomstack_postgresql
       username:
         env: DAGSTER_POSTGRES_USER
       password:
@@ -62,7 +62,7 @@ event_log_storage:
   class: PostgresEventLogStorage
   config:
     postgres_db:
-      hostname: docker_example_postgresql
+      hostname: anomstack_postgresql
       username:
         env: DAGSTER_POSTGRES_USER
       password:

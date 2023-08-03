@@ -3,27 +3,27 @@ version: "3.7"
 services:
   # This service runs the postgres DB used by dagster for run storage, schedule storage,
   # and event log storage.
-  docker_example_postgresql:
+  anomstack_postgresql:
     image: postgres:11
-    container_name: docker_example_postgresql
+    container_name: anomstack_postgresql
     environment:
       POSTGRES_USER: "postgres_user"
       POSTGRES_PASSWORD: "postgres_password"
       POSTGRES_DB: "postgres_db"
     networks:
-      - docker_example_network
+      - anomstack_network
 
   # This service runs the gRPC server that loads your user code, in both dagit
   # and dagster-daemon. By setting DAGSTER_CURRENT_IMAGE to its own image, we tell the
   # run launcher to use this same image when launching runs in a new container as well.
   # Multiple containers like this can be deployed separately - each just needs to run on
   # its own port, and have its own entry in the workspace.yaml file that's loaded by dagit.
-  docker_example_user_code:
+  anomstack_code:
     build:
       context: .
-      dockerfile: ./Dockerfile_user_code
-    container_name: docker_example_user_code
-    image: docker_example_user_code_image
+      dockerfile: ./Dockerfile_anomstack_code
+    container_name: anomstack_code
+    image: anomstack_code_image
     restart: always
     volumes:
       - ${GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json
@@ -31,7 +31,7 @@ services:
       DAGSTER_POSTGRES_USER: "postgres_user"
       DAGSTER_POSTGRES_PASSWORD: "postgres_password"
       DAGSTER_POSTGRES_DB: "postgres_db"
-      DAGSTER_CURRENT_IMAGE: "docker_example_user_code_image"
+      DAGSTER_CURRENT_IMAGE: "anomstack_code_image"
       # read from .env file
       ANOMSTACK_PROJECT_ID: ${ANOMSTACK_PROJECT_ID}
       ANOMSTACK_DATASET: ${ANOMSTACK_DATASET}
@@ -41,12 +41,12 @@ services:
       ANOMSTACK_IGNORE_EXAMPLES: ${ANOMSTACK_IGNORE_EXAMPLES}
       GOOGLE_APPLICATION_CREDENTIALS: /tmp/conf/gcp_credentials.json
     networks:
-      - docker_example_network
+      - anomstack_network
 
   # This service runs dagit, which loads your user code from the user code container.
   # Since our instance uses the QueuedRunCoordinator, any runs submitted from dagit will be put on
   # a queue and later dequeued and launched by dagster-daemon.
-  docker_example_dagit:
+  anomstack_dagit:
     build:
       context: .
       dockerfile: ./Dockerfile_dagster
@@ -58,7 +58,7 @@ services:
       - "3000"
       - -w
       - workspace.yaml
-    container_name: docker_example_dagit
+    container_name: anomstack_dagit
     expose:
       - "3000"
     ports:
@@ -80,21 +80,21 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/io_manager_storage:/tmp/io_manager_storage
     networks:
-      - docker_example_network
+      - anomstack_network
     depends_on:
-      - docker_example_postgresql
-      - docker_example_user_code
+      - anomstack_postgresql
+      - anomstack_code
 
   # This service runs the dagster-daemon process, which is responsible for taking runs
   # off of the queue and launching them, as well as creating runs from schedules or sensors.
-  docker_example_daemon:
+  anomstack_daemon:
     build:
       context: .
       dockerfile: ./Dockerfile_dagster
     entrypoint:
       - dagster-daemon
       - run
-    container_name: docker_example_daemon
+    container_name: anomstack_daemon
     restart: on-failure
     environment:
       DAGSTER_POSTGRES_USER: "postgres_user"
@@ -113,12 +113,12 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/io_manager_storage:/tmp/io_manager_storage
     networks:
-      - docker_example_network
+      - anomstack_network
     depends_on:
-      - docker_example_postgresql
-      - docker_example_user_code
+      - anomstack_postgresql
+      - anomstack_code
 
 networks:
-  docker_example_network:
+  anomstack_network:
     driver: bridge
-    name: docker_example_network
+    name: anomstack_network
