@@ -16,6 +16,7 @@ def build_ingest_job(spec) -> JobDefinition:
     metric_batch = spec['metric_batch']
     table_key = spec['table_key']
     project_id = spec['project_id']
+    db = spec['db']
 
 
     @job(name=f'{metric_batch}_ingest')
@@ -29,7 +30,7 @@ def build_ingest_job(spec) -> JobDefinition:
             """
             Calculate metrics.
             """
-            df = read_sql(render_sql('ingest_sql', spec))
+            df = read_sql(render_sql('ingest_sql', spec), db)
             df["metric_batch"] = metric_batch
             df["metric_type"] = 'metric'
             return df
@@ -39,7 +40,7 @@ def build_ingest_job(spec) -> JobDefinition:
             """
             Save metrics to db.
             """
-            df = save_df(df, table_key, project_id)
+            df = save_df(df, db, table_key, project_id)
             return df
 
         save_metrics(create_metrics())

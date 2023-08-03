@@ -16,6 +16,7 @@ def build_alert_job(spec) -> JobDefinition:
     logger = get_dagster_logger()
     
     metric_batch = spec['metric_batch']
+    db = spec['db']
     
     @job(name=f'{metric_batch}_alerts')
     def _job():
@@ -28,7 +29,7 @@ def build_alert_job(spec) -> JobDefinition:
             """
             Get data for alerting.
             """
-            df_alerts = read_sql(render_sql('alert_sql', spec))
+            df_alerts = read_sql(render_sql('alert_sql', spec), db)
             return df_alerts
 
         @op(name=f'{metric_batch}_alerts_op')
@@ -45,7 +46,7 @@ def build_alert_job(spec) -> JobDefinition:
                     df_alert = df_alerts.query(f"metric_name=='{metric_name}'")
                     alert_timestamp = df_alert['metric_timestamp_max'].max()
                     alert_title = f"{metric_name} alert at {alert_timestamp}"
-                    df_metric = read_sql(render_sql('metric_sql', spec=spec, params={'metric_name': metric_name}))
+                    df_metric = read_sql(render_sql('metric_sql', spec=spec, params={'metric_name': metric_name}), db)
                     df_metric = send_alert(
                         title=alert_title,
                         df=df_metric

@@ -18,6 +18,9 @@ def build_train_job(spec) -> JobDefinition:
     """
     Build job definitions for train jobs.
     """
+    
+    metric_batch = spec['metric_batch']
+    db = spec['db']
 
     @job(name=f"{spec['metric_batch']}_train")
     def _job():
@@ -33,11 +36,11 @@ def build_train_job(spec) -> JobDefinition:
             Get data for training.
             """
             
-            df = read_sql(render_sql('train_sql', spec))
+            df = read_sql(render_sql('train_sql', spec), db)
             
             return df
 
-        @op(name=f"{spec['metric_batch']}_train_models")
+        @op(name=f'{metric_batch}_train_models')
         def train_models(df) -> List[Tuple[str, BaseDetector]]:
             """
             Train models.
@@ -64,7 +67,7 @@ def build_train_job(spec) -> JobDefinition:
 
             return models
 
-        @op(name=f"{spec['metric_batch']}_save_model")
+        @op(name=f'{metric_batch}_save_model')
         def save_models(models) -> List[Tuple[str, BaseDetector]]:
             """
             Save trained models to bucket.

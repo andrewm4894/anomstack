@@ -9,6 +9,7 @@ from jinja2 import FileSystemLoader
 import requests
 import json
 import os
+import duckdb
 
 
 def render_sql(sql_key, spec, params=None) -> str:
@@ -36,7 +37,7 @@ def render_sql(sql_key, spec, params=None) -> str:
     return sql
 
 
-def read_sql(sql) -> pd.DataFrame:
+def read_sql_bigquery(sql) -> pd.DataFrame:
     """
     Read data from SQL.
     """
@@ -50,7 +51,40 @@ def read_sql(sql) -> pd.DataFrame:
     return df
 
 
-def save_df(df, table_key, project_id, if_exists='append') -> pd.DataFrame:
+def read_sql_duckdb(sql) -> pd.DataFrame:
+    """
+    Read data from SQL.
+    """
+    
+    logger = get_dagster_logger()
+    
+    logger.info(f'sql:\n{sql}')
+    df = duckdb.sql(sql).df()
+    logger.info(f'df:\n{df}')
+    
+    return df
+
+
+def read_sql(sql, db) -> pd.DataFrame:
+    """
+    Read data from SQL.
+    """
+    
+    logger = get_dagster_logger()
+    
+    logger.info(f'sql:\n{sql}')
+    if db=='bigquery':
+        df = read_sql_bigquery(sql)
+    elif db=='duckdb':
+        df = read_sql_duckdb(sql)
+    else:
+        raise ValueError(f'Unknown db: {db}')
+    logger.info(f'df:\n{df}')
+    
+    return df
+
+
+def save_df_bigquery(df, table_key, project_id, if_exists='append') -> pd.DataFrame:
     """
     Save df to db.
     """
@@ -60,6 +94,37 @@ def save_df(df, table_key, project_id, if_exists='append') -> pd.DataFrame:
         project_id=project_id,
         if_exists=if_exists,
     )
+    
+    return df
+
+
+def save_df_duckdb(df, table_key) -> pd.DataFrame:
+    """
+    Save df to db.
+    """
+
+    try:
+        if '.' in table_key:
+            schema, _ = table_key.split('.')
+            duckdb.sql(f'CREATE SCHEMA IF NOT EXISTS {schema}')
+        duckdb.sql(f'INSERT INTO {table_key} SELECT * FROM df')
+    except:
+        duckdb.sql(f'CREATE TABLE {table_key} AS SELECT * FROM df')
+    
+    return df
+
+
+def save_df(df, db, table_key, project_id, if_exists='append') -> pd.DataFrame:
+    """
+    Save df to db.
+    """
+
+    if db=='bigquery':
+        df = save_df_bigquery(df, table_key, project_id, if_exists)
+    elif db=='duckdb':
+        df = save_df_duckdb(df, table_key)
+    else:
+        raise ValueError(f'Unknown db: {db}')
     
     return df
 

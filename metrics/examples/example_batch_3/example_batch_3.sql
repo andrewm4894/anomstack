@@ -3,17 +3,17 @@ with
 metric_1 as
 (
 select
-  current_timestamp() as metric_timestamp,
+  get_current_timestamp() as metric_timestamp,
   'metric_1' as metric_name,
-  rand() as metric_value
+  random() as metric_value
 ),
 
 metric_2 as
 (
 select
-  current_timestamp() as metric_timestamp,
+  get_current_timestamp() as metric_timestamp,
   'metric_2' as metric_name,
-  rand() as metric_value
+  random() as metric_value
 )
 
 select

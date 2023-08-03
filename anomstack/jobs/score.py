@@ -22,6 +22,7 @@ def build_score_job(spec) -> JobDefinition:
     bucket_name = spec['bucket_name']
     table_key = spec['table_key']
     project_id = spec['project_id']
+    db = spec['db']
 
     
     @job(name=f"{spec['metric_batch']}_score")
@@ -35,7 +36,7 @@ def build_score_job(spec) -> JobDefinition:
             """
             Get data for scoring.
             """
-            df = read_sql(render_sql('score_sql', spec))
+            df = read_sql(render_sql('score_sql', spec), db)
             return df
 
         @op(name=f'{metric_batch}_score_op')
@@ -81,7 +82,7 @@ def build_score_job(spec) -> JobDefinition:
             """
             Save scores to db.
             """
-            df = save_df(df, table_key, project_id)
+            df = save_df(df, db, table_key, project_id)
             return df
 
         save_scores(score(get_score_data()))

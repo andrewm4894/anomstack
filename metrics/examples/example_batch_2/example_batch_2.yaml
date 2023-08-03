@@ -11,9 +11,9 @@ ingest_sql: >
   (
   {% for metric in metrics %}
   select
-    current_timestamp() as metric_timestamp,
+    get_current_timestamp() as metric_timestamp,
     '{{ metric }}' as metric_name,
-    rand() as metric_value
+    random() as metric_value
   {% if not loop.last %}union all{% endif %}
   {% endfor %}
   );
