@@ -9,7 +9,6 @@ from jinja2 import FileSystemLoader
 import requests
 import json
 import os
-from google.oauth2.service_account import Credentials
 
 
 def render_sql(sql_key, spec, params=None) -> str:

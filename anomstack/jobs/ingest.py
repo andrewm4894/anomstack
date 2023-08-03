@@ -4,8 +4,8 @@ Generate ingest jobs and schedules.
 
 import pandas as pd
 from dagster import get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
-from jobs.config import specs
-from jobs.utils import read_sql, render_sql, save_df
+from anomstack.jobs.config import specs
+from anomstack.jobs.utils import read_sql, render_sql, save_df
 
 
 def build_ingest_job(spec) -> JobDefinition:

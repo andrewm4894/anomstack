@@ -4,8 +4,8 @@ Generate alert jobs and schedules.
 
 import pandas as pd
 from dagster import get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
-from jobs.config import specs
-from jobs.utils import render_sql, read_sql, send_alert
+from anomstack.jobs.config import specs
+from anomstack.jobs.utils import render_sql, read_sql, send_alert
 
 
 def build_alert_job(spec) -> JobDefinition:
