@@ -44,13 +44,8 @@ def read_sql(sql) -> pd.DataFrame:
     
     logger = get_dagster_logger()
     
-    #logger.info(f'os.environ:\n{os.environ}')
-    
-    credentials = Credentials.from_service_account_file('/gcp_credentials.json')
-    #credentials = Credentials.from_service_account_file(os.environ['GOOGLE_APPLICATION_CREDENTIALS'])
-    
     logger.info(f'sql:\n{sql}')
-    df = pd.read_gbq(query=sql, credentials=credentials)
+    df = pd.read_gbq(query=sql)
     logger.info(f'df:\n{df}')
     
     return df
@@ -60,14 +55,13 @@ def save_df(df, table_key, project_id, if_exists='append') -> pd.DataFrame:
     """
     Save df to db.
     """
-    credentials = Credentials.from_service_account_file('/gcp_credentials.json')
-    #credentials = Credentials.from_service_account_file(os.environ['GOOGLE_APPLICATION_CREDENTIALS'])
+
     df.to_gbq(
         destination_table=table_key,
         project_id=project_id,
         if_exists=if_exists,
-        credentials=credentials,
     )
+    
     return df
 
 

@@ -26,7 +26,7 @@ services:
     image: docker_example_user_code_image
     restart: always
     volumes:
-      - ${GOOGLE_APPLICATION_CREDENTIALS}:/gcp_credentials.json
+      - ${GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json
     environment:
       DAGSTER_POSTGRES_USER: "postgres_user"
       DAGSTER_POSTGRES_PASSWORD: "postgres_password"
@@ -39,7 +39,7 @@ services:
       ANOMSTACK_BUCKET_NAME: ${ANOMSTACK_BUCKET_NAME}
       ANOMSTACK_SLACK_WEBHOOK_URL: ${ANOMSTACK_SLACK_WEBHOOK_URL}
       ANOMSTACK_IGNORE_EXAMPLES: ${ANOMSTACK_IGNORE_EXAMPLES}
-      GOOGLE_APPLICATION_CREDENTIALS: /gcp_credentials.json
+      GOOGLE_APPLICATION_CREDENTIALS: /tmp/conf/gcp_credentials.json
     networks:
       - docker_example_network
 
@@ -74,9 +74,9 @@ services:
       ANOMSTACK_BUCKET_NAME: ${ANOMSTACK_BUCKET_NAME}
       ANOMSTACK_SLACK_WEBHOOK_URL: ${ANOMSTACK_SLACK_WEBHOOK_URL}
       ANOMSTACK_IGNORE_EXAMPLES: ${ANOMSTACK_IGNORE_EXAMPLES}
-      GOOGLE_APPLICATION_CREDENTIALS: /gcp_credentials.json
+      GOOGLE_APPLICATION_CREDENTIALS: /tmp/conf/gcp_credentials.json
     volumes: # Make docker client accessible so we can terminate containers from dagit
-      - ${GOOGLE_APPLICATION_CREDENTIALS}:/gcp_credentials.json
+      - ${GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/io_manager_storage:/tmp/io_manager_storage
     networks:
@@ -107,9 +107,9 @@ services:
       ANOMSTACK_BUCKET_NAME: ${ANOMSTACK_BUCKET_NAME}
       ANOMSTACK_SLACK_WEBHOOK_URL: ${ANOMSTACK_SLACK_WEBHOOK_URL}
       ANOMSTACK_IGNORE_EXAMPLES: ${ANOMSTACK_IGNORE_EXAMPLES}
-      GOOGLE_APPLICATION_CREDENTIALS: /gcp_credentials.json
+      GOOGLE_APPLICATION_CREDENTIALS: /tmp/conf/gcp_credentials.json
     volumes: # Make docker client accessible so we can launch containers using host docker
-      - ${GOOGLE_APPLICATION_CREDENTIALS}:/gcp_credentials.json
+      - ${GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/io_manager_storage:/tmp/io_manager_storage
     networks:
