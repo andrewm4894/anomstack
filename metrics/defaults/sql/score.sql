@@ -6,7 +6,7 @@ select
   *,
   rank() over (partition by metric_type, metric_batch, metric_name order by metric_timestamp desc) as metric_recency_rank
 from
-  `{{ table_key }}`
+  {{ table_key }}
 where
   metric_batch = '{{ metric_batch }}'
   and
@@ -15,7 +15,6 @@ where
 
 select
   *
-  except (metric_recency_rank)
 from
   data_ranked
 where
