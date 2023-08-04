@@ -8,7 +8,7 @@ from google.cloud import storage
 from dagster import get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
 from anomstack.config import specs
 from anomstack.utils.sql import render_sql, read_sql, save_df
-from anomstack.utils.models import load_model
+from anomstack.utils.models import _load_model
 
 
 def build_score_job(spec) -> JobDefinition:
@@ -36,7 +36,9 @@ def build_score_job(spec) -> JobDefinition:
             """
             Get data for scoring.
             """
+            
             df = read_sql(render_sql('score_sql', spec), db)
+            
             return df
 
         @op(name=f'{metric_batch}_score_op')
@@ -51,7 +53,7 @@ def build_score_job(spec) -> JobDefinition:
                 
                 df_metric = df[df['metric_name'] == metric_name].head(1)
                 
-                model = load_model(metric_name, model_path)
+                model = _load_model(metric_name, model_path)
                 
                 scores = model.predict_proba(df_metric[['metric_value']])
 
@@ -73,7 +75,9 @@ def build_score_job(spec) -> JobDefinition:
             """
             Save scores to db.
             """
+            
             df = save_df(df, db, table_key, project_id)
+            
             return df
 
         save_scores(score(get_score_data()))

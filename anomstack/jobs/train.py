@@ -11,7 +11,7 @@ from google.cloud import storage
 from typing import List, Tuple
 from anomstack.config import specs
 from anomstack.utils.sql import render_sql, read_sql
-from anomstack.utils.models import save_models
+from anomstack.utils.models import _save_models
 
 
 def build_train_job(spec) -> JobDefinition:
@@ -74,7 +74,7 @@ def build_train_job(spec) -> JobDefinition:
             Save trained models.
             """
             
-            models = save_models(models, model_path)
+            models = _save_models(models, model_path)
 
             return models
         
