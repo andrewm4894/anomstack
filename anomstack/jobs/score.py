@@ -18,13 +18,13 @@ def build_score_job(spec) -> JobDefinition:
     logger = get_dagster_logger()
     
     metric_batch = spec['metric_batch']
-    bucket_name = spec['bucket_name']
+    model_path = spec['model_path']
     table_key = spec['table_key']
     project_id = spec['project_id']
     db = spec['db']
 
     
-    @job(name=f"{spec['metric_batch']}_score")
+    @job(name=f'{metric_batch}_score')
     def _job():
         """
         Get data for scoring and score data.
@@ -44,6 +44,11 @@ def build_score_job(spec) -> JobDefinition:
             Score data.
             """
             
+            model_path_parts = model_path.split("//:")
+            model_path_type = model_path_parts[0]
+            model_path_bucket = model_path_parts[1].split("/")[0]
+            model_path_prefix = "/".join(model_path_parts[1].split("/")[1:])
+            
             df_scores = pd.DataFrame()
             
             for metric_name in df['metric_name'].unique():
@@ -51,10 +56,10 @@ def build_score_job(spec) -> JobDefinition:
                 df_metric = df[df['metric_name'] == metric_name].head(1)
                 
                 model_name = f'{metric_name}.pkl'
-                logger.info(f'loading {model_name} from GCS bucket {bucket_name}')
+                logger.info(f'loading {model_name} from GCS bucket {model_path}')
                 storage_client = storage.Client()
-                bucket = storage_client.get_bucket(bucket_name)
-                blob = bucket.blob(f'models/{model_name}')
+                bucket = storage_client.get_bucket(model_path_bucket)
+                blob = bucket.blob(f'{model_path_prefix}/{model_name}')
                 
                 with blob.open('rb') as f:
                     

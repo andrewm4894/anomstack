@@ -21,8 +21,9 @@ def build_train_job(spec) -> JobDefinition:
     
     metric_batch = spec['metric_batch']
     db = spec['db']
+    model_path = spec['model_path']
 
-    @job(name=f"{spec['metric_batch']}_train")
+    @job(name=f'{metric_batch}_train')
     def _job():
         """
         Get data for training and train models.
@@ -30,7 +31,7 @@ def build_train_job(spec) -> JobDefinition:
         
         logger = get_dagster_logger()
 
-        @op(name=f"{spec['metric_batch']}_get_train_data")
+        @op(name=f'{metric_batch}_get_train_data')
         def get_train_data() -> pd.DataFrame:
             """
             Get data for training.
@@ -70,16 +71,21 @@ def build_train_job(spec) -> JobDefinition:
         @op(name=f'{metric_batch}_save_model')
         def save_models(models) -> List[Tuple[str, BaseDetector]]:
             """
-            Save trained models to bucket.
+            Save trained models.
             """
+            
+            model_path_parts = model_path.split("//:")
+            model_path_type = model_path_parts[0]
+            model_path_bucket = model_path_parts[1].split("/")[0]
+            model_path_prefix = "/".join(model_path_parts[1].split("/")[1:])
             
             for metric, model in models:
                 
                 model_name = f"{metric}.pkl"
-                logger.info(f"saving {model_name} to GCS bucket {spec['bucket_name']}")
+                logger.info(f"saving {model_name} to GCS bucket {model_path}")
                 storage_client = storage.Client()
-                bucket = storage_client.get_bucket(spec["bucket_name"])
-                blob = bucket.blob(f"models/{model_name}")
+                bucket = storage_client.get_bucket(model_path_bucket)
+                blob = bucket.blob(f"{model_path_prefix}/{model_name}")
                 
                 with blob.open("wb") as f:
                     pickle.dump(model, f)

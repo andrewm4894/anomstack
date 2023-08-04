@@ -8,7 +8,7 @@ from pathlib import Path
 
 env_vars = {
     'ANOMSTACK_PROJECT_ID': 'project_id',
-    'ANOMSTACK_BUCKET_NAME': 'bucket_name',
+    'ANOMSTACK_MODEL_PATH': 'model_path',
     'ANOMSTACK_DATASET': 'dataset',
     'ANOMSTACK_TABLE': 'table',
 }
