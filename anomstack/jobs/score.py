@@ -44,7 +44,7 @@ def build_score_job(spec) -> JobDefinition:
             Score data.
             """
             
-            model_path_parts = model_path.split("//:")
+            model_path_parts = model_path.split("://")
             model_path_type = model_path_parts[0]
             model_path_bucket = model_path_parts[1].split("/")[0]
             model_path_prefix = "/".join(model_path_parts[1].split("/")[1:])
