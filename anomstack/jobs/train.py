@@ -4,7 +4,6 @@ Generate train jobs and schedules.
 
 import time
 import pandas as pd
-import pickle
 from pyod.models.iforest import IForest
 from pyod.models.base import BaseDetector
 from dagster import get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
@@ -12,6 +11,7 @@ from google.cloud import storage
 from typing import List, Tuple
 from anomstack.config import specs
 from anomstack.utils.sql import render_sql, read_sql
+from anomstack.utils.models import save_models
 
 
 def build_train_job(spec) -> JobDefinition:
@@ -74,21 +74,7 @@ def build_train_job(spec) -> JobDefinition:
             Save trained models.
             """
             
-            model_path_parts = model_path.split("://")
-            model_path_type = model_path_parts[0]
-            model_path_bucket = model_path_parts[1].split("/")[0]
-            model_path_prefix = "/".join(model_path_parts[1].split("/")[1:])
-            
-            for metric, model in models:
-                
-                model_name = f"{metric}.pkl"
-                logger.info(f"saving {model_name} to {model_path}")
-                storage_client = storage.Client()
-                bucket = storage_client.get_bucket(model_path_bucket)
-                blob = bucket.blob(f"{model_path_prefix}/{model_name}")
-                
-                with blob.open("wb") as f:
-                    pickle.dump(model, f)
+            models = save_models(models, model_path)
 
             return models
         

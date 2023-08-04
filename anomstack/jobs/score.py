@@ -8,6 +8,7 @@ from google.cloud import storage
 from dagster import get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
 from anomstack.config import specs
 from anomstack.utils.sql import render_sql, read_sql, save_df
+from anomstack.utils.models import load_model
 
 
 def build_score_job(spec) -> JobDefinition:
@@ -44,29 +45,15 @@ def build_score_job(spec) -> JobDefinition:
             Score data.
             """
             
-            model_path_parts = model_path.split("://")
-            model_path_type = model_path_parts[0]
-            model_path_bucket = model_path_parts[1].split("/")[0]
-            model_path_prefix = "/".join(model_path_parts[1].split("/")[1:])
-            
             df_scores = pd.DataFrame()
             
             for metric_name in df['metric_name'].unique():
                 
                 df_metric = df[df['metric_name'] == metric_name].head(1)
                 
-                model_name = f'{metric_name}.pkl'
-                logger.info(f'loading {model_name} from {model_path}')
-                storage_client = storage.Client()
-                bucket = storage_client.get_bucket(model_path_bucket)
-                blob = bucket.blob(f'{model_path_prefix}/{model_name}')
+                model = load_model(metric_name, model_path)
                 
-                with blob.open('rb') as f:
-                    
-                    model = pickle.load(f)
-                    logger.info(model)
-                    logger.info(df_metric)
-                    scores = model.predict_proba(df_metric[['metric_value']])
+                scores = model.predict_proba(df_metric[['metric_value']])
 
                 df_score = pd.DataFrame({
                     'metric_timestamp': df_metric['metric_timestamp'].max(),
