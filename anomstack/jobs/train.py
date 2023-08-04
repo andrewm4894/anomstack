@@ -26,8 +26,6 @@ def build_train_job(spec) -> JobDefinition:
         """
         Get data for training and train models.
         """
-        
-        logger = get_dagster_logger()
 
         @op(name=f'{metric_batch}_get_train_data')
         def get_train_data() -> pd.DataFrame:
