@@ -17,7 +17,7 @@ def split_model_path(model_path) -> Tuple[str, str]:
     return model_path_bucket, model_path_prefix
 
 
-def save_models_gcs(models, model_path) -> List[Tuple[str, BaseDetector]]:
+def save_models_gcs(models, model_path, metric_batch) -> List[Tuple[str, BaseDetector]]:
     """
     Save trained models to gcs bucket.
     """
@@ -32,7 +32,7 @@ def save_models_gcs(models, model_path) -> List[Tuple[str, BaseDetector]]:
         logger.info(f"saving {model_name} to {model_path}")
         storage_client = storage.Client()
         bucket = storage_client.get_bucket(model_path_bucket)
-        blob = bucket.blob(f"{model_path_prefix}/{model_name}")
+        blob = bucket.blob(f"{model_path_prefix}/{metric_batch}/{model_name}")
         
         with blob.open("wb") as f:
             pickle.dump(model, f)
@@ -40,7 +40,7 @@ def save_models_gcs(models, model_path) -> List[Tuple[str, BaseDetector]]:
     return models
 
 
-def load_model_gcs(metric_name, model_path) -> BaseDetector:
+def load_model_gcs(metric_name, model_path, metric_batch) -> BaseDetector:
     """
     Load model.
     """
@@ -53,7 +53,7 @@ def load_model_gcs(metric_name, model_path) -> BaseDetector:
     logger.info(f'loading {model_name} from {model_path}')
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(model_path_bucket)
-    blob = bucket.blob(f'{model_path_prefix}/{model_name}')
+    blob = bucket.blob(f'{model_path_prefix}/{metric_batch}/{model_name}')
     
     with blob.open('rb') as f:
         

@@ -1,5 +1,4 @@
 """
-Some utility functions.
 """
 
 from dagster import get_dagster_logger
@@ -33,37 +32,3 @@ def render_sql(sql_key, spec, params=None) -> str:
     )
     
     return sql
-
-
-def read_sql(sql, db) -> pd.DataFrame:
-    """
-    Read data from SQL.
-    """
-    
-    logger = get_dagster_logger()
-    
-    logger.info(f'sql:\n{sql}')
-    if db=='bigquery':
-        df = read_sql_bigquery(sql)
-    elif db=='duckdb':
-        df = read_sql_duckdb(sql)
-    else:
-        raise ValueError(f'Unknown db: {db}')
-    logger.info(f'df:\n{df}')
-    
-    return df
-
-
-def save_df(df, db, table_key, gcp_project_id, if_exists='append') -> pd.DataFrame:
-    """
-    Save df to db.
-    """
-
-    if db=='bigquery':
-        df = save_df_bigquery(df, table_key, gcp_project_id, if_exists)
-    elif db=='duckdb':
-        df = save_df_duckdb(df, table_key)
-    else:
-        raise ValueError(f'Unknown db: {db}')
-    
-    return df

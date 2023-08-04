@@ -5,9 +5,11 @@ Generate score jobs and schedules.
 import pandas as pd
 from dagster import get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
 from anomstack.config import specs
-from anomstack.utils.sql import render_sql, read_sql, save_df
-from anomstack.utils.models import load_model
-from anomstack.utils.ml import make_x
+from anomstack.df.save import save_df
+from anomstack.sql.render import render_sql
+from anomstack.sql.read import read_sql
+from anomstack.models_io.load import load_model
+from anomstack.ml.preprocess import make_x
 
 
 def build_score_job(spec) -> JobDefinition:
@@ -55,7 +57,7 @@ def build_score_job(spec) -> JobDefinition:
                 
                 df_metric = df[df['metric_name'] == metric_name]
                 
-                model = load_model(metric_name, model_path)
+                model = load_model(metric_name, model_path, metric_batch)
                 
                 X = make_x(df_metric, mode='score', diff_n=diff_n, smooth_n=smooth_n, lags_n=lags_n)
                 

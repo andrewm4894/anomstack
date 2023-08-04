@@ -7,9 +7,11 @@ from pyod.models.base import BaseDetector
 from dagster import get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
 from typing import List, Tuple
 from anomstack.config import specs
-from anomstack.utils.sql import render_sql, read_sql
-from anomstack.utils.models import save_models
-from anomstack.utils.ml import train_model, make_x
+from anomstack.sql.render import render_sql
+from anomstack.sql.read import read_sql
+from anomstack.models_io.save import save_models
+from anomstack.ml.train import train_model
+from anomstack.ml.preprocess import make_x
 
 
 def build_train_job(spec) -> JobDefinition:
@@ -49,13 +51,9 @@ def build_train_job(spec) -> JobDefinition:
             models = []
             
             for metric_name in df["metric_name"].unique():
-                
                 df_metric = df[df['metric_name'] == metric_name]
-                
                 X = make_x(df_metric, mode='train', diff_n=diff_n, smooth_n=smooth_n, lags_n=lags_n)
-                
                 model = train_model(X, metric_name)
-                
                 models.append((metric_name, model))
 
             return models
@@ -66,7 +64,7 @@ def build_train_job(spec) -> JobDefinition:
             Save trained models.
             """
             
-            models = save_models(models, model_path)
+            models = save_models(models, model_path, metric_batch)
 
             return models
         

@@ -170,4 +170,5 @@ tmp*
 *.db
 
 # local model files
+models
 models/*

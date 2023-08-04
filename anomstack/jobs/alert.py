@@ -6,7 +6,8 @@ import pandas as pd
 from dagster import get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
 from anomstack.config import specs
 from anomstack.utils.alert import send_alert
-from anomstack.utils.sql import render_sql, read_sql
+from anomstack.sql.render import render_sql
+from anomstack.sql.read import read_sql
 
 
 def build_alert_job(spec) -> JobDefinition:
