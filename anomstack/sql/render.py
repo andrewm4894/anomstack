@@ -29,6 +29,7 @@ def render_sql(sql_key, spec, params=None) -> str:
         alert_threshold=spec.get('alert_threshold'),
         alert_smooth_n=spec.get('alert_smooth_n'),
         metric_name=params.get('metric_name'),
+        alert_recent_n=spec.get('alert_recent_n'),
     )
     
     return sql

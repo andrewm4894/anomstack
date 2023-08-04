@@ -24,7 +24,7 @@ select
 from
   data_ranked
 where
-  metric_score_recency_rank <= {{ alert_smooth_n }}
+  metric_score_recency_rank <= {{ alert_recent_n }}
 group by 1,2
 )
 
