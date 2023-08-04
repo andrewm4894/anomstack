@@ -6,6 +6,9 @@ score_max_n: 100
 alert_max_n: 25
 alert_smooth_n: 3
 alert_threshold: 0.5
+preprocess_diff_n: 1
+preprocess_smooth_n: 3
+preprocess_lags_n: 3
 ingest_cron_schedule: "*/3 * * * *"
 train_cron_schedule: "*/5 * * * *"
 score_cron_schedule: "*/4 * * * *"

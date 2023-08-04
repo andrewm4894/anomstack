@@ -20,6 +20,9 @@ def build_train_job(spec) -> JobDefinition:
     metric_batch = spec['metric_batch']
     db = spec['db']
     model_path = spec['model_path']
+    diff_n = spec['preprocess_diff_n']
+    smooth_n = spec['preprocess_smooth_n']
+    lags_n = spec['preprocess_lags_n']
 
     @job(name=f'{metric_batch}_train')
     def _job():
@@ -49,7 +52,7 @@ def build_train_job(spec) -> JobDefinition:
                 
                 df_metric = df[df['metric_name'] == metric_name]
                 
-                X = make_x(df_metric, mode='train')
+                X = make_x(df_metric, mode='train', diff_n=diff_n, smooth_n=smooth_n, lags_n=lags_n)
                 
                 model = train_model(X, metric_name)
                 

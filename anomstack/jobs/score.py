@@ -22,6 +22,9 @@ def build_score_job(spec) -> JobDefinition:
     table_key = spec['table_key']
     gcp_project_id = spec['gcp_project_id']
     db = spec['db']
+    diff_n = spec['preprocess_diff_n']
+    smooth_n = spec['preprocess_smooth_n']
+    lags_n = spec['preprocess_lags_n']
 
     
     @job(name=f'{metric_batch}_score')
@@ -50,11 +53,11 @@ def build_score_job(spec) -> JobDefinition:
             
             for metric_name in df['metric_name'].unique():
                 
-                df_metric = df[df['metric_name'] == metric_name].head(1)
+                df_metric = df[df['metric_name'] == metric_name]
                 
                 model = load_model(metric_name, model_path)
                 
-                X = make_x(df_metric, mode='score')
+                X = make_x(df_metric, mode='score', diff_n=diff_n, smooth_n=smooth_n, lags_n=lags_n)
                 
                 scores = model.predict_proba(X)
 
