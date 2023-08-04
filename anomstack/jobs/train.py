@@ -2,16 +2,14 @@
 Generate train jobs and schedules.
 """
 
-import time
 import pandas as pd
-from pyod.models.iforest import IForest
 from pyod.models.base import BaseDetector
 from dagster import get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
-from google.cloud import storage
 from typing import List, Tuple
 from anomstack.config import specs
 from anomstack.utils.sql import render_sql, read_sql
-from anomstack.utils.models import _save_models
+from anomstack.utils.models import save_models
+from anomstack.utils.ml import train_model, make_x
 
 
 def build_train_job(spec) -> JobDefinition:
@@ -42,51 +40,42 @@ def build_train_job(spec) -> JobDefinition:
             return df
 
         @op(name=f'{metric_batch}_train_models')
-        def train_models(df) -> List[Tuple[str, BaseDetector]]:
+        def train(df) -> List[Tuple[str, BaseDetector]]:
             """
             Train models.
             """
             
             models = []
             
-            for metric in df["metric_name"].unique():
+            for metric_name in df["metric_name"].unique():
                 
-                X = (
-                    df.query(f"metric_name=='{metric}'")[["metric_value"]]
-                    .sample(frac=1)
-                    .reset_index(drop=True)
-                )
-                model = IForest()
-                time_start_train = time.time()
-                model.fit(X)
-                time_end_train = time.time()
-                train_time = time_end_train - time_start_train
-                logger.info(
-                    f"trained model for {metric} (n={len(X)}, train_time={round(train_time,2)} secs)"
-                )
-                models.append((metric, model))
+                df_metric = df[df['metric_name'] == metric_name]
+                
+                X = make_x(df_metric, mode='train')
+                
+                model = train_model(X, metric_name)
+                
+                models.append((metric_name, model))
 
             return models
 
         @op(name=f'{metric_batch}_save_model')
-        def save_models(models) -> List[Tuple[str, BaseDetector]]:
+        def save(models) -> List[Tuple[str, BaseDetector]]:
             """
             Save trained models.
             """
             
-            models = _save_models(models, model_path)
+            models = save_models(models, model_path)
 
             return models
         
-        save_models(train_models(get_train_data()))
+        save(train(get_train_data()))
 
     return _job
 
 
-# generate jobs
 train_jobs = [build_train_job(specs[spec]) for spec in specs]
 
-# define schedules
 train_schedules = [
     ScheduleDefinition(
         job=train_job,

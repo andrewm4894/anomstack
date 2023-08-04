@@ -3,12 +3,11 @@ Generate score jobs and schedules.
 """
 
 import pandas as pd
-import pickle
-from google.cloud import storage
 from dagster import get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
 from anomstack.config import specs
 from anomstack.utils.sql import render_sql, read_sql, save_df
-from anomstack.utils.models import _load_model
+from anomstack.utils.models import load_model
+from anomstack.utils.ml import make_x
 
 
 def build_score_job(spec) -> JobDefinition:
@@ -21,7 +20,7 @@ def build_score_job(spec) -> JobDefinition:
     metric_batch = spec['metric_batch']
     model_path = spec['model_path']
     table_key = spec['table_key']
-    project_id = spec['project_id']
+    gcp_project_id = spec['gcp_project_id']
     db = spec['db']
 
     
@@ -53,9 +52,11 @@ def build_score_job(spec) -> JobDefinition:
                 
                 df_metric = df[df['metric_name'] == metric_name].head(1)
                 
-                model = _load_model(metric_name, model_path)
+                model = load_model(metric_name, model_path)
                 
-                scores = model.predict_proba(df_metric[['metric_value']])
+                X = make_x(df_metric, mode='score')
+                
+                scores = model.predict_proba(X)
 
                 df_score = pd.DataFrame({
                     'metric_timestamp': df_metric['metric_timestamp'].max(),
@@ -76,7 +77,7 @@ def build_score_job(spec) -> JobDefinition:
             Save scores to db.
             """
             
-            df = save_df(df, db, table_key, project_id)
+            df = save_df(df, db, table_key, gcp_project_id)
             
             return df
 

@@ -8,9 +8,11 @@ from anomstack.jobs.score import score_jobs, score_schedules
 from anomstack.jobs.alert import alert_jobs, alert_schedules
 from dagster import Definitions
 
+jobs = ingest_jobs + train_jobs + score_jobs + alert_jobs
 
-# define job definitions
+schedules = ingest_schedules + train_schedules + score_schedules + alert_schedules
+
 defs = Definitions(
-    jobs=ingest_jobs + train_jobs + score_jobs + alert_jobs,
-    schedules=ingest_schedules + train_schedules + score_schedules + alert_schedules,
+    jobs=jobs,
+    schedules=schedules
 )

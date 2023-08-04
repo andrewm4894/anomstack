@@ -20,14 +20,14 @@ def read_sql_bigquery(sql) -> pd.DataFrame:
     return df
 
 
-def save_df_bigquery(df, table_key, project_id, if_exists='append') -> pd.DataFrame:
+def save_df_bigquery(df, table_key, gcp_project_id, if_exists='append') -> pd.DataFrame:
     """
     Save df to db.
     """
 
     df.to_gbq(
         destination_table=table_key,
-        project_id=project_id,
+        gcp_project_id=gcp_project_id,
         if_exists=if_exists,
     )
     

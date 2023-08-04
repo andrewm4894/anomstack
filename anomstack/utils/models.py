@@ -3,7 +3,7 @@ from pyod.models.base import BaseDetector
 from anomstack.utils.gcs import save_models_gcs, load_model_gcs
 
 
-def _save_models(models, model_path) -> List[Tuple[str, BaseDetector]]:
+def save_models(models, model_path) -> List[Tuple[str, BaseDetector]]:
     """
     Save trained models.
     """
@@ -16,7 +16,7 @@ def _save_models(models, model_path) -> List[Tuple[str, BaseDetector]]:
     return models
 
 
-def _load_model(metric_name, model_path) -> BaseDetector:
+def load_model(metric_name, model_path) -> BaseDetector:
     """
     Load model.
     """

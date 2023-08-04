@@ -54,13 +54,13 @@ def read_sql(sql, db) -> pd.DataFrame:
     return df
 
 
-def save_df(df, db, table_key, project_id, if_exists='append') -> pd.DataFrame:
+def save_df(df, db, table_key, gcp_project_id, if_exists='append') -> pd.DataFrame:
     """
     Save df to db.
     """
 
     if db=='bigquery':
-        df = save_df_bigquery(df, table_key, project_id, if_exists)
+        df = save_df_bigquery(df, table_key, gcp_project_id, if_exists)
     elif db=='duckdb':
         df = save_df_duckdb(df, table_key)
     else:
