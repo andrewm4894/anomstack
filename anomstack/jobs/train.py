@@ -82,7 +82,7 @@ def build_train_job(spec) -> JobDefinition:
             for metric, model in models:
                 
                 model_name = f"{metric}.pkl"
-                logger.info(f"saving {model_name} to GCS bucket {model_path}")
+                logger.info(f"saving {model_name} to {model_path}")
                 storage_client = storage.Client()
                 bucket = storage_client.get_bucket(model_path_bucket)
                 blob = bucket.blob(f"{model_path_prefix}/{model_name}")

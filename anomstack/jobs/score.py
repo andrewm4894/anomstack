@@ -56,7 +56,7 @@ def build_score_job(spec) -> JobDefinition:
                 df_metric = df[df['metric_name'] == metric_name].head(1)
                 
                 model_name = f'{metric_name}.pkl'
-                logger.info(f'loading {model_name} from GCS bucket {model_path}')
+                logger.info(f'loading {model_name} from {model_path}')
                 storage_client = storage.Client()
                 bucket = storage_client.get_bucket(model_path_bucket)
                 blob = bucket.blob(f'{model_path_prefix}/{model_name}')
