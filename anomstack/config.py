@@ -28,31 +28,25 @@ def process_yaml_file(yaml_file):
         metric_batch = metric_specs['metric_batch']
         merged_specs = {**defaults, **metric_specs}
         
+        if merged_specs['disable_batch'] == True:
+            return None
         for env_var, key in env_vars.items():
-            
             if env_var in os.environ:
-                
                 merged_specs[key] = os.getenv(env_var)
 
         specs[metric_batch] = merged_specs
 
-with open(defaults_dir / 'defaults.yaml', 'r') as file:
-    
+with open(defaults_dir / 'defaults.yaml', 'r') as file:    
     defaults = yaml.safe_load(file)
 
 for root, dirs, files in os.walk(config_dir):
-    
-    if os.getenv('ANOMSTACK_IGNORE_EXAMPLES') == 'yes' and examples_dir in Path(root).parents:
-        
+    if os.getenv('ANOMSTACK_IGNORE_EXAMPLES') == 'yes' and examples_dir in Path(root).parents:        
         continue
     
     for yaml_file in files:
-        
         if yaml_file == 'defaults.yaml':
-            
             continue
         
         if yaml_file.endswith('.yaml'):
-            
             yaml_path = Path(root) / yaml_file
             process_yaml_file(yaml_path)

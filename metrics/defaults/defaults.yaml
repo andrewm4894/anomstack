@@ -1,6 +1,7 @@
 # default values to be applied to all batches unless overridden
 db: "duckdb"
 table_key: "tmp.metrics"
+disable_batch: False
 train_max_n: 1000
 score_max_n: 100
 alert_max_n: 30
