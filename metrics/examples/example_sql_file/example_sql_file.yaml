@@ -1,0 +1,4 @@
+# this shows a jinja based template example using a templated sql file
+metric_batch: "example_sql_file"
+ingest_sql: >
+  {% include "./examples/example_sql_file/example_sql_file.sql" %}

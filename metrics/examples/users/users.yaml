@@ -1,0 +1,3 @@
+metric_batch: "users"
+ingest_sql: >
+  {% include "./examples/users/users.sql" %}

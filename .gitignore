@@ -168,6 +168,7 @@ tmp*
 
 # any local .db files
 *.db
+*.db.wal
 
 # local model files
 models

@@ -1,0 +1,3 @@
+metric_batch: "sales"
+ingest_sql: >
+  {% include "./examples/sales/sales.sql" %}

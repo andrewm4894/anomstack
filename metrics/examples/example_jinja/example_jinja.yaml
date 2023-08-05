@@ -1,8 +1,5 @@
 # this shows a jinja based template example
-metric_batch: "example_batch_2"
-metric_descriptions:
-  metric_1: "this is metric 1"
-  metric_2: "this is metric 2"
+metric_batch: "example_jinja"
 ingest_sql: >
   {% set metrics = ['metric_1', 'metric_2', 'metric_3'] %}
   select
