@@ -12,4 +12,3 @@ pyyaml
 Jinja2
 google-cloud-bigquery
 duckdb
-ascii_graph
