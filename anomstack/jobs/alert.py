@@ -48,10 +48,9 @@ def build_alert_job(spec) -> JobDefinition:
                     df_alert = df_alerts.query(f"metric_name=='{metric_name}'")
                     metric_timestamp_max = df_alert['metric_timestamp_max'].max().strftime('%Y-%m-%d %H:%M')
                     alert_title = f"🔥 [{metric_name}] looks anomalous ({metric_timestamp_max}) 🔥"
-                    df_metric = read_sql(render_sql('metric_sql', spec=spec, params={'metric_name': metric_name}), db)
-                    df_metric = send_alert(
+                    df_alert = send_alert(
                         title=alert_title,
-                        df=df_metric
+                        df=df_alert
                     )
 
             return df_alerts
