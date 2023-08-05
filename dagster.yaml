@@ -34,13 +34,13 @@ retention:
       failure: 7
       success: 7
 
-schedules:
-  use_threads: true
-  num_workers: 8
+#schedules:
+#  use_threads: true
+#  num_workers: 8
 
-sensors:
-  use_threads: true
-  num_workers: 4
+#sensors:
+#  use_threads: true
+#  num_workers: 4
 
 telemetry:
   enabled: true
