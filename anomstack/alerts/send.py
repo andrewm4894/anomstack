@@ -7,6 +7,7 @@ import pandas as pd
 import requests
 import json
 import os
+from anomstack.alerts.asciiart import make_alert_message
 
 
 def send_alert_webhook(title='alert', message='hello', env_var_webhook_url='ANOMSTACK_SLACK_WEBHOOK_URL') -> requests.Response:
@@ -16,8 +17,24 @@ def send_alert_webhook(title='alert', message='hello', env_var_webhook_url='ANOM
     
     webhook_url = os.environ[env_var_webhook_url]
     payload = {
-        'text': f'{title}\n{message}'
-        }
+        #'text': f'{title}',
+        'blocks': [
+            {
+    		"type": "section",
+    		"text": {
+    			"type": "mrkdwn",
+    			"text": title
+    		    }
+    	    },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": message
+                }
+            }
+        ]
+    }
     headers = {'Content-Type': 'application/json'}
     response = requests.post(webhook_url, data=json.dumps(payload), headers=headers)
     
@@ -31,6 +48,7 @@ def send_alert(title, df) -> pd.DataFrame:
     
     logger = get_dagster_logger()
     logger.info(f'alerts to send: \n{df}')
-    _ = send_alert_webhook(title=title, message=df.to_string())
+    message = make_alert_message(df)
+    _ = send_alert_webhook(title=title, message=message)
     
     return df

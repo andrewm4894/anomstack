@@ -6,7 +6,7 @@ score_max_n: 100
 alert_max_n: 25
 alert_recent_n: 5
 alert_smooth_n: 3
-alert_threshold: 0.5
+alert_threshold: 0.25
 preprocess_diff_n: 1
 preprocess_smooth_n: 3
 preprocess_lags_n: 3
