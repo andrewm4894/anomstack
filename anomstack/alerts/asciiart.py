@@ -481,7 +481,7 @@ def make_alert_message(df_alert_metric, graph_symbol='~', anomaly_symbol='* ', n
         
     df_alert_metric = df_alert_metric.sort_values(by='metric_timestamp', ascending=False)
     x = df_alert_metric['metric_value'].round(2).values.tolist()
-    labels = (np.where(df_alert_metric['metric_alert']==1,anomaly_symbol,normal_symbol) + (df_alert_metric['metric_score_smoothed'].round(2)*100).astype('int').astype('str') + '% ') #+ df_alert_metric['metric_timestamp'].astype('str').values).to_list()
+    labels = (np.where(df_alert_metric['metric_alert']==1,anomaly_symbol,normal_symbol) + (df_alert_metric['metric_score_smooth'].round(2)*100).astype('int').astype('str') + '% ') #+ df_alert_metric['metric_timestamp'].astype('str').values).to_list()
     data = zip(labels,x)
     graph_title = f"{df_alert_metric['metric_name'].unique()[0]} ({df_alert_metric['metric_timestamp'].min().strftime('%Y-%m-%d %H:%M')} to {df_alert_metric['metric_timestamp'].max().strftime('%Y-%m-%d %H:%M')})"
 

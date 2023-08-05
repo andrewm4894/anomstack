@@ -27,7 +27,7 @@ from
 where
   metric_batch = '{{ metric_batch }}'
   and
-  metric_type = 'value'
+  metric_type = 'metric'
 ),
 
 data_ranked as 
@@ -71,7 +71,7 @@ select
   metric_value,
   metric_score,
   metric_score_smooth,
-  if(metric_score_recency_rank <= {{ alert_recent_n }} and metric_score_smooth >= {{ alert_threshold }}, 1, 0) as alert
+  if(metric_score_recency_rank <= {{ alert_recent_n }} and metric_score_smooth >= {{ alert_threshold }}, 1, 0) as metric_alert
 from
   data_smoothed
 where
@@ -82,24 +82,22 @@ metrics_triggered as
 (
 select
   metric_name,
-  max(alert) as alert
+  max(metric_alert) as metric_alert
 from 
   data_alerts
 group by 1
-having max(alert) = 1
+having max(metric_alert) = 1
 )
 
 select
   metric_timestamp,
-  a.metric_name,
+  metric_name,
   metric_value,
   metric_score,
   metric_score_smooth,
-  a.alert
+  metric_alert
 from
-  data_alerts a
-join
-  metrics_triggered t
-on
-  a.metric_name = t.metric_name
+  data_alerts
+where
+  metric_name in (select metric_name from metrics_triggered)
 ;
