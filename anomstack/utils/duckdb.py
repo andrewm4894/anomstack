@@ -21,9 +21,9 @@ def read_sql_duckdb(sql) -> pd.DataFrame:
     
     conn = duckdb.connect('anomstack.db')
     
-    logger.info(f'sql:\n{sql}')
+    logger.debug(f'sql:\n{sql}')
     df = duckdb.query(connection=conn, query=sql).df()
-    logger.info(f'df:\n{df}')
+    logger.debug(f'df:\n{df}')
     
     return df
 

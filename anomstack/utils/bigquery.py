@@ -13,9 +13,9 @@ def read_sql_bigquery(sql) -> pd.DataFrame:
     
     logger = get_dagster_logger()
     
-    logger.info(f'sql:\n{sql}')
+    logger.debug(f'sql:\n{sql}')
     df = pd.read_gbq(query=sql)
-    logger.info(f'df:\n{df}')
+    logger.debug(f'df:\n{df}')
     
     return df
 

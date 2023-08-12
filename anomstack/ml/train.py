@@ -16,7 +16,7 @@ def train_model(X, metric) -> BaseDetector:
     model.fit(X)
     time_end_train = time.time()
     train_time = time_end_train - time_start_train
-    logger.info(
+    logger.debug(
         f"trained model for {metric} (n={len(X)}, train_time={round(train_time,2)} secs)"
     )
     

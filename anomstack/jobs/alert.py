@@ -42,10 +42,10 @@ def build_alert_job(spec) -> JobDefinition:
             """
             
             if len(df_alerts) == 0:
-                logger.info('no alerts to send')
+                logger.debug('no alerts to send')
             else:
                 for metric_name in df_alerts['metric_name'].unique():
-                    logger.info(f"alerting on {metric_name}")
+                    logger.debug(f"alerting on {metric_name}")
                     df_alert = df_alerts.query(f"metric_name=='{metric_name}'")
                     metric_timestamp_max = df_alert['metric_timestamp'].max().strftime('%Y-%m-%d %H:%M')
                     alert_title = f"🔥 [{metric_name}] looks anomalous ({metric_timestamp_max}) 🔥"
