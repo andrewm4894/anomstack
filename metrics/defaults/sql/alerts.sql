@@ -2,7 +2,7 @@ with
 
 metric_score_recency_ranked as
 (
-select
+select distinct
   metric_timestamp,
   metric_name,
   metric_value as metric_score,
@@ -17,7 +17,7 @@ where
 
 metric_value_recency_ranked as
 (
-select
+select distinct
   metric_timestamp,
   metric_name,
   metric_value,
