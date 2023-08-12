@@ -43,6 +43,7 @@ def make_plot(df, metric_name, threshold=0.8):
     ax2.xaxis.set_major_locator(plt.MaxNLocator(n))
     ax2.set_xticklabels([f'{item.strftime("%Y-%m-%d %H:%M")}' for item in df_plot.index.tolist()], rotation=45)
     ax2.set_ylabel('Score')
+    ax2.set_ylim(0, 1)
     ax2.legend(loc='upper left')
     ax2.grid(False)
     
