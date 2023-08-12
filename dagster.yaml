@@ -44,8 +44,3 @@ retention:
 
 telemetry:
   enabled: true
-
-loggers:
-  console:
-    config:
-      log_level: DEBUG
