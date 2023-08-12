@@ -1,47 +1,15 @@
 """
-Some utility functions.
+Helper functions to send alerts.
 """
 
 from dagster import get_dagster_logger
 import pandas as pd
-import requests
-import json
-import os
 from anomstack.alerts.asciiart import make_alert_message
+from anomstack.alerts.slack import send_alert_slack
+from anomstack.alerts.email import send_email_with_plot
 
 
-def send_alert_webhook(title='alert', message='hello', env_var_webhook_url='ANOMSTACK_SLACK_WEBHOOK_URL') -> requests.Response:
-    """
-    Send alert via webhook.
-    """
-    
-    webhook_url = os.environ[env_var_webhook_url]
-    payload = {
-        #'text': f'{title}',
-        'blocks': [
-            {
-    		"type": "section",
-    		"text": {
-    			"type": "mrkdwn",
-    			"text": title
-    		    }
-    	    },
-            {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": message
-                }
-            }
-        ]
-    }
-    headers = {'Content-Type': 'application/json'}
-    response = requests.post(webhook_url, data=json.dumps(payload), headers=headers)
-    
-    return response
-    
-
-def send_alert(title, df) -> pd.DataFrame:
+def send_alert(metric_name, title, df) -> pd.DataFrame:
     """
     Send alert.
     """
@@ -49,6 +17,13 @@ def send_alert(title, df) -> pd.DataFrame:
     logger = get_dagster_logger()
     logger.info(f'alerts to send: \n{df}')
     message = make_alert_message(df)
-    _ = send_alert_webhook(title=title, message=message)
+    #_ = send_alert_slack(title=title, message=message)
+    send_email_with_plot(
+        df=df, 
+        metric_name=metric_name, 
+        subject=title, 
+        body=message, 
+        attachment_name=metric_name
+    )
     
     return df

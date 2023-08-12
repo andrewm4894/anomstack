@@ -498,9 +498,7 @@ def make_alert_message(df_alert_metric, graph_symbol='~', anomaly_symbol='* ', n
             message += '\n' + f't={0-i+2}'.ljust(6, ' ') + line
     
     message = f"""
-    ```
-    {message}
-    ```
+    <pre><code>{message}</code></pre>
     """
     
     return message
