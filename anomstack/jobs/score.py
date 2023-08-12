@@ -66,7 +66,7 @@ def build_score_job(spec) -> JobDefinition:
                 df_score = pd.DataFrame({
                     'metric_timestamp': df_metric['metric_timestamp'].max(),
                     'metric_name': metric_name,
-                    'metric_value': scores[0],
+                    'metric_value': scores[0][1], # probability of anomaly
                     'metric_batch': metric_batch,
                     'metric_type': 'score'
                 })
