@@ -46,6 +46,11 @@ def make_plot(df, metric_name, threshold=0.8):
     ax2.legend(loc='upper left')
     ax2.grid(False)
     
+    # Add point shading for alert regions
+    for idx in alert_points.index:
+        ax1.axvline(idx, color='yellow', alpha=0.3)
+        ax2.axvline(idx, color='yellow', alpha=0.3)
+    
     plt.tight_layout()
     
     return fig

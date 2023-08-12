@@ -12,7 +12,7 @@ import tempfile
 from anomstack.alerts.plot import make_plot
 
 
-def send_email_with_plot(df, metric_name, subject, body, attachment_name) -> None:
+def send_email_with_plot(df, metric_name, subject, body, attachment_name, threshold=0.8) -> None:
     
     sender = os.getenv("ANOMSTACK_ALERT_EMAIL_FROM")
     password = os.getenv("ANOMSTACK_ALERT_EMAIL_PASSWORD")
@@ -22,7 +22,7 @@ def send_email_with_plot(df, metric_name, subject, body, attachment_name) -> Non
 
     with tempfile.NamedTemporaryFile(prefix=attachment_name, suffix=".png", delete=False) as temp:
         
-        fig = make_plot(df, metric_name)
+        fig = make_plot(df, metric_name, threshold)
         fig.savefig(temp.name)
 
         msg = MIMEMultipart()
