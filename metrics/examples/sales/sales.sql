@@ -5,7 +5,7 @@ sales_pipeline_deals_created as
 select
   get_current_timestamp() as metric_timestamp,
   'sales_pipeline_deals_created' as metric_name,
-  random() as metric_value
+  random()*2 as metric_value
 ),
 
 sales_pipeline_deals_sold as
