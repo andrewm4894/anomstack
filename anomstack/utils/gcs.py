@@ -29,7 +29,7 @@ def save_models_gcs(models, model_path, metric_batch) -> List[Tuple[str, BaseDet
     for metric, model in models:
         
         model_name = f"{metric}.pkl"
-        logger.debug(f"saving {model_name} to {model_path}")
+        logger.info(f"saving {model_name} to {model_path}")
         storage_client = storage.Client()
         bucket = storage_client.get_bucket(model_path_bucket)
         blob = bucket.blob(f"{model_path_prefix}/{metric_batch}/{model_name}")
@@ -50,7 +50,7 @@ def load_model_gcs(metric_name, model_path, metric_batch) -> BaseDetector:
     model_path_bucket, model_path_prefix = split_model_path(model_path)
     
     model_name = f'{metric_name}.pkl'
-    logger.debug(f'loading {model_name} from {model_path}')
+    logger.info(f'loading {model_name} from {model_path}')
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(model_path_bucket)
     blob = bucket.blob(f'{model_path_prefix}/{metric_batch}/{model_name}')

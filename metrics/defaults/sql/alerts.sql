@@ -13,6 +13,8 @@ where
   metric_batch = '{{ metric_batch }}'
   and
   metric_type = 'score'
+  and
+  extract(day from cast(now() as timestamp) - cast(metric_timestamp as timestamp)) <= {{ alert_metric_timestamp_max_days_ago }}
 ),
 
 metric_value_recency_ranked as
@@ -28,6 +30,8 @@ where
   metric_batch = '{{ metric_batch }}'
   and
   metric_type = 'metric'
+  and 
+  extract(day from cast(now() as timestamp) - cast(metric_timestamp as timestamp)) <= {{ alert_metric_timestamp_max_days_ago }}
 ),
 
 data_ranked as 

@@ -5,6 +5,7 @@ disable_batch: False
 train_max_n: 1000
 score_max_n: 100
 alert_max_n: 30
+alert_metric_timestamp_max_days_ago: 1
 alert_recent_n: 5
 alert_smooth_n: 3
 alert_threshold: 0.8

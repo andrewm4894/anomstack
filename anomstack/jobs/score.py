@@ -63,7 +63,7 @@ def build_score_job(spec) -> JobDefinition:
                 
                 scores = model.predict_proba(X)
                 
-                logger.debug(f"scores:\n{scores}")
+                logger.info(f"scores:\n{scores}")
 
                 df_score = pd.DataFrame({
                     'metric_timestamp': df_metric['metric_timestamp'].max(),
@@ -74,7 +74,7 @@ def build_score_job(spec) -> JobDefinition:
                 })
                 df_scores = pd.concat([df_scores, df_score], ignore_index=True)
             
-            logger.debug(df_scores)
+            logger.info(df_scores)
 
             return df_scores
         

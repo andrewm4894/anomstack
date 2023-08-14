@@ -38,6 +38,6 @@ def make_x(df, mode='train', diff_n=0, smooth_n=0, lags_n=0, score_n=1) -> pd.Da
 
     X = X.dropna()
     
-    logger.debug(f'X=\n{X}')
+    logger.info(f'X=\n{X}')
     
     return X

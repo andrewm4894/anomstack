@@ -14,13 +14,13 @@ def read_sql(sql, db) -> pd.DataFrame:
     
     logger = get_dagster_logger()
     
-    logger.debug(f'sql:\n{sql}')
+    logger.info(f'sql:\n{sql}')
     if db=='bigquery':
         df = read_sql_bigquery(sql)
     elif db=='duckdb':
         df = read_sql_duckdb(sql)
     else:
         raise ValueError(f'Unknown db: {db}')
-    logger.debug(f'df:\n{df}')
+    logger.info(f'df:\n{df}')
     
     return df
