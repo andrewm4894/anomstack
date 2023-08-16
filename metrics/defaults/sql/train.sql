@@ -19,4 +19,6 @@ from
   data_ranked
 where
   metric_recency_rank <= {{ train_max_n }}
+  and
+  metric_recency_rank >= {{ train_min_n }}
 ;

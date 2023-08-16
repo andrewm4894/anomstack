@@ -75,7 +75,7 @@ select
   metric_value,
   metric_score,
   metric_score_smooth,
-  if(metric_score_recency_rank <= {{ alert_recent_n }} and metric_score_smooth >= {{ alert_threshold }}, 1, 0) as metric_alert
+  if(metric_score_recency_rank <= {{ alert_recent_n }} and (metric_score_smooth >= {{ alert_threshold }} or {{ alert_always }}=True ), 1, 0) as metric_alert
 from
   data_smoothed
 where
