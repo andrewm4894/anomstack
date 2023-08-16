@@ -1,8 +1,8 @@
 # AnomStack
 
-## Quick Start
-
 Painless open source anomaly detection for business metrics!
+
+## Quick Start
 
 ```bash
 # run locally
