@@ -29,7 +29,6 @@ services:
       - ${GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json
       - ./metrics:/opt/dagster/app/metrics
       - ./models:/opt/dagster/app/models
-      - ./anomstack.db:/opt/dagster/app/anomstack.db
       - ./tmp:/opt/dagster/app/tmp
       - ./.env:/opt/dagster/app/.env
     environment:

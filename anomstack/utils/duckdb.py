@@ -19,7 +19,9 @@ def read_sql_duckdb(sql) -> pd.DataFrame:
     
     logger = get_dagster_logger()
     
-    conn = duckdb.connect('anomstack.db')
+    duckdb_path = os.environ.get('ANOMSTACK_DUCKDB_PATH','./tmp/anomstack.db')
+    
+    conn = duckdb.connect(duckdb_path)
     
     logger.info(f'sql:\n{sql}')
     df = duckdb.query(connection=conn, query=sql).df()
@@ -33,7 +35,8 @@ def save_df_duckdb(df, table_key) -> pd.DataFrame:
     Save df to db.
     """
     
-    conn = duckdb.connect('anomstack.db')
+    duckdb_path = os.environ.get('ANOMSTACK_DUCKDB_PATH','./tmp/anomstack.db')
+    conn = duckdb.connect(duckdb_path)
 
     try:
         if '.' in table_key:
