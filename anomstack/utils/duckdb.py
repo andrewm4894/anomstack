@@ -20,6 +20,7 @@ def read_sql_duckdb(sql) -> pd.DataFrame:
     logger = get_dagster_logger()
     
     duckdb_path = os.environ.get('ANOMSTACK_DUCKDB_PATH','./tmp/anomstack.db')
+    logger.info(f'duckdb_path:{duckdb_path}')
     
     conn = duckdb.connect(duckdb_path)
     
@@ -35,7 +36,10 @@ def save_df_duckdb(df, table_key) -> pd.DataFrame:
     Save df to db.
     """
     
+    logger = get_dagster_logger()
+    
     duckdb_path = os.environ.get('ANOMSTACK_DUCKDB_PATH','./tmp/anomstack.db')
+    logger.info(f'duckdb_path:{duckdb_path}')
     conn = duckdb.connect(duckdb_path)
 
     try:
