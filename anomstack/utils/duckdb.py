@@ -19,7 +19,7 @@ def read_sql_duckdb(sql) -> pd.DataFrame:
     
     logger = get_dagster_logger()
     
-    duckdb_path = os.environ.get('ANOMSTACK_DUCKDB_PATH','./tmp/anomstack.db')
+    duckdb_path = os.environ.get('ANOMSTACK_DUCKDB_PATH','tmpdata/anomstack.db')
     logger.info(f'duckdb_path:{duckdb_path}')
     
     conn = duckdb.connect(duckdb_path)
