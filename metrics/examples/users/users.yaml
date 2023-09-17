@@ -1,3 +1,7 @@
 metric_batch: "users"
+ingest_cron_schedule: "*/2 * * * *"
+train_cron_schedule: "*/5 * * * *"
+score_cron_schedule: "*/4 * * * *"
+alert_cron_schedule: "*/5 * * * *"
 ingest_sql: >
   {% include "./examples/users/users.sql" %}

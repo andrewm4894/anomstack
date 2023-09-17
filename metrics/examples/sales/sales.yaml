@@ -1,3 +1,7 @@
 metric_batch: "sales"
+ingest_cron_schedule: "*/3 * * * *"
+train_cron_schedule: "*/6 * * * *"
+score_cron_schedule: "*/5 * * * *"
+alert_cron_schedule: "*/6 * * * *"
 ingest_sql: >
   {% include "./examples/sales/sales.sql" %}

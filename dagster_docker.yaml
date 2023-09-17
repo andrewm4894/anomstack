@@ -15,6 +15,7 @@ run_launcher:
       - DAGSTER_POSTGRES_PASSWORD
       - DAGSTER_POSTGRES_DB
       - ANOMSTACK_GCP_PROJECT_ID
+      - ANOMSTACK_DUCKDB_PATH
       - ANOMSTACK_TABLE_KEY
       - ANOMSTACK_MODEL_PATH
       - ANOMSTACK_SLACK_WEBHOOK_URL
@@ -27,6 +28,10 @@ run_launcher:
         - C:/Users/andre/Documents/conf/andrewm4894-4d8b5a41b891.json:/tmp/conf/gcp_credentials.json # <--works
         - /var/run/docker.sock:/var/run/docker.sock
         - /tmp/io_manager_storage:/tmp/io_manager_storage
+        - ./metrics:/opt/dagster/app/metrics
+        - ./models:/opt/dagster/app/models
+        - ./tmp:/opt/dagster/app/tmp
+        - ./tmpdata:/opt/dagster/app/tmpdata
 
 run_storage:
   module: dagster_postgres.run_storage

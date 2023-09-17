@@ -31,7 +31,6 @@ services:
       - ./models:/opt/dagster/app/models
       - ./tmp:/opt/dagster/app/tmp
       - ./tmpdata:/opt/dagster/app/tmpdata
-      - ./.env:/opt/dagster/app/.env
     environment:
       DAGSTER_POSTGRES_USER: "postgres_user"
       DAGSTER_POSTGRES_PASSWORD: "postgres_password"
@@ -84,6 +83,10 @@ services:
       - ${GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/io_manager_storage:/tmp/io_manager_storage
+      - ./metrics:/opt/dagster/app/metrics
+      - ./models:/opt/dagster/app/models
+      - ./tmp:/opt/dagster/app/tmp
+      - ./tmpdata:/opt/dagster/app/tmpdata
     networks:
       - anomstack_network
     depends_on:
@@ -117,6 +120,10 @@ services:
       - ${GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/io_manager_storage:/tmp/io_manager_storage
+      - ./metrics:/opt/dagster/app/metrics
+      - ./models:/opt/dagster/app/models
+      - ./tmp:/opt/dagster/app/tmp
+      - ./tmpdata:/opt/dagster/app/tmpdata
     networks:
       - anomstack_network
     depends_on:
