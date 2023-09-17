@@ -173,3 +173,7 @@ tmp*
 # local model files
 models
 models/*
+
+# tmp
+tmp
+tmpdata
