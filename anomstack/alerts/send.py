@@ -13,18 +13,18 @@ def send_alert(metric_name, title, df, threshold=0.8) -> pd.DataFrame:
     """
     Send alert.
     """
-    
+
     logger = get_dagster_logger()
     logger.info(f'alerts to send: \n{df}')
     message = make_alert_message(df)
-    #_ = send_alert_slack(title=title, message=message)
+    # _ = send_alert_slack(title=title, message=message)
     send_email_with_plot(
-        df=df, 
-        metric_name=metric_name, 
-        subject=title, 
-        body=message, 
+        df=df,
+        metric_name=metric_name,
+        subject=title,
+        body=message,
         attachment_name=metric_name,
         threshold=threshold
     )
-    
+
     return df

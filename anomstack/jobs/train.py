@@ -18,7 +18,7 @@ def build_train_job(spec) -> JobDefinition:
     """
     Build job definitions for train jobs.
     """
-    
+
     metric_batch = spec['metric_batch']
     db = spec['db']
     model_path = spec['model_path']
@@ -32,14 +32,16 @@ def build_train_job(spec) -> JobDefinition:
         Get data for training and train models.
         """
 
+        logger = get_dagster_logger()
+
         @op(name=f'{metric_batch}_get_train_data')
         def get_train_data() -> pd.DataFrame:
             """
             Get data for training.
             """
-            
+
             df = read_sql(render_sql('train_sql', spec), db)
-            
+
             return df
 
         @op(name=f'{metric_batch}_train_models')
@@ -47,14 +49,18 @@ def build_train_job(spec) -> JobDefinition:
             """
             Train models.
             """
-            
+
             models = []
-            
+
             for metric_name in df["metric_name"].unique():
                 df_metric = df[df['metric_name'] == metric_name]
                 X = make_x(df_metric, mode='train', diff_n=diff_n, smooth_n=smooth_n, lags_n=lags_n)
-                model = train_model(X, metric_name)
-                models.append((metric_name, model))
+                if len(X) > 0:
+                    logger.info(f'training {metric_name} in {metric_batch} train job. len(X)={len(X)}')
+                    model = train_model(X, metric_name)
+                    models.append((metric_name, model))
+                else:
+                    logger.info(f'no data for {metric_name} in {metric_batch} train job.')
 
             return models
 
@@ -63,11 +69,11 @@ def build_train_job(spec) -> JobDefinition:
             """
             Save trained models.
             """
-            
+
             models = save_models(models, model_path, metric_batch)
 
             return models
-        
+
         save(train(get_train_data()))
 
     return _job

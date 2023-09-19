@@ -32,6 +32,7 @@ run_launcher:
         - ./models:/opt/dagster/app/models
         - ./tmp:/opt/dagster/app/tmp
         - ./tmpdata:/opt/dagster/app/tmpdata
+        - ./anomstack:/opt/dagster/app/anomstack
 
 run_storage:
   module: dagster_postgres.run_storage

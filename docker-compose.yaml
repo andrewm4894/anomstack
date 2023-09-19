@@ -31,6 +31,7 @@ services:
       - ./models:/opt/dagster/app/models
       - ./tmp:/opt/dagster/app/tmp
       - ./tmpdata:/opt/dagster/app/tmpdata
+      - ./anomstack:/opt/dagster/app/anomstack
     environment:
       DAGSTER_POSTGRES_USER: "postgres_user"
       DAGSTER_POSTGRES_PASSWORD: "postgres_password"
@@ -87,6 +88,7 @@ services:
       - ./models:/opt/dagster/app/models
       - ./tmp:/opt/dagster/app/tmp
       - ./tmpdata:/opt/dagster/app/tmpdata
+      - ./anomstack:/opt/dagster/app/anomstack
     networks:
       - anomstack_network
     depends_on:
@@ -124,6 +126,7 @@ services:
       - ./models:/opt/dagster/app/models
       - ./tmp:/opt/dagster/app/tmp
       - ./tmpdata:/opt/dagster/app/tmpdata
+      - ./anomstack:/opt/dagster/app/anomstack
     networks:
       - anomstack_network
     depends_on:
