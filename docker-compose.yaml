@@ -28,10 +28,9 @@ services:
     volumes:
       - ${GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json
       - ./metrics:/opt/dagster/app/metrics
-      - ./models:/opt/dagster/app/models
       - ./tmp:/opt/dagster/app/tmp
       - ./tmpdata:/opt/dagster/app/tmpdata
-      - ./anomstack:/opt/dagster/app/anomstack
+      #- .env:/opt/dagster/app/.env
     environment:
       DAGSTER_POSTGRES_USER: "postgres_user"
       DAGSTER_POSTGRES_PASSWORD: "postgres_password"
@@ -44,6 +43,11 @@ services:
       ANOMSTACK_MODEL_PATH: ${ANOMSTACK_MODEL_PATH}
       ANOMSTACK_SLACK_WEBHOOK_URL: ${ANOMSTACK_SLACK_WEBHOOK_URL}
       ANOMSTACK_IGNORE_EXAMPLES: ${ANOMSTACK_IGNORE_EXAMPLES}
+      ANOMSTACK_ALERT_EMAIL_FROM: ${ANOMSTACK_ALERT_EMAIL_FROM}
+      ANOMSTACK_ALERT_EMAIL_TO: ${ANOMSTACK_ALERT_EMAIL_TO}
+      ANOMSTACK_ALERT_EMAIL_SMTP_HOST: ${ANOMSTACK_ALERT_EMAIL_SMTP_HOST}
+      ANOMSTACK_ALERT_EMAIL_SMTP_PORT: ${ANOMSTACK_ALERT_EMAIL_SMTP_PORT}
+      ANOMSTACK_ALERT_EMAIL_PASSWORD: ${ANOMSTACK_ALERT_EMAIL_PASSWORD}
       GOOGLE_APPLICATION_CREDENTIALS: /tmp/conf/gcp_credentials.json
     networks:
       - anomstack_network
@@ -79,16 +83,20 @@ services:
       ANOMSTACK_MODEL_PATH: ${ANOMSTACK_MODEL_PATH}
       ANOMSTACK_SLACK_WEBHOOK_URL: ${ANOMSTACK_SLACK_WEBHOOK_URL}
       ANOMSTACK_IGNORE_EXAMPLES: ${ANOMSTACK_IGNORE_EXAMPLES}
+      ANOMSTACK_ALERT_EMAIL_FROM: ${ANOMSTACK_ALERT_EMAIL_FROM}
+      ANOMSTACK_ALERT_EMAIL_TO: ${ANOMSTACK_ALERT_EMAIL_TO}
+      ANOMSTACK_ALERT_EMAIL_SMTP_HOST: ${ANOMSTACK_ALERT_EMAIL_SMTP_HOST}
+      ANOMSTACK_ALERT_EMAIL_SMTP_PORT: ${ANOMSTACK_ALERT_EMAIL_SMTP_PORT}
+      ANOMSTACK_ALERT_EMAIL_PASSWORD: ${ANOMSTACK_ALERT_EMAIL_PASSWORD}
       GOOGLE_APPLICATION_CREDENTIALS: /tmp/conf/gcp_credentials.json
     volumes: # Make docker client accessible so we can terminate containers from dagit
       - ${GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/io_manager_storage:/tmp/io_manager_storage
       - ./metrics:/opt/dagster/app/metrics
-      - ./models:/opt/dagster/app/models
       - ./tmp:/opt/dagster/app/tmp
       - ./tmpdata:/opt/dagster/app/tmpdata
-      - ./anomstack:/opt/dagster/app/anomstack
+      #- .env:/opt/dagster/app/.env
     networks:
       - anomstack_network
     depends_on:
@@ -117,16 +125,20 @@ services:
       ANOMSTACK_MODEL_PATH: ${ANOMSTACK_MODEL_PATH}
       ANOMSTACK_SLACK_WEBHOOK_URL: ${ANOMSTACK_SLACK_WEBHOOK_URL}
       ANOMSTACK_IGNORE_EXAMPLES: ${ANOMSTACK_IGNORE_EXAMPLES}
+      ANOMSTACK_ALERT_EMAIL_FROM: ${ANOMSTACK_ALERT_EMAIL_FROM}
+      ANOMSTACK_ALERT_EMAIL_TO: ${ANOMSTACK_ALERT_EMAIL_TO}
+      ANOMSTACK_ALERT_EMAIL_SMTP_HOST: ${ANOMSTACK_ALERT_EMAIL_SMTP_HOST}
+      ANOMSTACK_ALERT_EMAIL_SMTP_PORT: ${ANOMSTACK_ALERT_EMAIL_SMTP_PORT}
+      ANOMSTACK_ALERT_EMAIL_PASSWORD: ${ANOMSTACK_ALERT_EMAIL_PASSWORD}
       GOOGLE_APPLICATION_CREDENTIALS: /tmp/conf/gcp_credentials.json
     volumes: # Make docker client accessible so we can launch containers using host docker
       - ${GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/io_manager_storage:/tmp/io_manager_storage
       - ./metrics:/opt/dagster/app/metrics
-      - ./models:/opt/dagster/app/models
       - ./tmp:/opt/dagster/app/tmp
       - ./tmpdata:/opt/dagster/app/tmpdata
-      - ./anomstack:/opt/dagster/app/anomstack
+      #- .env:/opt/dagster/app/.env
     networks:
       - anomstack_network
     depends_on:

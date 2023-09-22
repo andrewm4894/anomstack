@@ -20,6 +20,11 @@ run_launcher:
       - ANOMSTACK_MODEL_PATH
       - ANOMSTACK_SLACK_WEBHOOK_URL
       - ANOMSTACK_IGNORE_EXAMPLES
+      - ANOMSTACK_ALERT_EMAIL_FROM
+      - ANOMSTACK_ALERT_EMAIL_TO
+      - ANOMSTACK_ALERT_EMAIL_SMTP_HOST
+      - ANOMSTACK_ALERT_EMAIL_SMTP_PORT
+      - ANOMSTACK_ALERT_EMAIL_PASSWORD
       - GOOGLE_APPLICATION_CREDENTIALS
     network: anomstack_network
     container_kwargs:
@@ -28,11 +33,9 @@ run_launcher:
         - C:/Users/andre/Documents/conf/andrewm4894-4d8b5a41b891.json:/tmp/conf/gcp_credentials.json # <--works
         - /var/run/docker.sock:/var/run/docker.sock
         - /tmp/io_manager_storage:/tmp/io_manager_storage
-        - ./metrics:/opt/dagster/app/metrics
-        - ./models:/opt/dagster/app/models
         - ./tmp:/opt/dagster/app/tmp
         - ./tmpdata:/opt/dagster/app/tmpdata
-        - ./anomstack:/opt/dagster/app/anomstack
+        #- .env:/opt/dagster/app/.env
 
 run_storage:
   module: dagster_postgres.run_storage
