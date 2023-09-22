@@ -10,22 +10,16 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 import tempfile
-from dagster import get_dagster_logger
 from anomstack.alerts.plot import make_plot
 
 
 def send_email_with_plot(df, metric_name, subject, body, attachment_name, threshold=0.8) -> None:
-
-    logger = get_dagster_logger()
 
     sender = os.getenv("ANOMSTACK_ALERT_EMAIL_FROM")
     password = os.getenv("ANOMSTACK_ALERT_EMAIL_PASSWORD")
     to = os.getenv("ANOMSTACK_ALERT_EMAIL_TO")
     host = os.getenv("ANOMSTACK_ALERT_EMAIL_SMTP_HOST")
     port = os.getenv("ANOMSTACK_ALERT_EMAIL_SMTP_PORT")
-
-    logger.info(f'host: {host}')
-    logger.info(f'port: {port}')
 
     with tempfile.NamedTemporaryFile(prefix=attachment_name, suffix=".png", delete=False) as temp:
 

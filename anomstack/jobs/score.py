@@ -3,7 +3,10 @@ Generate score jobs and schedules.
 """
 
 import pandas as pd
-from dagster import get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
+from dagster import (
+    get_dagster_logger, job, op, ScheduleDefinition, JobDefinition,
+    DefaultScheduleStatus
+)
 from anomstack.config import specs
 from anomstack.df.save import save_df
 from anomstack.sql.render import render_sql
@@ -93,16 +96,19 @@ def build_score_job(spec) -> JobDefinition:
     return _job
 
 
-# generate jobs
-score_jobs = [build_score_job(specs[spec]) for spec in specs]
-
-# define schedules
-score_schedules = [
-    ScheduleDefinition(
-        job=score_job,
-        cron_schedule=specs[score_job.name.replace('_score', '')][
-            'score_cron_schedule'
-        ],
+# Build score jobs and schedules.
+score_jobs = []
+score_schedules = []
+for spec in specs:
+    score_job = build_score_job(specs[spec])
+    score_jobs.append(score_job)
+    if specs[spec]['score_default_schedule_status'] == 'RUNNING':
+        score_default_schedule_status = DefaultScheduleStatus.RUNNING
+    else:
+        score_default_schedule_status = DefaultScheduleStatus.STOPPED
+    score_schedule = ScheduleDefinition(
+            job=score_job,
+            cron_schedule=specs[spec]['score_cron_schedule'],
+            default_status=score_default_schedule_status,
     )
-    for score_job in score_jobs
-]
+    score_schedules.append(score_schedule)

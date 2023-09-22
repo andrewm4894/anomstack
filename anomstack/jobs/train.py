@@ -4,7 +4,10 @@ Generate train jobs and schedules.
 
 import pandas as pd
 from pyod.models.base import BaseDetector
-from dagster import get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
+from dagster import (
+    get_dagster_logger, job, op, ScheduleDefinition, JobDefinition,
+    DefaultScheduleStatus
+)
 from typing import List, Tuple
 from anomstack.config import specs
 from anomstack.sql.render import render_sql
@@ -79,14 +82,19 @@ def build_train_job(spec) -> JobDefinition:
     return _job
 
 
-train_jobs = [build_train_job(specs[spec]) for spec in specs]
-
-train_schedules = [
-    ScheduleDefinition(
-        job=train_job,
-        cron_schedule=specs[train_job.name.replace("_train", "")][
-            "train_cron_schedule"
-        ],
+# Build train jobs and schedules.
+train_jobs = []
+train_schedules = []
+for spec in specs:
+    train_job = build_train_job(specs[spec])
+    train_jobs.append(train_job)
+    if specs[spec]['train_default_schedule_status'] == 'RUNNING':
+        train_default_schedule_status = DefaultScheduleStatus.RUNNING
+    else:
+        train_default_schedule_status = DefaultScheduleStatus.STOPPED
+    train_schedule = ScheduleDefinition(
+            job=train_job,
+            cron_schedule=specs[spec]['train_cron_schedule'],
+            default_status=train_default_schedule_status,
     )
-    for train_job in train_jobs
-]
+    train_schedules.append(train_schedule)

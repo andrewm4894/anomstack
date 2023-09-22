@@ -3,7 +3,9 @@ Generate ingest jobs and schedules.
 """
 
 import pandas as pd
-from dagster import job, op, ScheduleDefinition, JobDefinition
+from dagster import (
+    job, op, ScheduleDefinition, JobDefinition, DefaultScheduleStatus
+    )
 from anomstack.config import specs
 from anomstack.sql.render import render_sql
 from anomstack.sql.read import read_sql
@@ -14,7 +16,7 @@ def build_ingest_job(spec) -> JobDefinition:
     """
     Build job definitions for ingest jobs.
     """
-    
+
     metric_batch = spec['metric_batch']
     table_key = spec['table_key']
     gcp_project_id = spec['gcp_project_id']
@@ -49,17 +51,19 @@ def build_ingest_job(spec) -> JobDefinition:
 
     return _job
 
-
-# generate jobs
-ingest_jobs = [build_ingest_job(specs[spec]) for spec in specs]
-
-# define schedules
-ingest_schedules = [
-    ScheduleDefinition(
-        job=ingest_job,
-        cron_schedule=specs[ingest_job.name.replace('_ingest', '')][
-            'ingest_cron_schedule'
-        ],
+# Build ingest jobs and schedules.
+ingest_jobs = []
+ingest_schedules = []
+for spec in specs:
+    ingest_job = build_ingest_job(specs[spec])
+    ingest_jobs.append(ingest_job)
+    if specs[spec]['ingest_default_schedule_status'] == 'RUNNING':
+        ingest_default_schedule_status = DefaultScheduleStatus.RUNNING
+    else:
+        ingest_default_schedule_status = DefaultScheduleStatus.STOPPED
+    ingest_schedule = ScheduleDefinition(
+            job=ingest_job,
+            cron_schedule=specs[spec]['ingest_cron_schedule'],
+            default_status=ingest_default_schedule_status,
     )
-    for ingest_job in ingest_jobs
-]
+    ingest_schedules.append(ingest_schedule)

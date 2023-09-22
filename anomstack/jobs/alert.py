@@ -3,7 +3,10 @@ Generate alert jobs and schedules.
 """
 
 import pandas as pd
-from dagster import get_dagster_logger, job, op, ScheduleDefinition, JobDefinition
+from dagster import (
+    get_dagster_logger, job, op, ScheduleDefinition, JobDefinition,
+    DefaultScheduleStatus
+)
 from anomstack.config import specs
 from anomstack.alerts.send import send_alert
 from anomstack.sql.render import render_sql
@@ -14,13 +17,13 @@ def build_alert_job(spec) -> JobDefinition:
     """
     Build job definitions for alert jobs.
     """
-    
+
     logger = get_dagster_logger()
-    
+
     metric_batch = spec['metric_batch']
     db = spec['db']
     threshold = spec['alert_threshold']
-    
+
     @job(name=f'{metric_batch}_alerts')
     def _job():
         """
@@ -40,7 +43,7 @@ def build_alert_job(spec) -> JobDefinition:
             """
             Alert on data.
             """
-            
+
             if len(df_alerts) == 0:
                 logger.info('no alerts to send')
             else:
@@ -63,16 +66,19 @@ def build_alert_job(spec) -> JobDefinition:
     return _job
 
 
-# generate jobs
-alert_jobs = [build_alert_job(specs[spec]) for spec in specs]
-
-# define schedules
-alert_schedules = [
-    ScheduleDefinition(
-        job=alert_job,
-        cron_schedule=specs[alert_job.name.replace('_alerts', '')][
-            'alert_cron_schedule'
-        ],
+# Build alert jobs and schedules.
+alert_jobs = []
+alert_schedules = []
+for spec in specs:
+    alert_job = build_alert_job(specs[spec])
+    alert_jobs.append(alert_job)
+    if specs[spec]['alert_default_schedule_status'] == 'RUNNING':
+        alert_default_schedule_status = DefaultScheduleStatus.RUNNING
+    else:
+        alert_default_schedule_status = DefaultScheduleStatus.STOPPED
+    alert_schedule = ScheduleDefinition(
+            job=alert_job,
+            cron_schedule=specs[spec]['alert_cron_schedule'],
+            default_status=alert_default_schedule_status,
     )
-    for alert_job in alert_jobs
-]
+    alert_schedules.append(alert_schedule)
