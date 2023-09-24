@@ -14,9 +14,9 @@ env_vars = [
 ]
 
 # directories
-config_dir = Path('metrics')
-defaults_dir = Path('metrics/defaults')
-examples_dir = Path('metrics/examples')
+config_dir = Path('./metrics')
+defaults_dir = Path('./metrics/defaults')
+examples_dir = Path('./metrics/examples')
 
 specs = {}
 
