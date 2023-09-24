@@ -1,5 +1,5 @@
 # this shows a jinja based template example
-disable_batch: True
+disable_batch: False
 metric_batch: "example_jinja"
 ingest_sql: >
   {% set metrics = ['metric_1', 'metric_2', 'metric_3'] %}
