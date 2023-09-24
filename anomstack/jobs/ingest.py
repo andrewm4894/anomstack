@@ -4,7 +4,8 @@ Generate ingest jobs and schedules.
 
 import pandas as pd
 from dagster import (
-    job, op, ScheduleDefinition, JobDefinition, DefaultScheduleStatus
+    job, op, ScheduleDefinition, JobDefinition, DefaultScheduleStatus,
+    get_dagster_logger
     )
 from anomstack.config import specs
 from anomstack.sql.render import render_sql
@@ -51,13 +52,18 @@ def build_ingest_job(spec) -> JobDefinition:
 
     return _job
 
+
+logger = get_dagster_logger()
+
 # Build ingest jobs and schedules.
 ingest_jobs = []
 ingest_schedules = []
 for spec in specs:
+    logger.info(f'Building ingest job for {spec}')
+    logger.info(f'Specs: \n{specs[spec]}')
     ingest_job = build_ingest_job(specs[spec])
     ingest_jobs.append(ingest_job)
-    if specs[spec]['ingest_default_schedule_status'] == 'RUNNING':
+    if specs[spec].get('ingest_default_schedule_status','STOPPED') == 'RUNNING':
         ingest_default_schedule_status = DefaultScheduleStatus.RUNNING
     else:
         ingest_default_schedule_status = DefaultScheduleStatus.STOPPED

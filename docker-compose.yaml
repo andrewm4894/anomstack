@@ -29,7 +29,7 @@ services:
       - ${GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json
       - ./tmp:/opt/dagster/app/tmp
       - ./tmpdata:/opt/dagster/app/tmpdata
-      - ./metrics:/opt/dagster/app/metrics
+      #- ./metrics:/opt/dagster/app/metrics
     environment:
       DAGSTER_POSTGRES_USER: "postgres_user"
       DAGSTER_POSTGRES_PASSWORD: "postgres_password"

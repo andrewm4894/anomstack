@@ -16,13 +16,13 @@ preprocess_diff_n: 1 # 1 will use diff, 0 will use raw metric values.
 preprocess_smooth_n: 3 # how much smoothing to apply in preprocessing.
 preprocess_lags_n: 3 # how many lags to include in feature vector.
 ingest_cron_schedule: "*/3 * * * *" # cron schedule for ingest jobs
-ingest_default_schedule_status: 'RUNNING' # default schedule status for ingest jobs (RUNNING or STOPPED)
+ingest_default_schedule_status: 'STOPPED' # default schedule status for ingest jobs (RUNNING or STOPPED)
 train_cron_schedule: "*/5 * * * *" # cron schedule for training jobs
-train_default_schedule_status: 'RUNNING' # default schedule status for train jobs (RUNNING or STOPPED)
+train_default_schedule_status: 'STOPPED' # default schedule status for train jobs (RUNNING or STOPPED)
 score_cron_schedule: "*/4 * * * *" # cron schedule for scoring jobs
-score_default_schedule_status: 'RUNNING' # default schedule status for score jobs (RUNNING or STOPPED)
+score_default_schedule_status: 'STOPPED' # default schedule status for score jobs (RUNNING or STOPPED)
 alert_cron_schedule: "*/5 * * * *" # cron schedule for alerting jobs
-alert_default_schedule_status: 'RUNNING' # default schedule status for alert jobs (RUNNING or STOPPED)
+alert_default_schedule_status: 'STOPPED' # default schedule status for alert jobs (RUNNING or STOPPED)
 # default templated train sql
 train_sql: >
   {% include "./defaults/sql/train.sql" %}

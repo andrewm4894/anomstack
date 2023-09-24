@@ -14,9 +14,9 @@ env_vars = [
 ]
 
 # directories
-config_dir = Path('./metrics')
-defaults_dir = Path('./metrics/defaults')
-examples_dir = Path('./metrics/examples')
+metrics_dir = Path('./metrics')
+defaults_dir = Path(f'{metrics_dir}/defaults')
+examples_dir = Path(f'{metrics_dir}/examples')
 
 specs = {}
 
@@ -46,7 +46,7 @@ with open(defaults_dir / 'defaults.yaml', 'r') as file:
     defaults = yaml.safe_load(file)
 
 # load all the YAML files
-for root, dirs, files in os.walk(config_dir):
+for root, dirs, files in os.walk(metrics_dir):
     
     # ignore examples if the environment variable is set
     if os.getenv('ANOMSTACK_IGNORE_EXAMPLES') == 'yes' and examples_dir in Path(root).parents:        

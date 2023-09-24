@@ -35,7 +35,7 @@ run_launcher:
         - /tmp/io_manager_storage:/tmp/io_manager_storage
         - ./tmp:/opt/dagster/app/tmp
         - ./tmpdata:/opt/dagster/app/tmpdata
-        - ./metrics:/opt/dagster/app/metrics
+        #- ./metrics:/opt/dagster/app/metrics
 
 run_storage:
   module: dagster_postgres.run_storage
