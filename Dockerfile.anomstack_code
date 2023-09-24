@@ -8,7 +8,6 @@ RUN pip install -r requirements.txt
 
 COPY anomstack /opt/dagster/app/anomstack
 
-# uncomment if you want to bake metrics folder into your image rather than mounting it
 COPY metrics /opt/dagster/app/metrics
 
 # Run dagster gRPC server on port 4000

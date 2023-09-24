@@ -1,5 +1,5 @@
 # a basic minimal example of a batch
-disable_batch: False
+disable_batch: True
 metric_batch: "example_simple"
 ingest_cron_schedule: "*/2 * * * *"
 train_cron_schedule: "*/4 * * * *"
