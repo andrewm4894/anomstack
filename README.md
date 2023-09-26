@@ -75,9 +75,9 @@ Environment variables for your metrics can be set in the `.env` file (see [`.exa
 
 ## Concepts
 
-- "Metric Batch": You configure metric batches in Anomstack. A metric batch is a collection of metrics that you want to run together and with its own seperate set of parameters. Of course a metric batch can contain just one metric if you want but typically it makes more sense to group metrics in ways that make sense for you.
-- "Jobs": At the core Anomstack runs a few jobs for each metric batch. These jobs are:
+- "**Metric Batch**": You configure metric batches in Anomstack. A metric batch is a collection of metrics that you want to run together and with its own seperate set of parameters. Of course a metric batch can contain just one metric if you want but typically it makes more sense to group metrics in ways that make sense for you.
+- "**Jobs**": At the core Anomstack runs a few jobs for each metric batch. These jobs are:
   - "Ingest" ([`ingest.py`](./anomstack/jobs/ingest.py)): This job runs the sql query for the metric batch and ingests the data into the database.
-  - "Train" ([`train.py`](./anomstack/jobs/train.py)): This job trains the model for the metric batch.
-  - "Score": This job scores the model for the metric batch.
-  - "Alert": This job alerts you when the metric batch looks anomalous.
+  - "Train" ([`train.py`](./anomstack/jobs/train.py)): This job trains a model for each metric.
+  - "Score" ([`score.py`](./anomstack/jobs/score.py)): This job scores metrics using the latest trained model for each metric.
+  - "Alert" ([`alert.py`](./anomstack/jobs/alert.py)): This job alerts you when the metric looks anomalous.
