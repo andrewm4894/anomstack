@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -ex
 
 # copy .env.example to .env
 cp .env.example .env
