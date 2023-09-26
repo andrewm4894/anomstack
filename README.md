@@ -4,7 +4,7 @@ Painless open source anomaly detection for business metrics! 📈📉🚀
 
 ## What is Anomstack?
 
-Anomstack is a lightweight (README buzzword bingo alert!) data app built on top of [dagster](https://dagster.io/) that lets you easily get great anomaly detection (using [`pyod`](https://pyod.readthedocs.io/en/latest/)) for your business metrics with as little pain as physically possible.
+Anomstack is a lightweight (README buzzword bingo alert!) data app built on top of [dagster](https://dagster.io/) that lets you easily get great anomaly detection (using [`pyod`](https://pyod.readthedocs.io/en/latest/) for the ML stuff) for your business metrics with as little pain as physically possible.
 
 It's similar in scope and goal to this [Airflow Anomaly Detection provider](https://github.com/andrewm4894/airflow-provider-anomaly-detection) i also made, but easier to get going since does not require airflow and so easier to set up and run yourself.
 
