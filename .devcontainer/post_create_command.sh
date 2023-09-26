@@ -4,11 +4,8 @@ set -ex
 
 echo "start post create command"
 
-# show pwd
-echo "pwd: $(pwd)"
-
-# copy .env.example to .env
-cp .env.example .env
+# copy .example.env to .env
+cp .example.env .env
 
 # docker compose up
 docker compose up -d
