@@ -25,7 +25,7 @@ Below are some quick start instructions for getting up and running with Anomstac
 
 For proper use you would need to set up all your metrics and environment variables etc, but this should get you started.
 
-*Note*: you will need to run a dozen or so ingest jobs before there is enough data to train and score your metrics.
+*Note*: you will need to wait for it to run a dozen or so ingest jobs before there is enough data for train, score and alert jobs to run successfully.
 
 ### Docker
 
