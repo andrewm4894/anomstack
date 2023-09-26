@@ -1,9 +1,5 @@
 {
     "name": "anomstack",
-    "service": "anomstack",
-    "dockerComposeFile": [
-        "../docker-compose.yml"
-    ],
     "forwardPorts": [3000],
     "postCreateCommand": ".devcontainer/post_create_command.sh"
 }
