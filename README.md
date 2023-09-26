@@ -5,19 +5,28 @@ Painless open source anomaly detection for business metrics!
 ## Project Structure
 
 - [`./anomstack`](./anomstack) source code for Anomstack.
-- [`./metrics`](./metrics) sample metrics data. This is where you define your metrics (check out `examples` folder). Defaults params etc live in `defaults` folder.
+- [`./metrics`](./metrics) metrics `.sql` and `.yaml` configuration files. This is where you define your metrics (check out [`examples`](./metrics/examples/) folder). Defaults params etc live in [`defaults`](./metrics/defaults/) folder in [`defaults.yaml`](./metrics/defaults/defaults.yaml).
 
 ## Quick Start
+
+Below are some quick start instructions for getting up and running with AnomStack and a local db using duckdb.
+
+For proper use you would need to set up all your metrics and environment variables etc, but this should get you started.
 
 ### Docker
 
 To get started with AnomStack, you can run it locally via docker compose.
 
 ```bash
+# clone repo
 git clone https://github.com/andrewm4894/anomstack.git
+# cd into project
 cd anomstack
+# generate your .env file based on example
 cp .example.env .env
+# run docker compose up to start anomstack
 docker compose up
+# anomstack should now be running on port 3000
 ```
 
 ### Local Python Env
@@ -39,6 +48,7 @@ pip install -r requirements.txt
 cp .example.env .env
 # run locally
 dagster dev -f anomstack/main.py
+# anomstack should now be running on port 3000
 ```
 
 ## Adding Your Metrics
