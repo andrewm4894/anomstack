@@ -47,7 +47,7 @@ You can see the [`.devcontainer`](./.devcontainer) folder for the config used to
 
 ### Docker
 
-To get started with Anomstack, you can run it locally via docker compose.
+To get started with Anomstack, you can run it via docker compose.
 
 ```bash
 # clone repo
