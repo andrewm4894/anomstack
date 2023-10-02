@@ -2,7 +2,7 @@
 
 set -ex
 
-echo "start post create command"
+echo "start post create command..."
 
 # copy .example.env to .env
 cp .example.env .env
