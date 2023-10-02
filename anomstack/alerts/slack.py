@@ -11,7 +11,7 @@ def send_alert_slack(title='alert', message='hello', env_var_webhook_url='ANOMST
     """
     Send alert via webhook.
     """
-    
+
     webhook_url = os.environ[env_var_webhook_url]
     payload = {
         #'text': f'{title}',
@@ -34,5 +34,5 @@ def send_alert_slack(title='alert', message='hello', env_var_webhook_url='ANOMST
     }
     headers = {'Content-Type': 'application/json'}
     response = requests.post(webhook_url, data=json.dumps(payload), headers=headers)
-    
+
     return response

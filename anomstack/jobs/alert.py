@@ -23,6 +23,7 @@ def build_alert_job(spec) -> JobDefinition:
     metric_batch = spec['metric_batch']
     db = spec['db']
     threshold = spec['alert_threshold']
+    alert_methods = spec['alert_methods']
 
     @job(name=f'{metric_batch}_alerts')
     def _job():
@@ -56,7 +57,8 @@ def build_alert_job(spec) -> JobDefinition:
                         metric_name=metric_name,
                         title=alert_title,
                         df=df_alert,
-                        threshold=threshold
+                        threshold=threshold,
+                        alert_methods=alert_methods
                     )
 
             return df_alerts
