@@ -2,6 +2,16 @@
 
 Painless open source anomaly detection for business metrics! 📈📉🚀
 
+- [What is Anomstack?](#what-is-anomstack)
+  - [How it works](#how-it-works)
+- [Project structure](#project-structure)
+- [Quickstart](#quickstart)
+  - [GitHub Codespaces](#github-codespaces)
+  - [Docker](#docker)
+  - [Local Python env](#local-python-env)
+- [Adding your metrics](#adding-your-metrics)
+- [Concepts](#concepts)
+
 ## What is Anomstack?
 
 Anomstack is a lightweight (README buzzword bingo alert!) data app built on top of [dagster](https://dagster.io/) (for orchestration) that lets you easily get great anomaly detection (using [`pyod`](https://pyod.readthedocs.io/en/latest/) for the ML stuff) for your business metrics (whatever data platform you use) with as little pain as physically possible.
@@ -21,15 +31,17 @@ It's similar in scope and goal to this [Airflow Anomaly Detection provider](http
 
 ## Quickstart
 
-Below are some quick start instructions for getting up and running with Anomstack and a local db using duckdb.
+Below are some quick start instructions for getting up and running with Anomstack and a local db using duckdb and some example metrics.
 
 For proper use you would need to set up all your metrics and environment variables etc, but this should get you started.
+
+By default Anomstack will run on port 3000, so you can go to http://localhost:3000 to see the dagster UI. You can then enable the jobs you want to run and see them run in the UI.
 
 *Note*: you will need to wait for it to run a dozen or so ingest jobs before there is enough data for train, score and alert jobs to run successfully.
 
 ### GitHub Codespaces
 
-You can run Anomstack in a GitHub Codespace.
+You can run Anomstack using docker in a [GitHub Codespace](https://docs.github.com/en/codespaces). This is a great way to get started and familiar with Anomstack without having to install anything locally.
 
 ### Docker
 
