@@ -75,7 +75,7 @@ python3 -m venv .venv
 # activate virtual env
 source .venv/bin/activate
 # install deps
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 # cp example env file
 cp .example.env .env
 # run locally
