@@ -27,6 +27,10 @@ For proper use you would need to set up all your metrics and environment variabl
 
 *Note*: you will need to wait for it to run a dozen or so ingest jobs before there is enough data for train, score and alert jobs to run successfully.
 
+### GitHub Codespaces
+
+You can run Anomstack in a GitHub Codespace.
+
 ### Docker
 
 To get started with Anomstack, you can run it locally via docker compose.
