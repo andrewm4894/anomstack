@@ -1,4 +1,4 @@
-version: "3.7"
+version: "3.8"
 
 services:
   # This service runs the postgres DB used by dagster for run storage, schedule storage,
@@ -7,9 +7,9 @@ services:
     image: postgres:11
     container_name: anomstack_postgresql
     environment:
-      ANOMSTACK_POSTGRES_USER: "postgres_user"
-      ANOMSTACK_POSTGRES_PASSWORD: "postgres_password"
-      ANOMSTACK_POSTGRES_DB: "postgres_db"
+      POSTGRES_USER: "postgres_user"
+      POSTGRES_PASSWORD: "postgres_password"
+      POSTGRES_DB: "postgres_db"
     networks:
       - anomstack_network
 
@@ -26,13 +26,13 @@ services:
     image: anomstack_code_image
     restart: always
     volumes:
-      #- ${GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json
+      #- ${ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json
       - ./tmp:/opt/dagster/app/tmp
       - ./tmpdata:/opt/dagster/app/tmpdata
     environment:
-      ANOMSTACK_DAGSTER_POSTGRES_USER: "postgres_user"
-      ANOMSTACK_DAGSTER_POSTGRES_PASSWORD: "postgres_password"
-      ANOMSTACK_DAGSTER_POSTGRES_DB: "postgres_db"
+      DAGSTER_POSTGRES_USER: "postgres_user"
+      DAGSTER_POSTGRES_PASSWORD: "postgres_password"
+      DAGSTER_POSTGRES_DB: "postgres_db"
       DAGSTER_CURRENT_IMAGE: "anomstack_code_image"
       # read from .env file
       ANOMSTACK_GCP_PROJECT_ID: ${ANOMSTACK_GCP_PROJECT_ID}
@@ -71,9 +71,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      ANOMSTACK_DAGSTER_POSTGRES_USER: "postgres_user"
-      ANOMSTACK_DAGSTER_POSTGRES_PASSWORD: "postgres_password"
-      ANOMSTACK_DAGSTER_POSTGRES_DB: "postgres_db"
+      DAGSTER_POSTGRES_USER: "postgres_user"
+      DAGSTER_POSTGRES_PASSWORD: "postgres_password"
+      DAGSTER_POSTGRES_DB: "postgres_db"
       # read from .env file
       ANOMSTACK_GCP_PROJECT_ID: ${ANOMSTACK_GCP_PROJECT_ID}
       ANOMSTACK_DUCKDB_PATH: ${ANOMSTACK_DUCKDB_PATH}
@@ -111,9 +111,9 @@ services:
     container_name: anomstack_daemon
     restart: on-failure
     environment:
-      ANOMSTACK_DAGSTER_POSTGRES_USER: "postgres_user"
-      ANOMSTACK_DAGSTER_POSTGRES_PASSWORD: "postgres_password"
-      ANOMSTACK_DAGSTER_POSTGRES_DB: "postgres_db"
+      DAGSTER_POSTGRES_USER: "postgres_user"
+      DAGSTER_POSTGRES_PASSWORD: "postgres_password"
+      DAGSTER_POSTGRES_DB: "postgres_db"
       # read from .env file
       ANOMSTACK_GCP_PROJECT_ID: ${ANOMSTACK_GCP_PROJECT_ID}
       ANOMSTACK_DUCKDB_PATH: ${ANOMSTACK_DUCKDB_PATH}

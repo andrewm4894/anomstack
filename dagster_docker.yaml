@@ -11,9 +11,9 @@ scheduler:
 #   class: DefaultRunLauncher
 #   config:
 #     env_vars:
-#       - ANOMSTACK_DAGSTER_POSTGRES_USER
-#       - ANOMSTACK_DAGSTER_POSTGRES_PASSWORD
-#       - ANOMSTACK_DAGSTER_POSTGRES_DB
+#       - DAGSTER_POSTGRES_USER
+#       - DAGSTER_POSTGRES_PASSWORD
+#       - DAGSTER_POSTGRES_DB
 #       - ANOMSTACK_GCP_PROJECT_ID
 #       - ANOMSTACK_DUCKDB_PATH
 #       - ANOMSTACK_TABLE_KEY
@@ -43,11 +43,11 @@ run_storage:
     postgres_db:
       hostname: anomstack_postgresql
       username:
-        env: ANOMSTACK_DAGSTER_POSTGRES_USER
+        env: DAGSTER_POSTGRES_USER
       password:
-        env: ANOMSTACK_DAGSTER_POSTGRES_PASSWORD
+        env: DAGSTER_POSTGRES_PASSWORD
       db_name:
-        env: ANOMSTACK_DAGSTER_POSTGRES_DB
+        env: DAGSTER_POSTGRES_DB
       port: 5432
 
 run_retries:
@@ -61,11 +61,11 @@ schedule_storage:
     postgres_db:
       hostname: anomstack_postgresql
       username:
-        env: ANOMSTACK_DAGSTER_POSTGRES_USER
+        env: DAGSTER_POSTGRES_USER
       password:
-        env: ANOMSTACK_DAGSTER_POSTGRES_PASSWORD
+        env: DAGSTER_POSTGRES_PASSWORD
       db_name:
-        env: ANOMSTACK_DAGSTER_POSTGRES_DB
+        env: DAGSTER_POSTGRES_DB
       port: 5432
 
 event_log_storage:
@@ -75,9 +75,9 @@ event_log_storage:
     postgres_db:
       hostname: anomstack_postgresql
       username:
-        env: ANOMSTACK_DAGSTER_POSTGRES_USER
+        env: DAGSTER_POSTGRES_USER
       password:
-        env: ANOMSTACK_DAGSTER_POSTGRES_PASSWORD
+        env: DAGSTER_POSTGRES_PASSWORD
       db_name:
-        env: ANOMSTACK_DAGSTER_POSTGRES_DB
+        env: DAGSTER_POSTGRES_DB
       port: 5432

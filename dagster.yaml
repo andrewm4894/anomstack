@@ -9,21 +9,21 @@ run_coordinator:
 storage:
   sqlite:
     base_dir:
-      env: ANOMSTACK_DAGSTER_SQLITE_STORAGE_BASE_DIR
+      env: DAGSTER_SQLITE_STORAGE_BASE_DIR
 
 compute_logs:
   module: dagster.core.storage.local_compute_log_manager
   class: LocalComputeLogManager
   config:
     base_dir:
-      env: ANOMSTACK_DAGSTER_LOCAL_COMPUTE_LOG_MANAGER_DIRECTORY
+      env: DAGSTER_LOCAL_COMPUTE_LOG_MANAGER_DIRECTORY
 
 local_artifact_storage:
   module: dagster.core.storage.root
   class: LocalArtifactStorage
   config:
     base_dir:
-      env: ANOMSTACK_DAGSTER_LOCAL_ARTIFACT_STORAGE_DIR
+      env: DAGSTER_LOCAL_ARTIFACT_STORAGE_DIR
 
 retention:
   schedule:
