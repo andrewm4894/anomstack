@@ -11,9 +11,9 @@ scheduler:
 #   class: DefaultRunLauncher
 #   config:
 #     env_vars:
-#       - DAGSTER_POSTGRES_USER
-#       - DAGSTER_POSTGRES_PASSWORD
-#       - DAGSTER_POSTGRES_DB
+#       - ANOMSTACK_DAGSTER_POSTGRES_USER
+#       - ANOMSTACK_DAGSTER_POSTGRES_PASSWORD
+#       - ANOMSTACK_DAGSTER_POSTGRES_DB
 #       - ANOMSTACK_GCP_PROJECT_ID
 #       - ANOMSTACK_DUCKDB_PATH
 #       - ANOMSTACK_TABLE_KEY
@@ -25,11 +25,11 @@ scheduler:
 #       - ANOMSTACK_ALERT_EMAIL_SMTP_HOST
 #       - ANOMSTACK_ALERT_EMAIL_SMTP_PORT
 #       - ANOMSTACK_ALERT_EMAIL_PASSWORD
-#       - GOOGLE_APPLICATION_CREDENTIALS
+#       - ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS
 #     network: anomstack_network
 #     container_kwargs:
 #       volumes: # Make docker client accessible to any launched containers as well
-#         #- ${GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json # <--doesn't work
+#         #- ${ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json # <--doesn't work
 #         - C:/Users/andre/Documents/conf/andrewm4894-4d8b5a41b891.json:/tmp/conf/gcp_credentials.json # <--works
 #         - /var/run/docker.sock:/var/run/docker.sock
 #         - /tmp/io_manager_storage:/tmp/io_manager_storage
@@ -43,11 +43,11 @@ run_storage:
     postgres_db:
       hostname: anomstack_postgresql
       username:
-        env: DAGSTER_POSTGRES_USER
+        env: ANOMSTACK_DAGSTER_POSTGRES_USER
       password:
-        env: DAGSTER_POSTGRES_PASSWORD
+        env: ANOMSTACK_DAGSTER_POSTGRES_PASSWORD
       db_name:
-        env: DAGSTER_POSTGRES_DB
+        env: ANOMSTACK_DAGSTER_POSTGRES_DB
       port: 5432
 
 run_retries:
@@ -61,11 +61,11 @@ schedule_storage:
     postgres_db:
       hostname: anomstack_postgresql
       username:
-        env: DAGSTER_POSTGRES_USER
+        env: ANOMSTACK_DAGSTER_POSTGRES_USER
       password:
-        env: DAGSTER_POSTGRES_PASSWORD
+        env: ANOMSTACK_DAGSTER_POSTGRES_PASSWORD
       db_name:
-        env: DAGSTER_POSTGRES_DB
+        env: ANOMSTACK_DAGSTER_POSTGRES_DB
       port: 5432
 
 event_log_storage:
@@ -75,9 +75,9 @@ event_log_storage:
     postgres_db:
       hostname: anomstack_postgresql
       username:
-        env: DAGSTER_POSTGRES_USER
+        env: ANOMSTACK_DAGSTER_POSTGRES_USER
       password:
-        env: DAGSTER_POSTGRES_PASSWORD
+        env: ANOMSTACK_DAGSTER_POSTGRES_PASSWORD
       db_name:
-        env: DAGSTER_POSTGRES_DB
+        env: ANOMSTACK_DAGSTER_POSTGRES_DB
       port: 5432

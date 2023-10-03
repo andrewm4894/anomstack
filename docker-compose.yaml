@@ -7,9 +7,9 @@ services:
     image: postgres:11
     container_name: anomstack_postgresql
     environment:
-      POSTGRES_USER: "postgres_user"
-      POSTGRES_PASSWORD: "postgres_password"
-      POSTGRES_DB: "postgres_db"
+      ANOMSTACK_POSTGRES_USER: "postgres_user"
+      ANOMSTACK_POSTGRES_PASSWORD: "postgres_password"
+      ANOMSTACK_POSTGRES_DB: "postgres_db"
     networks:
       - anomstack_network
 
@@ -30,9 +30,9 @@ services:
       - ./tmp:/opt/dagster/app/tmp
       - ./tmpdata:/opt/dagster/app/tmpdata
     environment:
-      DAGSTER_POSTGRES_USER: "postgres_user"
-      DAGSTER_POSTGRES_PASSWORD: "postgres_password"
-      DAGSTER_POSTGRES_DB: "postgres_db"
+      ANOMSTACK_DAGSTER_POSTGRES_USER: "postgres_user"
+      ANOMSTACK_DAGSTER_POSTGRES_PASSWORD: "postgres_password"
+      ANOMSTACK_DAGSTER_POSTGRES_DB: "postgres_db"
       DAGSTER_CURRENT_IMAGE: "anomstack_code_image"
       # read from .env file
       ANOMSTACK_GCP_PROJECT_ID: ${ANOMSTACK_GCP_PROJECT_ID}
@@ -46,7 +46,7 @@ services:
       ANOMSTACK_ALERT_EMAIL_SMTP_HOST: ${ANOMSTACK_ALERT_EMAIL_SMTP_HOST}
       ANOMSTACK_ALERT_EMAIL_SMTP_PORT: ${ANOMSTACK_ALERT_EMAIL_SMTP_PORT}
       ANOMSTACK_ALERT_EMAIL_PASSWORD: ${ANOMSTACK_ALERT_EMAIL_PASSWORD}
-      GOOGLE_APPLICATION_CREDENTIALS: /tmp/conf/gcp_credentials.json
+      ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS: /tmp/conf/gcp_credentials.json
     networks:
       - anomstack_network
 
@@ -71,9 +71,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DAGSTER_POSTGRES_USER: "postgres_user"
-      DAGSTER_POSTGRES_PASSWORD: "postgres_password"
-      DAGSTER_POSTGRES_DB: "postgres_db"
+      ANOMSTACK_DAGSTER_POSTGRES_USER: "postgres_user"
+      ANOMSTACK_DAGSTER_POSTGRES_PASSWORD: "postgres_password"
+      ANOMSTACK_DAGSTER_POSTGRES_DB: "postgres_db"
       # read from .env file
       ANOMSTACK_GCP_PROJECT_ID: ${ANOMSTACK_GCP_PROJECT_ID}
       ANOMSTACK_DUCKDB_PATH: ${ANOMSTACK_DUCKDB_PATH}
@@ -86,9 +86,9 @@ services:
       ANOMSTACK_ALERT_EMAIL_SMTP_HOST: ${ANOMSTACK_ALERT_EMAIL_SMTP_HOST}
       ANOMSTACK_ALERT_EMAIL_SMTP_PORT: ${ANOMSTACK_ALERT_EMAIL_SMTP_PORT}
       ANOMSTACK_ALERT_EMAIL_PASSWORD: ${ANOMSTACK_ALERT_EMAIL_PASSWORD}
-      GOOGLE_APPLICATION_CREDENTIALS: /tmp/conf/gcp_credentials.json
+      ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS: /tmp/conf/gcp_credentials.json
     volumes: # Make docker client accessible so we can terminate containers from dagit
-      #- ${GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json
+      #- ${ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/io_manager_storage:/tmp/io_manager_storage
       - ./tmp:/opt/dagster/app/tmp
@@ -111,9 +111,9 @@ services:
     container_name: anomstack_daemon
     restart: on-failure
     environment:
-      DAGSTER_POSTGRES_USER: "postgres_user"
-      DAGSTER_POSTGRES_PASSWORD: "postgres_password"
-      DAGSTER_POSTGRES_DB: "postgres_db"
+      ANOMSTACK_DAGSTER_POSTGRES_USER: "postgres_user"
+      ANOMSTACK_DAGSTER_POSTGRES_PASSWORD: "postgres_password"
+      ANOMSTACK_DAGSTER_POSTGRES_DB: "postgres_db"
       # read from .env file
       ANOMSTACK_GCP_PROJECT_ID: ${ANOMSTACK_GCP_PROJECT_ID}
       ANOMSTACK_DUCKDB_PATH: ${ANOMSTACK_DUCKDB_PATH}
@@ -126,9 +126,9 @@ services:
       ANOMSTACK_ALERT_EMAIL_SMTP_HOST: ${ANOMSTACK_ALERT_EMAIL_SMTP_HOST}
       ANOMSTACK_ALERT_EMAIL_SMTP_PORT: ${ANOMSTACK_ALERT_EMAIL_SMTP_PORT}
       ANOMSTACK_ALERT_EMAIL_PASSWORD: ${ANOMSTACK_ALERT_EMAIL_PASSWORD}
-      GOOGLE_APPLICATION_CREDENTIALS: /tmp/conf/gcp_credentials.json
+      ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS: /tmp/conf/gcp_credentials.json
     volumes: # Make docker client accessible so we can launch containers using host docker
-      #- ${GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json
+      #- ${ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/io_manager_storage:/tmp/io_manager_storage
       - ./tmp:/opt/dagster/app/tmp
