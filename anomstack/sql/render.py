@@ -5,20 +5,18 @@ from dagster import get_dagster_logger
 import pandas as pd
 import jinja2
 from jinja2 import FileSystemLoader
-from anomstack.utils.bigquery import read_sql_bigquery, save_df_bigquery
-from anomstack.utils.duckdb import read_sql_duckdb, save_df_duckdb
 
 
 def render_sql(sql_key, spec, params=None) -> str:
     """
     Render SQL from template.
     """
-    
+
     environment = jinja2.Environment(loader=FileSystemLoader('metrics/'))
-    
+
     if params is None:
         params = {}
-    
+
     sql = environment.from_string(spec[sql_key])
     sql = sql.render(
         table_key=spec.get('table_key'),
@@ -34,5 +32,5 @@ def render_sql(sql_key, spec, params=None) -> str:
         alert_metric_timestamp_max_days_ago=spec.get('alert_metric_timestamp_max_days_ago'),
         alert_always=spec.get('alert_always'),
     )
-    
+
     return sql

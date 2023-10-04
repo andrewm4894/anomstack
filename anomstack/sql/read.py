@@ -3,7 +3,7 @@
 
 from dagster import get_dagster_logger
 import pandas as pd
-from anomstack.utils.bigquery import read_sql_bigquery
+from anomstack.gcp.bigquery import read_sql_bigquery
 from anomstack.utils.duckdb import read_sql_duckdb
 
 

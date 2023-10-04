@@ -2,7 +2,7 @@
 """
 
 import pandas as pd
-from anomstack.utils.bigquery import save_df_bigquery
+from anomstack.gcp.bigquery import save_df_bigquery
 from anomstack.utils.duckdb import save_df_duckdb
 
 
