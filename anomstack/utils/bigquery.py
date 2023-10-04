@@ -78,7 +78,7 @@ def save_df_bigquery(df, table_key, gcp_project_id, if_exists='append') -> pd.Da
 
     df.to_gbq(
         destination_table=table_key,
-        gcp_project_id=gcp_project_id,
+        project_id=gcp_project_id,
         if_exists=if_exists,
         credentials=credentials,
     )

@@ -11,21 +11,28 @@ ingest_sql: >
     *
   from
   (
+  
   -- metric_1
+
   select
     current_timestamp() as metric_timestamp,
     'metric_1' as metric_name,
     rand() as metric_value
   union all
+  
   -- metric_2
+  
   select
     current_timestamp() as metric_timestamp,
     'metric_2' as metric_name,
     rand() as metric_value
   union all
+  
   -- metric_3
+  
   select
     current_timestamp() as metric_timestamp,
     'metric_3' as metric_name,
     rand() as metric_value
+    
   );
