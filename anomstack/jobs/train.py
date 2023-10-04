@@ -12,7 +12,7 @@ from typing import List, Tuple
 from anomstack.config import specs
 from anomstack.sql.render import render_sql
 from anomstack.sql.read import read_sql
-from anomstack.models_io.save import save_models
+from anomstack.io.save import save_models
 from anomstack.ml.train import train_model
 from anomstack.ml.preprocess import make_x
 

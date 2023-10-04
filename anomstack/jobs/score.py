@@ -11,7 +11,7 @@ from anomstack.config import specs
 from anomstack.df.save import save_df
 from anomstack.sql.render import render_sql
 from anomstack.sql.read import read_sql
-from anomstack.models_io.load import load_model
+from anomstack.io.load import load_model
 from anomstack.ml.preprocess import make_x
 
 
