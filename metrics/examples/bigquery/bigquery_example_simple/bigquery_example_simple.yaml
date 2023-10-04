@@ -1,5 +1,6 @@
 # a basic minimal example of a batch
 db: "bigquery"
+table_key: "tmp.metrics"
 disable_batch: False
 metric_batch: "bigquery_example_simple"
 model_path: "gs://andrewm4894-tmp/models"
@@ -34,5 +35,5 @@ ingest_sql: >
     current_timestamp() as metric_timestamp,
     'metric_3' as metric_name,
     rand() as metric_value
-    
+
   );
