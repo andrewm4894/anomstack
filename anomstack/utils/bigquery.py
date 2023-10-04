@@ -20,6 +20,9 @@ def get_google_credentials():
         google.auth.credentials.Credentials or None: Google credentials or None if credentials
         cannot be retrieved or parsed.
     """
+
+    logger = get_dagster_logger()
+
     # Check for file path credentials
     credentials_path = os.getenv('ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS')
     credentials = None
@@ -27,8 +30,9 @@ def get_google_credentials():
     if credentials_path:
         try:
             credentials = service_account.Credentials.from_service_account_file(credentials_path)
+            logger.info(f"Loaded credentials from file path: {credentials_path}")
         except Exception as e:
-            print(f"Failed to load credentials from file with: {str(e)}. Trying to load from JSON string...")
+            logger.info(f"Failed to load credentials from file with: {str(e)}. Trying to load from JSON string...")
 
     # If credentials could not be loaded from file path, try JSON string
     if credentials is None:
@@ -38,8 +42,9 @@ def get_google_credentials():
             try:
                 credentials_json = json.loads(raw_credentials)
                 credentials = service_account.Credentials.from_service_account_info(credentials_json)
+                logger.info("Loaded credentials from JSON string")
             except json.JSONDecodeError as e:
-                print(f"Failed to parse JSON credentials with: {str(e)}")
+                logger.info(f"Failed to parse JSON credentials with: {str(e)}")
 
     return credentials
 
@@ -52,10 +57,13 @@ def read_sql_bigquery(sql) -> pd.DataFrame:
     logger = get_dagster_logger()
 
     logger.info(f'sql:\n{sql}')
+
+    credentials = get_google_credentials()
+
     df = pd.read_gbq(
         query=sql,
-        credentials=get_google_credentials(),
-        )
+        credentials=credentials,
+    )
     logger.info(f'df:\n{df}')
 
     return df
@@ -66,11 +74,13 @@ def save_df_bigquery(df, table_key, gcp_project_id, if_exists='append') -> pd.Da
     Save df to db.
     """
 
+    credentials = get_google_credentials()
+
     df.to_gbq(
         destination_table=table_key,
         gcp_project_id=gcp_project_id,
         if_exists=if_exists,
-        credentials=get_google_credentials(),
+        credentials=credentials,
     )
 
     return df
