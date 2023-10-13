@@ -10,6 +10,7 @@ google-auth
 google-cloud-bigquery
 Jinja2
 matplotlib
+oscrypto
 pandas
 pandas-gbq
 pyod
