@@ -1,0 +1,4 @@
+locations:
+  - location_name: anomstack
+    code_source:
+      package_name: main.py
