@@ -3,7 +3,7 @@
 
 import pandas as pd
 from anomstack.gcp.bigquery import save_df_bigquery
-from anomstack.utils.duckdb import save_df_duckdb
+from anomstack.duckdb.duckdb import save_df_duckdb
 from anomstack.snowflake.snowflake import save_df_snowflake
 
 
