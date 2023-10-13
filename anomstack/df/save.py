@@ -2,9 +2,9 @@
 """
 
 import pandas as pd
-from anomstack.gcp.bigquery import save_df_bigquery
-from anomstack.duckdb.duckdb import save_df_duckdb
-from anomstack.snowflake.snowflake import save_df_snowflake
+from anomstack.external.gcp.bigquery import save_df_bigquery
+from anomstack.external.duckdb.duckdb import save_df_duckdb
+from anomstack.external.snowflake.snowflake import save_df_snowflake
 
 
 def save_df(df, db, table_key, gcp_project_id, if_exists='append') -> pd.DataFrame:

@@ -1,6 +1,6 @@
 from typing import List, Tuple
 from pyod.models.base import BaseDetector
-from anomstack.gcp.gcs import save_models_gcs
+from anomstack.external.gcp.gcs import save_models_gcs
 import pickle
 import os
 

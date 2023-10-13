@@ -3,9 +3,9 @@
 
 from dagster import get_dagster_logger
 import pandas as pd
-from anomstack.gcp.bigquery import read_sql_bigquery
-from anomstack.duckdb.duckdb import read_sql_duckdb
-from anomstack.snowflake.snowflake import read_sql_snowflake
+from anomstack.external.gcp.bigquery import read_sql_bigquery
+from anomstack.external.duckdb.duckdb import read_sql_duckdb
+from anomstack.external.snowflake.snowflake import read_sql_snowflake
 
 
 def read_sql(sql, db) -> pd.DataFrame:
