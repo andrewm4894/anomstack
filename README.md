@@ -21,7 +21,6 @@ Supported databases for your metrics to live in and be queried from:
 <table>
     <thead>
         <tr>
-            <th align="center">Database</th>
             <th align="center">BigQuery</th>
             <th align="center">Snowflake</th>
             <th align="center">DuckDB</th>
@@ -30,7 +29,6 @@ Supported databases for your metrics to live in and be queried from:
     </thead>
     <tbody>
         <tr>
-            <td align="center">Support ✅</td>
             <td align="center">✅</td>
             <td align="center">✅</td>
             <td align="center">✅</td>
@@ -52,7 +50,7 @@ Supported storage for your trained models:
     </thead>
     <tbody>
         <tr>
-            <td align="center">Support ✅</td>
+            <td align="center">✅</td>
             <td align="center">✅</td>
             <td align="center">🚧</td>
             <td align="center">🚧</td>
