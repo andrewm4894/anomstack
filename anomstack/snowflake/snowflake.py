@@ -51,7 +51,6 @@ def save_df_snowflake(df, table_key) -> pd.DataFrame:
         password=credentials['snowflake_password'],
         warehouse=credentials['snowflake_warehouse'],
     )
-    cur = conn.cursor()
     success, nchunks, nrows, _ = write_pandas(
         conn,
         df,
@@ -60,8 +59,7 @@ def save_df_snowflake(df, table_key) -> pd.DataFrame:
         table_name=table_key_parts[2],
         auto_create_table=True
     )
-    logger.info(success, nchunks, nrows)
-    cur.write_pandas(df, table_key)
+
     conn.close()
 
     return df

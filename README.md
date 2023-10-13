@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Painless open source anomaly detection for business metrics! 📈📉🚀
+Painless open source anomaly detection for your metrics! 📈📉🚀
 
 - [What is Anomstack?](#what-is-anomstack)
   - [How it works](#how-it-works)
