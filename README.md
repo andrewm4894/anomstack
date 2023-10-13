@@ -16,6 +16,50 @@ Painless open source anomaly detection for business metrics! 📈📉🚀
 - [Adding your metrics](#adding-your-metrics)
 - [Concepts](#concepts)
 
+Supported databases for your metrics to live in and be queried from:
+
+<table>
+    <thead>
+        <tr>
+            <th align="center">Database</th>
+            <th align="center">BigQuery</th>
+            <th align="center">Snowflake</th>
+            <th align="center">DuckDB</th>
+            <th align="center">Redshift</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td align="center">Support ✅</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+            <td align="center">🚧</td>
+        </tr>
+    </tbody>
+</table>
+
+Supported storage for your trained models:
+
+<table>
+    <thead>
+        <tr>
+            <th align="center">Local</th>
+            <th align="center">GCS</th>
+            <th align="center">S3</th>
+            <th align="center">Azure Blob</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td align="center">Support ✅</td>
+            <td align="center">✅</td>
+            <td align="center">🚧</td>
+            <td align="center">🚧</td>
+        </tr>
+    </tbody>
+</table>
+
 ## What is Anomstack?
 
 Anomstack is a lightweight (README buzzword bingo alert!) data app built on top of [dagster](https://dagster.io/) (for orchestration) that lets you easily get great anomaly detection (using [`pyod`](https://pyod.readthedocs.io/en/latest/) for the ML stuff) for your business metrics (whatever data platform you use) with as little pain as physically possible.
