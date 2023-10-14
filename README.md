@@ -52,7 +52,7 @@ Supported storage for your trained models:
         <tr>
             <td align="center">✅</td>
             <td align="center">✅</td>
-            <td align="center">🚧</td>
+            <td align="center">✅</td>
             <td align="center">🚧</td>
         </tr>
     </tbody>

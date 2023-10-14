@@ -5,7 +5,7 @@ from dagster import get_dagster_logger
 import snowflake.connector
 from snowflake.connector.pandas_tools import write_pandas
 import pandas as pd
-from anomstack.snowflake.credentials import get_snowflake_credentials
+from anomstack.external.snowflake.credentials import get_snowflake_credentials
 
 
 def read_sql_snowflake(sql) -> pd.DataFrame:
