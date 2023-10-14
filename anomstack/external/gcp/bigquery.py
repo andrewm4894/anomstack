@@ -3,7 +3,7 @@
 
 from dagster import get_dagster_logger
 import pandas as pd
-from anomstack.gcp.credentials import get_google_credentials
+from anomstack.external.gcp.credentials import get_google_credentials
 
 
 def read_sql_bigquery(sql) -> pd.DataFrame:

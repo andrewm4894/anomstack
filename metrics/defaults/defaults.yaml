@@ -2,6 +2,8 @@
 db: "duckdb" # database type to use.
 table_key: "tmp.metrics" # table to store metrics in.
 model_path: "local://./models" # path to where models are to be stored.
+# model_path: "gs://your-bucket/models" # gcs path to where models are to be stored.
+# model_path: "s3://your-bucket/models" # s3 path to where models are to be stored.
 disable_batch: False # if you want to disable a metric batch for some reason.
 train_max_n: 1000 # max number of observations for training a model.
 train_min_n: 14 # min number of observations for training a model.

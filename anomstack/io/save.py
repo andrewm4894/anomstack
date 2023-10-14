@@ -1,6 +1,7 @@
 from typing import List, Tuple
 from pyod.models.base import BaseDetector
 from anomstack.external.gcp.gcs import save_models_gcs
+from anomstack.external.aws.s3 import save_models_s3
 import pickle
 import os
 
@@ -31,6 +32,8 @@ def save_models(models, model_path, metric_batch) -> List[Tuple[str, BaseDetecto
 
     if model_path.startswith('gs://'):
         models = save_models_gcs(models, model_path, metric_batch)
+    elif model_path.startswith('s3://'):
+        models = save_models_s3(models, model_path, metric_batch)
     elif model_path.startswith('local://'):
         models = save_models_local(models, model_path, metric_batch)
     else:
