@@ -65,9 +65,9 @@ Supported ways to run this project:
 <table>
     <thead>
         <tr>
-            <th align="center">Python Env</th>
-            <th align="center">Docker</th>
-            <th align="center">Dagster Cloud</th>
+            <th align="center"><a href="#local-python-env">Python Env</a></th>
+            <th align="center"><a href="#docker">Docker</a></th>
+            <th align="center"><a href="#dagster-cloud">Dagster Cloud</a></th>
         </tr>
     </thead>
     <tbody>
@@ -114,6 +114,12 @@ By default Anomstack will run on port 3000, so you can go to http://localhost:30
 You can run Anomstack using docker in a [GitHub Codespace](https://docs.github.com/en/codespaces). This is a great way to get started and familiar with Anomstack without having to install or run anything locally.
 
 You can see the [`.devcontainer`](./.devcontainer) folder for the config used to run Anomstack in a codespace and the post create script [`post_create_command.sh`](.devcontainer/post_create_command.sh) for the commands the devcontainer will run to get Anomstack up and running.
+
+### Dagster Cloud
+
+You can run this project in Dagster Cloud. Fork the repo and then follow the instructions [here](https://docs.dagster.io/dagster-cloud/deployment/serverless#with-github) to deploy to Dagster Cloud from your forked repo.
+
+You can then manage you metrics via GitHub and run them in Dagster Cloud.
 
 ### Docker
 
