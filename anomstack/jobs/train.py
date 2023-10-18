@@ -10,7 +10,7 @@ from dagster import (
 )
 from typing import List, Tuple
 from anomstack.config import specs
-from anomstack.sql.render import render_sql
+from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
 from anomstack.io.save import save_models
 from anomstack.ml.train import train_model
@@ -43,7 +43,7 @@ def build_train_job(spec) -> JobDefinition:
             Get data for training.
             """
 
-            df = read_sql(render_sql('train_sql', spec), db)
+            df = read_sql(render('train_sql', spec), db)
 
             return df
 

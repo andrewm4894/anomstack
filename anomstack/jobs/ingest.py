@@ -8,8 +8,9 @@ from dagster import (
     get_dagster_logger
     )
 from anomstack.config import specs
-from anomstack.sql.render import render_sql
+from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
+from anomstack.fn.run import run_ingest_fn
 from anomstack.df.save import save_df
 
 
@@ -22,6 +23,8 @@ def build_ingest_job(spec) -> JobDefinition:
     table_key = spec['table_key']
     gcp_project_id = spec['gcp_project_id']
     db = spec['db']
+    ingest_sql = spec.get('ingest_sql')
+    ingest_fn = spec.get('ingest_fn')
 
 
     @job(name=f'{metric_batch}_ingest')
@@ -35,7 +38,12 @@ def build_ingest_job(spec) -> JobDefinition:
             """
             Calculate metrics.
             """
-            df = read_sql(render_sql('ingest_sql', spec), db)
+            if ingest_sql:
+                df = read_sql(render('ingest_sql', spec), db)
+            elif ingest_fn:
+                df = run_ingest_fn(render('ingest_fn', spec))
+            else:
+                raise Exception(f'No ingest_sql or ingest_fn specified for {metric_batch}.')
             df["metric_batch"] = metric_batch
             df["metric_type"] = 'metric'
             return df

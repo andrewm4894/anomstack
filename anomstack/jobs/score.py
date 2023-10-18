@@ -9,7 +9,7 @@ from dagster import (
 )
 from anomstack.config import specs
 from anomstack.df.save import save_df
-from anomstack.sql.render import render_sql
+from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
 from anomstack.io.load import load_model
 from anomstack.ml.preprocess import make_x
@@ -44,7 +44,7 @@ def build_score_job(spec) -> JobDefinition:
             Get data for scoring.
             """
             
-            df = read_sql(render_sql('score_sql', spec), db)
+            df = read_sql(render('score_sql', spec), db)
             
             return df
 

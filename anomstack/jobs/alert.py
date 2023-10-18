@@ -9,7 +9,7 @@ from dagster import (
 )
 from anomstack.config import specs
 from anomstack.alerts.send import send_alert
-from anomstack.sql.render import render_sql
+from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
 
 
@@ -36,7 +36,7 @@ def build_alert_job(spec) -> JobDefinition:
             """
             Get data for alerting.
             """
-            df_alerts = read_sql(render_sql('alert_sql', spec), db)
+            df_alerts = read_sql(render('alert_sql', spec), db)
             return df_alerts
 
         @op(name=f'{metric_batch}_alerts_op')

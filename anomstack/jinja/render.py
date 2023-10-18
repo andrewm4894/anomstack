@@ -2,14 +2,13 @@
 """
 
 from dagster import get_dagster_logger
-import pandas as pd
 import jinja2
 from jinja2 import FileSystemLoader
 
 
-def render_sql(sql_key, spec, params=None) -> str:
+def render(spec_key, spec, params=None) -> str:
     """
-    Render SQL from template.
+    Render from a templated spec key.
     """
 
     environment = jinja2.Environment(loader=FileSystemLoader('metrics/'))
@@ -17,8 +16,8 @@ def render_sql(sql_key, spec, params=None) -> str:
     if params is None:
         params = {}
 
-    sql = environment.from_string(spec[sql_key])
-    sql = sql.render(
+    rendered = environment.from_string(spec[spec_key])
+    rendered = rendered.render(
         table_key=spec.get('table_key'),
         metric_batch=spec.get('metric_batch'),
         train_max_n=spec.get('train_max_n'),
@@ -33,4 +32,4 @@ def render_sql(sql_key, spec, params=None) -> str:
         alert_always=spec.get('alert_always'),
     )
 
-    return sql
+    return rendered
