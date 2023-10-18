@@ -19,19 +19,19 @@ def build_score_job(spec) -> JobDefinition:
     """
     Build job definitions for score jobs.
     """
-    
+
     logger = get_dagster_logger()
-    
+
     metric_batch = spec['metric_batch']
     model_path = spec['model_path']
     table_key = spec['table_key']
-    gcp_project_id = spec['gcp_project_id']
+    gcp_project_id = spec.get('gcp_project_id')
     db = spec['db']
     diff_n = spec['preprocess_diff_n']
     smooth_n = spec['preprocess_smooth_n']
     lags_n = spec['preprocess_lags_n']
 
-    
+
     @job(name=f'{metric_batch}_score')
     def _job():
         """

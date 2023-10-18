@@ -21,7 +21,7 @@ def build_ingest_job(spec) -> JobDefinition:
 
     metric_batch = spec['metric_batch']
     table_key = spec['table_key']
-    gcp_project_id = spec['gcp_project_id']
+    gcp_project_id = spec.get('gcp_project_id')
     db = spec['db']
     ingest_sql = spec.get('ingest_sql')
     ingest_fn = spec.get('ingest_fn')
