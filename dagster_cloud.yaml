@@ -1,4 +1,5 @@
 locations:
-  - location_name: anomstack
+  - location_name: .
     code_source:
       python_file: ./anomstack/main.py
+    working_directory: .
