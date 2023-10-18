@@ -44,9 +44,9 @@ Supported storage for your trained models:
 <table>
     <thead>
         <tr>
-            <th align="center">Local</th>
-            <th align="center">GCS</th>
-            <th align="center">S3</th>
+            <th align="center"><a href="./anomstack/io/save.py">Local</a></th>
+            <th align="center"><a href="./anomstack/external/gcp/gcs.py">GCS</a></th>
+            <th align="center"><a href="./anomstack/external/aws/s3.py">S3</a></th>
             <th align="center">Azure Blob</th>
         </tr>
     </thead>
