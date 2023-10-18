@@ -51,7 +51,7 @@ with open(defaults_dir / 'defaults.yaml', 'r') as file:
 for root, dirs, files in os.walk(metrics_dir):
 
     # ignore examples if the environment variable is set
-    if os.getenv('ANOMSTACK_IGNORE_EXAMPLES') == 'yes' and examples_dir in Path(root).parents:        
+    if os.getenv('ANOMSTACK_IGNORE_EXAMPLES') == 'yes' and examples_dir in Path(root).parents:
         continue
 
     # process all the YAML files

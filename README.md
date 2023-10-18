@@ -66,7 +66,8 @@ It's similar in scope and goal to this [Airflow Anomaly Detection provider](http
 
 ### How it works
 
-1. Define your metrics (part of a ["metric batch"](#concepts)) in a `.sql` file and corresponding config in a `.yaml` file.
+1. Define your metrics (part of a ["metric batch"](#concepts)) in a `.sql` file and corresponding config in a `.yaml` file.  
+  (_Note: you can also define your own custom python ingest function instead of just SQL, check out the [`python_ingest_simple`](./metrics/examples/python_ingest/python_ingest_simple.yaml) example_)
 1. Run Anomstack and it will automatically ingest, train, score, and alert (["jobs"](#concepts)) on your metrics and detect anomalies (alerts via email/slack etc.).
 1. Get alerts when metrics look anomalous.
 
