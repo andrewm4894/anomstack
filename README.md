@@ -21,10 +21,10 @@ Supported sources and databases for your metrics to live in and be queried from:
 <table>
     <thead>
         <tr>
-            <th align="center">Python</th>
-            <th align="center">BigQuery</th>
-            <th align="center">Snowflake</th>
-            <th align="center">DuckDB</th>
+            <th align="center"><a href="./anomstack/fn/run.py">Python</a></th>
+            <th align="center"><a href="./anomstack/external/gcp/bigquery.py">BigQuery</a></th>
+            <th align="center"><a href="./anomstack/external/snowflake/snowflake.py">Snowflake</a></th>
+            <th align="center"><a href="./anomstack/external/duckdb/duckdb.py">DuckDB</a></th>
             <th align="center">Redshift</th>
         </tr>
     </thead>
