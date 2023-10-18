@@ -16,7 +16,7 @@ Painless open source anomaly detection for your metrics! 📈📉🚀
 - [Adding your metrics](#adding-your-metrics)
 - [Concepts](#concepts)
 
-Supported databases for your metrics to live in and be queried from:
+Supported sources and databases for your metrics to live in and be queried from:
 
 <table>
     <thead>
