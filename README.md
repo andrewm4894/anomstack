@@ -60,6 +60,25 @@ Supported storage for your trained models:
     </tbody>
 </table>
 
+Supported ways to run this project:
+
+<table>
+    <thead>
+        <tr>
+            <th align="center">Python Env</th>
+            <th align="center">Docker</th>
+            <th align="center">Dagster Cloud</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+        </tr>
+    </tbody>
+</table>
+
 ## What is Anomstack?
 
 Anomstack is a lightweight (README buzzword bingo alert!) data app built on top of [dagster](https://dagster.io/) (for orchestration) that lets you easily get great anomaly detection (using [`pyod`](https://pyod.readthedocs.io/en/latest/) for the ML stuff) for your business metrics (whatever data platform you use) with as little pain as physically possible.
