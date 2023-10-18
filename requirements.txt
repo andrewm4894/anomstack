@@ -5,6 +5,7 @@ dagster-gcp
 dagster-gcp-pandas
 dagster-postgres
 dagster-webserver
+dagster-cloud
 duckdb
 google-auth
 google-cloud-bigquery
