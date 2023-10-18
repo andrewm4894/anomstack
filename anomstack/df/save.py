@@ -7,7 +7,7 @@ from anomstack.external.duckdb.duckdb import save_df_duckdb
 from anomstack.external.snowflake.snowflake import save_df_snowflake
 
 
-def save_df(df, db, table_key, gcp_project_id, if_exists='append') -> pd.DataFrame:
+def save_df(df, db, table_key, gcp_project_id=None, if_exists='append') -> pd.DataFrame:
     """
     Save df to db.
     """
