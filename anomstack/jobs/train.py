@@ -28,6 +28,9 @@ def build_train_job(spec) -> JobDefinition:
     diff_n = spec['preprocess_diff_n']
     smooth_n = spec['preprocess_smooth_n']
     lags_n = spec['preprocess_lags_n']
+    model_name = spec['model_config']['model_name']
+    model_params = spec['model_config']['model_params']
+
 
     @job(name=f'{metric_batch}_train')
     def _job():
@@ -60,7 +63,7 @@ def build_train_job(spec) -> JobDefinition:
                 X = make_x(df_metric, mode='train', diff_n=diff_n, smooth_n=smooth_n, lags_n=lags_n)
                 if len(X) > 0:
                     logger.info(f'training {metric_name} in {metric_batch} train job. len(X)={len(X)}')
-                    model = train_model(X, metric_name)
+                    model = train_model(X, metric_name, model_name, model_params)
                     models.append((metric_name, model))
                 else:
                     logger.info(f'no data for {metric_name} in {metric_batch} train job.')
