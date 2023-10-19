@@ -34,7 +34,6 @@ def save_df_bigquery(df, table_key, if_exists='append') -> pd.DataFrame:
 
     table_key_parts = table_key.split('.')
 
-    # if len(table_key_parts) is 2 then try pull ANOMSTACK_GCP_PROJECT_ID from env
     if len(table_key_parts) == 2:
         project_id = os.getenv('ANOMSTACK_GCP_PROJECT_ID')
         assert project_id is not None, f'ANOMSTACK_GCP_PROJECT_ID must be set in environment if table_key is not fully qualified: {table_key}'
