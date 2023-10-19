@@ -1,6 +1,6 @@
 # a basic minimal example of a batch
 db: "bigquery"
-table_key: "tmp.metrics"
+table_key: "andrewm4894.tmp.metrics"
 disable_batch: False
 metric_batch: "bigquery_example_simple"
 model_path: "gs://andrewm4894-tmp/models"
