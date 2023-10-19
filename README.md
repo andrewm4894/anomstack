@@ -119,7 +119,7 @@ You can see the [`.devcontainer`](./.devcontainer) folder for the config used to
 
 ### Dagster Cloud
 
-You can run this project in Dagster Cloud. Fork the repo (or make a completely new repo using the `andrewm4894/anomstack`) and then follow the instructions [here](https://docs.dagster.io/dagster-cloud/deployment/serverless#with-github) to deploy to Dagster Cloud from your forked repo.
+You can run this project in Dagster Cloud. Fork the repo (or make a completely new repo using the `andrewm4894/anomstack` GitHub template) and then follow the instructions [here](https://docs.dagster.io/dagster-cloud/deployment/serverless#with-github) to deploy to Dagster Cloud from your forked repo.
 
 You can then manage you metrics via GitHub and run them in Dagster Cloud.
 
