@@ -4,7 +4,7 @@ from pyod.models.base import BaseDetector
 from dagster import get_dagster_logger
 import pickle
 import os
-from google.oauth2 import service_account
+import json
 
 
 def split_model_path(model_path) -> Tuple[str, str]:
@@ -19,22 +19,20 @@ def split_model_path(model_path) -> Tuple[str, str]:
     return model_path_bucket, model_path_prefix
 
 
-def get_storage_client():
+def get_credentials():
     """
-    Get GCS storage client with credentials.
+    Get credentials from environment variables.
     """
-    creds_json = os.environ.get('ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS_JSON')
-    creds_file = os.environ.get('ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS')
 
-    if creds_file:
-        storage_client = storage.Client.from_service_account_json(creds_file)
-    elif creds_json:
-        creds = service_account.Credentials.from_authorized_user_info(creds_json)
-        storage_client = storage.Client(credentials=creds)
+    credentials_path = os.getenv("ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS")
+    credentials_json = os.getenv("ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS_JSON")
+
+    if credentials_path:
+        return storage.Client.from_service_account_file(credentials_path)
+    elif credentials_json:
+        return storage.Client.from_service_account_info(json.loads(credentials_json))
     else:
-        storage_client = storage.Client()
-
-    return storage_client
+        return storage.Client()
 
 
 def save_models_gcs(models, model_path, metric_batch) -> List[Tuple[str, BaseDetector]]:
@@ -46,13 +44,14 @@ def save_models_gcs(models, model_path, metric_batch) -> List[Tuple[str, BaseDet
 
     model_path_bucket, model_path_prefix = split_model_path(model_path)
 
-    storage_client = get_storage_client()
+    storage_client = get_credentials()
     bucket = storage_client.get_bucket(model_path_bucket)
 
     for metric, model in models:
 
         model_name = f"{metric}.pkl"
         logger.info(f"saving {model_name} to {model_path}")
+
         blob = bucket.blob(f"{model_path_prefix}/{metric_batch}/{model_name}")
 
         with blob.open("wb") as f:
@@ -70,11 +69,12 @@ def load_model_gcs(metric_name, model_path, metric_batch) -> BaseDetector:
 
     model_path_bucket, model_path_prefix = split_model_path(model_path)
 
+    storage_client = get_credentials()
+    bucket = storage_client.get_bucket(model_path_bucket)
+
     model_name = f'{metric_name}.pkl'
     logger.info(f'loading {model_name} from {model_path}')
 
-    storage_client = get_storage_client()
-    bucket = storage_client.get_bucket(model_path_bucket)
     blob = bucket.blob(f'{model_path_prefix}/{metric_batch}/{model_name}')
 
     with blob.open('rb') as f:
