@@ -1,39 +1,39 @@
 # a basic minimal example of a batch
 db: "bigquery"
-table_key: "andrewm4894.tmp.metrics"
+table_key: "andrewm4894.metrics.metrics"
 disable_batch: False
 metric_batch: "bigquery_example_simple"
 model_path: "gs://andrewm4894-tmp/models"
-ingest_cron_schedule: "*/2 * * * *"
-train_cron_schedule: "*/4 * * * *"
-score_cron_schedule: "*/3 * * * *"
+ingest_cron_schedule: "*/30 * * * *"
+train_cron_schedule: "30 */4 * * *"
+score_cron_schedule: "*/35 * * * *"
 ingest_sql: >
   select
     *
   from
   (
   
-  -- metric_1
+  -- random_1
 
   select
     current_timestamp() as metric_timestamp,
-    'metric_1' as metric_name,
+    'random_1' as metric_name,
     rand() as metric_value
   union all
   
-  -- metric_2
+  -- random_2
   
   select
     current_timestamp() as metric_timestamp,
-    'metric_2' as metric_name,
+    'random_2' as metric_name,
     rand() as metric_value
   union all
   
-  -- metric_3
+  -- random_3
   
   select
     current_timestamp() as metric_timestamp,
-    'metric_3' as metric_name,
+    'random_3' as metric_name,
     rand() as metric_value
 
   );
