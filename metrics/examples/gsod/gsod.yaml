@@ -4,9 +4,9 @@ table_key: "andrewm4894.metrics.metrics"
 disable_batch: False
 metric_batch: "gsod"
 model_path: "gs://andrewm4894-tmp/models"
-ingest_cron_schedule: "*/30 10 * * *"
+ingest_cron_schedule: "30 10 * * *"
 train_cron_schedule: "35 10 * * *"
-score_cron_schedule: "*/35 10 * * *"
-alert_cron_schedule: "*/40 10 * * *"
+score_cron_schedule: "35 10 * * *"
+alert_cron_schedule: "40 10 * * *"
 ingest_sql: >
   {% include "./examples/gsod/gsod.sql" %}
