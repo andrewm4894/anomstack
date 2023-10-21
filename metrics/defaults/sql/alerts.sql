@@ -86,7 +86,7 @@ metrics_triggered as
 (
 select
   metric_name,
-  max(metric_alert) as metric_alert
+  max(metric_alert) as metric_alert_tmp
 from 
   data_alerts
 group by 1
