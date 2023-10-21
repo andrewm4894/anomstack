@@ -24,6 +24,12 @@ from anomstack.ml.preprocess import make_x
 def build_train_job(spec) -> JobDefinition:
     """
     Build job definitions for train jobs.
+
+    Args:
+        spec (dict): A dictionary containing the specifications for the train job.
+
+    Returns:
+        JobDefinition: A job definition for the train job.
     """
 
     metric_batch = spec["metric_batch"]
@@ -39,6 +45,9 @@ def build_train_job(spec) -> JobDefinition:
     def _job():
         """
         Get data for training and train models.
+
+        Returns:
+            List[Tuple[str, BaseDetector]]: A list of tuples containing the metric name and the trained model.
         """
 
         logger = get_dagster_logger()
@@ -47,6 +56,9 @@ def build_train_job(spec) -> JobDefinition:
         def get_train_data() -> pd.DataFrame:
             """
             Get data for training.
+
+            Returns:
+                pd.DataFrame: A pandas DataFrame containing the data for training.
             """
 
             df = read_sql(render("train_sql", spec), db)
@@ -57,6 +69,12 @@ def build_train_job(spec) -> JobDefinition:
         def train(df) -> List[Tuple[str, BaseDetector]]:
             """
             Train models.
+
+            Args:
+                df (pd.DataFrame): A pandas DataFrame containing the data for training.
+
+            Returns:
+                List[Tuple[str, BaseDetector]]: A list of tuples containing the metric name and the trained model.
             """
 
             models = []
@@ -90,6 +108,12 @@ def build_train_job(spec) -> JobDefinition:
         def save(models) -> List[Tuple[str, BaseDetector]]:
             """
             Save trained models.
+
+            Args:
+                models (List[Tuple[str, BaseDetector]]): A list of tuples containing the metric name and the trained model.
+
+            Returns:
+                List[Tuple[str, BaseDetector]]: A list of tuples containing the metric name and the trained model.
             """
 
             models = save_models(models, model_path, metric_batch)
@@ -104,16 +128,16 @@ def build_train_job(spec) -> JobDefinition:
 # Build train jobs and schedules.
 train_jobs = []
 train_schedules = []
-for spec in specs:
-    train_job = build_train_job(specs[spec])
+for spec_name, spec in specs.items():
+    train_job = build_train_job(spec)
     train_jobs.append(train_job)
-    if specs[spec]["train_default_schedule_status"] == "RUNNING":
+    if spec["train_default_schedule_status"] == "RUNNING":
         train_default_schedule_status = DefaultScheduleStatus.RUNNING
     else:
         train_default_schedule_status = DefaultScheduleStatus.STOPPED
     train_schedule = ScheduleDefinition(
         job=train_job,
-        cron_schedule=specs[spec]["train_cron_schedule"],
+        cron_schedule=spec["train_cron_schedule"],
         default_status=train_default_schedule_status,
     )
     train_schedules.append(train_schedule)

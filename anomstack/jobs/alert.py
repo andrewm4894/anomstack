@@ -13,9 +13,19 @@ from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
 
 
+from dagster import JobDefinition, job, op
+from dagster.utils import get_dagster_logger
+import pandas as pd
+
 def build_alert_job(spec) -> JobDefinition:
     """
     Build job definitions for alert jobs.
+
+    Args:
+        spec (dict): A dictionary containing the specifications for the alert job.
+
+    Returns:
+        JobDefinition: A job definition for the alert job.
     """
 
     logger = get_dagster_logger()
@@ -29,12 +39,18 @@ def build_alert_job(spec) -> JobDefinition:
     def _job():
         """
         Get data for alerting.
+
+        Returns:
+            pd.DataFrame: A pandas DataFrame containing the data for alerting.
         """
 
         @op(name=f'{metric_batch}_get_alerts')
         def get_alerts() -> pd.DataFrame:
             """
             Get data for alerting.
+
+            Returns:
+                pd.DataFrame: A pandas DataFrame containing the data for alerting.
             """
             df_alerts = read_sql(render('alert_sql', spec), db)
             return df_alerts
@@ -43,6 +59,12 @@ def build_alert_job(spec) -> JobDefinition:
         def alert(df_alerts) -> pd.DataFrame:
             """
             Alert on data.
+
+            Args:
+                df_alerts (pd.DataFrame): A pandas DataFrame containing the data for alerting.
+
+            Returns:
+                pd.DataFrame: A pandas DataFrame containing the data for alerting.
             """
 
             if len(df_alerts) == 0:

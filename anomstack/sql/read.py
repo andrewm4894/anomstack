@@ -1,4 +1,5 @@
 """
+This module provides functions for reading data from SQL databases using different database connectors.
 """
 
 from dagster import get_dagster_logger
@@ -10,7 +11,14 @@ from anomstack.external.snowflake.snowflake import read_sql_snowflake
 
 def db_translate(sql, db) -> str:
     """
-    Function that will replace some functions with their db-specific equivalents.
+    Replace some functions with their db-specific equivalents.
+
+    Args:
+        sql (str): The SQL query to be translated.
+        db (str): The name of the database to which the query will be sent.
+
+    Returns:
+        str: The translated SQL query.
     """
     if db == "bigquery":
         sql = sql.replace("now()", "current_timestamp()")
@@ -21,6 +29,13 @@ def db_translate(sql, db) -> str:
 def read_sql(sql, db) -> pd.DataFrame:
     """
     Read data from SQL.
+
+    Args:
+        sql (str): SQL query to execute.
+        db (str): Name of the database to connect to.
+
+    Returns:
+        pd.DataFrame: A pandas DataFrame containing the results of the SQL query.
     """
 
     logger = get_dagster_logger()

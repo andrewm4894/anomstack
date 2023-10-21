@@ -22,6 +22,12 @@ from anomstack.ml.preprocess import make_x
 def build_score_job(spec) -> JobDefinition:
     """
     Build job definitions for score jobs.
+
+    Args:
+        spec (dict): A dictionary containing specifications for the job.
+
+    Returns:
+        JobDefinition: A job definition for the score job.
     """
 
     logger = get_dagster_logger()
@@ -44,6 +50,9 @@ def build_score_job(spec) -> JobDefinition:
         def get_score_data() -> pd.DataFrame:
             """
             Get data for scoring.
+
+            Returns:
+                pd.DataFrame: A pandas dataframe containing data for scoring.
             """
 
             df = read_sql(render("score_sql", spec), db)
@@ -54,6 +63,12 @@ def build_score_job(spec) -> JobDefinition:
         def score(df) -> pd.DataFrame:
             """
             Score data.
+
+            Args:
+                df (pd.DataFrame): A pandas dataframe containing data to be scored.
+
+            Returns:
+                pd.DataFrame: A pandas dataframe containing the scored data.
             """
 
             df_scores = pd.DataFrame()
@@ -94,6 +109,12 @@ def build_score_job(spec) -> JobDefinition:
         def save_scores(df) -> pd.DataFrame:
             """
             Save scores to db.
+
+            Args:
+                df (pd.DataFrame): A pandas dataframe containing the scored data.
+
+            Returns:
+                pd.DataFrame: A pandas dataframe containing the saved data.
             """
 
             df = save_df(df, db, table_key)
@@ -108,16 +129,16 @@ def build_score_job(spec) -> JobDefinition:
 # Build score jobs and schedules.
 score_jobs = []
 score_schedules = []
-for spec in specs:
-    score_job = build_score_job(specs[spec])
+for spec_name, spec in specs.items():
+    score_job = build_score_job(spec)
     score_jobs.append(score_job)
-    if specs[spec]["score_default_schedule_status"] == "RUNNING":
+    if spec["score_default_schedule_status"] == "RUNNING":
         score_default_schedule_status = DefaultScheduleStatus.RUNNING
     else:
         score_default_schedule_status = DefaultScheduleStatus.STOPPED
     score_schedule = ScheduleDefinition(
         job=score_job,
-        cron_schedule=specs[spec]["score_cron_schedule"],
+        cron_schedule=spec["score_cron_schedule"],
         default_status=score_default_schedule_status,
     )
     score_schedules.append(score_schedule)
