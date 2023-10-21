@@ -13,10 +13,6 @@ from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
 
 
-from dagster import JobDefinition, job, op
-from dagster.utils import get_dagster_logger
-import pandas as pd
-
 def build_alert_job(spec) -> JobDefinition:
     """
     Build job definitions for alert jobs.
@@ -93,16 +89,16 @@ def build_alert_job(spec) -> JobDefinition:
 # Build alert jobs and schedules.
 alert_jobs = []
 alert_schedules = []
-for spec in specs:
-    alert_job = build_alert_job(specs[spec])
+for spec_name, spec in specs.items():
+    alert_job = build_alert_job(spec)
     alert_jobs.append(alert_job)
-    if specs[spec]['alert_default_schedule_status'] == 'RUNNING':
+    if spec['alert_default_schedule_status'] == 'RUNNING':
         alert_default_schedule_status = DefaultScheduleStatus.RUNNING
     else:
         alert_default_schedule_status = DefaultScheduleStatus.STOPPED
     alert_schedule = ScheduleDefinition(
             job=alert_job,
-            cron_schedule=specs[spec]['alert_cron_schedule'],
+            cron_schedule=spec['alert_cron_schedule'],
             default_status=alert_default_schedule_status,
     )
     alert_schedules.append(alert_schedule)
