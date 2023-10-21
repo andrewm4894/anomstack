@@ -9,6 +9,7 @@ train_cron_schedule: "30 */4 * * *" # train every 4 hours
 score_cron_schedule: "*/35 * * * *" # score every 35 minutes
 alert_cron_schedule: "*/40 * * * *" # alert every 40 minutes
 alert_always: True # alert always just to see how they look
+alert_methods: "email"
 ingest_sql: >
   select
     *
