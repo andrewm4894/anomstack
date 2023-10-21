@@ -20,7 +20,17 @@ ingest_sql: >
   select
     current_timestamp() as metric_timestamp,
     'random_1' as metric_name,
-    rand() as metric_value
+    case
+      when rand() < 0.01 then
+        case floor(rand() * 5)
+          when 0 then rand() * 1000 -- Sudden spike
+          when 1 then rand() * -1000 -- Negative spike
+          when 2 then sin(rand() * 10) * 100 -- Sinusoidal anomaly
+          when 3 then log(rand() * 10) * 100 -- Logarithmic anomaly
+          when 4 then exp(rand() * 2) * 100 -- Exponential anomaly
+        end
+      else rand() -- Normal value
+    end as metric_value
   union all
   
   -- random_2
@@ -28,7 +38,17 @@ ingest_sql: >
   select
     current_timestamp() as metric_timestamp,
     'random_2' as metric_name,
-    rand() as metric_value
+    case
+      when rand() < 0.01 then
+        case floor(rand() * 5)
+          when 0 then rand() * 1000 -- Sudden spike
+          when 1 then rand() * -1000 -- Negative spike
+          when 2 then sin(rand() * 10) * 100 -- Sinusoidal anomaly
+          when 3 then log(rand() * 10) * 100 -- Logarithmic anomaly
+          when 4 then exp(rand() * 2) * 100 -- Exponential anomaly
+        end
+      else rand() -- Normal value
+    end as metric_value
   union all
   
   -- random_3
@@ -36,6 +56,16 @@ ingest_sql: >
   select
     current_timestamp() as metric_timestamp,
     'random_3' as metric_name,
-    rand() as metric_value
+    case
+      when rand() < 0.01 then
+        case floor(rand() * 5)
+          when 0 then rand() * 1000 -- Sudden spike
+          when 1 then rand() * -1000 -- Negative spike
+          when 2 then sin(rand() * 10) * 100 -- Sinusoidal anomaly
+          when 3 then log(rand() * 10) * 100 -- Logarithmic anomaly
+          when 4 then exp(rand() * 2) * 100 -- Exponential anomaly
+        end
+      else rand() -- Normal value
+    end as metric_value
 
   );
