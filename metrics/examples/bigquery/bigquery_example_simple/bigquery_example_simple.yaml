@@ -4,10 +4,10 @@ table_key: "andrewm4894.metrics.metrics"
 disable_batch: False
 metric_batch: "bigquery_example_simple"
 model_path: "gs://andrewm4894-tmp/models"
-ingest_cron_schedule: "*/30 * * * *" # ingest every 30 minutes
-train_cron_schedule: "30 */4 * * *" # train every 4 hours
-score_cron_schedule: "*/35 * * * *" # score every 35 minutes
-alert_cron_schedule: "*/40 * * * *" # alert every 40 minutes
+ingest_cron_schedule: "*/10 * * * *" # ingest every 10 minutes
+train_cron_schedule: "15 */1 * * *" # train every 1 hour
+score_cron_schedule: "*/15 * * * *" # score every 15 minutes
+alert_cron_schedule: "*/20 * * * *" # alert every 20 minutes
 alert_always: False
 alert_methods: "email"
 ingest_sql: >
