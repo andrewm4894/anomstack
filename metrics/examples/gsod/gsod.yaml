@@ -8,5 +8,6 @@ ingest_cron_schedule: "30 10 * * *"
 train_cron_schedule: "35 10 * * *"
 score_cron_schedule: "35 10 * * *"
 alert_cron_schedule: "40 10 * * *"
+alert_methods: "email"
 ingest_sql: >
   {% include "./examples/gsod/gsod.sql" %}
