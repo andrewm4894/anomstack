@@ -11,10 +11,12 @@ Painless open source anomaly detection for your metrics! 📈📉🚀
 - [Project structure](#project-structure)
 - [Quickstart](#quickstart)
   - [GitHub Codespaces](#github-codespaces)
+  - [Dagster Cloud](#dagster-cloud)
   - [Docker](#docker)
   - [Local Python env](#local-python-env)
 - [Adding your metrics](#adding-your-metrics)
 - [Concepts](#concepts)
+- [Alerts](#alerts)
 
 Supported sources and databases for your metrics to live in and be queried from:
 
