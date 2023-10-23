@@ -1,12 +1,11 @@
 with
 
-metric_score_recency_ranked as
+metric_score_data as
 (
 select distinct
   metric_timestamp,
   metric_name,
-  metric_value as metric_score,
-  rank() over (partition by metric_type, metric_batch, metric_name order by metric_timestamp desc) as metric_score_recency_rank
+  avg(metric_value) as metric_score,
 from
   {{ table_key }}
 where
@@ -15,6 +14,35 @@ where
   metric_type = 'score'
   and
   extract(day from cast(now() as timestamp) - cast(metric_timestamp as timestamp)) <= {{ alert_metric_timestamp_max_days_ago }}
+group by 1,2
+),
+
+metric_value_data as
+(
+select distinct
+  metric_timestamp,
+  metric_name,
+  avg(metric_value) as metric_value,
+from
+  {{ table_key }}
+where
+  metric_batch = '{{ metric_batch }}'
+  and
+  metric_type = 'value'
+  and
+  extract(day from cast(now() as timestamp) - cast(metric_timestamp as timestamp)) <= {{ alert_metric_timestamp_max_days_ago }}
+group by 1,2
+),
+
+metric_score_recency_ranked as
+(
+select distinct
+  metric_timestamp,
+  metric_name,
+  metric_score,
+  rank() over (partition by metric_name order by metric_timestamp desc) as metric_score_recency_rank
+from
+  metric_score_data
 ),
 
 metric_value_recency_ranked as
@@ -23,15 +51,9 @@ select distinct
   metric_timestamp,
   metric_name,
   metric_value,
-  rank() over (partition by metric_type, metric_batch, metric_name order by metric_timestamp desc) as metric_value_recency_rank
+  rank() over (partition by metric_name order by metric_timestamp desc) as metric_value_recency_rank
 from
-  {{ table_key }}
-where
-  metric_batch = '{{ metric_batch }}'
-  and
-  metric_type = 'metric'
-  and 
-  extract(day from cast(now() as timestamp) - cast(metric_timestamp as timestamp)) <= {{ alert_metric_timestamp_max_days_ago }}
+  metric_value_data
 ),
 
 data_ranked as 
