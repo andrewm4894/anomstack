@@ -177,3 +177,15 @@ Environment variables for your metrics can be set in the `.env` file (see [`.exa
   - "Train" ([`train.py`](./anomstack/jobs/train.py)): This job trains a model for each metric.
   - "Score" ([`score.py`](./anomstack/jobs/score.py)): This job scores metrics using the latest trained model for each metric.
   - "Alert" ([`alert.py`](./anomstack/jobs/alert.py)): This job alerts you when the metric looks anomalous.
+
+## Alerts
+
+Anomstack supports alerts via email and slack. You can configure these in the `.env` file (see [`.example.env`](.example.env) for examples and comments).
+
+Below is an example of an alert via email. It has some ascii art plotting recent metric values and which observations were anomalous. Attached is a png plot with more details.
+
+![email alert](./docs/img/email_alert.png)
+
+And the attached plot will look something like this:
+
+![plot](./docs/img/random_1.png)
