@@ -16,4 +16,5 @@ email_on_run_failure = make_email_on_run_failure_sensor(
     email_from=email_from,
     email_password=email_password,
     email_to=email_to,
+    monitor_all_repositories=True
 )
