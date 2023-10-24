@@ -1,6 +1,6 @@
 
 ```mermaid
-flowchart TD;
+flowchart LR;
 
     metric_batch_config[config]
     metric_batch_sql[sql]
@@ -11,9 +11,9 @@ flowchart TD;
     alert[[alert]]
 
     subgraph metric_batch
-    metric_batch_config
-    metric_batch_sql
-    metric_batch_py
+    metric_batch_config[".yaml"]
+    metric_batch_sql[".sql"]
+    metric_batch_py[".py"]
     end
 
     subgraph dagster_jobs
@@ -58,9 +58,11 @@ flowchart TD;
 
     metric_batch --> dagster_jobs
 
-    alert --> alerts
+    alert --> email
+    alert --> slack
 
     datasources <--> dagster_jobs
-    model_store <--> dagster_jobs
+    train --> model_store
+    model_store --> score
 
 ```
