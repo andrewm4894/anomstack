@@ -1,0 +1,11 @@
+metric_batch: "weather"
+db: "bigquery"
+table_key: "andrewm4894.metrics.metrics"
+model_path: "gs://andrewm4894-tmp/models"
+ingest_cron_schedule: "*/10 * * * *"
+train_cron_schedule: "*/60 * * * *"
+score_cron_schedule: "*/15 * * * *"
+alert_cron_schedule: "*/20 * * * *"
+ingest_fn: >
+  {% include "./examples/weather/weather/ingest_weather.py" %}
+  
