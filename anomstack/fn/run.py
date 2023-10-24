@@ -21,30 +21,21 @@ def validate_function_definition(code_str: str, function_name: str) -> bool:
         return False
 
 
-def run_ingest_fn(ingest_fn) -> pd.DataFrame:
+def run_fn(fn, fn_name) -> pd.DataFrame:
     """
-    Read data from a python function.
+    Run a python function.
     """
 
     logger = get_dagster_logger()
 
-    logger.info(f'ingest_fn:\n{ingest_fn}')
+    logger.info(f'fn:\n{fn}')
 
     # validate function definition
-    if not validate_function_definition(ingest_fn, 'ingest'):
-        raise ValueError(f"'ingest_fn' does not define a function named 'ingest'")
+    if not validate_function_definition(fn, fn_name):
+        raise ValueError(f"'fn' does not define a function named '{fn_name}'")
 
-    exec(ingest_fn)
+    exec(fn)
 
-    df = locals()['ingest']()
-
-    # validate the dataframe
-    assert 'metric_name' in df.columns, 'metric_name column missing'
-    assert 'metric_value' in df.columns, 'metric_value column missing'
-    assert 'metric_timestamp' in df.columns, 'metric_timestamp column missing'
-    assert len(df.columns) == 3, 'too many columns'
-    assert len(df) > 0, 'no data returned'
-
-    logger.info(f'df:\n{df}')
+    df = locals()[fn_name]()
 
     return df

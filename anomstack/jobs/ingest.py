@@ -15,8 +15,9 @@ from dagster import (
 from anomstack.config import specs
 from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
-from anomstack.fn.run import run_ingest_fn
+from anomstack.fn.run import run_fn
 from anomstack.df.save import save_df
+from anomstack.validate.ingest import validate_ingest_df
 
 
 def build_ingest_job(spec: Dict) -> JobDefinition:
@@ -53,11 +54,12 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
             if ingest_sql:
                 df = read_sql(render("ingest_sql", spec), db)
             elif ingest_fn:
-                df = run_ingest_fn(render("ingest_fn", spec))
+                df = run_fn(render("ingest_fn", spec),"ingest")
             else:
                 raise ValueError(
                     f"No ingest_sql or ingest_fn specified for {metric_batch}."
                 )
+            df = validate_ingest_df(df)
             df["metric_batch"] = metric_batch
             df["metric_type"] = "metric"
             return df
