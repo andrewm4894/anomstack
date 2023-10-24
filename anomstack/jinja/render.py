@@ -1,7 +1,6 @@
 """
 """
 
-from dagster import get_dagster_logger
 import jinja2
 from jinja2 import FileSystemLoader
 
