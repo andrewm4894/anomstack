@@ -18,7 +18,7 @@ from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
 from anomstack.io.save import save_models
 from anomstack.ml.train import train_model
-from anomstack.ml.preprocess import make_x
+from anomstack.fn.run import define_fn
 
 
 def build_train_job(spec) -> JobDefinition:
@@ -35,9 +35,7 @@ def build_train_job(spec) -> JobDefinition:
     metric_batch = spec["metric_batch"]
     db = spec["db"]
     model_path = spec["model_path"]
-    diff_n = spec["preprocess_diff_n"]
-    smooth_n = spec["preprocess_smooth_n"]
-    lags_n = spec["preprocess_lags_n"]
+    preprocess_params = spec["preprocess_params"]
     model_name = spec["model_config"]["model_name"]
     model_params = spec["model_config"]["model_params"]
 
@@ -77,6 +75,8 @@ def build_train_job(spec) -> JobDefinition:
                 List[Tuple[str, BaseDetector]]: A list of tuples containing the metric name and the trained model.
             """
 
+            preprocess = define_fn(fn_name="preprocess", fn=render("preprocess_fn", spec))
+
             models = []
 
             if len(df) == 0:
@@ -85,12 +85,10 @@ def build_train_job(spec) -> JobDefinition:
             else:
                 for metric_name in df["metric_name"].unique():
                     df_metric = df[df["metric_name"] == metric_name]
-                    X = make_x(
+                    X = preprocess(
                         df_metric,
                         mode="train",
-                        diff_n=diff_n,
-                        smooth_n=smooth_n,
-                        lags_n=lags_n,
+                        **preprocess_params
                     )
                     if len(X) > 0:
                         logger.info(

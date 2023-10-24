@@ -16,7 +16,7 @@ from anomstack.df.save import save_df
 from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
 from anomstack.io.load import load_model
-from anomstack.ml.preprocess import make_x
+from anomstack.fn.run import define_fn
 
 
 def build_score_job(spec) -> JobDefinition:
@@ -36,9 +36,7 @@ def build_score_job(spec) -> JobDefinition:
     model_path = spec["model_path"]
     table_key = spec["table_key"]
     db = spec["db"]
-    diff_n = spec["preprocess_diff_n"]
-    smooth_n = spec["preprocess_smooth_n"]
-    lags_n = spec["preprocess_lags_n"]
+    preprocess_params = spec["preprocess_params"]
 
     @job(name=f"{metric_batch}_score")
     def _job():
@@ -71,6 +69,8 @@ def build_score_job(spec) -> JobDefinition:
                 pd.DataFrame: A pandas dataframe containing the scored data.
             """
 
+            preprocess = define_fn(fn_name="preprocess", fn=render("preprocess_fn", spec))
+
             df_scores = pd.DataFrame()
 
             for metric_name in df["metric_name"].unique():
@@ -78,12 +78,10 @@ def build_score_job(spec) -> JobDefinition:
 
                 model = load_model(metric_name, model_path, metric_batch)
 
-                X = make_x(
+                X = preprocess(
                     df_metric,
                     mode="score",
-                    diff_n=diff_n,
-                    smooth_n=smooth_n,
-                    lags_n=lags_n,
+                    **preprocess_params
                 )
 
                 scores = model.predict_proba(X)

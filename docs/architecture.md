@@ -2,18 +2,20 @@
 ```mermaid
 flowchart LR;
 
-    metric_batch_config[config]
-    metric_batch_sql[sql]
-    metric_batch_py[py]
+    metric_batch_config[".yaml"]
+    metric_batch_sql[".sql"]
+    metric_batch_ingest_py["ingest.py"]
+    metric_batch_preprocess_py["preprocess.py"]
     ingest[[ingest]]
     train[[train]]
     score[[score]]
     alert[[alert]]
 
     subgraph metric_batch
-    metric_batch_config[".yaml"]
-    metric_batch_sql[".sql"]
-    metric_batch_py[".py"]
+    metric_batch_config
+    metric_batch_sql
+    metric_batch_ingest_py
+    metric_batch_preprocess_py
     end
 
     subgraph dagster_jobs
