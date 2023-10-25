@@ -31,10 +31,6 @@ def define_fn(fn_name: str, fn: str) -> str:
     logger.info(f'fn_name: {fn_name}')
     logger.info(f'fn: {fn}')
 
-    # validate function definition
-    if not validate_function_definition(fn, fn_name):
-        raise ValueError(f"'fn' does not define a function named '{fn_name}'")
-
     namespace = {}
     exec(fn, globals(), namespace)
 
