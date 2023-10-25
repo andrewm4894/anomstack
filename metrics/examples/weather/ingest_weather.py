@@ -1,6 +1,11 @@
-def ingest():
+import pandas as pd
 
-    import pandas as pd
+
+def ingest() -> pd.DataFrame:
+    """
+    Ingest weather data from open-meteo.com.
+    """
+
     import requests
 
     data = {

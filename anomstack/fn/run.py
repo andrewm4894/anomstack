@@ -37,12 +37,13 @@ def define_fn(fn_name: str, fn: str) -> str:
     return namespace[fn_name]
 
 
-def run_fn(fn_name: str, fn: str) -> pd.DataFrame:
+def run_df_fn(fn_name: str, fn: str) -> pd.DataFrame:
     """
     Run a python function.
     """
 
-    fn_name = define_fn(fn_name, fn)
+    #fn_name = define_fn(fn_name, fn)
+    exec(fn)
 
     df = locals()[fn_name]()
 
