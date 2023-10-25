@@ -8,6 +8,8 @@ Painless open source anomaly detection for your metrics! 📈📉🚀
 
 - [What is Anomstack?](#what-is-anomstack)
   - [How it works](#how-it-works)
+  - [Why?](#why)
+  - [Architecture](#arcitecture)
 - [Project structure](#project-structure)
 - [Quickstart](#quickstart)
   - [GitHub Codespaces](#github-codespaces)
@@ -95,6 +97,86 @@ It's similar in scope and goal to this [Airflow Anomaly Detection provider](http
   (_Note: you can also define your own custom python ingest function instead of just SQL, check out the [`python_ingest_simple`](./metrics/examples/python/python_ingest_simple/python_ingest_simple.yaml) example_)
 1. Run Anomstack and it will automatically ingest, train, score, and alert (["jobs"](#concepts)) on your metrics and detect anomalies (alerts via email/slack etc.).
 1. Get alerts when metrics look anomalous.
+
+### Why?
+
+It's still too hard and messy to get decent out of the box anomaly detection on your metrics. You either have to build some custom solution yourself or buy some modern data stack tool that does it for you. This project aims to make it as easy as possible to get anomaly detection on your metrics without having to buy anything or build anything from scratch yourself.
+
+### Architecture
+
+<details><summary>Click to see an arcitecture diagram of the various moving parts.</summary>
+
+```mermaid
+flowchart LR;
+
+    metric_batch_config[".yaml"]
+    metric_batch_sql[".sql"]
+    metric_batch_ingest_py["ingest.py"]
+    metric_batch_preprocess_py["preprocess.py"]
+    ingest[[ingest]]
+    train[[train]]
+    score[[score]]
+    alert[[alert]]
+
+    subgraph metric_batch
+    metric_batch_config
+    metric_batch_sql
+    metric_batch_ingest_py
+    metric_batch_preprocess_py
+    end
+
+    subgraph dagster_jobs
+    ingest
+    train
+    score
+    alert
+    end
+
+    subgraph alerts
+    email
+    slack
+    end
+
+    subgraph datasources
+    duckdb
+    bigquery
+    snowflake
+    python
+    end
+
+    subgraph user_inputs
+    metric_batch
+    end
+
+    subgraph anomstack
+    dagster_jobs
+    datasources
+    model_store
+    alerts
+    end
+
+    subgraph model_store
+    local
+    gcs
+    s3
+    end
+
+    ingest --> train
+    train --> score
+    score --> alert
+
+    metric_batch --> dagster_jobs
+
+    alert --> email
+    alert --> slack
+
+    datasources <--> dagster_jobs
+    train --> model_store
+    model_store --> score
+
+```
+
+</details>
 
 ## Project structure
 
