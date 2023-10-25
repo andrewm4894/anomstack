@@ -8,7 +8,7 @@ ingest_cron_schedule: "*/10 * * * *" # ingest every 10 minutes
 train_cron_schedule: "15 */1 * * *" # train every 1 hour
 score_cron_schedule: "*/15 * * * *" # score every 15 minutes
 alert_cron_schedule: "*/20 * * * *" # alert every 20 minutes
-alert_always: False
+alert_always: True
 alert_methods: "email"
 ingest_sql: >
   select
