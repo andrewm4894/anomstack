@@ -19,6 +19,7 @@ data_ranked as
 (
 select
   *,
+  -- rank the records by recency for determining the most recent {{ train_max_n }} records
   rank() over (partition by metric_name order by metric_timestamp desc) as metric_recency_rank
 from
   data
@@ -29,7 +30,9 @@ select
 from
   data_ranked
 where
+  -- only include the most recent {{ train_max_n }} records
   metric_recency_rank <= {{ train_max_n }}
   and
+  -- must be at least {{ train_min_n }} records
   metric_recency_rank >= {{ train_min_n }}
 ;
