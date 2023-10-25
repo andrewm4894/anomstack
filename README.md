@@ -107,7 +107,7 @@ It's still too hard and messy to get decent out of the box anomaly detection on 
 
 ### Architecture
 
-<details><summary>Click to see an arcitecture diagram of the various moving parts.</summary>
+<details><summary>Click to see an architecture diagram of the various moving parts.</summary>
 
 ```mermaid
 flowchart LR;
@@ -268,7 +268,7 @@ Environment variables for your metrics can be set in the `.env` file (see [`.exa
 
 ## Concepts
 
-- "**Metric Batch**": You configure metric batches in Anomstack. A metric batch is a collection of metrics that you want to run together and with its own seperate set of parameters. Of course a metric batch can contain just one metric if you want but typically it makes more sense to group metrics in ways that make sense for you.
+- "**Metric Batch**": You configure metric batches in Anomstack. A metric batch is a collection of metrics that you want to run together and with its own separate set of parameters. Of course a metric batch can contain just one metric if you want but typically it makes more sense to group metrics in ways that make sense for you. A metric batch is just some SQL or custom Python that results in a Pandas DataFrame with `metric_timestamp`, `metric_name` and `metric_value` columns.
 - "**Jobs**": At the core Anomstack runs a few jobs for each metric batch. These jobs are:
   - "Ingest" ([`ingest.py`](./anomstack/jobs/ingest.py)): This job runs the sql query for the metric batch and ingests the data into the database.
   - "Train" ([`train.py`](./anomstack/jobs/train.py)): This job trains a model for each metric.
