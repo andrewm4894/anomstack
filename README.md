@@ -10,6 +10,9 @@ Painless open source anomaly detection for your metrics! 📈📉🚀
   - [How it works](#how-it-works)
   - [Why?](#why)
   - [Architecture](#arcitecture)
+  - [Examples](#examples)
+    - [Weather](#weather)
+    - [GSOD](#gsod)
 - [Project structure](#project-structure)
 - [Quickstart](#quickstart)
   - [GitHub Codespaces](#github-codespaces)
@@ -177,6 +180,16 @@ flowchart LR;
 ```
 
 </details>
+
+### Examples
+
+#### Weather
+
+In [`./metrics/examples/weather/`](./metrics/examples/weather/) you will find an example of using a customer Python function ([`ingets_weather.py`](./metrics/examples/weather/ingest_weather.py)) to pull current temperature data for some cities from the Open Meteo API and ingest it into a table called `metrics` in a `metrics` dataset in a Google Bigquery project. This is all defined in the [`weather.yaml`](./metrics/examples/weather/weather.yaml)` configuration file for this metric batch.
+
+#### GSOD
+
+In [`./metrics/examples/gsod/`](./metrics/examples/gsod/) you will find an example of just defining some sql to derive a metric batch on data already in BigQuery ([`gsod.sql`](./metrics/examples/gsod/gsod.sql)) and ingest it into a table called `metrics` in a `metrics` dataset in a Google Bigquery project. This is all defined in the [`gsod.yaml`](./metrics/examples/gsod/gsod.yaml)` configuration file for this metric batch.
 
 ## Project structure
 
