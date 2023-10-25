@@ -28,7 +28,7 @@ from
 where
   metric_batch = '{{ metric_batch }}'
   and
-  metric_type = 'value'
+  metric_type = 'metric'
   and
   extract(day from cast(now() as timestamp) - cast(metric_timestamp as timestamp)) <= {{ alert_metric_timestamp_max_days_ago }}
 group by 1,2
