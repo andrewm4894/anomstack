@@ -6,6 +6,7 @@ ingest_cron_schedule: "*/10 * * * *"
 train_cron_schedule: "*/60 * * * *"
 score_cron_schedule: "*/15 * * * *"
 alert_cron_schedule: "*/20 * * * *"
+plot_cron_schedule: "*/25 * * * *"
 alert_always: True
 alert_methods: "email"
 ingest_fn: >
