@@ -49,7 +49,7 @@ def build_plot_job(spec) -> JobDefinition:
             colors = sns.color_palette("viridis", len(unique_metrics))
 
             # Create the time series plots with metric_score on the second y-axis
-            plt.figure(figsize=(10 * len(unique_metrics), 5))
+            plt.figure(figsize=(15, 5 * len(unique_metrics)))
 
             for i, metric in enumerate(unique_metrics):
                 ax1 = plt.subplot(len(unique_metrics), 1, i + 1)
