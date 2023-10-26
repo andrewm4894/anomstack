@@ -75,7 +75,9 @@ def build_train_job(spec) -> JobDefinition:
                 List[Tuple[str, BaseDetector]]: A list of tuples containing the metric name and the trained model.
             """
 
-            preprocess = define_fn(fn_name="preprocess", fn=render("preprocess_fn", spec))
+            preprocess = define_fn(
+                fn_name="preprocess", fn=render("preprocess_fn", spec)
+            )
 
             models = []
 
@@ -86,15 +88,20 @@ def build_train_job(spec) -> JobDefinition:
                 for metric_name in df["metric_name"].unique():
                     df_metric = df[df["metric_name"] == metric_name]
                     X = preprocess(
-                        df_metric,
-                        shuffle=True,
+                        df_metric, 
+                        shuffle=True, 
                         **preprocess_params
                     )
                     if len(X) > 0:
                         logger.info(
                             f"training {metric_name} in {metric_batch} train job. len(X)={len(X)}"
                         )
-                        model = train_model(X, metric_name, model_name, model_params)
+                        model = train_model(
+                            X,
+                            metric_name,
+                            model_name,
+                            model_params
+                        )
                         models.append((metric_name, model))
                     else:
                         logger.info(

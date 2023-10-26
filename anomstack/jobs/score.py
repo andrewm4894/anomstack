@@ -76,7 +76,6 @@ def build_score_job(spec) -> JobDefinition:
             df_scores = pd.DataFrame()
 
             for metric_name in df["metric_name"].unique():
-
                 df_metric = df[df["metric_name"] == metric_name]
 
                 model = load_model(metric_name, model_path, metric_batch)
@@ -89,13 +88,15 @@ def build_score_job(spec) -> JobDefinition:
                 df_score = pd.DataFrame(
                     data=scores[:, 1],  # probability of anomaly
                     index=X.index,
-                    columns=["metric_value"]
+                    columns=["metric_value"],
                 )
 
                 # limit to timestamps where metric_score is null to begin with in df_metric
                 df_score = df_score[
                     df_score.index.isin(
-                        df_metric[df_metric["metric_score"].isnull()]['metric_timestamp']
+                        df_metric[df_metric["metric_score"].isnull()][
+                            "metric_timestamp"
+                        ]
                     )
                 ].reset_index()
 
