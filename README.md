@@ -11,7 +11,7 @@ Painless open source anomaly detection for your metrics! 📈📉🚀
 - [What is Anomstack?](#what-is-anomstack)
   - [How it works](#how-it-works)
   - [Why?](#why)
-  - [Architecture](#arcitecture)
+  - [Architecture](#architecture)
   - [Examples](#examples)
     - [Weather](#weather)
     - [GSOD](#gsod)
@@ -91,6 +91,8 @@ Supported ways to run this project:
 </table>
 
 ## What is Anomstack?
+
+[back to top](#anomstack)
 
 Anomstack is a lightweight (README buzzword bingo alert!) data app built on top of [dagster](https://dagster.io/) (for orchestration) that lets you easily get great anomaly detection (using [`pyod`](https://pyod.readthedocs.io/en/latest/) for the ML stuff) for your business metrics (whatever data platform you use) with as little pain as physically possible.
 
@@ -181,6 +183,8 @@ flowchart LR;
 
 ### Examples
 
+[back to top](#anomstack)
+
 #### Weather
 
 In [`./metrics/examples/weather/`](./metrics/examples/weather/) you will find an example of using a customer Python function ([`ingets_weather.py`](./metrics/examples/weather/ingest_weather.py)) to pull current temperature data for some cities from the Open Meteo API and ingest it into a table called `metrics` in a `metrics` dataset in a Google Bigquery project. This is all defined in the [`weather.yaml`](./metrics/examples/weather/weather.yaml)` configuration file for this metric batch.
@@ -190,6 +194,8 @@ In [`./metrics/examples/weather/`](./metrics/examples/weather/) you will find an
 In [`./metrics/examples/gsod/`](./metrics/examples/gsod/) you will find an example of just defining some sql to derive a metric batch on data already in BigQuery ([`gsod.sql`](./metrics/examples/gsod/gsod.sql)) and ingest it into a table called `metrics` in a `metrics` dataset in a Google Bigquery project. This is all defined in the [`gsod.yaml`](./metrics/examples/gsod/gsod.yaml)` configuration file for this metric batch.
 
 ## Project structure
+
+[back to top](#anomstack)
 
 - [`./anomstack`](./anomstack) source code for Anomstack.
 - [`./metrics`](./metrics) metrics `.sql` and `.yaml` configuration files. This is where you define your metrics (check out [`examples`](./metrics/examples/) folder). Defaults params etc live in [`defaults`](./metrics/defaults/) folder in [`defaults.yaml`](./metrics/defaults/defaults.yaml).
@@ -258,6 +264,8 @@ dagster dev -f anomstack/main.py
 
 ## Adding your metrics
 
+[back to top](#anomstack)
+
 To add metrics, you can add them to the `metrics` folder. You can see some examples in the [`metrics/examples`](./metrics/examples/) folder.
 
 You can customize the default params for your metrics in the [`metrics/defaults`](./metrics/defaults/) folder.
@@ -265,6 +273,8 @@ You can customize the default params for your metrics in the [`metrics/defaults`
 Environment variables for your metrics can be set in the `.env` file (see [`.example.env`](.example.env) for examples and comments) or in the `docker-compose.yml` file.
 
 ## Concepts
+
+[back to top](#anomstack)
 
 - "**Metric Batch**": You configure metric batches in Anomstack. A metric batch is a collection of metrics that you want to run together and with its own separate set of parameters. Of course a metric batch can contain just one metric if you want but typically it makes more sense to group metrics in ways that make sense for you. A metric batch is just some SQL or custom Python that results in a Pandas DataFrame with `metric_timestamp`, `metric_name` and `metric_value` columns.
 - "**Jobs**": At the core Anomstack runs a few jobs for each metric batch. These jobs are:
@@ -274,6 +284,8 @@ Environment variables for your metrics can be set in the `.env` file (see [`.exa
   - "Alert" ([`alert.py`](./anomstack/jobs/alert.py)): This job alerts you when the metric looks anomalous.
 
 ## Alerts
+
+[back to top](#anomstack)
 
 Anomstack supports alerts via email and slack. You can configure these in the `.env` file (see [`.example.env`](.example.env) for examples and comments).
 
