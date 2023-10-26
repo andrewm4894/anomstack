@@ -202,6 +202,8 @@ In [`./metrics/examples/gsod/`](./metrics/examples/gsod/) you will find an examp
 
 ## Quickstart
 
+[back to top](#anomstack)
+
 Below are some quick start instructions for getting up and running with Anomstack and a local db using duckdb and some example metrics.
 
 For proper use you would need to set up all your metrics and environment variables etc, but this should get you started.
