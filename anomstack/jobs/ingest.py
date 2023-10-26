@@ -11,6 +11,7 @@ from dagster import (
     JobDefinition,
     DefaultScheduleStatus,
     get_dagster_logger,
+    asset
 )
 from anomstack.config import specs
 from anomstack.jinja.render import render

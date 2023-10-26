@@ -34,6 +34,8 @@ score_cron_schedule: "*/4 * * * *" # cron schedule for scoring jobs
 score_default_schedule_status: 'STOPPED' # default schedule status for score jobs (RUNNING or STOPPED)
 alert_cron_schedule: "*/5 * * * *" # cron schedule for alerting jobs
 alert_default_schedule_status: 'STOPPED' # default schedule status for alert jobs (RUNNING or STOPPED)
+plot_cron_schedule: "*/5 * * * *" # cron schedule for plot jobs
+plot_default_schedule_status: 'STOPPED' # default schedule status for plot jobs (RUNNING or STOPPED)
 # default templated train sql
 train_sql: >
   {% include "./defaults/sql/train.sql" %}
@@ -43,3 +45,6 @@ score_sql: >
 # default templated alert sql
 alert_sql: >
   {% include "./defaults/sql/alerts.sql" %}
+# default templated plot sql
+plot_sql: >
+  {% include "./defaults/sql/plot.sql" %}
