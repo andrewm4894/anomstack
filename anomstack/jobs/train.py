@@ -87,7 +87,7 @@ def build_train_job(spec) -> JobDefinition:
                     df_metric = df[df["metric_name"] == metric_name]
                     X = preprocess(
                         df_metric,
-                        mode="train",
+                        shuffle=True,
                         **preprocess_params
                     )
                     if len(X) > 0:

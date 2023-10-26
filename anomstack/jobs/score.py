@@ -69,34 +69,52 @@ def build_score_job(spec) -> JobDefinition:
                 pd.DataFrame: A pandas dataframe containing the scored data.
             """
 
-            preprocess = define_fn(fn_name="preprocess", fn=render("preprocess_fn", spec))
+            preprocess = define_fn(
+                fn_name="preprocess", fn=render("preprocess_fn", spec)
+            )
 
             df_scores = pd.DataFrame()
 
             for metric_name in df["metric_name"].unique():
+
                 df_metric = df[df["metric_name"] == metric_name]
 
                 model = load_model(metric_name, model_path, metric_batch)
 
-                X = preprocess(
-                    df_metric,
-                    mode="score",
-                    **preprocess_params
-                )
+                X = preprocess(df_metric, **preprocess_params)
 
                 scores = model.predict_proba(X)
 
-                logger.info(f"scores:\n{scores}")
-
+                # create initial df_score
                 df_score = pd.DataFrame(
-                    {
-                        "metric_timestamp": df_metric["metric_timestamp"].max(),
-                        "metric_name": metric_name,
-                        "metric_value": [scores[0][1]],  # probability of anomaly
-                        "metric_batch": metric_batch,
-                        "metric_type": "score",
-                    }
+                    data=scores[:, 1],  # probability of anomaly
+                    index=X.index,
+                    columns=["metric_value"]
                 )
+
+                # limit to timestamps where metric_score is null to begin with in df_metric
+                df_score = df_score[
+                    df_score.index.isin(
+                        df_metric[df_metric["metric_score"].isnull()]['metric_timestamp']
+                    )
+                ].reset_index()
+
+                # merge some df_metric info onto df_score
+                df_score = df_score.merge(
+                    df_metric[["metric_timestamp", "metric_name", "metric_batch"]],
+                    on=["metric_timestamp"],
+                )
+                df_score["metric_type"] = "score"
+                df_score = df_score[
+                    [
+                        "metric_timestamp",
+                        "metric_name",
+                        "metric_value",
+                        "metric_batch",
+                        "metric_type",
+                    ]
+                ]
+
                 df_scores = pd.concat([df_scores, df_score], ignore_index=True)
 
             logger.info(df_scores)
