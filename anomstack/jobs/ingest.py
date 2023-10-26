@@ -2,15 +2,22 @@
 Generate ingest jobs and schedules.
 """
 
+import base64
+from io import BytesIO
 from typing import Dict
+import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from dagster import (
+    AssetExecutionContext,
+    MetadataValue,
     job,
     op,
     ScheduleDefinition,
     JobDefinition,
     DefaultScheduleStatus,
     get_dagster_logger,
+    asset
 )
 from anomstack.config import specs
 from anomstack.jinja.render import render
@@ -77,8 +84,37 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
             """
             df = save_df(df, db, table_key)
             return df
+        
+        @asset(name=f"{metric_batch}_asset", compute_kind="Plot")
+        def some_plot(context, df) -> None:
+            
+            # Generate random data
+            date_rng = pd.date_range(start='1/1/2020', end='12/31/2021', freq='M')
+            sales_data = np.random.randint(100, 1000, size=(len(date_rng)))
 
-        save_metrics(create_metrics())
+            # Create DataFrame
+            df = pd.DataFrame(data={'date': date_rng, 'sales': sales_data})
+            df.set_index('date', inplace=True)
+
+            # Plot time series
+            plt.figure(figsize=(10,5))
+            plt.plot(df.index, df['sales'], marker='o')
+            plt.title('Monthly Sales Over Time')
+            plt.xlabel('Date')
+            plt.ylabel('Sales')
+            plt.grid(True)
+
+            # Save the image to a buffer and embed the image into Markdown content for quick view
+            buffer = BytesIO()
+            plt.savefig(buffer, format="png")
+            image_data = base64.b64encode(buffer.getvalue())
+            md_content = f"![img](data:image/png;base64,{image_data.decode()})"
+
+            # Attach the Markdown content and s3 file path as metadata to the asset
+            # Read about more metadata types in https://docs.dagster.io/_apidocs/ops#metadata-types
+            context.add_output_metadata({"plot": MetadataValue.md(md_content)})
+
+        some_plot(save_metrics(create_metrics()))
 
     return _job
 
