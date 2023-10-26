@@ -109,8 +109,6 @@ It's still too hard and messy to get decent out of the box anomaly detection on 
 
 ### Architecture
 
-<details><summary>Click to see an architecture diagram of the various moving parts.</summary>
-
 ```mermaid
 flowchart LR;
 
@@ -180,8 +178,6 @@ flowchart LR;
     model_store --> score
 
 ```
-
-</details>
 
 ### Examples
 
