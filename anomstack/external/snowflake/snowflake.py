@@ -15,7 +15,7 @@ def read_sql_snowflake(sql) -> pd.DataFrame:
 
     logger = get_dagster_logger()
 
-    logger.info(f'sql:\n{sql}')
+    logger.debug(f'sql:\n{sql}')
 
     credentials = get_snowflake_credentials()
 
@@ -29,7 +29,7 @@ def read_sql_snowflake(sql) -> pd.DataFrame:
     cur.execute(sql)
     df = cur.fetch_pandas_all()
 
-    logger.info(f'df:\n{df}')
+    logger.debug(f'df:\n{df}')
 
     return df
 
