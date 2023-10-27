@@ -97,6 +97,7 @@ def make_batch_plot(df) -> plt.Figure:
             legend=False,
         )
         ax2.set_ylabel("Metric Score")
+        ax2.set_ylim(0, 1)
         ax2.tick_params(axis="y", labelcolor=colors[i])
 
         ax1.set_title(f"{metric} - value vs score")
