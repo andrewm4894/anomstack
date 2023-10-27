@@ -32,6 +32,18 @@ def build_train_job(spec) -> JobDefinition:
         JobDefinition: A job definition for the train job.
     """
 
+    if spec.get("disable_train"):
+
+        @job(name=f'{spec["metric_batch"]}_train_disabled')
+        def _dummy_job():
+            @op(name=f'{spec["metric_batch"]}_noop')
+            def noop():
+                pass
+
+            noop()
+
+        return _dummy_job
+
     metric_batch = spec["metric_batch"]
     db = spec["db"]
     model_path = spec["model_path"]

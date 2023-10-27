@@ -30,6 +30,18 @@ def build_score_job(spec) -> JobDefinition:
         JobDefinition: A job definition for the score job.
     """
 
+    if spec.get("disable_score"):
+
+        @job(name=f'{spec["metric_batch"]}_score_disabled')
+        def _dummy_job():
+            @op(name=f'{spec["metric_batch"]}_noop')
+            def noop():
+                pass
+
+            noop()
+
+        return _dummy_job
+
     logger = get_dagster_logger()
 
     metric_batch = spec["metric_batch"]

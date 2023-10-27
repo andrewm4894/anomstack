@@ -32,6 +32,18 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
         JobDefinition: A job definition for the ingest job.
     """
 
+    if spec.get("disable_ingest"):
+
+        @job(name=f'{spec["metric_batch"]}_ingest_disabled')
+        def _dummy_job():
+            @op(name=f'{spec["metric_batch"]}_noop')
+            def noop():
+                pass
+
+            noop()
+
+        return _dummy_job
+
     metric_batch = spec["metric_batch"]
     table_key = spec["table_key"]
     db = spec["db"]

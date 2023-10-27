@@ -26,6 +26,18 @@ from anomstack.plots.plot import make_batch_plot
 def build_plot_job(spec) -> JobDefinition:
     """ """
 
+    if spec.get("disable_plot"):
+
+        @job(name=f'{spec["metric_batch"]}_plot_disabled')
+        def _dummy_job():
+            @op(name=f'{spec["metric_batch"]}_noop')
+            def noop():
+                pass
+
+            noop()
+
+        return _dummy_job
+
     metric_batch = spec["metric_batch"]
     db = spec["db"]
 
