@@ -13,6 +13,7 @@ Painless open source anomaly detection for your metrics! 📈📉🚀
   - [Why?](#why)
   - [Architecture](#architecture)
   - [Examples](#examples)
+    - [HackerNews](#hackernews)
     - [Weather](#weather)
     - [GSOD](#gsod)
 - [Project structure](#project-structure)
@@ -189,13 +190,17 @@ flowchart LR;
 
 [back to top](#anomstack)
 
-#### Weather
+#### HackerNews
 
-In [`./metrics/examples/weather/`](./metrics/examples/weather/) you will find an example of using a customer Python function ([`ingets_weather.py`](./metrics/examples/weather/ingest_weather.py)) to pull current temperature data for some cities from the Open Meteo API and ingest it into a table called `metrics` in a `metrics` dataset in a Google Bigquery project. This is all defined in the [`weather.yaml`](./metrics/examples/weather/weather.yaml)` configuration file for this metric batch.
+In [`./metrics/examples/hackernews/`](./metrics/examples/hackernews/) you will find an example of using a customer Python function ([`hn_top_stories_scores.py`](./metrics/examples/hackernews/hn_top_stories_scores.py)) to pull current top 10 stories from HackerNew API and derive some metrics based on their score. This is all defined in the [`hn_top_stories_scores.yaml`](./metrics/examples/hackernews/hn_top_stories_scores.yaml)` configuration file for this metric batch.
 
 #### GSOD
 
 In [`./metrics/examples/gsod/`](./metrics/examples/gsod/) you will find an example of just defining some sql to derive a metric batch on data already in BigQuery ([`gsod.sql`](./metrics/examples/gsod/gsod.sql)) and ingest it into a table called `metrics` in a `metrics` dataset in a Google Bigquery project. This is all defined in the [`gsod.yaml`](./metrics/examples/gsod/gsod.yaml)` configuration file for this metric batch.
+
+#### Weather
+
+In [`./metrics/examples/weather/`](./metrics/examples/weather/) you will find an example of using a customer Python function ([`ingets_weather.py`](./metrics/examples/weather/ingest_weather.py)) to pull current temperature data for some cities from the Open Meteo API and ingest it into a table called `metrics` in a `metrics` dataset in a Google Bigquery project. This is all defined in the [`weather.yaml`](./metrics/examples/weather/weather.yaml)` configuration file for this metric batch.
 
 ## Project structure
 
