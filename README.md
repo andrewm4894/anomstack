@@ -22,6 +22,7 @@ Painless open source anomaly detection for your metrics! 📈📉🚀
   - [Docker](#docker)
   - [Local Python env](#local-python-env)
 - [Adding your metrics](#adding-your-metrics)
+- [Visualization](#visualization)
 - [Concepts](#concepts)
 - [Alerts](#alerts)
 
@@ -122,6 +123,7 @@ flowchart LR;
     train[[train]]
     score[[score]]
     alert[[alert]]
+    plot[[plot]]
 
     subgraph metric_batch
     metric_batch_config
@@ -135,6 +137,7 @@ flowchart LR;
     train
     score
     alert
+    plot
     end
 
     subgraph alerts
@@ -169,6 +172,7 @@ flowchart LR;
     ingest --> train
     train --> score
     score --> alert
+    score --> plot
 
     metric_batch --> dagster_jobs
 
@@ -274,6 +278,19 @@ You can customize the default params for your metrics in the [`metrics/defaults`
 
 Environment variables for your metrics can be set in the `.env` file (see [`.example.env`](.example.env) for examples and comments) or in the `docker-compose.yml` file.
 
+## Visualization
+
+Visualization of the metrics and anomaly scores is a bit outside the scope of this project, but we do provide the [`plot.py`](./anomstack/jobs/plot.py) job to generate some plots of your metrics and anomaly scores for quick eyeballing within the dagster UI.
+
+<details>
+<summary>Click to see some screenshots</summary>
+
+![plot1](./docs/img/plot1.png)
+
+![plot2](./docs/img/plot2.png)
+
+</details>
+
 ## Concepts
 
 [back to top](#anomstack)
@@ -284,6 +301,7 @@ Environment variables for your metrics can be set in the `.env` file (see [`.exa
   - "Train" ([`train.py`](./anomstack/jobs/train.py)): This job trains a model for each metric.
   - "Score" ([`score.py`](./anomstack/jobs/score.py)): This job scores metrics using the latest trained model for each metric.
   - "Alert" ([`alert.py`](./anomstack/jobs/alert.py)): This job alerts you when the metric looks anomalous.
+  - "Plot" ([`plot.py`](./anomstack/jobs/plot.py)): This job plots metric values and scores for a batch at regular intervals so you can see some charts from within the Dagster UI.
 
 ## Alerts
 

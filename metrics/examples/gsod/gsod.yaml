@@ -10,6 +10,6 @@ score_cron_schedule: "35 10 * * *"
 alert_cron_schedule: "40 10 * * *"
 plot_cron_schedule: "45 10 * * *"
 alert_methods: "email"
-alert_always: True
+alert_always: False
 ingest_sql: >
   {% include "./examples/gsod/gsod.sql" %}

@@ -4,7 +4,7 @@ table_key: "tmp.metrics" # table to store metrics in.
 model_path: "local://./models" # path to where models are to be stored.
 # model_path: "gs://your-bucket/models" # gcs path to where models are to be stored.
 # model_path: "s3://your-bucket/models" # s3 path to where models are to be stored.
-# model configs to pass to PyOD
+# model configs to pass to PyOD, model_params are passed to the model constructor.
 model_config:
   model_name: 'PCA'
   model_params:
