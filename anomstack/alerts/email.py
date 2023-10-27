@@ -10,7 +10,7 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 import tempfile
-from anomstack.alerts.plot import make_plot
+from anomstack.plots.plot import make_alert_plot
 from dagster import get_dagster_logger
 
 
@@ -43,7 +43,7 @@ def send_email_with_plot(
     with tempfile.NamedTemporaryFile(
         prefix=attachment_name, suffix=".png", delete=False
     ) as temp:
-        fig = make_plot(df, metric_name, threshold)
+        fig = make_alert_plot(df, metric_name, threshold)
         fig.savefig(temp.name)
 
         msg = MIMEMultipart()

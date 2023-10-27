@@ -42,7 +42,8 @@ def read_sql(sql, db) -> pd.DataFrame:
 
     sql = db_translate(sql, db)
 
-    logger.info(f"sql:\n{sql}")
+    logger.debug(f"sql:\n{sql}")
+
     if db == "bigquery":
         df = read_sql_bigquery(sql)
     elif db == "snowflake":
@@ -51,6 +52,7 @@ def read_sql(sql, db) -> pd.DataFrame:
         df = read_sql_duckdb(sql)
     else:
         raise ValueError(f"Unknown db: {db}")
-    logger.info(f"df:\n{df}")
+
+    logger.debug(f"df:\n{df}")
 
     return df
