@@ -27,7 +27,7 @@ on
   and 
   gsod.wban = stations.wban
 where
-  date(date) = date_add(current_date(), interval -3 day)
+  date(date) = date_add(current_date(), interval -4 day)
 ),
 
 -- US
