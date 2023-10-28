@@ -2,7 +2,7 @@ import json
 import openai
 
 
-def get_completion(prompt: str) -> tuple[bool, str]:
+def get_completion(prompt: str):
     """
     Get a completion from the OpenAI API.
 
