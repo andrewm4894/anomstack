@@ -100,11 +100,11 @@ def build_llmalert_job(spec) -> JobDefinition:
 
             for metric_name in df["metric_name"].unique():
 
-                df_metric = df[df.metric_name == metric_name]
-                df_metric_prompt = df_metric[['metric_timestamp', 'metric_value']]
+                df_metric = df[df.metric_name == metric_name].reset_index(drop=True)
+                df_metric = df_metric.sort_values(by="metric_timestamp")
 
                 prompt = make_prompt(
-                    df_metric_prompt,
+                    df_metric[['metric_timestamp', 'metric_value']],
                     llmalert_recent_n,
                     metric_name
                 )
