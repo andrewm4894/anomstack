@@ -30,7 +30,7 @@ def make_alert_plot(df: pd.DataFrame, metric_name: str, threshold: float = 0.8) 
     )
     if "metric_value_smooth" in df_plot.columns:
         df_plot["metric_value_smooth"].plot(
-            ax=axes[0], style="-", color="darkorange", label="Value Smooth"
+            ax=axes[0], style="--", color="darkorange", label="Value Smooth"
         )
     ax1.axes.get_xaxis().set_visible(False)
     ax1.grid(True, which="both", linestyle="--", linewidth=0.5)

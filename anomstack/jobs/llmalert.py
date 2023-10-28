@@ -12,6 +12,7 @@ from dagster import (
     DefaultScheduleStatus,
     get_dagster_logger
 )
+import openai
 from anomstack.config import specs
 from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
