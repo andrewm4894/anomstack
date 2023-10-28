@@ -2,12 +2,22 @@
 """
 
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
 
 
-def make_alert_plot(df, metric_name, threshold=0.8) -> plt:
-    """ """
+def make_alert_plot(df: pd.DataFrame, metric_name: str, threshold: float = 0.8) -> plt:
+    """
+    Creates a plot with two subplots: one for the metric values and another for the anomaly score.
 
+    Args:
+        df (pd.DataFrame): The dataframe containing the data to plot.
+        metric_name (str): The name of the metric to plot.
+        threshold (float, optional): The threshold value for the anomaly score. Defaults to 0.8.
+
+    Returns:
+        plt: The matplotlib figure object.
+    """
     fig, axes = plt.subplots(
         nrows=2, ncols=1, figsize=(20, 10), gridspec_kw={"height_ratios": [2, 1]}
     )
@@ -18,9 +28,14 @@ def make_alert_plot(df, metric_name, threshold=0.8) -> plt:
     ax1 = df_plot["metric_value"].plot(
         title=metric_name, ax=axes[0], style="-o", color="royalblue"
     )
+    if "metric_value_smooth" in df_plot.columns:
+        df_plot["metric_value_smooth"].plot(
+            ax=axes[0], style="-", color="darkorange", label="Value Smooth"
+        )
     ax1.axes.get_xaxis().set_visible(False)
     ax1.grid(True, which="both", linestyle="--", linewidth=0.5)
     ax1.set_ylabel(metric_name)
+    ax1.legend(loc="upper left")
 
     ax2 = df_plot["metric_score_smooth"].plot(
         title="Anomaly Score",
@@ -56,7 +71,7 @@ def make_alert_plot(df, metric_name, threshold=0.8) -> plt:
     return fig
 
 
-def make_batch_plot(df) -> plt.Figure:
+def make_batch_plot(df: pd.DataFrame) -> plt.Figure:
     """ """
 
     unique_metrics = df["metric_name"].unique()

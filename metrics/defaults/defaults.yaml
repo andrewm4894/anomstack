@@ -18,6 +18,7 @@ alert_metric_timestamp_max_days_ago: 1 # don't alert on metrics older than this.
 alert_recent_n: 5 # only alert on recent n so as to avoid continually alerting.
 llmalert_recent_n: 5 # only llmalert on recent n so as to avoid continually alerting.
 alert_smooth_n: 3 # smooth anomaly score over rolling n to avoid being too trigger happy.
+llmalert_smooth_n: 3 # smooth metric value prior to sending to llm.
 alert_threshold: 0.8 # threshold for smoothed anomaly score above which to alert on.
 alert_always: False # if True, always send alerts, even if no anomalies.
 alert_methods: "email" # comma separated list of alert methods to use eg "email,slack".

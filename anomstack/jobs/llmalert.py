@@ -52,6 +52,7 @@ def build_llmalert_job(spec) -> JobDefinition:
     threshold = spec["alert_threshold"]
     alert_methods = spec["alert_methods"]
     llmalert_recent_n = spec["llmalert_recent_n"]
+    llmalert_smooth_n = spec["llmalert_smooth_n"]
 
     @job(name=f"{metric_batch}_llmalert_job")
     def _job():
@@ -93,9 +94,17 @@ def build_llmalert_job(spec) -> JobDefinition:
 
                 df_metric = df[df.metric_name == metric_name].reset_index(drop=True)
                 df_metric = df_metric.sort_values(by="metric_timestamp")
+                
+                if llmalert_smooth_n > 0:
+                    df_metric["metric_value_smooth"] = (
+                        df_metric["metric_value"]
+                        .rolling(llmalert_smooth_n)
+                        .mean()
+                    )
 
+                metric_col = "metric_value" if llmalert_smooth_n == 0 else "metric_value_smooth"
                 prompt = make_prompt(
-                    df_metric[['metric_timestamp', 'metric_value']],
+                    df_metric[['metric_timestamp', metric_col]],
                     llmalert_recent_n
                 )
 
