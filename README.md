@@ -26,6 +26,7 @@ Painless open source anomaly detection for your metrics! 📈📉🚀
 - [Visualization](#visualization)
 - [Concepts](#concepts)
 - [Alerts](#alerts)
+- [LLM Alerts](#llm-alerts)
 
 Supported sources and databases for your metrics to live in and be queried from:
 
@@ -343,3 +344,20 @@ Below is an example of an alert via email. It has some ascii art plotting recent
 And the attached plot will look something like this:
 
 ![plot](./docs/img/random_1.png)
+
+## LLM Alerts
+
+[back to top](#anomstack)
+
+Yes! I have managed to find a way to ram a large language model (LLM) into this project. But you know what, it might just work...
+
+Idea here is to just send the metric data and prompt to a LLM (ChatGPT) and ask it if it thinks the metric looks anomalous. If it does, we alert.
+
+Note: If you don't want to send your metric data to OpenAI then just set `disable_llmalert` to `True` in your metric batch config.
+
+<details>
+<summary>Click to see some LLM Alert screenshots</summary>
+
+TODO
+
+</details>

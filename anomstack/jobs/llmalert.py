@@ -27,9 +27,8 @@ from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
 from anomstack.plots.plot import make_batch_plot
 from anomstack.alerts.send import send_alert
-from anomstack.llm.prompt import make_prompt
 from anomstack.llm.completion import get_completion
-
+from anomstack.fn.run import define_fn
 
 def build_llmalert_job(spec) -> JobDefinition:
     """Builds a job definition for the LLM Alert job.
@@ -95,12 +94,20 @@ def build_llmalert_job(spec) -> JobDefinition:
                 None
             """
 
+            make_prompt = define_fn(
+                fn_name="make_prompt", fn=render("prompt_fn", spec)
+            )
+
             for metric_name in df["metric_name"].unique():
 
                 df_metric = df[df.metric_name == metric_name]
                 df_metric_prompt = df_metric[['metric_timestamp', 'metric_value']]
 
-                prompt = make_prompt(df_metric_prompt, llmalert_recent_n, metric_name)
+                prompt = make_prompt(
+                    df_metric_prompt,
+                    llmalert_recent_n,
+                    metric_name
+                )
 
                 is_anomalous, anomaly_description = get_completion(prompt)
 
