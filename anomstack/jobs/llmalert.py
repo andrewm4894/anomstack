@@ -2,33 +2,23 @@
 Generate llmalert jobs and schedules.
 """
 
-import base64
 import os
-import json
-from io import BytesIO
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 from dagster import (
-    AssetExecutionContext,
-    MetadataValue,
     job,
     op,
     ScheduleDefinition,
     JobDefinition,
     DefaultScheduleStatus,
-    asset,
     get_dagster_logger
 )
-from typing import List, Tuple
-import openai
 from anomstack.config import specs
 from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
-from anomstack.plots.plot import make_batch_plot
 from anomstack.alerts.send import send_alert
 from anomstack.llm.completion import get_completion
 from anomstack.fn.run import define_fn
+
 
 def build_llmalert_job(spec) -> JobDefinition:
     """Builds a job definition for the LLM Alert job.
@@ -41,6 +31,7 @@ def build_llmalert_job(spec) -> JobDefinition:
     """
 
     openai.api_key = os.getenv("ANOMSTACK_OPENAI_KEY")
+    openai_model = os.getenv("ANOMSTACK_OPENAI_MODEL", "gpt-4-0613")
 
     logger = get_dagster_logger()
 
@@ -105,11 +96,10 @@ def build_llmalert_job(spec) -> JobDefinition:
 
                 prompt = make_prompt(
                     df_metric[['metric_timestamp', 'metric_value']],
-                    llmalert_recent_n,
-                    metric_name
+                    llmalert_recent_n
                 )
 
-                is_anomalous, anomaly_description = get_completion(prompt)
+                is_anomalous, anomaly_description = get_completion(prompt, openai_model)
 
                 logger.info(f"is_anomalous: {is_anomalous}")
                 logger.info(f"anomaly_description: {anomaly_description}")

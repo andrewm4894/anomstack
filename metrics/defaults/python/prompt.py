@@ -1,4 +1,4 @@
-def make_prompt(df, llmalert_recent_n, metric_name) -> str:
+def make_prompt(df, llmalert_recent_n) -> str:
     """
     Generates a prompt for the user to check if there is an anomaly in a time series data.
 
@@ -14,7 +14,7 @@ def make_prompt(df, llmalert_recent_n, metric_name) -> str:
     prompt = f"""
     Can you help me check if there is an anomaly in this time series data?
 
-    I am interested in finding anomalies in the time series data for metric `{metric_name}`.
+    I am interested in finding anomalies in the time series data for the metric.
 
     I am interested in looking at the last {llmalert_recent_n} observations and if it looks like the more recent data may be anomalous or if it looks not all that much different from the rest of the data.
 

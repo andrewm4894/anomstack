@@ -2,7 +2,7 @@ import json
 import openai
 
 
-def get_completion(prompt: str):
+def get_completion(prompt: str, model="gpt-4-0613"):
     """
     Get a completion from the OpenAI API.
 
@@ -17,7 +17,7 @@ def get_completion(prompt: str):
     messages = [{"role": "user", "content": prompt}]
 
     completion = openai.ChatCompletion.create(
-        model="gpt-4-0613",
+        model=model,
         messages=messages,
         functions=[
             {

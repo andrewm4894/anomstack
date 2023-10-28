@@ -4,6 +4,7 @@
     },
     "python.formatting.provider": "none",
     "cSpell.words": [
-        "dataframe"
+        "dataframe",
+        "llmalert"
     ]
 }
