@@ -358,6 +358,8 @@ Note: If you don't want to send your metric data to OpenAI then just set `disabl
 <details>
 <summary>Click to see some LLM Alert screenshots</summary>
 
-TODO
+![llmalert1](./docs/img/llmalert1.png)
+
+![llmalert2](./docs/img/llmalert2.png)
 
 </details>
