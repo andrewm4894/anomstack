@@ -16,6 +16,7 @@ score_max_n: 20 # max n to pull for scoring to avoid pulling more than needed.
 alert_max_n: 60 # max n to include and plot in an alert.
 alert_metric_timestamp_max_days_ago: 1 # don't alert on metrics older than this.
 alert_recent_n: 5 # only alert on recent n so as to avoid continually alerting.
+llmalert_recent_n: 10 # only llmalert on recent n so as to avoid continually alerting.
 alert_smooth_n: 3 # smooth anomaly score over rolling n to avoid being too trigger happy.
 alert_threshold: 0.8 # threshold for smoothed anomaly score above which to alert on.
 alert_always: False # if True, always send alerts, even if no anomalies.
@@ -34,6 +35,8 @@ score_cron_schedule: "*/4 * * * *" # cron schedule for scoring jobs
 score_default_schedule_status: 'STOPPED' # default schedule status for score jobs (RUNNING or STOPPED)
 alert_cron_schedule: "*/5 * * * *" # cron schedule for alerting jobs
 alert_default_schedule_status: 'STOPPED' # default schedule status for alert jobs (RUNNING or STOPPED)
+llmalert_cron_schedule: "*/5 * * * *" # cron schedule for llmalerting jobs
+llmalert_default_schedule_status: 'STOPPED' # default schedule status for llmalert jobs (RUNNING or STOPPED)
 plot_cron_schedule: "*/5 * * * *" # cron schedule for plot jobs
 plot_default_schedule_status: 'STOPPED' # default schedule status for plot jobs (RUNNING or STOPPED)
 # default templated train sql
@@ -52,4 +55,5 @@ disable_ingest: False # if you want to disable ingest job for some reason.
 disable_train: False # if you want to disable train job for some reason.
 disable_score: False # if you want to disable score job for some reason.
 disable_alert: False # if you want to disable alert job for some reason.
+disable_llmalert: False # if you want to disable llmalert job for some reason.
 disable_plot: False # if you want to disable plot job for some reason.

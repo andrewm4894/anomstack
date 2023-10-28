@@ -124,6 +124,7 @@ flowchart LR;
     train[[train]]
     score[[score]]
     alert[[alert]]
+    llmalert[[llmalert]]
     plot[[plot]]
 
     subgraph metric_batch
@@ -138,6 +139,7 @@ flowchart LR;
     train
     score
     alert
+    llmalert
     plot
     end
 
@@ -162,6 +164,7 @@ flowchart LR;
     datasources
     model_store
     alerts
+    llmalert
     end
 
     subgraph model_store
@@ -173,12 +176,15 @@ flowchart LR;
     ingest --> train
     train --> score
     score --> alert
+    score --> llmalert
     score --> plot
 
     metric_batch --> dagster_jobs
 
     alert --> email
     alert --> slack
+    llmalert --> email
+    llmalert --> slack
 
     datasources <--> dagster_jobs
     train --> model_store
@@ -321,6 +327,7 @@ Visualization of the metrics and anomaly scores is a bit outside the scope of th
   - "Train" ([`train.py`](./anomstack/jobs/train.py)): This job trains a model for each metric.
   - "Score" ([`score.py`](./anomstack/jobs/score.py)): This job scores metrics using the latest trained model for each metric.
   - "Alert" ([`alert.py`](./anomstack/jobs/alert.py)): This job alerts you when the metric looks anomalous.
+  - "LLM Alert" ([`llmalert.py`](./anomstack/jobs/llmalert.py)): This job alerts you when the metric looks anomalous as decided by a LLM (ChatGPT).
   - "Plot" ([`plot.py`](./anomstack/jobs/plot.py)): This job plots metric values and scores for a batch at regular intervals so you can see some charts from within the Dagster UI.
 
 ## Alerts
