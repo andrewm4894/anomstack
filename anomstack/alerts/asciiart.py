@@ -477,8 +477,8 @@ class Pyasciigraph:
         return result
 
 
-def make_alert_message(df_alert_metric, graph_symbol='~', anomaly_symbol='* ', normal_symbol='  ', alert_float_format='{:,.2f}'):
-        
+def make_alert_message(df_alert_metric, description='', graph_symbol='~', anomaly_symbol='* ', normal_symbol='  ', alert_float_format='{:,.2f}'):
+
     df_alert_metric = df_alert_metric.sort_values(by='metric_timestamp', ascending=False)
     x = df_alert_metric['metric_value'].round(2).values.tolist()
     labels = (np.where(df_alert_metric['metric_alert']==1,anomaly_symbol,normal_symbol) + (df_alert_metric['metric_score_smooth'].round(2)*100).astype('int').astype('str') + '% ') #+ df_alert_metric['metric_timestamp'].astype('str').values).to_list()
@@ -496,9 +496,15 @@ def make_alert_message(df_alert_metric, graph_symbol='~', anomaly_symbol='* ', n
             message += '\n' + line
         else:
             message += '\n' + f't={0-i+2}'.ljust(6, ' ') + line
-    
+
     message = f"""
     <pre><code>{message}</code></pre>
     """
-    
+
+    # if description is not '' then prepend it to the message
+    if description != '':
+        message = f"""
+        <pre><code>{description}</code></pre>
+        """ + message
+
     return message

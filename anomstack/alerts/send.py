@@ -15,6 +15,7 @@ def send_alert(
     df: pd.DataFrame,
     alert_methods: str = "email,slack",
     threshold: float = 0.8,
+    description: str = "",
 ) -> pd.DataFrame:
     """
     Sends an alert using the specified alert methods.
@@ -31,7 +32,7 @@ def send_alert(
     """
     logger = get_dagster_logger()
     logger.info(f"alerts to send: \n{df}")
-    message = make_alert_message(df)
+    message = make_alert_message(df, description=description)
     if "slack" in alert_methods:
         send_alert_slack(title=title, message=message)
     if "email" in alert_methods:
