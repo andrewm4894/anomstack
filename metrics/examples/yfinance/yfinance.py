@@ -4,11 +4,15 @@ def ingest() -> pd.DataFrame:
 
     import pandas as pd
     import yfinance as yf
+    import requests_cache
+
+    session = requests_cache.CachedSession('yfinance.cache')
+    session.headers['User-agent'] = 'Dagster Anomstack'
 
     prices = []
     tickers = ['AAPL','MSFT','GOOG','NVDA']
     for ticker in tickers:
-        stock = yf.Ticker(ticker)
+        stock = yf.Ticker(ticker, session=session)
         latest_price = stock.info["currentPrice"]
         prices.append(latest_price)
 
