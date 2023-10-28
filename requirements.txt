@@ -21,3 +21,5 @@ pyod
 pyyaml
 snowflake-connector-python[pandas]
 seaborn
+# below are only required for examples
+yfinance
