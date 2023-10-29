@@ -5,14 +5,13 @@ def make_prompt(df, llmalert_recent_n) -> str:
     Args:
         df (pandas.DataFrame): The time series data to check for anomalies.
         llmalert_recent_n (int): The number of most recent observations to consider.
-        metric_name (str): The name of the metric being analyzed.
 
     Returns:
         str: A prompt for the user to check if there is an anomaly in the time series data.
     """
 
     prompt = f"""
-    Can you help me check if there is an anomaly in this time series data?
+    Can you help me check if there is an anomaly in this time series data for this metric?
 
     I am interested in finding anomalies in the time series data for the metric.
 
@@ -20,18 +19,18 @@ def make_prompt(df, llmalert_recent_n) -> str:
     
     Here are some questions to think about:
     
-    - Is there anything unusual about the last {llmalert_recent_n} values of the metric_value column in the df DataFrame?
-    - Are there any anomalies or outliers in the recent {llmalert_recent_n} observations of metric_value in df?
-    - Can you identify any patterns or trends in the last {llmalert_recent_n} values of metric_value in df that could be indicative of an anomaly?
-    - How does the distribution of the last {llmalert_recent_n} values of metric_value in df compare to the distribution of the entire dataset?
-    - Are there any changes in the mean, median, or standard deviation of metric_value in the last {llmalert_recent_n} observations that could be indicative of an anomaly?
-    - Is there a sudden increase or decrease in metric_value in the last {llmalert_recent_n} observations?
-    - Is there a change in the slope of the metric_value trend line in the last {llmalert_recent_n} observations?
-    - Are there any spikes or dips in metric_value in the last {llmalert_recent_n} observations?
-    - Do the last {llmalert_recent_n} observations fall outside of the normal range of metric_value?
+    - Is there anything unusual about the last {llmalert_recent_n} values of the metric in the df DataFrame?
+    - Are there any anomalies or outliers in the recent {llmalert_recent_n} observations of metric in df?
+    - Can you identify any patterns or trends in the last {llmalert_recent_n} values of the metric in df that could be indicative of an anomaly?
+    - How does the distribution of the last {llmalert_recent_n} values of the metric in df compare to the distribution of the entire dataset?
+    - Are there any changes in the mean, median, or standard deviation of the metric in the last {llmalert_recent_n} observations that could be indicative of an anomaly?
+    - Is there a sudden increase or decrease in the metric in the last {llmalert_recent_n} observations?
+    - Is there a change in the slope of the metric trend line in the last {llmalert_recent_n} observations?
+    - Are there any spikes or dips in the metric in the last {llmalert_recent_n} observations?
+    - Do the last {llmalert_recent_n} observations fall outside of the normal range of the metric?
     - Are there any patterns in the timing of the anomalies in the last {llmalert_recent_n} observations?
 
-    Here is the data:
+    Here is the data (it may also include a metric_value_smooth column that is a smoothed version of the metric_value column):
 
     {df.to_string(max_rows=len(df), max_cols=(len(df.columns)))}
 
