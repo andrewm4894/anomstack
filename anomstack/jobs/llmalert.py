@@ -10,7 +10,7 @@ from dagster import (
     ScheduleDefinition,
     JobDefinition,
     DefaultScheduleStatus,
-    get_dagster_logger
+    get_dagster_logger,
 )
 import openai
 from anomstack.config import specs
@@ -87,44 +87,48 @@ def build_llmalert_job(spec) -> JobDefinition:
                 None
             """
 
-            make_prompt = define_fn(
-                fn_name="make_prompt", fn=render("prompt_fn", spec)
-            )
+            make_prompt = define_fn(fn_name="make_prompt", fn=render("prompt_fn", spec))
 
             for metric_name in df["metric_name"].unique():
+                df_metric = (
+                    df[df.metric_name == metric_name]
+                    .sort_values(by="metric_timestamp", ascending=True)
+                    .reset_index(drop=True)
+                )
 
-                df_metric = df[df.metric_name == metric_name].reset_index(drop=True)
-                df_metric = df_metric.sort_values(by="metric_timestamp", ascending=True)
-                
                 if llmalert_smooth_n > 0:
                     df_metric["metric_value_smooth"] = (
-                        df_metric["metric_value"]
-                        .rolling(llmalert_smooth_n)
-                        .mean()
+                        df_metric["metric_value"].rolling(llmalert_smooth_n).mean()
                     )
 
                 if llmalert_smooth_n > 0:
-                    df_prompt = df_metric[["metric_timestamp", "metric_value", "metric_value_smooth"]]
+                    df_prompt = df_metric[
+                        ["metric_timestamp", "metric_value", "metric_value_smooth"]
+                    ]
                 else:
                     df_prompt = df_metric[["metric_timestamp", "metric_value"]]
 
-                prompt = make_prompt(df_prompt,llmalert_recent_n)
-                
+                prompt = make_prompt(df_prompt, llmalert_recent_n)
+
                 logger.info(f"prompt: \n{prompt}")
 
-                is_anomalous, anomaly_description, anomaly_confidence_level = get_completion(prompt, openai_model)
+                (
+                    is_anomalous,
+                    anomaly_description,
+                    anomaly_confidence_level,
+                ) = get_completion(prompt, openai_model)
 
                 logger.info(f"is_anomalous: {is_anomalous}")
 
                 if is_anomalous:
-                    anomaly_description = f'{anomaly_confidence_level.upper()}: {anomaly_description}'
+                    anomaly_description = (
+                        f"{anomaly_confidence_level.upper()}: {anomaly_description}"
+                    )
                     logger.info(f"anomaly_description: {anomaly_description}")
                     metric_timestamp_max = (
                         df_metric["metric_timestamp"].max().strftime("%Y-%m-%d %H:%M")
                     )
-                    alert_title = (
-                        f"🤖 LLM says [{metric_name}] looks anomalous ({metric_timestamp_max}) 🤖"
-                    )
+                    alert_title = f"🤖 LLM says [{metric_name}] looks anomalous ({metric_timestamp_max}) 🤖"
                     df_metric = send_alert(
                         metric_name=metric_name,
                         title=alert_title,
