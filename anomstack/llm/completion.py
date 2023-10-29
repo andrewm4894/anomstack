@@ -39,8 +39,13 @@ def get_completion(prompt: str, model="gpt-3.5-turbo", max_retries=5):
                                     "type": "string",
                                     "description": "A description of the anomaly, if is_anomalous=True, else None.",
                                 },
+                                "anomaly_confidence_level": {
+                                    "type": "string",
+                                    "enum": ["high", "medium", "low"],
+                                    "description": "Confidence level in the is_anomalous flag. 'high' if very confident in the anomaly decision, 'medium' if somewhat confident, 'low' if not confident.",
+                                },
                             },
-                            "required": ["is_anomalous", "anomaly_description"],
+                            "required": ["is_anomalous", "anomaly_description", "anomaly_confidence_level"],
                         },
                     }
                 ],
@@ -61,5 +66,6 @@ def get_completion(prompt: str, model="gpt-3.5-turbo", max_retries=5):
     funcs = json.loads(funcs)
     is_anomalous = funcs["is_anomalous"]
     anomaly_description = funcs["anomaly_description"]
+    anomaly_confidence_level = funcs["anomaly_confidence_level"]
 
-    return is_anomalous, anomaly_description
+    return is_anomalous, anomaly_description, anomaly_confidence_level

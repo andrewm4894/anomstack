@@ -109,7 +109,9 @@ def build_llmalert_job(spec) -> JobDefinition:
                     llmalert_recent_n
                 )
 
-                is_anomalous, anomaly_description = get_completion(prompt, openai_model)
+                is_anomalous, anomaly_description, anomaly_confidence_level = get_completion(prompt, openai_model)
+
+                anomaly_description = f'{anomaly_confidence_level.capitalize()}: {anomaly_description}'
 
                 logger.info(f"is_anomalous: {is_anomalous}")
                 logger.info(f"anomaly_description: {anomaly_description}")
