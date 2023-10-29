@@ -94,7 +94,7 @@ def build_llmalert_job(spec) -> JobDefinition:
             for metric_name in df["metric_name"].unique():
 
                 df_metric = df[df.metric_name == metric_name].reset_index(drop=True)
-                df_metric = df_metric.sort_values(by="metric_timestamp")
+                df_metric = df_metric.sort_values(by="metric_timestamp", ascending=True)
                 
                 if llmalert_smooth_n > 0:
                     df_metric["metric_value_smooth"] = (
