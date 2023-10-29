@@ -26,7 +26,7 @@ def make_alert_plot(df: pd.DataFrame, metric_name: str, threshold: float = 0.8) 
     n = len(df_plot)
 
     ax1 = df_plot["metric_value"].plot(
-        title=metric_name, ax=axes[0], style="-o", color="royalblue"
+        title=f'{metric_name} (n={n})', ax=axes[0], style="-o", color="royalblue"
     )
     if "metric_value_smooth" in df_plot.columns:
         df_plot["metric_value_smooth"].plot(
@@ -87,6 +87,7 @@ def make_batch_plot(df: pd.DataFrame) -> plt.Figure:
     for i, metric in enumerate(unique_metrics):
         ax1 = axs[i]
         metric_data = df[df["metric_name"] == metric]
+        n = len(metric_data)
 
         sns.lineplot(
             data=metric_data,
@@ -115,7 +116,7 @@ def make_batch_plot(df: pd.DataFrame) -> plt.Figure:
         ax2.set_ylim(0, 1)
         ax2.tick_params(axis="y", labelcolor=colors[i])
 
-        ax1.set_title(f"{metric} - value vs score")
+        ax1.set_title(f"{metric} - value vs score (n={n})")
 
     plt.tight_layout()
 
