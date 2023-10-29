@@ -104,10 +104,9 @@ def build_llmalert_job(spec) -> JobDefinition:
                     )
 
                 metric_col = "metric_value" if llmalert_smooth_n == 0 else "metric_value_smooth"
-                prompt = make_prompt(
-                    df_metric[['metric_timestamp', metric_col]],
-                    llmalert_recent_n
-                )
+                df_prompt = df_metric[["metric_timestamp", metric_col]]
+                df_prompt.columns = ["metric_timestamp", "metric_value"]
+                prompt = make_prompt(df_prompt,llmalert_recent_n)
 
                 is_anomalous, anomaly_description, anomaly_confidence_level = get_completion(prompt, openai_model)
 
