@@ -109,6 +109,8 @@ def build_llmalert_job(spec) -> JobDefinition:
                     df_prompt = df_metric[["metric_timestamp", "metric_value"]]
 
                 prompt = make_prompt(df_prompt,llmalert_recent_n)
+                
+                logger.info(f"prompt: \n{prompt}")
 
                 is_anomalous, anomaly_description, anomaly_confidence_level = get_completion(prompt, openai_model)
 
