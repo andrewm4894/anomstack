@@ -32,7 +32,7 @@ def build_llmalert_job(spec) -> JobDefinition:
     """
 
     openai.api_key = os.getenv("ANOMSTACK_OPENAI_KEY")
-    openai_model = os.getenv("ANOMSTACK_OPENAI_MODEL", "gpt-4-0613")
+    openai_model = os.getenv("ANOMSTACK_OPENAI_MODEL", "gpt-3.5-turbo")
 
     logger = get_dagster_logger()
 

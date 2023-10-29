@@ -3,7 +3,7 @@ import openai
 import time
 
 
-def get_completion(prompt: str, model="gpt-4-0613", max_retries=5):
+def get_completion(prompt: str, model="gpt-3.5-turbo", max_retries=5):
     """
     Get a completion from the OpenAI API.
 
