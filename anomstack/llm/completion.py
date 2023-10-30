@@ -9,11 +9,12 @@ def get_completion(prompt: str, model="gpt-3.5-turbo", max_retries=5):
 
     Args:
         prompt (str): The prompt to send to the OpenAI API.
-        max_retries (int): The maximum number of retries before giving up.
+        model (str, optional): The model to use for the completion. Defaults to "gpt-3.5-turbo".
+        max_retries (int, optional): The maximum number of retries before giving up.
 
     Returns:
-        Tuple[bool, str]: A tuple containing a boolean indicating whether the metric looks anomalous,
-        and a string describing the anomaly (if is_anomalous=True, else None).
+        Tuple[bool, str, str]: A tuple containing a boolean indicating whether the metric looks anomalous,
+        a string describing the anomaly (if is_anomalous=True, else None) and a confidence level.
     """
 
     messages = [{"role": "user", "content": prompt}]
@@ -33,11 +34,11 @@ def get_completion(prompt: str, model="gpt-3.5-turbo", max_retries=5):
                             "properties": {
                                 "is_anomalous": {
                                     "type": "boolean",
-                                    "description": "True if the metric looks anomalous, False otherwise.",
+                                    "description": "True if the recent metric values looks anomalous, False otherwise.",
                                 },
                                 "anomaly_description": {
                                     "type": "string",
-                                    "description": "A description of the anomaly, if is_anomalous=True, else None.",
+                                    "description": "If is_anomalous=True, a detailed description of the anomaly including some reasoning, else None.",
                                 },
                                 "anomaly_confidence_level": {
                                     "type": "string",
