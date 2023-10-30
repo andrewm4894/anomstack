@@ -103,10 +103,10 @@ def build_llmalert_job(spec) -> JobDefinition:
 
                 if llmalert_smooth_n > 0:
                     df_prompt = df_metric[
-                        ["metric_timestamp", "metric_value", "metric_value_smooth"]
+                        ["metric_value", "metric_value_smooth"]
                     ]
                 else:
-                    df_prompt = df_metric[["metric_timestamp", "metric_value"]]
+                    df_prompt = df_metric[["metric_value"]]
 
                 prompt = make_prompt(df_prompt, llmalert_recent_n)
 

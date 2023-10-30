@@ -12,7 +12,7 @@ def make_prompt(df, llmalert_recent_n) -> str:
 
     from tabulate import tabulate
 
-    text_representation = tabulate(df, headers='keys', tablefmt='pipe')
+    text_representation = tabulate(df.reset_index(), headers='keys', tablefmt='pipe', showindex=False)
 
     prompt = f"""
     You are a seasoned time series expert who has worked with time series data for many years.
@@ -39,12 +39,12 @@ def make_prompt(df, llmalert_recent_n) -> str:
     Notes about the data:
     - The metric_value column is the raw metric value.
     - The metric_value_smooth (which may or may not exist) column is the smoothed metric value.
-    - The data is ordered by the timestamp column in ascending order. So the most recent observations are at the bottom of the table.
-    - Pay attention to the timestamp column and the ordering of the data. This is time series data so the order is very important.
+    - The data is ordered by the index in ascending order. So the most recent observations are at the bottom of the table.
+    - Pay attention to the ordering of the data. This is time series data so the order is very important.
     - Focus only on how the most recent {llmalert_recent_n} observations and if they look anomalous or not in reference to the earlier data.
     - The data comes from a pandas dataframe.
 
-    Here is the data (ordered by timestamp in ascending order)):
+    Here is the data (ordered in ascending order)):
 
     {text_representation}
 
