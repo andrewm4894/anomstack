@@ -10,6 +10,10 @@ def make_prompt(df, llmalert_recent_n) -> str:
         str: A prompt for the user to check if there is an anomaly in the time series data.
     """
 
+    from tabulate import tabulate
+
+    text_representation = tabulate(df, headers='keys', tablefmt='pipe')
+
     prompt = f"""
     You are a seasoned time series expert who has worked with time series data for many years.
 
@@ -42,7 +46,7 @@ def make_prompt(df, llmalert_recent_n) -> str:
 
     Here is the data (ordered by timestamp in ascending order)):
 
-    {df.to_string(max_rows=len(df), max_cols=(len(df.columns)))}
+    {text_representation}
 
     I need a yes or no answer as to if you think the recent data looks anomalous or not.
 

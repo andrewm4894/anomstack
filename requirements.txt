@@ -21,3 +21,4 @@ pyod
 pyyaml
 snowflake-connector-python[pandas]
 seaborn
+tabulate
