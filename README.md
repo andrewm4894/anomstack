@@ -366,6 +366,8 @@ Note: If you don't want to send your metric data to OpenAI then just set `disabl
 <details>
 <summary>Click to see some LLM Alert screenshots</summary>
 
+Below you see an example of an LLM alert via email. In this case we add a description of the reasoning from the LLM around why it thinks the metric looks anomalous.
+
 ![llmalert1](./docs/img/llmalert1.png)
 
 ![llmalert2](./docs/img/llmalert2.png)
