@@ -9,6 +9,7 @@ train_cron_schedule: "15 */1 * * *" # train every 1 hour
 score_cron_schedule: "*/15 * * * *" # score every 15 minutes
 alert_cron_schedule: "*/20 * * * *" # alert every 20 minutes
 llmalert_cron_schedule: "*/20 * * * *" # alert every 20 minutes
+disable_llmalert: False
 plot_cron_schedule: "*/25 * * * *" # plot every 25 minutes
 alert_always: False
 alert_methods: "email"

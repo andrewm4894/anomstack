@@ -56,7 +56,7 @@ disable_ingest: False # if you want to disable ingest job for some reason.
 disable_train: False # if you want to disable train job for some reason.
 disable_score: False # if you want to disable score job for some reason.
 disable_alert: False # if you want to disable alert job for some reason.
-disable_llmalert: False # if you want to disable llmalert job for some reason.
+disable_llmalert: True # if you want to disable llmalert job for some reason.
 disable_plot: False # if you want to disable plot job for some reason.
 prompt_fn: >
   {% include "./defaults/python/prompt.py" %}
