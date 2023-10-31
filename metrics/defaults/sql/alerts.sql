@@ -4,6 +4,7 @@ metric_score_data as
 (
 select distinct
   metric_timestamp,
+  metric_batch,
   metric_name,
   avg(metric_value) as metric_score,
 from
@@ -15,13 +16,14 @@ where
   and
   -- limit to the last {{ alert_metric_timestamp_max_days_ago }} days
   extract(day from cast(now() as timestamp) - cast(metric_timestamp as timestamp)) <= {{ alert_metric_timestamp_max_days_ago }}
-group by 1,2
+group by 1,2,3
 ),
 
 metric_value_data as
 (
 select distinct
   metric_timestamp,
+  metric_batch,
   metric_name,
   avg(metric_value) as metric_value,
 from
@@ -33,13 +35,14 @@ where
   and
   -- limit to the last {{ alert_metric_timestamp_max_days_ago }} days
   extract(day from cast(now() as timestamp) - cast(metric_timestamp as timestamp)) <= {{ alert_metric_timestamp_max_days_ago }}
-group by 1,2
+group by 1,2,3
 ),
 
 metric_score_recency_ranked as
 (
 select distinct
   metric_timestamp,
+  metric_batch,
   metric_name,
   metric_score,
   rank() over (partition by metric_name order by metric_timestamp desc) as metric_score_recency_rank
@@ -51,6 +54,7 @@ metric_value_recency_ranked as
 (
 select distinct
   metric_timestamp,
+  metric_batch,
   metric_name,
   metric_value,
   rank() over (partition by metric_name order by metric_timestamp desc) as metric_value_recency_rank
@@ -62,6 +66,7 @@ data_ranked as
 (
 select
   m.metric_timestamp,
+  m.metric_batch,
   m.metric_name,
   m.metric_value,
   s.metric_score,
@@ -74,6 +79,8 @@ left outer join
 on 
   m.metric_name = s.metric_name
   and
+  m.metric_batch = s.metric_batch
+  and
   m.metric_timestamp = s.metric_timestamp
 ),
 
@@ -81,6 +88,7 @@ data_smoothed as
 (
 select
   metric_timestamp,
+  metric_batch,
   metric_name,
   metric_value,
   metric_score,
@@ -96,6 +104,7 @@ data_alerts as
 (
 select
   metric_timestamp,
+  metric_batch,
   metric_name,
   metric_value,
   metric_score,
@@ -112,24 +121,30 @@ where
 metrics_triggered as
 (
 select
+  metric_batch,
   metric_name,
   max(metric_alert) as metric_alert_tmp
 from 
   data_alerts
-group by 1
+group by 1,2
 having max(metric_alert) = 1
 )
 
 select
   metric_timestamp,
-  metric_name,
+  data_alerts.metric_batch as metric_batch,
+  data_alerts.metric_name as metric_name,
   metric_value,
   metric_score,
   metric_score_smooth,
   metric_alert
 from
   data_alerts
-where
-  -- only return metrics that have been triggered
-  metric_name in (select metric_name from metrics_triggered)
+-- only return metrics that have been triggered
+join
+  metrics_triggered
+on
+  data_alerts.metric_batch = metrics_triggered.metric_batch
+  and
+  data_alerts.metric_name = metrics_triggered.metric_name
 ;

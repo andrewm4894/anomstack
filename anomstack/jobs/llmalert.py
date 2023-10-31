@@ -102,9 +102,7 @@ def build_llmalert_job(spec) -> JobDefinition:
                     )
 
                 if llmalert_smooth_n > 0:
-                    df_prompt = df_metric[
-                        ["metric_value", "metric_value_smooth"]
-                    ]
+                    df_prompt = df_metric[["metric_value", "metric_value_smooth"]]
                 else:
                     df_prompt = df_metric[["metric_value"]]
 
@@ -120,7 +118,7 @@ def build_llmalert_job(spec) -> JobDefinition:
 
                 logger.info(f"is_anomalous: {is_anomalous}")
                 decision_description = (
-                        f"{decision_confidence_level.upper()}: {decision_reasoning}"
+                    f"{decision_confidence_level.upper()}: {decision_reasoning}"
                 )
                 logger.info(f"decision_description: {decision_description}")
 

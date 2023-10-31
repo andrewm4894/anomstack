@@ -8,24 +8,30 @@ import sys
 import re
 import copy
 
-if sys.version < '3' or sys.version.startswith('3.0.') or sys.version.startswith('3.1.') or sys.version.startswith('3.2.'):
+if (
+    sys.version < "3"
+    or sys.version.startswith("3.0.")
+    or sys.version.startswith("3.1.")
+    or sys.version.startswith("3.2.")
+):
     from collections import Iterable
 else:
     from collections.abc import Iterable
 
 
 class Pyasciigraph:
-
-    def __init__(self, line_length=79,
-                 min_graph_length=50,
-                 separator_length=2,
-                 force_max_value=None,
-                 graphsymbol=None,
-                 multivalue=True,
-                 human_readable=None,
-                 float_format='{0:.0f}',
-                 titlebar='#'
-                 ):
+    def __init__(
+        self,
+        line_length=79,
+        min_graph_length=50,
+        separator_length=2,
+        force_max_value=None,
+        graphsymbol=None,
+        multivalue=True,
+        human_readable=None,
+        float_format="{0:.0f}",
+        titlebar="#",
+    ):
         """Constructor of Pyasciigraph
 
         :param line_length: the max number of char on a line
@@ -77,31 +83,39 @@ class Pyasciigraph:
         self.float_format = float_format
         self.titlebar = titlebar
         if graphsymbol is None:
-            self.graphsymbol = self._u('█')
+            self.graphsymbol = self._u("█")
         else:
             self.graphsymbol = graphsymbol
         if self._len_noansi(self.graphsymbol) != 1:
-            raise Exception('Bad graphsymbol length, must be 1',
-                            self._len_noansi(self.graphsymbol))
+            raise Exception(
+                "Bad graphsymbol length, must be 1", self._len_noansi(self.graphsymbol)
+            )
         self.multivalue = multivalue
-        self.hsymbols = [self._u(''), self._u('K'), self._u('M'),
-                         self._u('G'), self._u('T'), self._u('P'),
-                         self._u('E'), self._u('Z'), self._u('Y')]
+        self.hsymbols = [
+            self._u(""),
+            self._u("K"),
+            self._u("M"),
+            self._u("G"),
+            self._u("T"),
+            self._u("P"),
+            self._u("E"),
+            self._u("Z"),
+            self._u("Y"),
+        ]
 
-        if human_readable == 'si':
+        if human_readable == "si":
             self.divider = 1000
-        elif human_readable == 'cs':
+        elif human_readable == "cs":
             self.divider = 1024
         else:
             self.divider = None
 
     @staticmethod
     def _len_noansi(string):
-        l = len(re.sub('\x1b[^m]*m', '', string))
+        l = len(re.sub("\x1b[^m]*m", "", string))
         return l
 
     def _trans_hr(self, value):
-
         if self.divider is None:
             return self.float_format.format(value)
         vl = value
@@ -115,37 +129,35 @@ class Pyasciigraph:
 
     @staticmethod
     def _u(x):
-        """Unicode compat helper
-        """
-        if sys.version < '3':
-            return x + ''.decode("utf-8")
+        """Unicode compat helper"""
+        if sys.version < "3":
+            return x + "".decode("utf-8")
         else:
             return x
 
     @staticmethod
     def _color_string(string, color):
-        """append color to a string + reset to white at the end of the string
-        """
+        """append color to a string + reset to white at the end of the string"""
         if color is None:
             return string
         else:
-            return color + string + '\033[0m'
+            return color + string + "\033[0m"
 
     def _get_thresholds(self, data):
         """get various info (min, max, width... etc)
         from the data to graph.
         """
         all_thre = {}
-        all_thre['value_max_length'] = 0
-        all_thre['info_max_length'] = 0
-        all_thre['max_pos_value'] = 0
-        all_thre['min_neg_value'] = 0
+        all_thre["value_max_length"] = 0
+        all_thre["info_max_length"] = 0
+        all_thre["max_pos_value"] = 0
+        all_thre["min_neg_value"] = 0
 
         if self.max_value is not None:
-            all_thre['max_pos_value'] = self.max_value
+            all_thre["max_pos_value"] = self.max_value
 
         # Iterate on all the items
-        for (info, value, color) in data:
+        for info, value, color in data:
             totalvalue_len = 0
 
             # If we have a list of values for the item
@@ -153,7 +165,7 @@ class Pyasciigraph:
                 icount = 0
                 maxvalue = 0
                 minvalue = 0
-                for (ivalue, icolor) in value:
+                for ivalue, icolor in value:
                     if ivalue < minvalue:
                         minvalue = ivalue
                     if ivalue > maxvalue:
@@ -167,7 +179,9 @@ class Pyasciigraph:
                     if self.multivalue:
                         totalvalue_len += len("," + self._trans_hr(ivalue))
                     else:
-                        totalvalue_len = max(totalvalue_len, len(self._trans_hr(ivalue)))
+                        totalvalue_len = max(
+                            totalvalue_len, len(self._trans_hr(ivalue))
+                        )
 
                 if self.multivalue:
                     # remove one comma if multivalues
@@ -179,39 +193,41 @@ class Pyasciigraph:
                 maxvalue = value
                 minvalue = value
 
-            if minvalue < all_thre['min_neg_value']:
-                all_thre['min_neg_value'] = minvalue
+            if minvalue < all_thre["min_neg_value"]:
+                all_thre["min_neg_value"] = minvalue
 
-            if maxvalue > all_thre['max_pos_value']:
-                all_thre['max_pos_value'] = maxvalue
+            if maxvalue > all_thre["max_pos_value"]:
+                all_thre["max_pos_value"] = maxvalue
 
-            if self._len_noansi(info) > all_thre['info_max_length']:
-                all_thre['info_max_length'] = self._len_noansi(info)
+            if self._len_noansi(info) > all_thre["info_max_length"]:
+                all_thre["info_max_length"] = self._len_noansi(info)
 
-            if totalvalue_len > all_thre['value_max_length']:
-                all_thre['value_max_length'] = totalvalue_len
+            if totalvalue_len > all_thre["value_max_length"]:
+                all_thre["value_max_length"] = totalvalue_len
 
         return all_thre
 
     def _gen_graph_string(
-            self, value, max_value, min_neg_value, graph_length, start_value_pos, color):
-        """Generate the bar + its paddings (left and right)
-        """
-        def _gen_graph_string_part(
-                value, max_value, min_neg_value, graph_length, color):
+        self, value, max_value, min_neg_value, graph_length, start_value_pos, color
+    ):
+        """Generate the bar + its paddings (left and right)"""
 
+        def _gen_graph_string_part(
+            value, max_value, min_neg_value, graph_length, color
+        ):
             all_width = max_value + abs(min_neg_value)
 
             if all_width == 0:
                 bar_width = 0
             else:
-                bar_width = int(abs(float(value)) * float(graph_length) / float(all_width))
-
-            return (Pyasciigraph._color_string(
-                    self.graphsymbol * bar_width,
-                color),
-                bar_width
+                bar_width = int(
+                    abs(float(value)) * float(graph_length) / float(all_width)
                 )
+
+            return (
+                Pyasciigraph._color_string(self.graphsymbol * bar_width, color),
+                bar_width,
+            )
 
         all_width = max_value + abs(min_neg_value)
 
@@ -220,7 +236,9 @@ class Pyasciigraph:
             neg_width = 0
             pos_width = 0
         else:
-            neg_width = int(abs(float(min_neg_value)) * float(graph_length) / float(all_width))
+            neg_width = int(
+                abs(float(min_neg_value)) * float(graph_length) / float(all_width)
+            )
             pos_width = int(abs(max_value) * graph_length / all_width)
 
         if isinstance(value, Iterable):
@@ -239,13 +257,16 @@ class Pyasciigraph:
                 icolor = i[1]
                 scaled_value = ivalue - accuvalue
                 (partstr, squares) = _gen_graph_string_part(
-                    scaled_value, max_value, min_neg_value, graph_length, icolor)
+                    scaled_value, max_value, min_neg_value, graph_length, icolor
+                )
                 totalstring = partstr + totalstring
                 totalsquares += squares
                 accuvalue += scaled_value
 
             # left padding
-            totalstring = Pyasciigraph._u(' ') * (neg_width - abs(totalsquares)) + totalstring
+            totalstring = (
+                Pyasciigraph._u(" ") * (neg_width - abs(totalsquares)) + totalstring
+            )
 
             # reset some counters
             accuvalue = 0
@@ -257,108 +278,111 @@ class Pyasciigraph:
                 icolor = i[1]
                 scaled_value = ivalue - accuvalue
                 (partstr, squares) = _gen_graph_string_part(
-                    scaled_value, max_value, min_neg_value, graph_length, icolor)
+                    scaled_value, max_value, min_neg_value, graph_length, icolor
+                )
                 totalstring += partstr
                 totalsquares += squares
                 accuvalue += scaled_value
 
             # right padding
-            totalstring += Pyasciigraph._u(' ') * (start_value_pos - neg_width - abs(totalsquares))
+            totalstring += Pyasciigraph._u(" ") * (
+                start_value_pos - neg_width - abs(totalsquares)
+            )
             return totalstring
         else:
             # handling for single value item
             (partstr, squares) = _gen_graph_string_part(
-                value, max_value, min_neg_value, graph_length, color)
+                value, max_value, min_neg_value, graph_length, color
+            )
             if value >= 0:
-                return Pyasciigraph._u(' ') * neg_width + \
-                        partstr + \
-                        Pyasciigraph._u(' ') * (start_value_pos - (neg_width + squares))
+                return (
+                    Pyasciigraph._u(" ") * neg_width
+                    + partstr
+                    + Pyasciigraph._u(" ") * (start_value_pos - (neg_width + squares))
+                )
             else:
-                return Pyasciigraph._u(' ') * (neg_width - squares) +\
-                        partstr +\
-                        Pyasciigraph._u(' ') * (start_value_pos - neg_width)
-
+                return (
+                    Pyasciigraph._u(" ") * (neg_width - squares)
+                    + partstr
+                    + Pyasciigraph._u(" ") * (start_value_pos - neg_width)
+                )
 
     def _gen_info_string(self, info, start_info_pos, line_length):
-        """Generate the info string + padding
-        """
-        number_of_space = (line_length - start_info_pos - self._len_noansi(info))
-        return info + Pyasciigraph._u(' ') * number_of_space
+        """Generate the info string + padding"""
+        number_of_space = line_length - start_info_pos - self._len_noansi(info)
+        return info + Pyasciigraph._u(" ") * number_of_space
 
-    def _gen_value_string(self, value, min_neg_value, color, start_value_pos, start_info_pos):
-        """Generate the value string + padding
-        """
+    def _gen_value_string(
+        self, value, min_neg_value, color, start_value_pos, start_info_pos
+    ):
+        """Generate the value string + padding"""
         icount = 0
         if isinstance(value, Iterable) and self.multivalue:
-            for (ivalue, icolor) in value:
+            for ivalue, icolor in value:
                 if icount == 0:
                     # total_len is needed because the color characters count
                     # with the len() function even when they are not printed to
                     # the screen.
                     totalvalue_len = len(self._trans_hr(ivalue))
                     totalvalue = Pyasciigraph._color_string(
-                        self._trans_hr(ivalue), icolor)
+                        self._trans_hr(ivalue), icolor
+                    )
                 else:
                     totalvalue_len += len("," + self._trans_hr(ivalue))
-                    totalvalue += "," + \
-                        Pyasciigraph._color_string(
-                            self._trans_hr(ivalue),
-                            icolor)
+                    totalvalue += "," + Pyasciigraph._color_string(
+                        self._trans_hr(ivalue), icolor
+                    )
                 icount += 1
         elif isinstance(value, Iterable):
             max_value = min_neg_value
             color = None
-            for (ivalue, icolor) in value:
+            for ivalue, icolor in value:
                 if ivalue > max_value:
                     max_value = ivalue
                     color = icolor
             totalvalue_len = len(self._trans_hr(max_value))
-            totalvalue = Pyasciigraph._color_string(
-                self._trans_hr(max_value), color)
+            totalvalue = Pyasciigraph._color_string(self._trans_hr(max_value), color)
 
         else:
             totalvalue_len = len(self._trans_hr(value))
-            totalvalue = Pyasciigraph._color_string(
-                self._trans_hr(value), color)
+            totalvalue = Pyasciigraph._color_string(self._trans_hr(value), color)
 
-        number_space = start_info_pos -\
-            start_value_pos -\
-            totalvalue_len -\
-            self.separator_length
+        number_space = (
+            start_info_pos - start_value_pos - totalvalue_len - self.separator_length
+        )
 
         # This must not be negitive, this happens when the string length is
         # larger than the separator length
         if number_space < 0:
             number_space = 0
 
-        return  ' ' * number_space + totalvalue +\
-                ' ' * \
-            ((start_info_pos - start_value_pos - totalvalue_len)
-             - number_space)
+        return (
+            " " * number_space
+            + totalvalue
+            + " " * ((start_info_pos - start_value_pos - totalvalue_len) - number_space)
+        )
 
     def _sanitize_string(self, string):
-        """try to convert strings to UTF-8
-        """
+        """try to convert strings to UTF-8"""
         # get the type of a unicode string
-        unicode_type = type(Pyasciigraph._u('t'))
+        unicode_type = type(Pyasciigraph._u("t"))
         input_type = type(string)
         if input_type is str:
-            if sys.version < '3':
+            if sys.version < "3":
                 info = unicode(string)
             else:
                 info = string
         elif input_type is unicode_type:
             info = string
         elif input_type is int or input_type is float:
-            if sys.version < '3':
+            if sys.version < "3":
                 info = unicode(string)
             else:
                 info = str(string)
         return info
 
     def _sanitize_value(self, value):
-        """try to values to UTF-8
-        """
+        """try to values to UTF-8"""
         if isinstance(value, Iterable):
             newcollection = []
             for i in value:
@@ -373,22 +397,31 @@ class Pyasciigraph:
     def _sanitize_data(self, data):
         ret = []
         for item in data:
-            if (len(item) == 2):
+            if len(item) == 2:
                 if isinstance(item[1], Iterable):
                     ret.append(
-                        (self._sanitize_string(item[0]),
-                         self._sanitize_value(item[1]),
-                         None))
+                        (
+                            self._sanitize_string(item[0]),
+                            self._sanitize_value(item[1]),
+                            None,
+                        )
+                    )
                 else:
                     ret.append(
-                        (self._sanitize_string(item[0]),
-                         self._sanitize_value(item[1]),
-                         None))
-            if (len(item) == 3):
+                        (
+                            self._sanitize_string(item[0]),
+                            self._sanitize_value(item[1]),
+                            None,
+                        )
+                    )
+            if len(item) == 3:
                 ret.append(
-                    (self._sanitize_string(item[0]),
-                     self._sanitize_value(item[1]),
-                     item[2]))
+                    (
+                        self._sanitize_string(item[0]),
+                        self._sanitize_value(item[1]),
+                        item[2],
+                    )
+                )
         return ret
 
     def graph(self, label=None, data=[]):
@@ -413,33 +446,31 @@ class Pyasciigraph:
 
         real_line_length = max(self.line_length, label_len)
 
-        min_line_length = self.min_graph_length +\
-            2 * self.separator_length +\
-            all_thre['value_max_length'] +\
-            all_thre['info_max_length']
+        min_line_length = (
+            self.min_graph_length
+            + 2 * self.separator_length
+            + all_thre["value_max_length"]
+            + all_thre["info_max_length"]
+        )
 
         if min_line_length < real_line_length:
             # calcul of where to start info
-            start_info_pos = self.line_length -\
-                all_thre['info_max_length']
+            start_info_pos = self.line_length - all_thre["info_max_length"]
             # calcul of where to start value
-            start_value_pos = start_info_pos -\
-                self.separator_length -\
-                all_thre['value_max_length']
+            start_value_pos = (
+                start_info_pos - self.separator_length - all_thre["value_max_length"]
+            )
             # calcul of where to end graph
-            graph_length = start_value_pos -\
-                self.separator_length
+            graph_length = start_value_pos - self.separator_length
         else:
             # calcul of where to start value
-            start_value_pos = self.min_graph_length +\
-                self.separator_length
+            start_value_pos = self.min_graph_length + self.separator_length
             # calcul of where to start info
-            start_info_pos = start_value_pos +\
-                all_thre['value_max_length'] +\
-                self.separator_length
+            start_info_pos = (
+                start_value_pos + all_thre["value_max_length"] + self.separator_length
+            )
             # calcul of where to end graph
-            graph_length = start_value_pos -\
-                self.separator_length
+            graph_length = start_value_pos - self.separator_length
             # calcul of the real line length
             real_line_length = min_line_length
 
@@ -448,63 +479,94 @@ class Pyasciigraph:
             result.append(Pyasciigraph._u(self.titlebar) * real_line_length)
 
         for info, value, color in san_data:
-
             graph_string = self._gen_graph_string(
                 value,
-                    all_thre['max_pos_value'],
-                    all_thre['min_neg_value'],
-                    graph_length,
-                    start_value_pos,
-                    color
+                all_thre["max_pos_value"],
+                all_thre["min_neg_value"],
+                graph_length,
+                start_value_pos,
+                color,
             )
 
             value_string = self._gen_value_string(
                 value,
-                    all_thre['min_neg_value'],
-                    color,
-                    start_value_pos,
-                    start_info_pos,
+                all_thre["min_neg_value"],
+                color,
+                start_value_pos,
+                start_info_pos,
             )
 
-            info_string = self._gen_info_string(
-                info,
-                    start_info_pos,
-                    real_line_length
-            )
+            info_string = self._gen_info_string(info, start_info_pos, real_line_length)
             new_line = graph_string + value_string + info_string
             result.append(new_line)
 
         return result
 
 
-def make_alert_message(df_alert_metric, description='', graph_symbol='~', anomaly_symbol='* ', normal_symbol='  ', alert_float_format='{:,.2f}'):
-
-    df_alert_metric = df_alert_metric.sort_values(by='metric_timestamp', ascending=False)
-    x = df_alert_metric['metric_value'].round(2).values.tolist()
-    labels = (np.where(df_alert_metric['metric_alert']==1,anomaly_symbol,normal_symbol) + (df_alert_metric['metric_score_smooth'].round(2)*100).astype('int').astype('str') + '% ') #+ df_alert_metric['metric_timestamp'].astype('str').values).to_list()
-    data = zip(labels,x)
-    graph_title = f"{df_alert_metric['metric_name'].unique()[0]} ({df_alert_metric['metric_timestamp'].min().strftime('%Y-%m-%d %H:%M')} to {df_alert_metric['metric_timestamp'].max().strftime('%Y-%m-%d %H:%M')})"
+def make_alert_message(
+    df_alert_metric,
+    description="",
+    graph_symbol="~",
+    anomaly_symbol="* ",
+    normal_symbol="  ",
+    alert_float_format="{:,.2f}",
+):
+    df_alert_metric = df_alert_metric.sort_values(
+        by="metric_timestamp", ascending=False
+    )
+    x = df_alert_metric["metric_value"].round(2).values.tolist()
+    metric_batch = df_alert_metric["metric_batch"].unique()[0]
+    metric_name = df_alert_metric["metric_name"].unique()[0]
+    metric_timestamp_from = (
+        df_alert_metric["metric_timestamp"].min().strftime("%Y-%m-%d %H:%M")
+    )
+    metric_timestamp_to = (
+        df_alert_metric["metric_timestamp"].max().strftime("%Y-%m-%d %H:%M")
+    )
+    labels = (
+        np.where(df_alert_metric["metric_alert"] == 1, anomaly_symbol, normal_symbol)
+        + (df_alert_metric["metric_score_smooth"].round(2) * 100)
+        .astype("int")
+        .astype("str")
+        + "% "
+    )  # + df_alert_metric['metric_timestamp'].astype('str').values).to_list()
+    data = zip(labels, x)
+    graph_title = f"{metric_name} ({metric_timestamp_from} to {metric_timestamp_to})"
 
     graph = Pyasciigraph(
-        titlebar=' ',
-        graphsymbol=graph_symbol,
-        float_format=alert_float_format
-        ).graph(graph_title, data)
-    message = ''
-    for i, line in  enumerate(graph):
+        titlebar=" ", graphsymbol=graph_symbol, float_format=alert_float_format
+    ).graph(graph_title, data)
+    message = ""
+    for i, line in enumerate(graph):
         if i <= 1:
-            message += '\n' + line
+            message += "\n" + line
         else:
-            message += '\n' + f't={0-i+2}'.ljust(6, ' ') + line
+            message += "\n" + f"t={0-i+2}".ljust(6, " ") + line
 
     message = f"""
     <pre><code>{message}</code></pre>
     """
 
     # if description is not '' then prepend it to the message
-    if description != '':
-        message = f"""
+    if description != "":
+        message = (
+            f"""
         <pre><code>{description}</code></pre>
-        """ + message
+        """
+            + message
+        )
+
+    # generate tags
+    tags = {
+        "metric_batch": metric_batch,
+        "metric_name": metric_name,
+        "metric_timestamp_from": metric_timestamp_from,
+        "metric_timestamp_to": metric_timestamp_to,
+    }
+
+    # add tags as a json string to bottom of description
+    message += f"""
+    <pre><code>{tags}</code></pre>
+    """
 
     return message
