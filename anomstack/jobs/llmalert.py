@@ -114,17 +114,17 @@ def build_llmalert_job(spec) -> JobDefinition:
 
                 (
                     is_anomalous,
-                    anomaly_description,
-                    anomaly_confidence_level,
+                    decision_reasoning,
+                    decision_confidence_level,
                 ) = get_completion(prompt, openai_model)
 
                 logger.info(f"is_anomalous: {is_anomalous}")
+                decision_description = (
+                        f"{decision_confidence_level.upper()}: {decision_reasoning}"
+                )
+                logger.info(f"decision_description: {decision_description}")
 
                 if is_anomalous:
-                    anomaly_description = (
-                        f"{anomaly_confidence_level.upper()}: {anomaly_description}"
-                    )
-                    logger.info(f"anomaly_description: {anomaly_description}")
                     metric_timestamp_max = (
                         df_metric["metric_timestamp"].max().strftime("%Y-%m-%d %H:%M")
                     )
@@ -135,7 +135,7 @@ def build_llmalert_job(spec) -> JobDefinition:
                         df=df_metric,
                         threshold=threshold,
                         alert_methods=alert_methods,
-                        description=anomaly_description,
+                        description=decision_description,
                     )
 
         llmalert(get_llmalert_data())

@@ -36,17 +36,17 @@ def get_completion(prompt: str, model="gpt-3.5-turbo", max_retries=5):
                                     "type": "boolean",
                                     "description": "True if the recent metric values looks anomalous, False otherwise.",
                                 },
-                                "anomaly_description": {
+                                "decision_reasoning": {
                                     "type": "string",
-                                    "description": "If is_anomalous=True, a detailed description of the anomaly including some reasoning, else None.",
+                                    "description": "A detailed description, referencing observations by their index number or value, on why or why not the metric looks anomalous.",
                                 },
-                                "anomaly_confidence_level": {
+                                "decision_confidence_level": {
                                     "type": "string",
                                     "enum": ["high", "medium", "low"],
-                                    "description": "Confidence level in the is_anomalous flag. 'high' if very confident in the anomaly decision, 'medium' if somewhat confident, 'low' if not confident.",
+                                    "description": "Confidence level in the `is_anomalous` flag. 'high' if very confident in the anomaly decision, 'medium' if somewhat confident, 'low' if not confident.",
                                 },
                             },
-                            "required": ["is_anomalous", "anomaly_description", "anomaly_confidence_level"],
+                            "required": ["is_anomalous", "decision_reasoning", "decision_confidence_level"],
                         },
                     }
                 ],
@@ -66,7 +66,7 @@ def get_completion(prompt: str, model="gpt-3.5-turbo", max_retries=5):
     funcs = reply_content["message"].to_dict()["function_call"]["arguments"]
     funcs = json.loads(funcs)
     is_anomalous = funcs["is_anomalous"]
-    anomaly_description = funcs["anomaly_description"]
-    anomaly_confidence_level = funcs["anomaly_confidence_level"]
+    decision_reasoning = funcs["decision_reasoning"]
+    decision_confidence_level = funcs["decision_confidence_level"]
 
-    return is_anomalous, anomaly_description, anomaly_confidence_level
+    return is_anomalous, decision_reasoning, decision_confidence_level
