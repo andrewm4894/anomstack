@@ -105,8 +105,8 @@ select
 from
   data_smoothed
 where
-  -- only alert on the most recent {{ alert_max_n }} values
-  metric_score_recency_rank <= {{ alert_max_n }}
+  -- only plot most recent {{ alert_max_n }} values
+  metric_value_recency_rank <= {{ alert_max_n }}
 )
 
 select

@@ -15,6 +15,7 @@ from dagster import (
     JobDefinition,
     DefaultScheduleStatus,
     asset,
+    get_dagster_logger
 )
 from typing import List, Tuple
 from anomstack.config import specs
@@ -25,6 +26,8 @@ from anomstack.plots.plot import make_batch_plot
 
 def build_plot_job(spec) -> JobDefinition:
     """ """
+    
+    logger = get_dagster_logger()
 
     if spec.get("disable_plot"):
 

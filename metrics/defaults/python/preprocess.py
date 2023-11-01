@@ -1,5 +1,8 @@
+import pandas as pd
+
+
 def preprocess(
-    df, diff_n=0, smooth_n=0, lags_n=0, shuffle=False, dropna=True
+    df, diff_n=0, smooth_n=0, lags_n=0, shuffle=False, dropna=True, freq=None, freq_agg='mean'
 ) -> pd.DataFrame:
     """
     Prepare data for model training and scoring.
@@ -8,6 +11,10 @@ def preprocess(
         diff_n (int): The order of differencing.
         smooth_n (int): The window size for smoothing (moving average).
         lags_n (list): The list of lags to include.
+        shuffle (bool): Whether to shuffle the data.
+        dropna (bool): Whether to drop missing values.
+        freq (str): The frequency string to resample the data.
+        freq_agg (str): The aggregation method for resampling.
     """
 
     X = (
@@ -16,6 +23,15 @@ def preprocess(
         .set_index("metric_timestamp")
     )
     X = X[["metric_value"]]
+
+    if freq is not None:
+        if freq_agg == 'mean':
+            X = X.resample(freq).mean()
+        elif freq_agg == 'sum':
+            X = X.resample(freq).sum()
+        # Add other aggregation methods as needed
+        else:
+            raise ValueError(f"Unsupported aggregation method: {freq_agg}")
 
     if diff_n > 0:
         X["metric_value"] = X["metric_value"].diff(periods=diff_n).dropna()
