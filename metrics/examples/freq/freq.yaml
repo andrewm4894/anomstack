@@ -4,9 +4,12 @@ table_key: "andrewm4894.metrics.metrics"
 disable_batch: False
 metric_batch: "freq_example"
 model_path: "gs://andrewm4894-tmp/models"
-# we will resample to 30 minute intervals and take the mean
+# we will resample to 10 minute intervals and take the mean
 preprocess_params:
-  freq: '30mins'
+  diff_n: 1
+  smooth_n: 3
+  lags_n: 5
+  freq: '10min'
   freq_agg: 'mean'
 ingest_cron_schedule: "*/5 * * * *" # ingest every 5 minutes
 train_cron_schedule: "15 */1 * * *" # train every 1 hour

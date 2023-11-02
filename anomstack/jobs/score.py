@@ -90,9 +90,14 @@ def build_score_job(spec) -> JobDefinition:
             for metric_name in df["metric_name"].unique():
                 df_metric = df[df["metric_name"] == metric_name]
 
+                logger.debug(f"preprocess {metric_name} in {metric_batch} score job.")
+                logger.debug(f"df_metric:\n{df_metric.head()}")
+
                 model = load_model(metric_name, model_path, metric_batch)
 
                 X = preprocess(df_metric, **preprocess_params)
+
+                logger.debug(f"X:\n{X.head()}")
 
                 scores = model.predict_proba(X)
 
@@ -103,19 +108,20 @@ def build_score_job(spec) -> JobDefinition:
                     columns=["metric_value"],
                 )
 
-                # limit to timestamps where metric_score is null to begin with in df_metric
+                # limit to timestamps where metric_score is null to begin with
+                # in df_metric or its not in df_metric
                 df_score = df_score[
                     df_score.index.isin(
-                        df_metric[df_metric["metric_score"].isnull()][
-                            "metric_timestamp"
-                        ]
+                        df_metric[df_metric["metric_score"].isnull()].index
                     )
+                    | ~df_score.index.isin(df_metric.index)
                 ].reset_index()
 
                 # merge some df_metric info onto df_score
                 df_score = df_score.merge(
                     df_metric[["metric_timestamp", "metric_name", "metric_batch"]],
                     on=["metric_timestamp"],
+                    how="left",
                 )
                 df_score["metric_type"] = "score"
                 df_score = df_score[
@@ -127,10 +133,12 @@ def build_score_job(spec) -> JobDefinition:
                         "metric_type",
                     ]
                 ]
+                df_score["metric_name"] = df_score["metric_name"].fillna(metric_name)
+                df_score["metric_batch"] = df_score["metric_batch"].fillna(metric_batch)
 
                 df_scores = pd.concat([df_scores, df_score], ignore_index=True)
 
-            logger.info(df_scores)
+            logger.debug(f"df_scores:\n{df_scores.head()}")
 
             return df_scores
 

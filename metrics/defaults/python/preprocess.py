@@ -2,7 +2,7 @@ import pandas as pd
 
 
 def preprocess(
-    df, diff_n=0, smooth_n=0, lags_n=0, shuffle=False, dropna=True, freq=None, freq_agg='mean'
+    df, diff_n=1, smooth_n=3, lags_n=5, shuffle=False, dropna=True, freq=None, freq_agg='mean'
 ) -> pd.DataFrame:
     """
     Prepare data for model training and scoring.

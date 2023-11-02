@@ -22,11 +22,12 @@ from anomstack.config import specs
 from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
 from anomstack.plots.plot import make_batch_plot
+from anomstack.df.resample import resample
 
 
 def build_plot_job(spec) -> JobDefinition:
     """ """
-    
+
     logger = get_dagster_logger()
 
     if spec.get("disable_plot"):
@@ -43,6 +44,9 @@ def build_plot_job(spec) -> JobDefinition:
 
     metric_batch = spec["metric_batch"]
     db = spec["db"]
+    preprocess_params = spec["preprocess_params"]
+    freq = preprocess_params.get('freq')
+    freq_agg = preprocess_params.get('freq_agg')
 
     @job(name=f"{metric_batch}_plot_job")
     def _job():
@@ -53,6 +57,9 @@ def build_plot_job(spec) -> JobDefinition:
             """ """
 
             df = read_sql(render("plot_sql", spec), db)
+
+            if freq:
+                df = resample(df, freq, freq_agg)
 
             return df
 
