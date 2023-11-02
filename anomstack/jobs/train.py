@@ -99,11 +99,14 @@ def build_train_job(spec) -> JobDefinition:
             else:
                 for metric_name in df["metric_name"].unique():
                     df_metric = df[df["metric_name"] == metric_name]
+                    logger.debug(f"preprocess {metric_name} in {metric_batch} train job.")
+                    logger.debug(f"df_metric:\n{df_metric.head()}")
                     X = preprocess(
-                        df_metric, 
-                        shuffle=True, 
+                        df_metric,
+                        shuffle=True,
                         **preprocess_params
                     )
+                    logger.debug(f"X:\n{X.head()}")
                     if len(X) > 0:
                         logger.info(
                             f"training {metric_name} in {metric_batch} train job. len(X)={len(X)}"

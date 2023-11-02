@@ -28,6 +28,8 @@ preprocess_params:
   diff_n: 1 # 1 will use diff, 0 will use raw metric values.
   smooth_n: 3 # how much smoothing to apply in preprocessing.
   lags_n: 5 # how many lags to include in feature vector.
+  freq: null # how often to resample for different aggregation levels than ingested at. Default of null means no resampling.
+  freq_agg: 'mean' # default aggregation function to use for resampling if freq != None.
 ingest_cron_schedule: "*/3 * * * *" # cron schedule for ingest jobs
 ingest_default_schedule_status: 'STOPPED' # default schedule status for ingest jobs (RUNNING or STOPPED)
 train_cron_schedule: "*/5 * * * *" # cron schedule for training jobs

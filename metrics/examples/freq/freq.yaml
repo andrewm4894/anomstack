@@ -1,0 +1,80 @@
+# a basic minimal example of a batch
+db: "bigquery"
+table_key: "andrewm4894.metrics.metrics"
+disable_batch: False
+metric_batch: "freq_example"
+model_path: "gs://andrewm4894-tmp/models"
+# we will resample to 10 minute intervals and take the mean
+preprocess_params:
+  diff_n: 1
+  smooth_n: 3
+  lags_n: 5
+  freq: '10min'
+  freq_agg: 'mean'
+ingest_cron_schedule: "*/5 * * * *" # ingest every 5 minutes
+train_cron_schedule: "15 */1 * * *" # train every 1 hour
+score_cron_schedule: "*/15 * * * *" # score every 15 minutes
+alert_cron_schedule: "*/30 * * * *" # alert every 30 minutes
+plot_cron_schedule: "*/30 * * * *" # plot every 30 minutes
+alert_always: False
+alert_methods: "email"
+ingest_sql: >
+  select
+    *
+  from
+  (
+  
+  -- freq_random_1
+
+  select
+    current_timestamp() as metric_timestamp,
+    'freq_random_1' as metric_name,
+    case
+      when rand() < 0.01 then
+        case floor(rand() * 5)
+          when 0 then rand() * 10 -- Sudden spike
+          when 1 then rand() * -10 -- Negative spike
+          when 2 then sin(rand() * 10) -- Sinusoidal anomaly
+          when 3 then log(rand() * 10) -- Logarithmic anomaly
+          when 4 then exp(rand() * 1) -- Exponential anomaly
+        end
+      else rand() -- Normal value
+    end as metric_value
+  union all
+  
+  -- freq_random_2
+  
+  select
+    current_timestamp() as metric_timestamp,
+    'freq_random_2' as metric_name,
+    case
+      when rand() < 0.01 then
+        case floor(rand() * 5)
+          when 0 then rand() * 10 -- Sudden spike
+          when 1 then rand() * -10 -- Negative spike
+          when 2 then sin(rand() * 10) -- Sinusoidal anomaly
+          when 3 then log(rand() * 10) -- Logarithmic anomaly
+          when 4 then exp(rand() * 1) -- Exponential anomaly
+        end
+      else rand() -- Normal value
+    end as metric_value
+  union all
+  
+  -- freq_random_3
+  
+  select
+    current_timestamp() as metric_timestamp,
+    'freq_random_3' as metric_name,
+    case
+      when rand() < 0.01 then
+        case floor(rand() * 5)
+          when 0 then rand() * 10 -- Sudden spike
+          when 1 then rand() * -10 -- Negative spike
+          when 2 then sin(rand() * 10) -- Sinusoidal anomaly
+          when 3 then log(rand() * 10) -- Logarithmic anomaly
+          when 4 then exp(rand() * 1) -- Exponential anomaly
+        end
+      else rand() -- Normal value
+    end as metric_value
+
+  );
