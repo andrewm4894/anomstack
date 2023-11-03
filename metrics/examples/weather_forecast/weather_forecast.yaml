@@ -1,6 +1,6 @@
 metric_batch: "weather_forecast"
 db: "snowflake"
-table_key: "ANDREWM4894.TMP.metrics"
+table_key: "ANDREWM4894.metrics.metrics"
 model_path: "gs://andrewm4894-tmp/models"
 ingest_cron_schedule: "*/120 * * * *"
 train_cron_schedule: "*/240 * * * *"
