@@ -1,0 +1,14 @@
+metric_batch: "weather_forecast"
+db: "snowflake"
+table_key: "ANDREWM4894.TMP.metrics"
+model_path: "gs://andrewm4894-tmp/models"
+ingest_cron_schedule: "*/120 * * * *"
+train_cron_schedule: "*/240 * * * *"
+score_cron_schedule: "*/125 * * * *"
+alert_cron_schedule: "*/130 * * * *"
+plot_cron_schedule: "*/130 * * * *"
+alert_always: False
+alert_methods: "email"
+ingest_sql: >
+  {% include "./examples/weather_forecast/weather_forecast.sql" %}
+  
