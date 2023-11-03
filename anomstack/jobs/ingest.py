@@ -72,6 +72,7 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
                 raise ValueError(
                     f"No ingest_sql or ingest_fn specified for {metric_batch}."
                 )
+            logger.debug(f"df: \n{df}")
             df = validate_ingest_df(df)
             df["metric_batch"] = metric_batch
             df["metric_type"] = "metric"
@@ -102,8 +103,8 @@ logger = get_dagster_logger()
 ingest_jobs = []
 ingest_schedules = []
 for spec_key, spec in specs.items():
-    logger.info(f"Building ingest job for {spec_key}")
-    logger.info(f"Specs: \n{spec}")
+    logger.debug(f"Building ingest job for {spec_key}")
+    logger.debug(f"Specs: \n{spec}")
     ingest_job = build_ingest_job(spec)
     ingest_jobs.append(ingest_job)
     if spec.get("ingest_default_schedule_status", "STOPPED") == "RUNNING":
