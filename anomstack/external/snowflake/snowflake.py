@@ -8,7 +8,7 @@ import pandas as pd
 from anomstack.external.snowflake.credentials import get_snowflake_credentials
 
 
-def read_sql_snowflake(sql) -> pd.DataFrame:
+def read_sql_snowflake(sql, cols_lowercase=True) -> pd.DataFrame:
     """
     Read data from SQL.
     """
@@ -29,17 +29,18 @@ def read_sql_snowflake(sql) -> pd.DataFrame:
     cur.execute(sql)
     df = cur.fetch_pandas_all()
 
+    if cols_lowercase:
+        df.columns = df.columns.str.lower()
+
     logger.debug(f'df:\n{df}')
 
     return df
 
 
-def save_df_snowflake(df, table_key) -> pd.DataFrame:
+def save_df_snowflake(df, table_key, cols_lowercase=True) -> pd.DataFrame:
     """
     Save df to db.
     """
-
-    logger = get_dagster_logger()
 
     table_key_parts = table_key.split('.')
 
@@ -61,5 +62,8 @@ def save_df_snowflake(df, table_key) -> pd.DataFrame:
     )
 
     conn.close()
+
+    if cols_lowercase:
+        df.columns = df.columns.str.lower()
 
     return df
