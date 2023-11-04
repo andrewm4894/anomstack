@@ -4,6 +4,7 @@ metric_score_data as
 (
 select distinct
   metric_timestamp,
+  metric_batch,
   metric_name,
   avg(metric_value) as metric_score,
 from
@@ -15,13 +16,14 @@ where
   and
   -- limit to the last {{ alert_metric_timestamp_max_days_ago }} days
   extract(day from cast(now() as timestamp) - cast(metric_timestamp as timestamp)) <= {{ alert_metric_timestamp_max_days_ago }}
-group by 1,2
+group by 1,2,3
 ),
 
 metric_value_data as
 (
 select distinct
   metric_timestamp,
+  metric_batch,
   metric_name,
   avg(metric_value) as metric_value,
 from
@@ -33,13 +35,14 @@ where
   and
   -- limit to the last {{ alert_metric_timestamp_max_days_ago }} days
   extract(day from cast(now() as timestamp) - cast(metric_timestamp as timestamp)) <= {{ alert_metric_timestamp_max_days_ago }}
-group by 1,2
+group by 1,2,3
 ),
 
 metric_score_recency_ranked as
 (
 select distinct
   metric_timestamp,
+  metric_batch,
   metric_name,
   metric_score,
   rank() over (partition by metric_name order by metric_timestamp desc) as metric_score_recency_rank
@@ -51,6 +54,7 @@ metric_value_recency_ranked as
 (
 select distinct
   metric_timestamp,
+  metric_batch,
   metric_name,
   metric_value,
   rank() over (partition by metric_name order by metric_timestamp desc) as metric_value_recency_rank
@@ -62,6 +66,7 @@ data_ranked as
 (
 select
   m.metric_timestamp,
+  m.metric_batch,
   m.metric_name,
   m.metric_value,
   s.metric_score,
@@ -71,7 +76,9 @@ from
   metric_value_recency_ranked m
 left outer join
   metric_score_recency_ranked s
-on 
+on
+  m.metric_batch = s.metric_batch
+  and
   m.metric_name = s.metric_name
   and
   m.metric_timestamp = s.metric_timestamp
@@ -81,13 +88,14 @@ data_smoothed as
 (
 select
   metric_timestamp,
+  metric_batch,
   metric_name,
   metric_value,
   metric_score,
   metric_value_recency_rank,
   metric_score_recency_rank,
   -- smooth the metric score over the last {{ alert_smooth_n }} values
-  avg(metric_score) over (partition by metric_name order by metric_score_recency_rank rows between {{ alert_smooth_n }} preceding and current row) as metric_score_smooth
+  avg(metric_score) over (partition by metric_batch, metric_name order by metric_score_recency_rank rows between {{ alert_smooth_n }} preceding and current row) as metric_score_smooth
 from 
   data_ranked
 ),
@@ -96,6 +104,7 @@ data_alerts as
 (
 select
   metric_timestamp,
+  metric_batch,
   metric_name,
   metric_value,
   metric_score,
@@ -111,6 +120,7 @@ where
 
 select
   metric_timestamp,
+  metric_batch,
   metric_name,
   metric_value,
   metric_score,
