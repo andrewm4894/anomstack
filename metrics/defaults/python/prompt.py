@@ -15,13 +15,11 @@ def make_prompt(df, llmalert_recent_n) -> str:
     text_representation = tabulate(df.reset_index(), headers='keys', tablefmt='pipe', showindex=False)
 
     prompt = f"""
-    You are a seasoned time series expert who has worked with time series data for many years.
+    You are a seasoned time series expert who has worked with time series data for many years and are very acomplished at spotting and explaining anomalies in time series data.
 
     Can you help me check if there is an anomaly in this time series data for this metric?
 
-    I am interested in understanding if there may be anomalies in the time series data for the recent observations.
-
-    I am interested in looking at the last {llmalert_recent_n} observations and if it looks like the more recent data may be anomalous or if it looks not all that much different from the rest of the data.
+    I am solely interested in looking at the last {llmalert_recent_n} observations and if it looks like the more recent data may be anomalous or if it looks not all that much different from the rest of the data.
 
     Here are some questions to think about:
 
@@ -38,7 +36,6 @@ def make_prompt(df, llmalert_recent_n) -> str:
 
     Notes about the data:
     - The metric_value column is the raw metric value.
-    - The metric_value_smooth (which may or may not exist) column is the smoothed metric value.
     - The data is ordered by the index in ascending order. So the most recent observations are at the bottom of the table.
     - Pay attention to the ordering of the data. This is time series data so the order is very important.
     - Focus only on how the most recent {llmalert_recent_n} observations and if they look anomalous or not in reference to the earlier data.
@@ -54,7 +51,7 @@ def make_prompt(df, llmalert_recent_n) -> str:
 
     Also think about and provide a confidence level on how confident ('high', 'medium', 'low') you are that the metric is anomalous.
 
-    Please think step by step and provide a description of your thought process as you go through the data.
+    Please think step by step and provide a description, along with evidence, of your thought process as you go through the data.
     """
 
     return prompt

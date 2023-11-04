@@ -513,7 +513,7 @@ def make_alert_message(
 ):
     df_alert_metric = df_alert_metric.sort_values(
         by="metric_timestamp", ascending=False
-    )
+    ).dropna()
     x = df_alert_metric["metric_value"].round(2).values.tolist()
     metric_batch = df_alert_metric["metric_batch"].unique()[0]
     metric_name = df_alert_metric["metric_name"].unique()[0]

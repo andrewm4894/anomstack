@@ -94,17 +94,14 @@ def build_llmalert_job(spec) -> JobDefinition:
                     df[df.metric_name == metric_name]
                     .sort_values(by="metric_timestamp", ascending=True)
                     .reset_index(drop=True)
-                )
+                ).dropna()
 
                 if llmalert_smooth_n > 0:
-                    df_metric["metric_value_smooth"] = (
+                    df_metric["metric_value"] = (
                         df_metric["metric_value"].rolling(llmalert_smooth_n).mean()
                     )
 
-                if llmalert_smooth_n > 0:
-                    df_prompt = df_metric[["metric_value", "metric_value_smooth"]]
-                else:
-                    df_prompt = df_metric[["metric_value"]]
+                df_prompt = df_metric[["metric_value"]].dropna()
 
                 prompt = make_prompt(df_prompt, llmalert_recent_n)
 
