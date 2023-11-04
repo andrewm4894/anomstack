@@ -13,7 +13,7 @@ disable_batch: False # if you want to disable a metric batch for some reason.
 train_max_n: 1000 # max number of observations for training a model.
 train_min_n: 14 # min number of observations for training a model.
 score_max_n: 20 # max n to pull for scoring to avoid pulling more than needed.
-alert_max_n: 90 # max n to include and plot in an alert.
+alert_max_n: 180 # max n to include and plot in an alert.
 alert_metric_timestamp_max_days_ago: 7 # don't alert on metrics older than this.
 alert_recent_n: 2 # only alert on recent n so as to avoid continually alerting.
 llmalert_recent_n: 5 # only llmalert on recent n so as to avoid continually alerting.
