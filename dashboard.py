@@ -6,10 +6,8 @@ $ streamlit run dashboard.py
 """
 
 import streamlit as st
-import pandas as pd
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
-import matplotlib.pyplot as plt
 from anomstack.config import specs
 from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
@@ -25,7 +23,11 @@ def plot_time_series(df, metric_name) -> go.Figure:
 
     # Add traces/lines for metric_value, metric_score, and metric_alert
     fig.add_trace(
-        go.Scatter(x=df["metric_timestamp"], y=df["metric_value"], name="Metric Value"),
+        go.Scatter(
+            x=df["metric_timestamp"],
+            y=df["metric_value"],
+            name="Metric Value"
+        ),
         secondary_y=False,
     )
 
@@ -43,7 +45,11 @@ def plot_time_series(df, metric_name) -> go.Figure:
     fig.update_xaxes(showgrid=False, zeroline=False)
     fig.update_yaxes(showgrid=False, zeroline=False, secondary_y=False)
     fig.update_yaxes(
-        showgrid=False, zeroline=False, range=[0, 1], tickformat=".0%", secondary_y=True
+        showgrid=False,
+        zeroline=False,
+        range=[0, 1],
+        tickformat=".0%",
+        secondary_y=True
     )
 
     # Set x-axis title
@@ -57,7 +63,13 @@ def plot_time_series(df, metric_name) -> go.Figure:
     fig.update_layout(
         title_text=f"{metric_name} (n={len(df)})",
         hovermode="x",
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1
+        ),
     )
 
     return fig
