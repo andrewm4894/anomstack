@@ -6,7 +6,7 @@ select distinct
   metric_timestamp,
   metric_batch,
   metric_name,
-  avg(metric_value) as metric_score,
+  avg(metric_value) as metric_score
 from
   {{ table_key }}
 where
@@ -25,7 +25,7 @@ select distinct
   metric_timestamp,
   metric_batch,
   metric_name,
-  avg(metric_value) as metric_value,
+  avg(metric_value) as metric_value
 from
   {{ table_key }}
 where
@@ -71,7 +71,7 @@ select
   m.metric_value,
   s.metric_score,
   m.metric_value_recency_rank,
-  s.metric_score_recency_rank,
+  s.metric_score_recency_rank
 from
   metric_value_recency_ranked m
 left outer join

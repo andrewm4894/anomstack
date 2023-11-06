@@ -7,7 +7,7 @@ select
   metric_batch,
   metric_name,
   avg(if(metric_type='metric',metric_value,null)) as metric_value,
-  avg(if(metric_type='score',metric_value,null)) as metric_score,
+  avg(if(metric_type='score',metric_value,null)) as metric_score
 from
   {{ table_key }}
 where
