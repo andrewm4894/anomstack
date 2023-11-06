@@ -10,25 +10,19 @@ def render(spec_key, spec, params=None) -> str:
     Render from a templated spec key.
     """
 
-    environment = jinja2.Environment(loader=FileSystemLoader('metrics/'))
+    environment = jinja2.Environment(loader=FileSystemLoader("metrics/"))
 
-    if params is None:
-        params = {}
+    # Use empty dictionary if params is None
+    params = {} if params is None else params
 
-    rendered = environment.from_string(spec[spec_key])
-    rendered = rendered.render(
-        table_key=spec.get('table_key'),
-        metric_batch=spec.get('metric_batch'),
-        train_max_n=spec.get('train_max_n'),
-        train_min_n=spec.get('train_min_n'),
-        score_max_n=spec.get('score_max_n'),
-        alert_max_n=spec.get('alert_max_n'),
-        alert_threshold=spec.get('alert_threshold'),
-        alert_smooth_n=spec.get('alert_smooth_n'),
-        metric_name=params.get('metric_name'),
-        alert_recent_n=spec.get('alert_recent_n'),
-        alert_metric_timestamp_max_days_ago=spec.get('alert_metric_timestamp_max_days_ago'),
-        alert_always=spec.get('alert_always'),
-    )
+    # Initialize the template with the spec key
+    template = environment.from_string(spec[spec_key])
+
+    # Prepare context by starting with spec, then update with params
+    # Any key that exists in both will have the value from params
+    context = {**spec, **params}
+
+    # Render the template with the context
+    rendered = template.render(**context)
 
     return rendered
