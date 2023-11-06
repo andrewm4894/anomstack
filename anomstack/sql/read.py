@@ -22,6 +22,8 @@ def db_translate(sql, db) -> str:
     """
     if db == "bigquery":
         sql = sql.replace("now()", "current_timestamp()")
+    elif db == "snowflake":
+        sql = sql.replace("now()", "current_timestamp()")
 
     return sql
 
