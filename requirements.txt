@@ -17,8 +17,10 @@ git+https://github.com/wbond/oscrypto.git@master#egg=oscrypto
 openai
 pandas
 pandas-gbq
+plotly
 pyod
 pyyaml
 snowflake-connector-python[pandas]
 seaborn
+streamlit
 tabulate

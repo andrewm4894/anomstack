@@ -315,7 +315,11 @@ Environment variables for your metrics can be set in the `.env` file (see [`.exa
 
 ## Visualization
 
-Visualization of the metrics and anomaly scores is a bit outside the scope of this project, but we do provide the [`plot.py`](./anomstack/jobs/plot.py) job to generate some plots of your metrics and anomaly scores for quick eyeballing within the dagster UI.
+Visualization of the metrics and anomaly scores is a bit outside the scope of this project, but we do provide a couple of ways to visualize your metrics and anomaly scores.
+
+### Dagster UI
+
+Within Dagster there is the [`plot.py`](./anomstack/jobs/plot.py) job to generate some plots of your metrics and anomaly scores for quick eyeballing within the dagster UI.
 
 <details>
 <summary>Click to see some screenshots</summary>
@@ -323,6 +327,24 @@ Visualization of the metrics and anomaly scores is a bit outside the scope of th
 ![plot1](./docs/img/plot1.png)
 
 ![plot2](./docs/img/plot2.png)
+
+</details>
+
+### Streamlit
+
+You can also use the little streamlit app in [`./dashboard.py`](./dashboard.py) to visualize your metrics and anomaly scores.
+
+```bash
+# run streamlit app
+streamlit run .\dashboard.py
+```
+
+<details>
+<summary>Click to see some screenshots</summary>
+
+![streamlit1](./docs/img/streamlit1.png)
+
+![streamlit2](./docs/img/streamlit2.png)
 
 </details>
 
@@ -358,6 +380,8 @@ And the attached plot will look something like this:
 [back to top](#anomstack)
 
 Yes! I have managed to find a way to ram a large language model (LLM) into this project. But you know what, it might just work...
+
+**Update**: It works horribly, but it works! 🤣. Still need to do a lot more prompt engineering to get this to work well, but it's a start.
 
 Idea here is to just send the metric data and prompt to a LLM (ChatGPT) and ask it if it thinks the metric looks anomalous. If it does, we alert.
 
