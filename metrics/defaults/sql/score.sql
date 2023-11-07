@@ -1,3 +1,7 @@
+/*
+Template for generating input metric data for scoring.
+*/
+
 with
 
 data as
@@ -39,5 +43,6 @@ select
 from
   data_ranked
 where
+  -- limit to the most recent {{ score_max_n }} records
   metric_recency_rank <= {{ score_max_n }}
 ;
