@@ -6,8 +6,8 @@ select
   metric_timestamp,
   metric_batch,
   metric_name,
-  avg(case when metric_type='metric' then metric_value else null end)) as metric_value,
-  avg(case when metric_type='score' then metric_value else null end)) as metric_score
+  avg(case when metric_type='metric' then metric_value else null end) as metric_value,
+  avg(case when metric_type='score' then metric_value else null end) as metric_score
 from
   {{ table_key }}
 where
