@@ -11,14 +11,15 @@ from dagster import (
     JobDefinition,
     DefaultScheduleStatus,
     get_dagster_logger,
-    asset
+    asset,
 )
 from anomstack.config import specs
 from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
 from anomstack.fn.run import run_df_fn
 from anomstack.df.save import save_df
-from anomstack.validate.ingest import validate_ingest_df
+from anomstack.df.wrangle import wrangle_df
+from anomstack.validate.validate import validate_df
 
 
 def build_ingest_job(spec: Dict) -> JobDefinition:
@@ -73,9 +74,11 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
                     f"No ingest_sql or ingest_fn specified for {metric_batch}."
                 )
             logger.debug(f"df: \n{df}")
-            df = validate_ingest_df(df)
             df["metric_batch"] = metric_batch
             df["metric_type"] = "metric"
+            df = wrangle_df(df)
+            df = validate_df(df)
+
             return df
 
         @op(name=f"{metric_batch}_save_metrics")
