@@ -1,6 +1,6 @@
 # a basic minimal example of a batch
 db: "snowflake"
-table_key: "ANDREWM4894.TMP.metrics"
+table_key: "ANDREWM4894.TMP.METRICS"
 disable_batch: False
 metric_batch: "snowflake_example_simple"
 ingest_cron_schedule: "*/2 * * * *"
@@ -17,7 +17,7 @@ ingest_sql: >
   select
     current_timestamp() as metric_timestamp,
     'metric_1' as metric_name,
-    random() as metric_value
+    uniform(0::float, 1::float, random()) as metric_value
   union all
   
   -- metric_2
@@ -25,7 +25,7 @@ ingest_sql: >
   select
     current_timestamp() as metric_timestamp,
     'metric_2' as metric_name,
-    random() as metric_value
+    uniform(0::float, 1::float, random()) as metric_value
   union all
   
   -- metric_3
@@ -33,6 +33,6 @@ ingest_sql: >
   select
     current_timestamp() as metric_timestamp,
     'metric_3' as metric_name,
-    random() as metric_value
+    uniform(0::float, 1::float, random()) as metric_value
 
   );
