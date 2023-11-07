@@ -51,6 +51,7 @@ def build_score_job(spec) -> JobDefinition:
     table_key = spec["table_key"]
     db = spec["db"]
     preprocess_params = spec["preprocess_params"]
+    score_metric_rounding = spec.get("score_metric_rounding", 4)
 
     @job(name=f"{metric_batch}_score")
     def _job():
@@ -140,7 +141,7 @@ def build_score_job(spec) -> JobDefinition:
 
                 df_scores = pd.concat([df_scores, df_score], ignore_index=True)
 
-            df_scores = wrangle_df(df_scores)
+            df_scores = wrangle_df(df_scores, rounding=score_metric_rounding)
             df_scores = validate_df(df_scores)
 
             logger.debug(f"df_scores:\n{df_scores.head()}")

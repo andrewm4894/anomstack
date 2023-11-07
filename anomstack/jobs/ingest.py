@@ -50,6 +50,7 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
     db = spec["db"]
     ingest_sql = spec.get("ingest_sql")
     ingest_fn = spec.get("ingest_fn")
+    ingest_metric_rounding = spec.get("ingest_metric_rounding", 4)
 
     @job(name=f"{metric_batch}_ingest")
     def _job():
@@ -76,7 +77,7 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
             logger.debug(f"df: \n{df}")
             df["metric_batch"] = metric_batch
             df["metric_type"] = "metric"
-            df = wrangle_df(df)
+            df = wrangle_df(df, rounding=ingest_metric_rounding)
             df = validate_df(df)
 
             return df

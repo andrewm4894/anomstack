@@ -2,11 +2,11 @@ import pandas as pd
 from dagster import get_dagster_logger
 
 
-def wrangle_df(df: pd.DataFrame) -> pd.DataFrame:
+def wrangle_df(df: pd.DataFrame, rounding: int = 4) -> pd.DataFrame:
     """
     Wrangle the df to ensure its as expected.
     """
-    
+
     logger = get_dagster_logger()
 
     # ensure metric_value is numeric
@@ -30,5 +30,8 @@ def wrangle_df(df: pd.DataFrame) -> pd.DataFrame:
     if df["metric_value"].isnull().sum() > 0:
         logger.warning(f"dropping {df['metric_value'].isnull().sum()} nan metric_value rows")
         df = df[~df["metric_value"].isnull()]
+
+    # round metric_value
+    df["metric_value"] = df["metric_value"].round(rounding)
 
     return df
