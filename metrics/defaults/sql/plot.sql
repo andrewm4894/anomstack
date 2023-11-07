@@ -1,3 +1,7 @@
+/*
+Template for generating the input data for the plot job.
+*/
+
 with
 
 metric_score_data as

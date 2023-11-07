@@ -1,3 +1,7 @@
+/*
+Template for generating the input data for the train job.
+*/
+
 with
 
 data as
