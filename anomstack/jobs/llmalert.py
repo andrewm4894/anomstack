@@ -54,6 +54,7 @@ def build_llmalert_job(spec) -> JobDefinition:
     alert_methods = spec["alert_methods"]
     llmalert_recent_n = spec["llmalert_recent_n"]
     llmalert_smooth_n = spec["llmalert_smooth_n"]
+    llmalert_metric_rounding = spec.get("llmalert_metric_rounding", 4)
 
     @job(name=f"{metric_batch}_llmalert_job")
     def _job():
@@ -101,7 +102,11 @@ def build_llmalert_job(spec) -> JobDefinition:
                         df_metric["metric_value"].rolling(llmalert_smooth_n).mean()
                     )
 
-                df_prompt = df_metric[["metric_value"]].dropna()
+                df_prompt = (
+                    df_metric[["metric_value"]]
+                    .dropna()
+                    .round(llmalert_metric_rounding)
+                )
 
                 prompt = make_prompt(df_prompt, llmalert_recent_n)
 
@@ -119,7 +124,7 @@ def build_llmalert_job(spec) -> JobDefinition:
                 )
                 logger.info(f"decision_description: {decision_description}")
 
-                if is_anomalous == "True" and decision_confidence_level.lower() == "high":
+                if is_anomalous and decision_confidence_level.lower() == "high":
                     metric_timestamp_max = (
                         df_metric["metric_timestamp"].max().strftime("%Y-%m-%d %H:%M")
                     )
