@@ -17,6 +17,8 @@ from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
 from anomstack.io.load import load_model
 from anomstack.fn.run import define_fn
+from anomstack.validate.validate import validate_df
+from anomstack.df.wrangle import wrangle_df
 
 
 def build_score_job(spec) -> JobDefinition:
@@ -106,7 +108,7 @@ def build_score_job(spec) -> JobDefinition:
                     data=scores[:, 1],  # probability of anomaly
                     index=X.index,
                     columns=["metric_value"],
-                )
+                ).round(3)
 
                 # limit to timestamps where metric_score is null to begin with
                 # in df_metric or its not in df_metric
@@ -137,6 +139,9 @@ def build_score_job(spec) -> JobDefinition:
                 df_score["metric_batch"] = df_score["metric_batch"].fillna(metric_batch)
 
                 df_scores = pd.concat([df_scores, df_score], ignore_index=True)
+
+            df_scores = wrangle_df(df_scores)
+            df_scores = validate_df(df_scores)
 
             logger.debug(f"df_scores:\n{df_scores.head()}")
 
