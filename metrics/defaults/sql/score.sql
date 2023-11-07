@@ -20,14 +20,22 @@ group by 1,2,3
 data_ranked as
 (
 select
-  *,
+  metric_timestamp,
+  metric_batch,
+  metric_name,
+  metric_value,
+  metric_score,
   rank() over (partition by metric_name order by metric_timestamp desc) as metric_recency_rank
 from
   data
 )
 
 select
-  *
+  metric_timestamp,
+  metric_batch,
+  metric_name,
+  metric_value,
+  metric_score
 from
   data_ranked
 where
