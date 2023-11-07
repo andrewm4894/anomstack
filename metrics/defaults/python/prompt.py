@@ -36,12 +36,12 @@ def make_prompt(df, llmalert_recent_n) -> str:
 
     Notes about the data:
     - The metric_value column is the raw metric value.
-    - The data is ordered by the index in ascending order. So the most recent observations are at the bottom of the table.
+    - The data is ordered by the index in ascending order, oldest to newest. So the most recent observations are at the bottom of the table.
     - Pay attention to the ordering of the data. This is time series data so the order is very important.
     - Focus only on how the most recent {llmalert_recent_n} observations and if they look anomalous or not in reference to the earlier data.
     - The data comes from a pandas dataframe.
 
-    Here is the data (ordered in ascending order)):
+    Here is the data (ordered in ascending order, so from oldest to newest (top to bottom)):
 
     {text_representation}
 
