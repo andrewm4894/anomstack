@@ -11,6 +11,10 @@ from plotly.subplots import make_subplots
 from anomstack.config import specs
 from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 
 def plot_time_series(df, metric_name) -> go.Figure:
