@@ -339,6 +339,8 @@ You can also use the little streamlit app in [`./dashboard.py`](./dashboard.py) 
 streamlit run .\dashboard.py
 ```
 
+...Or you can run it via `make dashboard`.
+
 <details>
 <summary>Click to see some screenshots</summary>
 
