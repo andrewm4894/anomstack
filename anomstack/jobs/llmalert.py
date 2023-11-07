@@ -119,7 +119,7 @@ def build_llmalert_job(spec) -> JobDefinition:
                 )
                 logger.info(f"decision_description: {decision_description}")
 
-                if is_anomalous:
+                if is_anomalous == "True" and decision_confidence_level.lower() == "high":
                     metric_timestamp_max = (
                         df_metric["metric_timestamp"].max().strftime("%Y-%m-%d %H:%M")
                     )
