@@ -1,11 +1,12 @@
 # a basic minimal example of a batch
 db: "snowflake"
-table_key: "ANDREWM4894.TMP.METRICS"
+table_key: "ANDREWM4894.METRICS.METRICS"
 disable_batch: False
 metric_batch: "snowflake_example_simple"
-ingest_cron_schedule: "*/2 * * * *"
-train_cron_schedule: "*/4 * * * *"
-score_cron_schedule: "*/3 * * * *"
+ingest_cron_schedule: "*/10 * * * *" # ingest every 10 minutes
+train_cron_schedule: "15 */1 * * *" # train every 1 hour
+score_cron_schedule: "*/15 * * * *" # score every 15 minutes
+alert_cron_schedule: "*/20 * * * *" # alert every 20 minutes
 ingest_sql: >
   select
     *
