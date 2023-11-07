@@ -126,6 +126,7 @@ flowchart LR;
     alert[[alert]]
     llmalert[[llmalert]]
     plot[[plot]]
+    dashboardpy["dashboard.py"]
 
     subgraph metric_batch
     metric_batch_config
@@ -165,12 +166,17 @@ flowchart LR;
     model_store
     alerts
     llmalert
+    dashboard
     end
 
     subgraph model_store
     local
     gcs
     s3
+    end
+
+    subgraph dashboard
+    dashboardpy
     end
 
     ingest --> train
@@ -189,6 +195,7 @@ flowchart LR;
     datasources <--> dagster_jobs
     train --> model_store
     model_store --> score
+    datasources --> dashboard
 
 ```
 
