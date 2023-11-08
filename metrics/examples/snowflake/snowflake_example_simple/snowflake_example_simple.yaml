@@ -3,6 +3,7 @@ db: "snowflake"
 table_key: "ANDREWM4894.METRICS.METRICS"
 disable_batch: False
 metric_batch: "snowflake_example_simple"
+model_path: "gs://andrewm4894-tmp/models"
 ingest_cron_schedule: "*/10 * * * *" # ingest every 10 minutes
 train_cron_schedule: "15 */1 * * *" # train every 1 hour
 score_cron_schedule: "*/15 * * * *" # score every 15 minutes
