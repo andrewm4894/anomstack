@@ -85,6 +85,7 @@ def build_alert_job(spec) -> JobDefinition:
                 for metric_name in df_alerts["metric_name"].unique():
                     logger.info(f"alerting on {metric_name}")
                     df_alert = df_alerts.query(f"metric_name=='{metric_name}'")
+                    df_alert["metric_timestamp"] = pd.to_datetime(df_alert["metric_timestamp"])
                     metric_timestamp_max = (
                         df_alert["metric_timestamp"].max().strftime("%Y-%m-%d %H:%M")
                     )

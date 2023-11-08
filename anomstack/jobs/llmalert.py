@@ -96,6 +96,7 @@ def build_llmalert_job(spec) -> JobDefinition:
                     .sort_values(by="metric_timestamp", ascending=True)
                     .reset_index(drop=True)
                 ).dropna()
+                df_metric["metric_timestamp"] = pd.to_datetime(df_metric["metric_timestamp"])
 
                 if llmalert_smooth_n > 0:
                     df_metric["metric_value"] = (
