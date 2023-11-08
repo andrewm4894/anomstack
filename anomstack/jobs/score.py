@@ -100,6 +100,10 @@ def build_score_job(spec) -> JobDefinition:
 
                 X = preprocess(df_metric, **preprocess_params)
 
+                if len(X) == 0:
+                    logger.debug(f"X is empty for {metric_name} in {metric_batch} score job.")
+                    continue
+
                 logger.debug(f"X:\n{X.head()}")
 
                 scores = model.predict_proba(X)
