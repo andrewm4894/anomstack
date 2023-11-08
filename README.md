@@ -98,14 +98,13 @@ Supported ways to run this project:
 
 Anomstack is a lightweight (README buzzword bingo alert!) data app built on top of [dagster](https://dagster.io/) (for orchestration) that lets you easily get great anomaly detection (using [`pyod`](https://pyod.readthedocs.io/en/latest/) for the ML stuff) for your metrics (whatever data platform you use) with as little pain as physically possible.
 
-It's similar in scope and goal to this [Airflow Anomaly Detection provider](https://github.com/andrewm4894/airflow-provider-anomaly-detection) i also made, but easier to get going since does not require airflow and so easier to set up and run yourself.
+It's similar in scope and goal to this [Airflow Anomaly Detection provider](https://github.com/andrewm4894/airflow-provider-anomaly-detection) i also made, but easier to get going since does not require airflow and so easier to set up and run yourself or via [Dagster Cloud](#dagster-cloud) in a [serverless](https://docs.dagster.io/dagster-cloud/deployment/serverless) manner.
 
 ### How it works
 
-1. Define your metrics (part of a ["metric batch"](#concepts)) in a `.sql` file and corresponding config in a `.yaml` file.  
-  (_Note: you can also define your own custom python ingest function instead of just SQL, check out the [`python_ingest_simple`](./metrics/examples/python/python_ingest_simple/python_ingest_simple.yaml) example_)
+1. Define your metrics (part of a ["metric batch"](#concepts)) in a `.sql` file and corresponding config in a `.yaml` file. You can also define your own custom python ingest function instead of just SQL, check out the [`python_ingest_simple`](./metrics/examples/python/python_ingest_simple/python_ingest_simple.yaml) example.
 1. Run Anomstack and it will automatically ingest, train, score, and alert (["jobs"](#concepts)) on your metrics and detect anomalies (alerts via email/slack etc.).
-1. Get alerts when metrics look anomalous.
+1. Get [alerts](#alerts) when metrics look anomalous.
 
 ### Why?
 
@@ -270,7 +269,7 @@ You can see the [`.devcontainer`](./.devcontainer) folder for the config used to
 
 You can run this project in Dagster Cloud. Fork the repo (or make a completely new repo using the `andrewm4894/anomstack` GitHub template) and then follow the instructions [here](https://docs.dagster.io/dagster-cloud/deployment/serverless#with-github) to deploy to Dagster Cloud from your forked repo.
 
-You can then manage you metrics via GitHub and run them in Dagster Cloud.
+You can then manage you metrics via PR's in your GitHub repo and run them in Dagster Cloud which will just sync with your repo.
 
 ### Docker
 
@@ -279,6 +278,8 @@ To get started with Anomstack, you can run it via docker compose.
 ```bash
 # clone repo
 git clone https://github.com/andrewm4894/anomstack.git
+# clone repo at specific release tag
+# git clone -b v0.0.1 https://github.com/andrewm4894/anomstack.git
 # cd into project
 cd anomstack
 # generate your .env file based on example
@@ -295,6 +296,8 @@ You can also run Anomstack locally via a python virtual env.
 ```bash
 # git clone
 git clone https://github.com/andrewm4894/anomstack.git
+# clone repo at specific release tag
+# git clone -b v0.0.1 https://github.com/andrewm4894/anomstack.git
 # cd into project
 cd anomstack
 # make virtual env
