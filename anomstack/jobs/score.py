@@ -145,6 +145,10 @@ def build_score_job(spec) -> JobDefinition:
 
                 df_scores = pd.concat([df_scores, df_score], ignore_index=True)
 
+            if len(df_scores) == 0:
+                logger.debug(f"df_scores is empty for {metric_batch} score job.")
+                return df_scores
+            
             df_scores = wrangle_df(df_scores, rounding=score_metric_rounding)
             df_scores = validate_df(df_scores)
 
@@ -164,7 +168,10 @@ def build_score_job(spec) -> JobDefinition:
                 pd.DataFrame: A pandas dataframe containing the saved data.
             """
 
-            df = save_df(df, db, table_key)
+            if len(df) > 0:
+                df = save_df(df, db, table_key)
+            else:
+                logger.debug(f"no scores to save, df is empty for {metric_batch} score job.")
 
             return df
 
