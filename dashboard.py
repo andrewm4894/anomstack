@@ -94,16 +94,26 @@ sql = render("plot_sql", specs[batch_selection], params={"alert_max_n": last_n})
 df = read_sql(sql, db=specs[batch_selection]["db"])
 
 # data based inputs
-metric_selection = st.sidebar.selectbox(
-    "Metric Name:",
-    df[df["metric_batch"] == batch_selection]["metric_name"].unique(),
-)
+metric_names = ['ALL']
+unique_metrics = list(df[df["metric_batch"] == batch_selection]["metric_name"].unique())
+metric_names.append(unique_metrics)
+metric_selection = st.sidebar.selectbox("Metric Name:", metric_names)
 
-# filter data
-filtered_df = df[
-    (df["metric_batch"] == batch_selection) & (df["metric_name"] == metric_selection)
-].sort_values(by="metric_timestamp")
+# filter data and plot
+if metric_selection == 'ALL':
+    for metric in unique_metrics:
+        filtered_df = df[
+            (df["metric_batch"] == batch_selection) & (df["metric_name"] == metric)
+        ].sort_values(by="metric_timestamp")
 
-# plot
-fig = plot_time_series(filtered_df, metric_selection)
-st.plotly_chart(fig, use_container_width=True)
+        # plot
+        fig = plot_time_series(filtered_df, metric)
+        st.plotly_chart(fig, use_container_width=True)
+else:
+    filtered_df = df[
+        (df["metric_batch"] == batch_selection) & (df["metric_name"] == metric_selection)
+    ].sort_values(by="metric_timestamp")
+
+    # plot
+    fig = plot_time_series(filtered_df, metric_selection)
+    st.plotly_chart(fig, use_container_width=True)
