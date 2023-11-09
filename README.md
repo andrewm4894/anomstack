@@ -269,7 +269,7 @@ You can see the [`.devcontainer`](./.devcontainer) folder for the config used to
 
 You can run this project in Dagster Cloud. Fork the repo (or make a completely new repo using the `andrewm4894/anomstack` GitHub template) and then follow the instructions [here](https://docs.dagster.io/dagster-cloud/deployment/serverless#with-github) to deploy to Dagster Cloud from your forked repo.
 
-You can then manage you metrics via PR's in your GitHub repo and run them in Dagster Cloud which will just sync with your repo.
+You can then manage you metrics via PR's in your GitHub repo ([here](https://github.com/andrewm4894/anomstack/pull/40/files) is a PR to add Google Trends metrics) and run them in Dagster Cloud which will just sync with your repo.
 
 ### Docker
 
@@ -318,6 +318,8 @@ dagster dev -f anomstack/main.py
 [back to top](#anomstack)
 
 To add metrics, you can add them to the `metrics` folder. You can see some examples in the [`metrics/examples`](./metrics/examples/) folder.
+
+For example, [here](https://github.com/andrewm4894/anomstack/pull/40/files) is the PR that added Google Trends metrics to the examples.
 
 You can customize the default params for your metrics in the [`metrics/defaults`](./metrics/defaults/) folder.
 
