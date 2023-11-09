@@ -5,6 +5,7 @@ Run locally with:
 $ streamlit run dashboard.py
 """
 
+import pandas as pd
 import streamlit as st
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
@@ -27,11 +28,7 @@ def plot_time_series(df, metric_name) -> go.Figure:
 
     # Add traces/lines for metric_value, metric_score, and metric_alert
     fig.add_trace(
-        go.Scatter(
-            x=df["metric_timestamp"],
-            y=df["metric_value"],
-            name="Metric Value"
-        ),
+        go.Scatter(x=df["metric_timestamp"], y=df["metric_value"], name="Metric Value"),
         secondary_y=False,
     )
 
@@ -49,11 +46,7 @@ def plot_time_series(df, metric_name) -> go.Figure:
     fig.update_xaxes(showgrid=False, zeroline=False)
     fig.update_yaxes(showgrid=False, zeroline=False, secondary_y=False)
     fig.update_yaxes(
-        showgrid=False,
-        zeroline=False,
-        range=[0, 1],
-        tickformat=".0%",
-        secondary_y=True
+        showgrid=False, zeroline=False, range=[0, 1], tickformat=".0%", secondary_y=True
     )
 
     # Set x-axis title
@@ -67,16 +60,20 @@ def plot_time_series(df, metric_name) -> go.Figure:
     fig.update_layout(
         title_text=f"{metric_name} (n={len(df)})",
         hovermode="x",
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="right",
-            x=1
-        ),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
     )
 
     return fig
+
+
+@st.cache_data
+def get_data(sql: str, db: str) -> pd.DataFrame:
+    """
+    Get data from the database.
+    """
+    df = read_sql(sql, db=db)
+
+    return df
 
 
 # Streamlit app
@@ -91,16 +88,17 @@ batch_selection = st.sidebar.selectbox("Metric Batch:", metric_batches)
 
 # get data
 sql = render("plot_sql", specs[batch_selection], params={"alert_max_n": last_n})
-df = read_sql(sql, db=specs[batch_selection]["db"])
+db = specs[batch_selection]["db"]
+df = get_data(sql, db)
 
 # data based inputs
-metric_names = ['ALL']
-unique_metrics = list(df[df["metric_batch"] == batch_selection]["metric_name"].unique())
-metric_names.append(unique_metrics)
+metric_names = ["ALL"]
+unique_metrics = sorted(list(df[df["metric_batch"] == batch_selection]["metric_name"].unique()))
+metric_names.extend(unique_metrics)
 metric_selection = st.sidebar.selectbox("Metric Name:", metric_names)
 
 # filter data and plot
-if metric_selection == 'ALL':
+if metric_selection == "ALL":
     for metric in unique_metrics:
         filtered_df = df[
             (df["metric_batch"] == batch_selection) & (df["metric_name"] == metric)
@@ -111,7 +109,8 @@ if metric_selection == 'ALL':
         st.plotly_chart(fig, use_container_width=True)
 else:
     filtered_df = df[
-        (df["metric_batch"] == batch_selection) & (df["metric_name"] == metric_selection)
+        (df["metric_batch"] == batch_selection)
+        & (df["metric_name"] == metric_selection)
     ].sort_values(by="metric_timestamp")
 
     # plot
