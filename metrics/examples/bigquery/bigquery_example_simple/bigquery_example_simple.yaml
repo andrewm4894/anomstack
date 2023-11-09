@@ -8,9 +8,13 @@ ingest_cron_schedule: "*/10 * * * *" # ingest every 10 minutes
 train_cron_schedule: "15 */1 * * *" # train every 1 hour
 score_cron_schedule: "*/15 * * * *" # score every 15 minutes
 alert_cron_schedule: "*/20 * * * *" # alert every 20 minutes
-llmalert_cron_schedule: "*/20 * * * *" # alert every 20 minutes
-disable_llmalert: True
+llmalert_cron_schedule: "*/20 * * * *" # llmalert every 20 minutes
+timegptalert_cron_schedule: "*/20 * * * *" # timegptalert every 20 minutes
 plot_cron_schedule: "*/25 * * * *" # plot every 25 minutes
+timegptalert_freq: '1H'
+timegptalert_freq_agg: 'mean'
+disable_llmalert: True
+disable_timegptalert: False
 alert_always: False
 alert_methods: "email"
 ingest_sql: >

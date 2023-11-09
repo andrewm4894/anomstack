@@ -40,7 +40,7 @@ def build_llmalert_job(spec) -> JobDefinition:
 
         @job(name=f'{spec["metric_batch"]}_llmalert_disabled')
         def _dummy_job():
-            @op(name=f'{spec["metric_batch"]}_noop')
+            @op(name=f'{spec["metric_batch"]}_llmalert_noop')
             def noop():
                 pass
 
