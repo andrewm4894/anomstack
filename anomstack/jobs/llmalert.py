@@ -103,8 +103,10 @@ def build_llmalert_job(spec) -> JobDefinition:
                         df_metric["metric_value"].rolling(llmalert_smooth_n).mean()
                     )
 
+                df_metric['metric_recency'] = 'baseline'
+                df_metric.iloc[-llmalert_recent_n:, df_metric.columns.get_loc('metric_recency')] = 'recent'
                 df_prompt = (
-                    df_metric[["metric_value"]]
+                    df_metric[["metric_value","metric_recency"]]
                     .dropna()
                     .round(llmalert_metric_rounding)
                 )
