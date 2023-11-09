@@ -1,0 +1,14 @@
+db: "bigquery"
+table_key: "andrewm4894.metrics.metrics"
+disable_batch: False
+metric_batch: "gtrends"
+model_path: "gs://andrewm4894-tmp/models"
+ingest_cron_schedule: "30 17 * * *"
+train_cron_schedule: "35 17 * * *"
+score_cron_schedule: "35 17 * * *"
+alert_cron_schedule: "40 17 * * *"
+plot_cron_schedule: "45 17 * * *"
+alert_methods: "email"
+alert_always: False
+ingest_sql: >
+  {% include "./examples/gtrends/gtrends.sql" %}
