@@ -16,6 +16,7 @@ Painless open source anomaly detection for your metrics! 📈📉🚀
   - [How it works](#how-it-works)
   - [Why?](#why)
   - [Architecture](#architecture)
+  - [Features](#features)
   - [Examples](#examples)
     - [HackerNews](#hackernews)
     - [GSOD](#gsod)
@@ -211,45 +212,54 @@ flowchart LR;
 
 ```
 
+### Features
+
+[back to top](#anomstack)
+
+Here is a list of features of Anomstack (emoji alert warning!)
+
+1. 🌟 - You bring your metrics Anomstack will do the ML (❤️[PyOD](https://github.com/yzhao062/pyod)).
+2. 🚀 - Easy to run yourself or via Dagster Cloud.
+3. ⚙️ - Very flexible config, you can see all params in [`defaults.yaml`](./metrics/defaults/defaults.yaml) and override them in each metric batch config.
+4. 🧠 - Ability to define your own custom python ingest function instead of just SQL, check out the [`python_ingest_simple`](./metrics/examples/python/python_ingest_simple/python_ingest_simple.yaml) example.
+5. 🛠️ - Ability to define your own custom python preprocess function instead of the default at [`/metrics/defaults/python/preprocess.py`](./metrics/defaults/python/preprocess.py).
+6. 📧 - Email alerting with fancy(ish) ascii art plots of your metrics and anomaly scores.
+7. 💬 - Slack alerts too (want to make these nicer).
+8. 🤖 - LLM based alerts (ChatGPT) - see [LLM Alerts](#llm-alerts). p.s. they don't work great yet - experimental :)
+9. 🕒 - Ability to ingest at whatever frequency you want and then agg to a different level for training/scoring, see [`freq`](/metrics/examples/freq/README.md) example.
+10. 📊 - Plot jobs so you can just eyeball your metrics in Dagster job logs, see [#dagster-ui-plots](#dagster-ui-plots).
+11. 🏗️ - Minimal infrastructure requirements, Anomstack just reads from and writes to whatever database you use.
+12. 📈 - A nice little local [Streamlit](https://streamlit.io/) dashboard to visualise your metrics and anomaly scores, see [#streamlit](#streamlit).
+
 ### Examples
 
 [back to top](#anomstack)
 
+Here as some specific examples, there are lots more in the [`./metrics/examples/`](./metrics/examples/) folder.
+
 #### HackerNews
 
-<details>
-<summary>Derive metrics from current top stories</summary>
+##### Derive metrics from current top stories
 
 In [`./metrics/examples/hackernews/`](./metrics/examples/hackernews/) you will find an example of using a customer Python function ([`hn_top_stories_scores.py`](./metrics/examples/hackernews/hn_top_stories_scores.py)) to pull current top 10 stories from HackerNew API and derive some metrics based on their score. This is all defined in the [`hn_top_stories_scores.yaml`](./metrics/examples/hackernews/hn_top_stories_scores.yaml)` configuration file for this metric batch.
 
-</details>
-
 #### GSOD
 
-<details>
-<summary>Derive metrics from public GSOD data in BigQuery</summary>
+##### Derive metrics from public GSOD data in BigQuery
 
 In [`./metrics/examples/gsod/`](./metrics/examples/gsod/) you will find an example of just defining some sql to derive a metric batch on data already in BigQuery ([`gsod.sql`](./metrics/examples/gsod/gsod.sql)) and ingest it into a table called `metrics` in a `metrics` dataset in a Google Bigquery project. This is all defined in the [`gsod.yaml`](./metrics/examples/gsod/gsod.yaml)` configuration file for this metric batch.
 
-</details>
-
 #### Weather
 
-<details>
-<summary>Use a custom python function to pull some weather metrics from the Open Meteo API</summary>
+##### Use a custom python function to pull some weather metrics from the Open Meteo API
 
 In [`./metrics/examples/weather/`](./metrics/examples/weather/) you will find an example of using a customer Python function ([`ingest_weather.py`](./metrics/examples/weather/ingest_weather.py)) to pull current temperature data for some cities from the Open Meteo API and ingest it into a table called `metrics` in a `metrics` dataset in a Google Bigquery project. This is all defined in the [`weather.yaml`](./metrics/examples/weather/weather.yaml)` configuration file for this metric batch.
 
-</details>
-
 #### Yahoo Finance
 
-<details>
-<summary>Use a custom python function to pull some Yahoo Finance data.</summary>
+##### Use a custom python function to pull some Yahoo Finance data
 
 In [`./metrics/examples/yfinance/`](./metrics/examples/yfinance/) you will find an example of using a customer Python function ([`yfinance.py`](./metrics/examples/yfinance/yfinance.py)) to pull current stock price data for some stocks and ingest it into a table called `metrics` in a `metrics` dataset in a Google Bigquery project. This is all defined in the [`yfinance.yaml`](./metrics/examples/yfinance/yfinance.yaml)` configuration file for this metric batch.
-
-</details>
 
 ## Project structure
 
@@ -342,7 +352,7 @@ Environment variables for your metrics can be set in the `.env` file (see [`.exa
 
 Visualization of the metrics and anomaly scores is a bit outside the scope of this project, but we do provide a couple of ways to visualize your metrics and anomaly scores.
 
-### Dagster UI
+### Dagster UI Plots
 
 Within Dagster there is the [`plot.py`](./anomstack/jobs/plot.py) job to generate some plots of your metrics and anomaly scores for quick eyeballing within the dagster UI.
 
