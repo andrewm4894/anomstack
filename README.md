@@ -346,6 +346,8 @@ Environment variables for your metrics can be set in the `.env` file (see [`.exa
 
 ## Visualization
 
+[back to top](#anomstack)
+
 Visualization of the metrics and anomaly scores is a bit outside the scope of this project, but we do provide a couple of ways to visualize your metrics and anomaly scores.
 
 ### Dagster UI Plots
