@@ -2,7 +2,13 @@
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/andrewm4894/anomstack)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<div align="left">
+
+<a href="https://github.com/andrewm4894/anomstack/stargazers">![GitHub Repo stars](https://img.shields.io/github/stars/andrewm4894/anomstack?style=social)</a>
+<a href="https://github.com/andrewm4894/anomstack/releases">![GitHub release (latest by date)](https://img.shields.io/github/v/release/andrewm4894/anomstack?label=Release)</a>
+<a href="https://img.shields.io/badge/License-MIT-yellow.svg">![License](https://github.com/andrewm4894/anomstack/blob/main/LICENSE)</a>
+
+</div>
 
 Painless open source anomaly detection for your metrics! 📈📉🚀
 
@@ -99,6 +105,13 @@ Supported ways to run this project:
 Anomstack is a lightweight (README buzzword bingo alert!) data app built on top of [dagster](https://dagster.io/) (for orchestration) that lets you easily get great anomaly detection (using [`pyod`](https://pyod.readthedocs.io/en/latest/) for the ML stuff) for your metrics (whatever data platform you use) with as little pain as physically possible.
 
 It's similar in scope and goal to this [Airflow Anomaly Detection provider](https://github.com/andrewm4894/airflow-provider-anomaly-detection) i also made, but easier to get going since does not require airflow and so easier to set up and run yourself or via [Dagster Cloud](#dagster-cloud) in a [serverless](https://docs.dagster.io/dagster-cloud/deployment/serverless) manner.
+
+<details>
+<summary>GitHub Star History - Lets Gooooo!</summary>
+
+[![Star History Chart](https://api.star-history.com/svg?repos=andrewm4894/anomstack&type=Date)](https://star-history.com/#andrewm4894/anomstack&Date)
+
+</details>
 
 ### How it works
 
