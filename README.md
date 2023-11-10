@@ -388,7 +388,7 @@ streamlit run .\dashboard.py
 [back to top](#anomstack)
 
 - "**Metric Batch**": You configure metric batches in Anomstack. A metric batch is a collection of metrics that you want to run together and with its own separate set of parameters. Of course a metric batch can contain just one metric if you want but typically it makes more sense to group metrics in ways that make sense for you. A metric batch is just some SQL or custom Python that results in a Pandas DataFrame with `metric_timestamp`, `metric_name` and `metric_value` columns.
-- "**Jobs**": At the core Anomstack runs a few jobs for each metric batch. These jobs are:
+- "**Jobs**": At the core Anomstack runs a few jobs ([Dagster Jobs](https://docs.dagster.io/concepts/ops-jobs-graphs/jobs)) for each metric batch. These jobs are:
   - "Ingest" ([`ingest.py`](./anomstack/jobs/ingest.py)): This job runs the sql query (or Python function) for the metric batch and ingests the data into the database.
   - "Train" ([`train.py`](./anomstack/jobs/train.py)): This job trains a model for each metric.
   - "Score" ([`score.py`](./anomstack/jobs/score.py)): This job scores metrics using the latest trained model for each metric.
