@@ -2,6 +2,7 @@
 """
 
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import pandas as pd
 import seaborn as sns
 
@@ -61,6 +62,7 @@ def make_alert_plot(df: pd.DataFrame, metric_name: str, threshold: float = 0.8) 
     ax2.set_ylim(0, 1)
     ax2.legend(loc="upper left")
     ax2.grid(False)
+    ax2.locator_params(axis='x', nbins=25)
 
     for idx in alert_points.index:
         ax1.axvline(idx, color="yellow", alpha=0.3)
