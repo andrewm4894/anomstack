@@ -400,6 +400,8 @@ streamlit run .\dashboard.py
 
 [back to top](#anomstack)
 
+_Check out more example alerts in the [anomaly gallery](./gallery/)._
+
 Anomstack supports alerts via email and slack. You can configure these in the `.env` file (see [`.example.env`](.example.env) for examples and comments).
 
 Below is an example of an alert via email. It has some ascii art plotting recent metric values and which observations were anomalous. Attached is a png plot with more details.
