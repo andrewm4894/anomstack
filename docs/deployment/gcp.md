@@ -93,7 +93,6 @@ gcloud compute ssh $INSTANCE_NAME --zone=$ZONE --project=$PROJECT_ID
 Install Docker:
 
 ```bash
-
 # Add Docker's official GPG key:
 sudo apt-get update
 sudo apt-get install ca-certificates curl gnupg
@@ -113,13 +112,11 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin 
 
 # Verify that Docker Engine is installed correctly by running the hello-world image:
 sudo docker run hello-world
-
 ```
 
 ### Install Anomstack
 
 ```bash
-
 # clone anomstack
 git clone https://github.com/andrewm4894/anomstack.git
 
@@ -156,5 +153,4 @@ sudo docker compose down
 
 # rebuild anomstack with latest metrics and changes
 sudo docker compose up -d --build
-
 ```
