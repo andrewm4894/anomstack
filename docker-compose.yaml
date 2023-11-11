@@ -26,7 +26,7 @@ services:
     image: anomstack_code_image
     restart: always
     volumes:
-      - ${ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json
+      # - ${ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json
       - ./tmp:/opt/dagster/app/tmp
       - ./tmpdata:/opt/dagster/app/tmpdata
     environment:
@@ -52,7 +52,8 @@ services:
       ANOMSTACK_ALERT_EMAIL_SMTP_HOST: ${ANOMSTACK_ALERT_EMAIL_SMTP_HOST}
       ANOMSTACK_ALERT_EMAIL_SMTP_PORT: ${ANOMSTACK_ALERT_EMAIL_SMTP_PORT}
       ANOMSTACK_ALERT_EMAIL_PASSWORD: ${ANOMSTACK_ALERT_EMAIL_PASSWORD}
-      ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS: "/tmp/conf/gcp_credentials.json"
+      # ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS: "/tmp/conf/gcp_credentials.json"
+      ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS: ${ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS}
       ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS_JSON: ${ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS_JSON}
     networks:
       - anomstack_network
@@ -99,10 +100,11 @@ services:
       ANOMSTACK_ALERT_EMAIL_SMTP_HOST: ${ANOMSTACK_ALERT_EMAIL_SMTP_HOST}
       ANOMSTACK_ALERT_EMAIL_SMTP_PORT: ${ANOMSTACK_ALERT_EMAIL_SMTP_PORT}
       ANOMSTACK_ALERT_EMAIL_PASSWORD: ${ANOMSTACK_ALERT_EMAIL_PASSWORD}
-      ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS: "/tmp/conf/gcp_credentials.json"
+      # ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS: "/tmp/conf/gcp_credentials.json"
+      ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS: ${ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS}
       ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS_JSON: ${ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS_JSON}
     volumes: # Make docker client accessible so we can terminate containers from dagit
-      - ${ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json
+      # - ${ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/io_manager_storage:/tmp/io_manager_storage
       - ./tmp:/opt/dagster/app/tmp
@@ -146,10 +148,11 @@ services:
       ANOMSTACK_ALERT_EMAIL_SMTP_HOST: ${ANOMSTACK_ALERT_EMAIL_SMTP_HOST}
       ANOMSTACK_ALERT_EMAIL_SMTP_PORT: ${ANOMSTACK_ALERT_EMAIL_SMTP_PORT}
       ANOMSTACK_ALERT_EMAIL_PASSWORD: ${ANOMSTACK_ALERT_EMAIL_PASSWORD}
-      ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS: "/tmp/conf/gcp_credentials.json"
+      # ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS: "/tmp/conf/gcp_credentials.json"
+      ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS: ${ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS}
       ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS_JSON: ${ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS_JSON}
     volumes: # Make docker client accessible so we can launch containers using host docker
-      - ${ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json
+      # - ${ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/io_manager_storage:/tmp/io_manager_storage
       - ./tmp:/opt/dagster/app/tmp
