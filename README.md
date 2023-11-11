@@ -276,6 +276,8 @@ By default Anomstack will run on port 3000, so you can go to http://localhost:30
 
 *Note*: you will need to wait for it to run a dozen or so ingest jobs before there is enough data for train, score and alert jobs to run successfully.
 
+There are some more detailed instructions (WIP) in [`/docs/deployment/`](./docs/deployment/).
+
 ### GitHub Codespaces
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/andrewm4894/anomstack)
