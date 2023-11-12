@@ -37,32 +37,32 @@ Create the VPC network for Anomstack:
 
 ```bash
 # Create the VPC network
-gcloud compute networks create anomstack-network --project=$PROJECT_ID
+gcloud compute networks create anomstack --project=$PROJECT_ID
 
 # Create the subnet
-gcloud compute networks subnets create anomstack-subnet \
-    --network=anomstack-network \
+gcloud compute networks subnets create anomstack \
+    --network=anomstack \
     --region=$REGION \
     --range=$RANGE \
     --project=$PROJECT_ID
 
 # Create the firewall rule to allow traffic
 gcloud compute firewall-rules create allow-anomstack-internal \
-    --network=anomstack-network \
+    --network=anomstack \
     --allow=tcp,udp,icmp \
     --source-ranges=$RANGE \
     --project=$PROJECT_ID
 
 # Create the firewall rule to allow SSH traffic
 gcloud compute firewall-rules create allow-ssh \
-    --network=anomstack-network \
+    --network=anomstack \
     --allow=tcp:22 \
     --source-ranges=$YOUR_IP_ADDRESS/0 \
     --project=$PROJECT_ID
 
 # Create the firewall rule to allow traffic to Dagster UI
 gcloud compute firewall-rules create allow-anomstack-3000 \
-    --network=anomstack-network \
+    --network=anomstack \
     --allow=tcp:3000 \
     --source-ranges=$YOUR_IP_ADDRESS/0 \
     --project=$PROJECT_ID
@@ -77,7 +77,7 @@ gcloud compute instances create $INSTANCE_NAME \
 --zone=$ZONE \
 --machine-type=$MACHINE_TYPE \
 --service-account="anomstack-service-account@$PROJECT_ID.iam.gserviceaccount.com" \
---network-interface="network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=anomstack-subnet" \
+--network-interface="network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=anomstack" \
 --create-disk="auto-delete=yes,boot=yes,device-name=$INSTANCE_NAME,image=projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20231101,mode=rw,size=50,type=projects/$PROJECT_ID/zones/$ZONE/diskTypes/pd-balanced"
 ```
 
