@@ -37,7 +37,7 @@ Create the VPC network for Anomstack:
 
 ```bash
 # Create the VPC network
-gcloud compute networks create anomstack-network --subnet-mode=custom --project=$PROJECT_ID
+gcloud compute networks create anomstack-network --project=$PROJECT_ID
 
 # Create the subnet
 gcloud compute networks subnets create anomstack-subnet \
@@ -83,6 +83,8 @@ gcloud compute instances create $INSTANCE_NAME \
 
 ### Configure VM
 
+#### Docker: Install Docker
+
 After the VM is created, SSH into it:
 
 ```bash
@@ -114,7 +116,7 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin 
 sudo docker run hello-world
 ```
 
-### Install Anomstack
+#### Docker: Install Anomstack
 
 ```bash
 # clone anomstack
@@ -138,6 +140,67 @@ sudo docker compose up -d --build
 ```
 
 Once the containers are up and running, you can access the UI at `http://<your-vm-ip>:3000`.
+
+#### Systemd: Install Anomstack
+
+```bash
+# Create anomstack user
+sudo useradd -m -d /home/anomstack anomstack
+
+# Switch to anomstack user
+sudo -su anomstack
+
+# Clone anomstack into /home/anomstack/anomstack
+git clone https://github.com/andrewm4894/anomstack.git /home/anomstack/anomstack
+# or
+# Clone repo at specific release tag
+# git clone -b v0.0.1 https://github.com/andrewm4894/anomstack.git
+
+# cd into anomstack
+cd /home/anomstack/anomstack
+
+# Create Python virtual environment
+python3 -m venv venv
+
+# Activate virtual environment
+source venv/bin/activate
+
+# Install requirements
+pip3 install -r requirements.txt
+
+# Copy .env file
+cp .example.env .env
+
+# Run anomstack locally
+dagster dev -f anomstack/main.py
+```
+
+Assuming everything is working, you can now create a systemd service to run anomstack.
+
+```bash
+# Create the systemd service file
+cat << EOF | sudo tee /etc/systemd/system/anomstack.service
+[Unit]
+Description=Anomstack Service
+After=network.target
+
+[Service]
+User=anomstack
+WorkingDirectory=/home/anomstack/anomstack
+ExecStart=/home/anomstack/anomstack/.venv/bin/python /home/anomstack/anomstack/main.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Reload systemd to read new service file
+sudo systemctl daemon-reload
+
+# Enable and start the Anomstack service
+sudo systemctl enable anomstack.service
+sudo systemctl start anomstack.service
+```
 
 ### Adding Your Metrics
 
