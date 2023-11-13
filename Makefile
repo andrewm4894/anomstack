@@ -2,14 +2,19 @@ SHELL=/bin/bash
 
 .PHONY: dashboard
 .PHONY: local
+.PHONY: docker
 
 ## start streamlit dashboard
 dashboard:
-	streamlit run ./dashboard.py
+	streamlit run ./dashboard.py --server.port 8501
 
 ## start dagster locally
 local:
 	dagster dev -f anomstack/main.py
+
+## start docker containers
+docker:
+	docker compose up -d --build
 
 ## setup local development environment and install dependencies
 dev:
@@ -74,3 +79,5 @@ show-help:
 		printf "\n"; \
 	}' \
 	| more $(shell test $(shell uname) == Darwin && echo '--no-init --raw-control-chars')
+
+
