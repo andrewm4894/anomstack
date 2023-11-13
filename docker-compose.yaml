@@ -162,6 +162,40 @@ services:
     depends_on:
       - anomstack_postgresql
       - anomstack_code
+  
+  # This service runs the Streamlit dashboard
+  anomstack_dashboard:
+    build:
+        context: .
+        dockerfile: ./Dockerfile.anomstack_dashboard
+    container_name: anomstack_dashboard
+    ports:
+      - "8501:8501"
+    environment:
+      # read from .env file
+      ANOMSTACK_GCP_PROJECT_ID: ${ANOMSTACK_GCP_PROJECT_ID}
+      ANOMSTACK_SNOWFLAKE_ACCOUNT: ${ANOMSTACK_SNOWFLAKE_ACCOUNT}
+      ANOMSTACK_SNOWFLAKE_USER: ${ANOMSTACK_SNOWFLAKE_USER}
+      ANOMSTACK_SNOWFLAKE_PASSWORD: ${ANOMSTACK_SNOWFLAKE_PASSWORD}
+      ANOMSTACK_SNOWFLAKE_WAREHOUSE: ${ANOMSTACK_SNOWFLAKE_WAREHOUSE}
+      ANOMSTACK_AWS_ACCESS_KEY_ID: ${ANOMSTACK_AWS_ACCESS_KEY_ID}
+      ANOMSTACK_AWS_SECRET_ACCESS_KEY: ${ANOMSTACK_AWS_SECRET_ACCESS_KEY}
+      ANOMSTACK_DUCKDB_PATH: ${ANOMSTACK_DUCKDB_PATH}
+      ANOMSTACK_TABLE_KEY: ${ANOMSTACK_TABLE_KEY}
+      ANOMSTACK_MODEL_PATH: ${ANOMSTACK_MODEL_PATH}
+      ANOMSTACK_IGNORE_EXAMPLES: ${ANOMSTACK_IGNORE_EXAMPLES}
+      # ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS: "/tmp/conf/gcp_credentials.json"
+      ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS: ${ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS}
+      ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS_JSON: ${ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS_JSON}
+    volumes:
+      # - ${ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json
+      - ./tmp:/opt/dagster/app/tmp
+      - ./tmpdata:/opt/dagster/app/tmpdata
+    command: streamlit run /opt/dagster/app/dashboard.py --server.port 8501
+    networks:
+      - anomstack_network
+    profiles:
+      - "dashboard"
 
 networks:
   anomstack_network:
