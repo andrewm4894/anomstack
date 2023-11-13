@@ -57,14 +57,14 @@ gcloud compute firewall-rules create allow-anomstack-internal \
 gcloud compute firewall-rules create allow-ssh \
     --network=anomstack \
     --allow=tcp:22 \
-    --source-ranges=$YOUR_IP_ADDRESS/0 \
+    --source-ranges=$YOUR_IP_ADDRESS \
     --project=$PROJECT_ID
 
 # Create the firewall rule to allow traffic to Dagster UI
 gcloud compute firewall-rules create allow-anomstack-3000 \
     --network=anomstack \
     --allow=tcp:3000 \
-    --source-ranges=$YOUR_IP_ADDRESS/0 \
+    --source-ranges=$YOUR_IP_ADDRESS \
     --project=$PROJECT_ID
 ```
 
@@ -92,7 +92,7 @@ After the VM is created, SSH into it:
 gcloud compute ssh $INSTANCE_NAME --zone=$ZONE --project=$PROJECT_ID
 ```
 
-Install Docker:
+[Install Docker](https://docs.docker.com/engine/install/ubuntu/):
 
 ```bash
 # Add Docker's official GPG key:
@@ -205,6 +205,8 @@ sudo systemctl start anomstack.service
 ### Adding Your Metrics
 
 After you add whatever environment variables you need to the `.env` file, you can add your metrics to the `metrics` folder.
+
+#### Docker
 
 Once ready you can stop and then rebuild the containers:
 
