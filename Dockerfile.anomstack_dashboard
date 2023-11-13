@@ -21,6 +21,8 @@ COPY metrics /opt/dagster/app/metrics
 
 COPY dashboard.py /opt/dagster/app/dashboard.py
 
+COPY .streamlit /opt/dagster/app/.streamlit
+
 EXPOSE 8501
 
 ENTRYPOINT ["streamlit", "run", "/opt/dagster/app/dashboard.py", "--server.port=8501", "--server.address=0.0.0.0"]
