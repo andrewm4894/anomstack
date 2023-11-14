@@ -5,4 +5,3 @@ train_cron_schedule: "*/4 * * * *"
 score_cron_schedule: "*/3 * * * *"
 ingest_fn: >
   {% include "./examples/python/python_ingest_simple/ingest.py" %}
-

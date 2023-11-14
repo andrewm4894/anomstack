@@ -3,6 +3,7 @@ SHELL=/bin/bash
 .PHONY: dashboard
 .PHONY: local
 .PHONY: docker
+.PHONY: pre-commit
 
 ## start streamlit dashboard
 dashboard:
@@ -16,10 +17,13 @@ local:
 docker:
 	docker compose up -d --build
 
+## pre-commit
+pre-commit:
+	pre-commit run --all-files
+
 ## setup local development environment and install dependencies
 dev:
 	pre-commit install
-
 
 # Self-documenting Makefiles:
 # https://gist.github.com/klmr/575726c7e05d8780505a
