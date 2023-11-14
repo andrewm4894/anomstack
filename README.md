@@ -436,3 +436,5 @@ Below you see an example of an LLM alert via email. In this case we add a descri
 ![llmalert2](./docs/img/llmalert2.png)
 
 </details>
+
+## Contributing
