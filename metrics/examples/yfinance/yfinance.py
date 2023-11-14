@@ -3,17 +3,15 @@ import pandas as pd
 
 def ingest() -> pd.DataFrame:
     """
-    Credit to: https://stackoverflow.com/a/76580610/1919374 
+    Credit to: https://stackoverflow.com/a/76580610/1919374
     """
 
-    import requests
     import pandas as pd
+    import requests
 
-    
     apiBase = "https://query2.finance.yahoo.com"
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64)"}
-    
-    
+
     def getCredentials(
         cookieUrl="https://fc.yahoo.com", crumbUrl=apiBase + "/v1/test/getcrumb"
     ):
@@ -35,7 +33,6 @@ def ingest() -> pd.DataFrame:
         )
         quotes = response.json()["quoteResponse"]["result"]
         return quotes
-
 
     symbols = ["GOOG", "TSLA", "AAPL", "MSFT"]
 

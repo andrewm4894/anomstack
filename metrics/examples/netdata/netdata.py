@@ -6,8 +6,8 @@ def ingest() -> pd.DataFrame:
     Ingest data from Netdata API.
     """
 
-    import requests
     import pandas as pd
+    import requests
     from dagster import get_dagster_logger
 
     logger = get_dagster_logger()
@@ -54,7 +54,7 @@ def ingest() -> pd.DataFrame:
 
     df = df[["metric_timestamp", "metric_name", "metric_value"]]
 
-    logger.debug(f'df:\n{df}')
+    logger.debug(f"df:\n{df}")
 
     df["metric_value"] = df["metric_value"].astype(float)
 

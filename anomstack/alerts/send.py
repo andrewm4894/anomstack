@@ -2,11 +2,12 @@
 Helper functions to send alerts.
 """
 
-from dagster import get_dagster_logger
 import pandas as pd
+from dagster import get_dagster_logger
+
 from anomstack.alerts.asciiart import make_alert_message
-from anomstack.alerts.slack import send_alert_slack
 from anomstack.alerts.email import send_email_with_plot
+from anomstack.alerts.slack import send_alert_slack
 
 
 def send_alert(

@@ -1,6 +1,6 @@
 with
 
-forecast_data as 
+forecast_data as
 (
 SELECT
   CASE
@@ -24,9 +24,9 @@ SELECT
   avg(avg_wind_speed_10m_mph) as avg_wind_speed,
   avg(avg_humidity_relative_2m_pct) as avg_humidity,
   avg(avg_cloud_cover_tot_pct) as avg_cloud_cover
-FROM 
+FROM
   global_weather__climate_data_for_bi.standard_tile.forecast_day
-WHERE 
+WHERE
   date_valid_std >= DATEADD(DAY, 0, CURRENT_DATE())
   AND
   date_valid_std <= DATEADD(DAY, 3, CURRENT_DATE())
@@ -58,5 +58,3 @@ select
 from
   forecast_data_clean
 ;
-
-

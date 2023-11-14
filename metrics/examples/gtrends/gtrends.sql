@@ -1,30 +1,30 @@
 with
 
 -- get the latest data
-latest_data as 
+latest_data as
 (
-select 
+select
   *
-FROM 
-  `bigquery-public-data.google_trends.top_terms` 
+FROM
+  `bigquery-public-data.google_trends.top_terms`
 WHERE
   -- usually the data is updated every 3 days
-  refresh_date = date_sub(current_date(), INTERVAL 3 DAY)  
+  refresh_date = date_sub(current_date(), INTERVAL 3 DAY)
 ),
 
 -- get the latest week
 max_week as
 (
-SELECT 
-  max(week) as week_max 
-FROM 
+SELECT
+  max(week) as week_max
+FROM
   latest_data
 ),
 
 -- get the latest data for the latest week
 most_recent_week as
 (
-select 
+select
   latest_data.*
 from
   latest_data

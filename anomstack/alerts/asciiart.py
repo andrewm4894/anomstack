@@ -1,13 +1,15 @@
 from __future__ import unicode_literals
 
+import copy
+import re
+import sys
+
+import numpy as np
+import pandas as pd
+
 # copied from: https://raw.githubusercontent.com/kakwa/py-ascii-graph/09ca5901be94ec3563bdcc25d6396e18fd8ca5df/ascii_graph/__init__.py
 # copied from: https://raw.githubusercontent.com/nyurik/py-ascii-graph/fix-python310/ascii_graph/__init__.py
 
-import pandas as pd
-import numpy as np
-import sys
-import re
-import copy
 
 if (
     sys.version < "3"
@@ -515,7 +517,9 @@ def make_alert_message(
     df_alert_metric = df_alert_metric.sort_values(
         by="metric_timestamp", ascending=False
     ).dropna()
-    df_alert_metric["metric_timestamp"] = pd.to_datetime(df_alert_metric["metric_timestamp"])
+    df_alert_metric["metric_timestamp"] = pd.to_datetime(
+        df_alert_metric["metric_timestamp"]
+    )
     x = df_alert_metric["metric_value"].round(2).values.tolist()
     metric_batch = df_alert_metric["metric_batch"].unique()[0]
     metric_name = df_alert_metric["metric_name"].unique()[0]

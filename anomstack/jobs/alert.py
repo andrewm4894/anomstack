@@ -4,15 +4,16 @@ Generate alert jobs and schedules.
 
 import pandas as pd
 from dagster import (
+    DefaultScheduleStatus,
+    JobDefinition,
+    ScheduleDefinition,
     get_dagster_logger,
     job,
     op,
-    ScheduleDefinition,
-    JobDefinition,
-    DefaultScheduleStatus,
 )
-from anomstack.config import specs
+
 from anomstack.alerts.send import send_alert
+from anomstack.config import specs
 from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
 
@@ -85,13 +86,13 @@ def build_alert_job(spec) -> JobDefinition:
                 for metric_name in df_alerts["metric_name"].unique():
                     logger.info(f"alerting on {metric_name}")
                     df_alert = df_alerts.query(f"metric_name=='{metric_name}'")
-                    df_alert["metric_timestamp"] = pd.to_datetime(df_alert["metric_timestamp"])
+                    df_alert["metric_timestamp"] = pd.to_datetime(
+                        df_alert["metric_timestamp"]
+                    )
                     metric_timestamp_max = (
                         df_alert["metric_timestamp"].max().strftime("%Y-%m-%d %H:%M")
                     )
-                    alert_title = (
-                        f"🔥 [{metric_name}] looks anomalous ({metric_timestamp_max}) 🔥"
-                    )
+                    alert_title = f"🔥 [{metric_name}] looks anomalous ({metric_timestamp_max}) 🔥"
                     df_alert = send_alert(
                         metric_name=metric_name,
                         title=alert_title,

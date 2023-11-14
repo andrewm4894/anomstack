@@ -162,7 +162,7 @@ services:
     depends_on:
       - anomstack_postgresql
       - anomstack_code
-  
+
   # This service runs the Streamlit dashboard
   anomstack_dashboard:
     build:

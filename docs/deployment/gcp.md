@@ -122,7 +122,7 @@ sudo docker run hello-world
 # clone anomstack
 git clone https://github.com/andrewm4894/anomstack.git
 
-# or 
+# or
 
 # clone repo at specific release tag
 # git clone -b v0.0.1 https://github.com/andrewm4894/anomstack.git

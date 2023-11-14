@@ -66,7 +66,7 @@ from
   metric_value_data
 ),
 
-data_ranked as 
+data_ranked as
 (
 select
   m.metric_timestamp,
@@ -100,7 +100,7 @@ select
   metric_score_recency_rank,
   -- smooth the metric score over the last {{ alert_smooth_n }} values
   avg(metric_score) over (partition by metric_batch, metric_name order by metric_score_recency_rank rows between {{ alert_smooth_n }} preceding and current row) as metric_score_smooth
-from 
+from
   data_ranked
 ),
 

@@ -3,22 +3,24 @@ Generate llmalert jobs and schedules.
 """
 
 import os
+
+import openai
 import pandas as pd
 from dagster import (
+    DefaultScheduleStatus,
+    JobDefinition,
+    ScheduleDefinition,
+    get_dagster_logger,
     job,
     op,
-    ScheduleDefinition,
-    JobDefinition,
-    DefaultScheduleStatus,
-    get_dagster_logger,
 )
-import openai
-from anomstack.config import specs
-from anomstack.jinja.render import render
-from anomstack.sql.read import read_sql
+
 from anomstack.alerts.send import send_alert
-from anomstack.llm.completion import get_completion
+from anomstack.config import specs
 from anomstack.fn.run import define_fn
+from anomstack.jinja.render import render
+from anomstack.llm.completion import get_completion
+from anomstack.sql.read import read_sql
 
 
 def build_llmalert_job(spec) -> JobDefinition:
@@ -96,17 +98,21 @@ def build_llmalert_job(spec) -> JobDefinition:
                     .sort_values(by="metric_timestamp", ascending=True)
                     .reset_index(drop=True)
                 ).dropna()
-                df_metric["metric_timestamp"] = pd.to_datetime(df_metric["metric_timestamp"])
+                df_metric["metric_timestamp"] = pd.to_datetime(
+                    df_metric["metric_timestamp"]
+                )
 
                 if llmalert_smooth_n > 0:
                     df_metric["metric_value"] = (
                         df_metric["metric_value"].rolling(llmalert_smooth_n).mean()
                     )
 
-                df_metric['metric_recency'] = 'baseline'
-                df_metric.iloc[-llmalert_recent_n:, df_metric.columns.get_loc('metric_recency')] = 'recent'
+                df_metric["metric_recency"] = "baseline"
+                df_metric.iloc[
+                    -llmalert_recent_n:, df_metric.columns.get_loc("metric_recency")
+                ] = "recent"
                 df_prompt = (
-                    df_metric[["metric_value","metric_recency"]]
+                    df_metric[["metric_value", "metric_recency"]]
                     .dropna()
                     .round(llmalert_metric_rounding)
                 )

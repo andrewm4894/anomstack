@@ -1,6 +1,7 @@
 import json
-import openai
 import time
+
+import openai
 
 
 def get_completion(prompt: str, model="gpt-3.5-turbo", max_retries=5):
@@ -46,7 +47,11 @@ def get_completion(prompt: str, model="gpt-3.5-turbo", max_retries=5):
                                     "description": "Confidence level in the `is_anomalous` flag. 'high' if very confident in the anomaly decision, 'medium' if somewhat confident, 'low' if not confident.",
                                 },
                             },
-                            "required": ["is_anomalous", "decision_reasoning", "decision_confidence_level"],
+                            "required": [
+                                "is_anomalous",
+                                "decision_reasoning",
+                                "decision_confidence_level",
+                            ],
                         },
                     }
                 ],
