@@ -19,9 +19,3 @@ repos:
     hooks:
       - id: isort
         args: ["--profile", "black"]
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.5
-    hooks:
-      - id: ruff
-        args: ["--ignore", "E501, E711, E712"] # ignore line length and comparison to None, refer full list of codes here: https://pycodestyle.pycqa.org/en/latest/intro.html#error-codes
-      - id: ruff-format
