@@ -223,17 +223,17 @@ flowchart LR;
 Here is a list of features of Anomstack (emoji alert warning!)
 
 1. 🌟 - You bring your metrics Anomstack will do the ML (❤️[PyOD](https://github.com/yzhao062/pyod)).
-2. 🚀 - Easy to run yourself or via Dagster Cloud.
+2. 🚀 - Easy to run yourself or via [Dagster Cloud](#dagster-cloud).
 3. ⚙️ - Very flexible config, you can see all params in [`defaults.yaml`](./metrics/defaults/defaults.yaml) and override them in each metric batch config.
 4. 🧠 - Ability to define your own custom python ingest function instead of just SQL, check out the [`python_ingest_simple`](./metrics/examples/python/python_ingest_simple/python_ingest_simple.yaml) example.
 5. 🛠️ - Ability to define your own custom python preprocess function instead of the default at [`/metrics/defaults/python/preprocess.py`](./metrics/defaults/python/preprocess.py).
-6. 📧 - Email alerting with fancy(ish) ascii art plots of your metrics and anomaly scores.
+6. 📧 - Email [alerting](#alerts) with fancy(ish) ascii art plots of your metrics and anomaly scores.
 7. 💬 - Slack alerts too (want to make these nicer).
 8. 🤖 - LLM based alerts (ChatGPT) - see [LLM Alerts](#llm-alerts). p.s. they don't work great yet - experimental :)
 9. 🕒 - Ability to ingest at whatever frequency you want and then agg to a different level for training/scoring, see [`freq`](/metrics/examples/freq/README.md) example.
 10. 📊 - Plot jobs so you can just eyeball your metrics in Dagster job logs, see [#dagster-ui-plots](#dagster-ui-plots).
 11. 🏗️ - Minimal infrastructure requirements, Anomstack just reads from and writes to whatever database you use.
-12. 📈 - A nice little local [Streamlit](https://streamlit.io/) dashboard to visualise your metrics and anomaly scores, see [#streamlit](#streamlit).
+12. 📈 - A nice little local [Streamlit](https://streamlit.io/) dashboard to visualize your metrics and anomaly scores, see [#streamlit](#streamlit).
 
 ### Examples
 
