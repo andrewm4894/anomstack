@@ -11,4 +11,4 @@ alert_always: False
 alert_methods: "email"
 ingest_sql: >
   {% include "./examples/weather_forecast/weather_forecast.sql" %}
-  
+

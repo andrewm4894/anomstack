@@ -3,26 +3,28 @@
 
 import base64
 from io import BytesIO
-import pandas as pd
+from typing import List, Tuple
+
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
 from dagster import (
     AssetExecutionContext,
+    DefaultScheduleStatus,
+    JobDefinition,
     MetadataValue,
+    ScheduleDefinition,
+    asset,
+    get_dagster_logger,
     job,
     op,
-    ScheduleDefinition,
-    JobDefinition,
-    DefaultScheduleStatus,
-    asset,
-    get_dagster_logger
 )
-from typing import List, Tuple
+
 from anomstack.config import specs
-from anomstack.jinja.render import render
-from anomstack.sql.read import read_sql
-from anomstack.plots.plot import make_batch_plot
 from anomstack.df.resample import resample
+from anomstack.jinja.render import render
+from anomstack.plots.plot import make_batch_plot
+from anomstack.sql.read import read_sql
 
 
 def build_plot_job(spec) -> JobDefinition:
@@ -45,8 +47,8 @@ def build_plot_job(spec) -> JobDefinition:
     metric_batch = spec["metric_batch"]
     db = spec["db"]
     preprocess_params = spec["preprocess_params"]
-    freq = preprocess_params.get('freq')
-    freq_agg = preprocess_params.get('freq_agg')
+    freq = preprocess_params.get("freq")
+    freq_agg = preprocess_params.get("freq_agg")
 
     @job(name=f"{metric_batch}_plot_job")
     def _job():

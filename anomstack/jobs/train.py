@@ -2,23 +2,25 @@
 Generate train jobs and schedules.
 """
 
+from typing import List, Tuple
+
 import pandas as pd
-from pyod.models.base import BaseDetector
 from dagster import (
+    DefaultScheduleStatus,
+    JobDefinition,
+    ScheduleDefinition,
     get_dagster_logger,
     job,
     op,
-    ScheduleDefinition,
-    JobDefinition,
-    DefaultScheduleStatus,
 )
-from typing import List, Tuple
+from pyod.models.base import BaseDetector
+
 from anomstack.config import specs
-from anomstack.jinja.render import render
-from anomstack.sql.read import read_sql
-from anomstack.io.save import save_models
-from anomstack.ml.train import train_model
 from anomstack.fn.run import define_fn
+from anomstack.io.save import save_models
+from anomstack.jinja.render import render
+from anomstack.ml.train import train_model
+from anomstack.sql.read import read_sql
 
 
 def build_train_job(spec) -> JobDefinition:
@@ -99,24 +101,17 @@ def build_train_job(spec) -> JobDefinition:
             else:
                 for metric_name in df["metric_name"].unique():
                     df_metric = df[df["metric_name"] == metric_name]
-                    logger.debug(f"preprocess {metric_name} in {metric_batch} train job.")
-                    logger.debug(f"df_metric:\n{df_metric.head()}")
-                    X = preprocess(
-                        df_metric,
-                        shuffle=True,
-                        **preprocess_params
+                    logger.debug(
+                        f"preprocess {metric_name} in {metric_batch} train job."
                     )
+                    logger.debug(f"df_metric:\n{df_metric.head()}")
+                    X = preprocess(df_metric, shuffle=True, **preprocess_params)
                     logger.debug(f"X:\n{X.head()}")
                     if len(X) > 0:
                         logger.info(
                             f"training {metric_name} in {metric_batch} train job. len(X)={len(X)}"
                         )
-                        model = train_model(
-                            X,
-                            metric_name,
-                            model_name,
-                            model_params
-                        )
+                        model = train_model(X, metric_name, model_name, model_params)
                         models.append((metric_name, model))
                     else:
                         logger.info(

@@ -1,15 +1,17 @@
 """
 """
 
-from dagster import get_dagster_logger
-import pandas as pd
-from anomstack.external.gcp.credentials import get_google_credentials
 import os
-import time
 import random
+import time
+
+import pandas as pd
+from dagster import get_dagster_logger
 from google.api_core.exceptions import Forbidden
 from google.cloud import bigquery
 from google.cloud.exceptions import TooManyRequests
+
+from anomstack.external.gcp.credentials import get_google_credentials
 
 
 def read_sql_bigquery(sql) -> pd.DataFrame:
@@ -98,9 +100,7 @@ def save_df_bigquery(df, table_key, if_exists="append", max_retries=5) -> pd.Dat
     for attempt in range(max_retries):
         try:
             job = client.load_table_from_dataframe(
-                dataframe=df,
-                destination=destination_table,
-                job_config=job_config
+                dataframe=df, destination=destination_table, job_config=job_config
             )
             job.result()  # Wait for the job to complete
             break  # Success, exit the retry loop

@@ -4,21 +4,22 @@ Generate score jobs and schedules.
 
 import pandas as pd
 from dagster import (
+    DefaultScheduleStatus,
+    JobDefinition,
+    ScheduleDefinition,
     get_dagster_logger,
     job,
     op,
-    ScheduleDefinition,
-    JobDefinition,
-    DefaultScheduleStatus,
 )
+
 from anomstack.config import specs
 from anomstack.df.save import save_df
+from anomstack.df.wrangle import wrangle_df
+from anomstack.fn.run import define_fn
+from anomstack.io.load import load_model
 from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
-from anomstack.io.load import load_model
-from anomstack.fn.run import define_fn
 from anomstack.validate.validate import validate_df
-from anomstack.df.wrangle import wrangle_df
 
 
 def build_score_job(spec) -> JobDefinition:
@@ -101,7 +102,9 @@ def build_score_job(spec) -> JobDefinition:
                 X = preprocess(df_metric, **preprocess_params)
 
                 if len(X) == 0:
-                    logger.debug(f"X is empty for {metric_name} in {metric_batch} score job.")
+                    logger.debug(
+                        f"X is empty for {metric_name} in {metric_batch} score job."
+                    )
                     continue
 
                 logger.debug(f"X:\n{X.head()}")
@@ -148,7 +151,7 @@ def build_score_job(spec) -> JobDefinition:
             if len(df_scores) == 0:
                 logger.debug(f"df_scores is empty for {metric_batch} score job.")
                 return df_scores
-            
+
             df_scores = wrangle_df(df_scores, rounding=score_metric_rounding)
             df_scores = validate_df(df_scores)
 
@@ -171,7 +174,9 @@ def build_score_job(spec) -> JobDefinition:
             if len(df) > 0:
                 df = save_df(df, db, table_key)
             else:
-                logger.debug(f"no scores to save, df is empty for {metric_batch} score job.")
+                logger.debug(
+                    f"no scores to save, df is empty for {metric_batch} score job."
+                )
 
             return df
 

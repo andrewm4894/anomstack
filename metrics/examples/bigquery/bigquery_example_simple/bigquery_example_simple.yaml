@@ -18,7 +18,7 @@ ingest_sql: >
     *
   from
   (
-  
+
   -- random_1
 
   select
@@ -36,9 +36,9 @@ ingest_sql: >
       else rand() -- Normal value
     end as metric_value
   union all
-  
+
   -- random_2
-  
+
   select
     current_timestamp() as metric_timestamp,
     'random_2' as metric_name,
@@ -54,9 +54,9 @@ ingest_sql: >
       else rand() -- Normal value
     end as metric_value
   union all
-  
+
   -- random_3
-  
+
   select
     current_timestamp() as metric_timestamp,
     'random_3' as metric_name,

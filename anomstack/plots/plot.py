@@ -1,8 +1,8 @@
 """
 """
 
-import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
@@ -27,7 +27,7 @@ def make_alert_plot(df: pd.DataFrame, metric_name: str, threshold: float = 0.8) 
     n = len(df_plot)
 
     ax1 = df_plot["metric_value"].plot(
-        title=f'{metric_name} (n={n})', ax=axes[0], style="-o", color="royalblue"
+        title=f"{metric_name} (n={n})", ax=axes[0], style="-o", color="royalblue"
     )
     if "metric_value_smooth" in df_plot.columns:
         df_plot["metric_value_smooth"].plot(
@@ -62,7 +62,7 @@ def make_alert_plot(df: pd.DataFrame, metric_name: str, threshold: float = 0.8) 
     ax2.set_ylim(0, 1)
     ax2.legend(loc="upper left")
     ax2.grid(False)
-    ax2.locator_params(axis='x', nbins=25)
+    ax2.locator_params(axis="x", nbins=25)
 
     for idx in alert_points.index:
         ax1.axvline(idx, color="yellow", alpha=0.3)

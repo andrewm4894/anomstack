@@ -2,7 +2,7 @@ name: Serverless Branch Deployments
 on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
-    
+
 concurrency:
   # Cancel in-progress deploys to same branch
   group: ${{ github.ref }}/branch_deployments
@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-20.04
     outputs:
       build_info: ${{ steps.parse-workspace.outputs.build_info }}
-    
+
     steps:
       - name: Prerun Checks
         id: prerun
@@ -39,7 +39,7 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
           path: project-repo
-          
+
       - name: Python Executable Deploy
         if: steps.prerun.outputs.result == 'pex-deploy'
         uses: dagster-io/dagster-cloud-action/actions/build_deploy_python_executable@v0.1
@@ -75,4 +75,3 @@ jobs:
           organization_id: ${{ secrets.ORGANIZATION_ID }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-

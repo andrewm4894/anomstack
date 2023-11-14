@@ -2,7 +2,7 @@ import pandas as pd
 from dagster import get_dagster_logger
 
 
-def make_x(df, mode='train', diff_n=0, smooth_n=0, lags_n=0, score_n=1) -> pd.DataFrame:
+def make_x(df, mode="train", diff_n=0, smooth_n=0, lags_n=0, score_n=1) -> pd.DataFrame:
     """
     Prepare data for model training and scoring.
 
@@ -14,23 +14,27 @@ def make_x(df, mode='train', diff_n=0, smooth_n=0, lags_n=0, score_n=1) -> pd.Da
 
     logger = get_dagster_logger()
 
-    X = df.sort_values(by=['metric_timestamp']).reset_index(drop=True).set_index('metric_timestamp')
+    X = (
+        df.sort_values(by=["metric_timestamp"])
+        .reset_index(drop=True)
+        .set_index("metric_timestamp")
+    )
     X = df[["metric_value"]]
 
     if diff_n > 0:
-        X['metric_value'] = X['metric_value'].diff(periods=diff_n).dropna()
+        X["metric_value"] = X["metric_value"].diff(periods=diff_n).dropna()
 
     if smooth_n > 0:
-        X['metric_value'] = X['metric_value'].rolling(window=smooth_n).mean().dropna()
+        X["metric_value"] = X["metric_value"].rolling(window=smooth_n).mean().dropna()
 
     if lags_n > 0:
-        for lag in range(1,lags_n+1):
-            X[f'lag_{lag}'] = X['metric_value'].shift(lag)
+        for lag in range(1, lags_n + 1):
+            X[f"lag_{lag}"] = X["metric_value"].shift(lag)
 
-    if mode == 'train':
+    if mode == "train":
         X = X.sample(frac=1)
 
-    elif mode == 'score':
+    elif mode == "score":
         X = X.tail(score_n)
 
     else:
@@ -38,6 +42,6 @@ def make_x(df, mode='train', diff_n=0, smooth_n=0, lags_n=0, score_n=1) -> pd.Da
 
     X = X.dropna()
 
-    logger.info(f'X=\n{X}')
+    logger.info(f"X=\n{X}")
 
     return X

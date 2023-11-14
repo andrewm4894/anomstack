@@ -12,7 +12,9 @@ def make_prompt(df, llmalert_recent_n) -> str:
 
     from tabulate import tabulate
 
-    text_representation = tabulate(df.reset_index(), headers='keys', tablefmt='pipe', showindex=False)
+    text_representation = tabulate(
+        df.reset_index(), headers="keys", tablefmt="pipe", showindex=False
+    )
 
     prompt = f"""
     You are a seasoned time series expert who has worked with time series data for many years and are very acomplished at spotting and explaining anomalies in time series data.

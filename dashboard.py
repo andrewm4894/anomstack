@@ -6,14 +6,14 @@ $ streamlit run dashboard.py
 """
 
 import pandas as pd
-import streamlit as st
 import plotly.graph_objs as go
+import streamlit as st
+from dotenv import load_dotenv
 from plotly.subplots import make_subplots
+
 from anomstack.config import specs
 from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
-from dotenv import load_dotenv
-
 
 load_dotenv()
 
@@ -93,7 +93,9 @@ df = get_data(sql, db)
 
 # data based inputs
 metric_names = ["ALL"]
-unique_metrics = sorted(list(df[df["metric_batch"] == batch_selection]["metric_name"].unique()))
+unique_metrics = sorted(
+    list(df[df["metric_batch"] == batch_selection]["metric_name"].unique())
+)
 metric_names.extend(unique_metrics)
 metric_selection = st.sidebar.selectbox("Metric Name:", metric_names)
 

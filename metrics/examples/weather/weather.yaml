@@ -12,4 +12,4 @@ alert_always: False
 alert_methods: "email"
 ingest_fn: >
   {% include "./examples/weather/ingest_weather.py" %}
-  
+

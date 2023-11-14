@@ -1,7 +1,8 @@
-import time
 import importlib
-from pyod.models.base import BaseDetector
+import time
+
 from dagster import get_dagster_logger
+from pyod.models.base import BaseDetector
 
 
 def train_model(X, metric, model_name, model_params) -> BaseDetector:
@@ -11,7 +12,9 @@ def train_model(X, metric, model_name, model_params) -> BaseDetector:
 
     logger = get_dagster_logger()
 
-    model_class = getattr(importlib.import_module(f'pyod.models.{model_name.lower()}'), model_name)
+    model_class = getattr(
+        importlib.import_module(f"pyod.models.{model_name.lower()}"), model_name
+    )
     model = model_class(**model_params)
 
     time_start_train = time.time()

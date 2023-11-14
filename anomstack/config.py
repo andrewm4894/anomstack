@@ -3,8 +3,9 @@ Handle configuration for the jobs.
 """
 
 import os
-import yaml
 from pathlib import Path
+
+import yaml
 
 # environment variables that can be used to override the configuration.
 env_vars = ["ANOMSTACK_GCP_PROJECT_ID", "ANOMSTACK_MODEL_PATH", "ANOMSTACK_TABLE_KEY"]
@@ -28,7 +29,7 @@ def process_yaml_file(yaml_file):
     None
     """
 
-    with open(yaml_file, "r", encoding='utf-8') as f:
+    with open(yaml_file, "r", encoding="utf-8") as f:
         metric_specs = yaml.safe_load(f)
         metric_batch = metric_specs["metric_batch"]
         merged_specs = {**defaults, **metric_specs}
@@ -45,7 +46,7 @@ def process_yaml_file(yaml_file):
 
 
 # load defaults
-with open(defaults_dir / "defaults.yaml", "r", encoding='utf-8') as file:
+with open(defaults_dir / "defaults.yaml", "r", encoding="utf-8") as file:
     defaults = yaml.safe_load(file)
 
 # load all the YAML files

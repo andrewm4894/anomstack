@@ -66,7 +66,7 @@ from
   metric_value_data
 ),
 
-data_ranked as 
+data_ranked as
 (
 select
   m.metric_timestamp,
@@ -80,7 +80,7 @@ from
   metric_value_recency_ranked m
 left outer join
   metric_score_recency_ranked s
-on 
+on
   m.metric_name = s.metric_name
   and
   m.metric_batch = s.metric_batch
@@ -100,7 +100,7 @@ select
   metric_score_recency_rank,
   -- smooth the metric score over the last {{ alert_smooth_n }} values
   avg(metric_score) over (partition by metric_name order by metric_score_recency_rank rows between {{ alert_smooth_n }} preceding and current row) as metric_score_smooth
-from 
+from
   data_ranked
 ),
 
@@ -128,7 +128,7 @@ select
   metric_batch,
   metric_name,
   max(metric_alert) as metric_alert_tmp
-from 
+from
   data_alerts
 group by 1,2
 having max(metric_alert) = 1

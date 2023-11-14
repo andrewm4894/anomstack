@@ -5,13 +5,15 @@ Helper functions for sending alerts via email.
 import os
 import smtplib
 import ssl
+import tempfile
+from email import encoders
+from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.mime.base import MIMEBase
-from email import encoders
-import tempfile
-from anomstack.plots.plot import make_alert_plot
+
 from dagster import get_dagster_logger
+
+from anomstack.plots.plot import make_alert_plot
 
 
 def send_email_with_plot(
