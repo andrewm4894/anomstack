@@ -7,6 +7,7 @@ model_path: "gs://andrewm4894-tmp/models"
 ingest_cron_schedule: "*/60 * * * *" # ingest every 60 minutes
 train_cron_schedule: "15 */4 * * *" # train every 4 hours
 score_cron_schedule: "*/70 * * * *" # score every 70 minutes
+plot_cron_schedule: "*/70 * * * *" # plot every 70 minutes
 alert_cron_schedule: "*/75 * * * *" # alert every 75 minutes
 ingest_sql: >
   select
