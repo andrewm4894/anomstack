@@ -105,7 +105,14 @@ Anomstack is a lightweight (README buzzword bingo alert!) data app built on top 
 It's similar in scope and goal to this [Airflow Anomaly Detection provider](https://github.com/andrewm4894/airflow-provider-anomaly-detection) i also made, but easier to get going since does not require airflow and so easier to set up and run yourself or via [Dagster Cloud](#dagster-cloud) in a [serverless](https://docs.dagster.io/dagster-cloud/deployment/serverless) manner.
 
 <details>
-<summary>GitHub Star History - Lets Gooooo!</summary>
+<summary>Quick 10 Minute Video Project Intro</summary>
+
+[![Watch the video](https://img.youtube.com/vi/NyAKQ8H7JMw/0.jpg)](https://www.youtube.com/watch?v=NyAKQ8H7JMw)
+
+</details>
+
+<details>
+<summary>GitHub Star History - Lets Gooooo! :)</summary>
 
 [![Star History Chart](https://api.star-history.com/svg?repos=andrewm4894/anomstack&type=Date)](https://star-history.com/#andrewm4894/anomstack&Date)
 
