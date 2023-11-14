@@ -29,6 +29,7 @@ Painless open source anomaly detection for your metrics! 📈📉🚀
 - [Concepts](#concepts)
 - [Alerts](#alerts)
 - [LLM Alerts](#llm-alerts)
+- [Contributing](#contributing)
 
 Supported sources and databases for your metrics to live in and be queried from:
 
@@ -438,3 +439,5 @@ Below you see an example of an LLM alert via email. In this case we add a descri
 </details>
 
 ## Contributing
+
+Read the [contributing guide](./CONTRIBUTING.md) to learn about our development process, how to propose bugfixes and improvements, and how to build and test your changes to Anomstack.
