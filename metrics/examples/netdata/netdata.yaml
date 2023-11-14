@@ -12,4 +12,3 @@ alert_always: False
 alert_methods: "email"
 ingest_fn: >
   {% include "./examples/netdata/netdata.py" %}
-

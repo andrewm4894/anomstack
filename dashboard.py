@@ -17,6 +17,8 @@ from anomstack.sql.read import read_sql
 
 load_dotenv()
 
+st.set_page_config(layout="wide")
+
 
 def plot_time_series(df, metric_name) -> go.Figure:
     """
@@ -61,6 +63,7 @@ def plot_time_series(df, metric_name) -> go.Figure:
         title_text=f"{metric_name} (n={len(df)})",
         hovermode="x",
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        autosize=True,
     )
 
     return fig
