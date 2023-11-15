@@ -4,7 +4,6 @@ Generate llmalert jobs and schedules.
 
 import os
 
-import openai
 import pandas as pd
 from dagster import (
     DefaultScheduleStatus,
@@ -32,9 +31,6 @@ def build_llmalert_job(spec) -> JobDefinition:
     Returns:
         JobDefinition: A job definition for the LLM Alert job.
     """
-
-    openai.api_key = os.getenv("ANOMSTACK_OPENAI_KEY")
-    openai_model = os.getenv("ANOMSTACK_OPENAI_MODEL", "gpt-3.5-turbo")
 
     logger = get_dagster_logger()
 
@@ -125,7 +121,7 @@ def build_llmalert_job(spec) -> JobDefinition:
                     is_anomalous,
                     decision_reasoning,
                     decision_confidence_level,
-                ) = get_completion(prompt, openai_model)
+                ) = get_completion(prompt)
 
                 logger.info(f"is_anomalous: {is_anomalous}")
                 decision_description = (

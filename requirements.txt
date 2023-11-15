@@ -14,7 +14,7 @@ Jinja2
 matplotlib
 #oscrypto # for now, install from gh to fix this: https://community.snowflake.com/s/article/Python-Connector-fails-to-connect-with-LibraryNotFoundError-Error-detecting-the-version-of-libcrypto
 git+https://github.com/wbond/oscrypto.git@master#egg=oscrypto
-openai
+openai>=1.2.4
 pandas
 pandas-gbq
 plotly
