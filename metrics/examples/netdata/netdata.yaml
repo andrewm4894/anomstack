@@ -9,6 +9,7 @@ alert_cron_schedule: "*/20 * * * *"
 llmalert_cron_schedule: "*/20 * * * *"
 plot_cron_schedule: "*/25 * * * *"
 alert_always: False
+disable_llmalert: False
 alert_methods: "email"
 ingest_fn: >
   {% include "./examples/netdata/netdata.py" %}
