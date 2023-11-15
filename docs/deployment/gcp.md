@@ -208,14 +208,14 @@ After you add whatever environment variables you need to the `.env` file, you ca
 
 #### Docker
 
-Once ready you can stop and then rebuild the containers:
+Once ready you can rebuild and then restart the containers:
 
 ```bash
 # from within anomstack folder
 
-# stop anomstack
-sudo docker compose down
+# build anomstack
+sudo docker compose build
 
-# rebuild anomstack with latest metrics and changes
-sudo docker compose up -d --build
+# restart anomstack with latest metrics and changes
+sudo docker compose up -d
 ```
