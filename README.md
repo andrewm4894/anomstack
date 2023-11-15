@@ -7,6 +7,7 @@
 <a href="https://github.com/andrewm4894/anomstack/stargazers">![GitHub Repo stars](https://img.shields.io/github/stars/andrewm4894/anomstack?style=social)</a>
 <a href="https://github.com/andrewm4894/anomstack/releases">![GitHub release (latest by date)](https://img.shields.io/github/v/release/andrewm4894/anomstack?label=Release)</a>
 <a href="https://github.com/andrewm4894/anomstack/blob/main/LICENSE">![License](https://img.shields.io/badge/License-MIT-yellow.svg)</a>
+<a href="https://github.com/andrewm4894/anomstack/actions/workflows/pytest.yaml">![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/andrewm4894/anomstack/pytest.yaml?label=pytest)</a>
 
 </div>
 
