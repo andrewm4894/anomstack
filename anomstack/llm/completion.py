@@ -1,9 +1,9 @@
 import json
-import time
 import os
+import time
 
-from openai import OpenAI
 import openai
+from openai import OpenAI
 
 
 def get_completion(prompt: str, max_retries=5):
