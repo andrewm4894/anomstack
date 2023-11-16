@@ -237,6 +237,8 @@ Here is a list of features of Anomstack (emoji alert warning!)
 10. 📊 - Plot jobs so you can just eyeball your metrics in Dagster job logs, see [#dagster-ui-plots](#dagster-ui-plots).
 11. 🏗️ - Minimal infrastructure requirements, Anomstack just reads from and writes to whatever database you use.
 12. 📈 - A nice little local [Streamlit](https://streamlit.io/) dashboard to visualize your metrics and anomaly scores, see [#streamlit](#streamlit).
+13. 📦 - Dockerized for easy deployment.
+14. 🔔- Scores & Alerts saved to database so you can query them and do whatever you want with them.
 
 ### Examples
 
