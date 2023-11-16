@@ -44,11 +44,24 @@ def plot_time_series(df, metric_name) -> go.Figure:
         secondary_y=True,
     )
 
+    alert_df = df[df["metric_alert"] == 1]
+    if not alert_df.empty:
+        fig.add_trace(
+            go.Scatter(
+                x=alert_df["metric_timestamp"],
+                y=alert_df["metric_alert"],
+                mode='markers',
+                name="Metric Alert",
+                marker=dict(color='red', size=5)
+            ),
+            secondary_y=True,
+        )
+
     # Update x-axis and y-axes to remove gridlines, set the y-axis range for metric score, and format as percentage
     fig.update_xaxes(showgrid=False, zeroline=False)
     fig.update_yaxes(showgrid=False, zeroline=False, secondary_y=False)
     fig.update_yaxes(
-        showgrid=False, zeroline=False, range=[0, 1], tickformat=".0%", secondary_y=True
+        showgrid=False, zeroline=False, range=[0, 1.1], tickformat=".0%", secondary_y=True
     )
 
     # Set x-axis title
