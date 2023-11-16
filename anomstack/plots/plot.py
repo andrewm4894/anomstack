@@ -115,10 +115,20 @@ def make_batch_plot(df: pd.DataFrame) -> plt.Figure:
             legend=False,
         )
         ax2.set_ylabel("Metric Score")
-        ax2.set_ylim(0, 1)
+        ax2.set_ylim(0, 1.1)
         ax2.tick_params(axis="y", labelcolor=colors[i])
 
-        ax1.set_title(f"{metric} - value vs score (n={n})")
+        alert_data = metric_data[metric_data["metric_alert"] == 1]
+        ax2.scatter(
+            alert_data["metric_timestamp"],
+            alert_data["metric_alert"],
+            color="red",
+            label="Metric Alert",
+            marker="o",
+            s=10
+        )
+
+        ax1.set_title(f"{metric} - value vs score vs alert (n={n})")
 
     plt.tight_layout()
 
