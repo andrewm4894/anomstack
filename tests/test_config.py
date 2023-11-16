@@ -3,7 +3,7 @@ import os
 import pytest
 import yaml
 
-from .config import process_yaml_file, specs
+from anomstack.config import process_yaml_file, specs
 
 
 def test_process_yaml_file():
