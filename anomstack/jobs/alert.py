@@ -99,6 +99,12 @@ def build_alert_job(spec) -> JobDefinition:
                         df=df_alert,
                         threshold=threshold,
                         alert_methods=alert_methods,
+                        tags={
+                            "metric_batch": metric_batch,
+                            "metric_name": metric_name,
+                            "metric_timestamp": metric_timestamp_max,
+                            "alert_type": "ml"
+                        }
                     )
 
             return df_alerts

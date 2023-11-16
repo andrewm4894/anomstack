@@ -141,6 +141,12 @@ def build_llmalert_job(spec) -> JobDefinition:
                         threshold=threshold,
                         alert_methods=alert_methods,
                         description=decision_description,
+                        tags={
+                            "metric_batch": metric_batch,
+                            "metric_name": metric_name,
+                            "metric_timestamp": metric_timestamp_max,
+                            "alert_type": "llm"
+                        }
                     )
 
         llmalert(get_llmalert_data())

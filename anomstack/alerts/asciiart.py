@@ -513,6 +513,7 @@ def make_alert_message(
     anomaly_symbol="* ",
     normal_symbol="  ",
     alert_float_format="{:,.2f}",
+    tags=None,
 ):
     df_alert_metric = df_alert_metric.sort_values(
         by="metric_timestamp", ascending=False
@@ -562,17 +563,10 @@ def make_alert_message(
             + message
         )
 
-    # generate tags
-    tags = {
-        "metric_batch": metric_batch,
-        "metric_name": metric_name,
-        "metric_timestamp_from": metric_timestamp_from,
-        "metric_timestamp_to": metric_timestamp_to,
-    }
-
     # add tags as a json string to bottom of description
-    message += f"""
-    <pre><code>{tags}</code></pre>
-    """
+    if tags:
+        message += f"""
+        <pre><code>{tags}</code></pre>
+        """
 
     return message
