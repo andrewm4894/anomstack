@@ -14,8 +14,10 @@ from dagster import (
 
 from anomstack.alerts.send import send_alert
 from anomstack.config import specs
+from anomstack.df.save import save_df
 from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
+from anomstack.validate.validate import validate_df
 
 
 def build_alert_job(spec) -> JobDefinition:
@@ -47,6 +49,7 @@ def build_alert_job(spec) -> JobDefinition:
     db = spec["db"]
     threshold = spec["alert_threshold"]
     alert_methods = spec["alert_methods"]
+    table_key = spec["table_key"]
 
     @job(name=f"{metric_batch}_alerts")
     def _job():
@@ -92,7 +95,9 @@ def build_alert_job(spec) -> JobDefinition:
                     metric_timestamp_max = (
                         df_alert["metric_timestamp"].max().strftime("%Y-%m-%d %H:%M")
                     )
-                    alert_title = f"🔥 [{metric_name}] looks anomalous ({metric_timestamp_max}) 🔥"
+                    alert_title = (
+                        f"🔥 [{metric_name}] looks anomalous ({metric_timestamp_max}) 🔥"
+                    )
                     df_alert = send_alert(
                         metric_name=metric_name,
                         title=alert_title,
@@ -103,13 +108,44 @@ def build_alert_job(spec) -> JobDefinition:
                             "metric_batch": metric_batch,
                             "metric_name": metric_name,
                             "metric_timestamp": metric_timestamp_max,
-                            "alert_type": "ml"
-                        }
+                            "alert_type": "ml",
+                        },
                     )
 
             return df_alerts
 
-        alert(get_alerts())
+        @op(name=f"{metric_batch}_save_alerts")
+        def save_alerts(df_alerts: pd.DataFrame) -> pd.DataFrame:
+            """
+            Save alerts to db.
+
+            Args:
+                df (DataFrame): A pandas DataFrame containing the alerts to be saved.
+
+            Returns:
+                DataFrame: A pandas DataFrame containing the saved alerts.
+            """
+
+            df_alerts = df_alerts.query("metric_alert == 1")
+            df_alerts["metric_type"] = "alert"
+            df_alerts["metric_alert"] = df_alerts["metric_alert"].astype(float)
+            df_alerts = df_alerts[
+                [
+                    "metric_timestamp",
+                    "metric_batch",
+                    "metric_name",
+                    "metric_type",
+                    "metric_alert",
+                ]
+            ]
+            df_alerts = df_alerts.rename(columns={"metric_alert": "metric_value"})
+            df_alerts = validate_df(df_alerts)
+            logger.info(f"saving {len(df_alerts)} alerts to {db} {table_key}")
+            df_alerts = save_df(df_alerts, db, table_key)
+
+            return df_alerts
+
+        save_alerts(alert(get_alerts()))
 
     return _job
 
