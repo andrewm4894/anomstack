@@ -127,21 +127,25 @@ def build_alert_job(spec) -> JobDefinition:
             """
 
             df_alerts = df_alerts.query("metric_alert == 1")
-            df_alerts["metric_type"] = "alert"
-            df_alerts["metric_alert"] = df_alerts["metric_alert"].astype(float)
-            df_alerts = df_alerts[
-                [
-                    "metric_timestamp",
-                    "metric_batch",
-                    "metric_name",
-                    "metric_type",
-                    "metric_alert",
+
+            if len(df_alerts) > 0:
+                df_alerts["metric_type"] = "alert"
+                df_alerts["metric_alert"] = df_alerts["metric_alert"].astype(float)
+                df_alerts = df_alerts[
+                    [
+                        "metric_timestamp",
+                        "metric_batch",
+                        "metric_name",
+                        "metric_type",
+                        "metric_alert",
+                    ]
                 ]
-            ]
-            df_alerts = df_alerts.rename(columns={"metric_alert": "metric_value"})
-            df_alerts = validate_df(df_alerts)
-            logger.info(f"saving {len(df_alerts)} alerts to {db} {table_key}")
-            df_alerts = save_df(df_alerts, db, table_key)
+                df_alerts = df_alerts.rename(columns={"metric_alert": "metric_value"})
+                df_alerts = validate_df(df_alerts)
+                logger.info(f"saving {len(df_alerts)} alerts to {db} {table_key}")
+                df_alerts = save_df(df_alerts, db, table_key)
+            else:
+                logger.info("no alerts to save")
 
             return df_alerts
 
