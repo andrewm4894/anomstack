@@ -2,4 +2,4 @@ theme: jekyll-theme-minimal
 
 layout: page
 title: "BigQuery"
-permalink: /bigquery
+permalink: docs/bigquery
