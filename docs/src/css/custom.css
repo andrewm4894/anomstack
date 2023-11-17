@@ -1,0 +1,29 @@
+/**
+ * Grey Theme Adaptation
+ */
+
+/* Grey shades adaptation for the light mode */
+:root {
+    --ifm-color-primary: #607D8B; /* Primary grey shade */
+    --ifm-color-primary-dark: #546E7A; /* Slightly darker grey */
+    --ifm-color-primary-darker: #455A64; /* Darker grey */
+    --ifm-color-primary-darkest: #37474F; /* Darkest grey */
+    --ifm-color-primary-light: #78909C; /* Light grey */
+    --ifm-color-primary-lighter: #90A4AE; /* Lighter grey */
+    --ifm-color-primary-lightest: #B0BEC5; /* Lightest grey */
+    --ifm-code-font-size: 95%; /* Keeping the font size unchanged */
+    --docusaurus-highlighted-code-line-bg: rgba(97, 97, 97, 0.1); /* Subtle grey for highlighted code lines */
+  }
+  
+  /* For readability in dark mode, choosing slightly lighter grey shades */
+  [data-theme='dark'] {
+    --ifm-color-primary: #78909C; /* Primary grey for dark mode */
+    --ifm-color-primary-dark: #607D8B; /* Slightly darker grey */
+    --ifm-color-primary-darker: #546E7A; /* Darker grey */
+    --ifm-color-primary-darkest: #455A64; /* Darkest grey */
+    --ifm-color-primary-light: #90A4AE; /* Light grey */
+    --ifm-color-primary-lighter: #B0BEC5; /* Lighter grey */
+    --ifm-color-primary-lightest: #CFD8DC; /* Lightest grey */
+    --docusaurus-highlighted-code-line-bg: rgba(97, 97, 97, 0.3); /* Darker grey for highlighted code lines in dark mode */
+  }
+  
