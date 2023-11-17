@@ -7,4 +7,4 @@
 - [GCS](gcs)
 - [S3](s3)
 - Deployment
-  - [GCP}(/deployment/gcp)
+  - [GCP](/deployment/gcp)
