@@ -1,0 +1,5 @@
+theme: jekyll-theme-minimal
+
+layout: page
+title: "BigQuery"
+permalink: /bigquery
