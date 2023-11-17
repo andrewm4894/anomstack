@@ -7,3 +7,12 @@ permalink: /bigquery
 
 layout: page
 permalink: /snowflake
+
+layout: page
+permalink: /gcs
+
+layout: page
+permalink: /s3
+
+layout: page
+permalink: /deployment/gcp
