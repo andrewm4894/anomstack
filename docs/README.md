@@ -2,5 +2,4 @@
 
 ## Table of Contents
 
-- [BigQuery](/bigquery)
-- [BigQuery](/bigquery)
+- [BigQuery](bigquery)
