@@ -258,13 +258,13 @@ Here are the columns in the metrics table:
 - `metric_value`: Value of the metric (coming from the ingest, score, or alert jobs (see [concepts](#concepts) for more details).
 
 ```SQL
-SELECT 
+SELECT
   metric_timestamp,
   metric_batch,
   metric_name,
   metric_type,
-  metric_value, 
-FROM 
+  metric_value,
+FROM
   `metrics.metrics`
 WHERE
   metric_batch = 'gsod'
@@ -293,14 +293,14 @@ limit 10
 Of course you can easily pivot this table to get a slightly more "wide" format table if you prefer and is easier for working with your analytics tools etc.
 
 ```SQL
-SELECT 
+SELECT
   metric_timestamp,
   metric_batch,
   metric_name,
   avg(if(metric_type='metric', metric_value, null)) as metric_value,
   avg(if(metric_type='score', metric_value, null)) as metric_score,
   max(if(metric_type='alert', metric_value, 0)) as metric_alert,
-FROM 
+FROM
   `metrics.metrics`
 WHERE
   metric_batch = 'gsod'
