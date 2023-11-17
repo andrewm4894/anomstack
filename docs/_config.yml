@@ -1,5 +1,7 @@
 theme: jekyll-theme-minimal
+title: Anomstack
+description: Painless open source anomaly detection for your metrics! 📈📉🚀
 
 layout: page
 title: "BigQuery"
-permalink: docs/bigquery
+permalink: /bigquery

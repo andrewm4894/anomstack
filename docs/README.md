@@ -1,3 +1,6 @@
 # Anomstack Docs
 
-foo foo 
+## Table of Contents
+
+- [BigQuery](/bigquery)
+- [BigQuery](/bigquery)
