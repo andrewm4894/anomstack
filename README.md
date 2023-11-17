@@ -18,8 +18,8 @@ Painless open source anomaly detection for your metrics! 📈📉🚀
 - [What is Anomstack?](#what-is-anomstack)
   - [How it works](#how-it-works)
   - [Why?](#why)
-  - [Architecture](#architecture)
   - [Features](#features)
+  - [Architecture](#architecture)
   - [Examples](#examples)
 - [Project structure](#project-structure)
 - [Quickstart](#quickstart)
@@ -131,7 +131,30 @@ It's similar in scope and goal to this [Airflow Anomaly Detection provider](http
 
 It's still too hard and messy to get decent out of the box anomaly detection on your metrics with minimal fuss. You either have to build some custom solution yourself or buy some modern data stack tool that does it for you. This project aims to make it as easy as possible to get anomaly detection on your metrics without having to buy anything or build anything from scratch yourself.
 
+### Features
+
+[back to top](#anomstack)
+
+Here is a list of features of Anomstack (emoji alert warning!)
+
+1. 🌟 - You bring your metrics Anomstack will do the ML (❤️[PyOD](https://github.com/yzhao062/pyod)).
+2. 🚀 - Easy to run yourself or via [Dagster Cloud](#dagster-cloud).
+3. ⚙️ - Very flexible config, you can see all params in [`defaults.yaml`](./metrics/defaults/defaults.yaml) and override them in each metric batch config.
+4. 🧠 - Ability to define your own custom python ingest function instead of just SQL, check out the [`python_ingest_simple`](./metrics/examples/python/python_ingest_simple/python_ingest_simple.yaml) example.
+5. 🛠️ - Ability to define your own custom python preprocess function instead of the default at [`/metrics/defaults/python/preprocess.py`](./metrics/defaults/python/preprocess.py).
+6. 📧 - Email [alerting](#alerts) with fancy(ish) ascii art plots of your metrics and anomaly scores.
+7. 💬 - Slack alerts too (want to make these nicer).
+8. 🤖 - LLM based alerts (ChatGPT) - see [LLM Alerts](#llm-alerts). p.s. they don't work great yet - experimental :)
+9. 🕒 - Ability to ingest at whatever frequency you want and then agg to a different level for training/scoring, see [`freq`](/metrics/examples/freq/README.md) example.
+10. 📊 - Plot jobs so you can just eyeball your metrics in Dagster job logs, see [#dagster-ui-plots](#dagster-ui-plots).
+11. 🏗️ - Minimal infrastructure requirements, Anomstack just reads from and writes to whatever database you use.
+12. 📈 - A nice little local [Streamlit](https://streamlit.io/) dashboard to visualize your metrics and anomaly scores, see [#streamlit](#streamlit).
+13. 📦 - Dockerized for easy deployment.
+14. 🔔- Scores & Alerts saved to database so you can query them and do whatever you want with them.
+
 ### Architecture
+
+#### The Moving Parts
 
 ```mermaid
 flowchart LR;
@@ -219,26 +242,90 @@ flowchart LR;
 
 ```
 
-### Features
+#### Metrics Table
 
-[back to top](#anomstack)
+Core to what Anomstack is doing in reading from and appending to a "Metrics" table for each metric batch. This is a "long" format table where new metrics are appended to the table as they come in or are defined and configured as you add new metric batches.
 
-Here is a list of features of Anomstack (emoji alert warning!)
+Here are the columns in the metrics table:
 
-1. 🌟 - You bring your metrics Anomstack will do the ML (❤️[PyOD](https://github.com/yzhao062/pyod)).
-2. 🚀 - Easy to run yourself or via [Dagster Cloud](#dagster-cloud).
-3. ⚙️ - Very flexible config, you can see all params in [`defaults.yaml`](./metrics/defaults/defaults.yaml) and override them in each metric batch config.
-4. 🧠 - Ability to define your own custom python ingest function instead of just SQL, check out the [`python_ingest_simple`](./metrics/examples/python/python_ingest_simple/python_ingest_simple.yaml) example.
-5. 🛠️ - Ability to define your own custom python preprocess function instead of the default at [`/metrics/defaults/python/preprocess.py`](./metrics/defaults/python/preprocess.py).
-6. 📧 - Email [alerting](#alerts) with fancy(ish) ascii art plots of your metrics and anomaly scores.
-7. 💬 - Slack alerts too (want to make these nicer).
-8. 🤖 - LLM based alerts (ChatGPT) - see [LLM Alerts](#llm-alerts). p.s. they don't work great yet - experimental :)
-9. 🕒 - Ability to ingest at whatever frequency you want and then agg to a different level for training/scoring, see [`freq`](/metrics/examples/freq/README.md) example.
-10. 📊 - Plot jobs so you can just eyeball your metrics in Dagster job logs, see [#dagster-ui-plots](#dagster-ui-plots).
-11. 🏗️ - Minimal infrastructure requirements, Anomstack just reads from and writes to whatever database you use.
-12. 📈 - A nice little local [Streamlit](https://streamlit.io/) dashboard to visualize your metrics and anomaly scores, see [#streamlit](#streamlit).
-13. 📦 - Dockerized for easy deployment.
-14. 🔔- Scores & Alerts saved to database so you can query them and do whatever you want with them.
+- `metric_timestamp`: Timestamp of the metric (Defined in `ingest_sql` or `ingest_fn`).
+- `metric_batch`: Name of the metric batch (Defined from `metric_batch` in the yaml config for the batch).
+- `metric_name`: Name of the metric (Defined in `ingest_sql` or `ingest_fn`).
+- `metric_type`: Type of the metric the row relates to.
+  - `metric` for the raw metric value.
+  - `score` for the anomaly score (a float from 0-1).
+  - `alert` for an alert (a 1 when an alert was raised).
+- `metric_value`: Value of the metric (coming from the ingest, score, or alert jobs (see [concepts](#concepts) for more details).
+
+```SQL
+SELECT 
+  metric_timestamp,
+  metric_batch,
+  metric_name,
+  metric_type,
+  metric_value, 
+FROM 
+  `metrics.metrics`
+WHERE
+  metric_batch = 'gsod'
+  and
+  metric_name = 'gsod_us_temp_avg'
+ORDER BY metric_timestamp DESC
+limit 10
+/*
++--------------------------+------------+----------------+-----------+------------+
+|metric_timestamp          |metric_batch|metric_name     |metric_type|metric_value|
++--------------------------+------------+----------------+-----------+------------+
+|2023-11-12 00:00:00.000000|gsod        |gsod_us_temp_avg|score      |1           |
+|2023-11-12 00:00:00.000000|gsod        |gsod_us_temp_avg|score      |1           |
+|2023-11-12 00:00:00.000000|gsod        |gsod_us_temp_avg|alert      |1           |
+|2023-11-12 00:00:00.000000|gsod        |gsod_us_temp_avg|metric     |44.4758     |
+|2023-11-11 00:00:00.000000|gsod        |gsod_us_temp_avg|score      |1           |
+|2023-11-11 00:00:00.000000|gsod        |gsod_us_temp_avg|score      |1           |
+|2023-11-11 00:00:00.000000|gsod        |gsod_us_temp_avg|score      |1           |
+|2023-11-11 00:00:00.000000|gsod        |gsod_us_temp_avg|metric     |46.3212     |
+|2023-11-11 00:00:00.000000|gsod        |gsod_us_temp_avg|score      |1           |
+|2023-11-11 00:00:00.000000|gsod        |gsod_us_temp_avg|metric     |46.3212     |
++--------------------------+------------+----------------+-----------+------------+
+*/
+```
+
+Of course you can easily pivot this table to get a slightly more "wide" format table if you prefer and is easier for working with your analytics tools etc.
+
+```SQL
+SELECT 
+  metric_timestamp,
+  metric_batch,
+  metric_name,
+  avg(if(metric_type='metric', metric_value, null)) as metric_value,
+  avg(if(metric_type='score', metric_value, null)) as metric_score,
+  max(if(metric_type='alert', metric_value, 0)) as metric_alert,
+FROM 
+  `metrics.metrics`
+WHERE
+  metric_batch = 'gsod'
+  and
+  metric_name = 'gsod_us_temp_avg'
+GROUP BY 1,2,3
+ORDER BY metric_timestamp DESC
+limit 10
+/*
++--------------------------+------------+----------------+------------------+------------+------------+
+|metric_timestamp          |metric_batch|metric_name     |metric_value      |metric_score|metric_alert|
++--------------------------+------------+----------------+------------------+------------+------------+
+|2023-11-12 00:00:00.000000|gsod        |gsod_us_temp_avg|44.4758           |1           |1           |
+|2023-11-11 00:00:00.000000|gsod        |gsod_us_temp_avg|46.3212           |1           |1           |
+|2023-11-10 00:00:00.000000|gsod        |gsod_us_temp_avg|47.51435          |1           |0           |
+|2023-11-08 00:00:00.000000|gsod        |gsod_us_temp_avg|51.7557           |1           |0           |
+|2023-11-07 00:00:00.000000|gsod        |gsod_us_temp_avg|54.1946           |1           |0           |
+|2023-11-06 00:00:00.000000|gsod        |gsod_us_temp_avg|53.8131           |1           |0           |
+|2023-11-05 00:00:00.000000|gsod        |gsod_us_temp_avg|52.0883           |1           |0           |
+|2023-11-04 00:00:00.000000|gsod        |gsod_us_temp_avg|47.8              |1           |0           |
+|2023-11-03 00:00:00.000000|gsod        |gsod_us_temp_avg|48.752422407267225|1           |0           |
+|2023-11-02 00:00:00.000000|gsod        |gsod_us_temp_avg|38.999010833725855|1           |0           |
++--------------------------+------------+----------------+------------------+------------+------------+
+*/
+```
 
 ### Examples
 
