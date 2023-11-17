@@ -14,7 +14,7 @@
     --ifm-code-font-size: 95%; /* Keeping the font size unchanged */
     --docusaurus-highlighted-code-line-bg: rgba(97, 97, 97, 0.1); /* Subtle grey for highlighted code lines */
   }
-  
+
   /* For readability in dark mode, choosing slightly lighter grey shades */
   [data-theme='dark'] {
     --ifm-color-primary: #78909C; /* Primary grey for dark mode */
@@ -26,4 +26,4 @@
     --ifm-color-primary-lightest: #CFD8DC; /* Lightest grey */
     --docusaurus-highlighted-code-line-bg: rgba(97, 97, 97, 0.3); /* Darker grey for highlighted code lines in dark mode */
   }
-  
+
