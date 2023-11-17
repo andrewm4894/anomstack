@@ -2,9 +2,9 @@
 
 ## Table of Contents
 
-- [BigQuery](bigquery)
-- [Snowflake](snowflake)
-- [GCS](gcs)
-- [S3](s3)
-- Deployment
-  - [GCP](/deployment/gcp)
+- [BigQuery](./bigquery.md)
+- [Snowflake](./snowflake.md)
+- [GCS](./gcs.md)
+- [S3](./s3.md)
+- [Deployment](./deployment/README.md)
+  - [GCP](./deployment/gcp.md)
