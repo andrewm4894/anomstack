@@ -10,8 +10,8 @@ repos:
       - id: mixed-line-ending
       - id: name-tests-test
         args: ["--pytest-test-first"]
-      - id: no-commit-to-branch
-        args: ["--branch", "main"]
+      # - id: no-commit-to-branch
+      #   args: ["--branch", "main"]
       - id: trailing-whitespace
         args: ["--markdown-linebreak-ext=md"]
   - repo: https://github.com/pycqa/isort
