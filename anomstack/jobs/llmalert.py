@@ -6,6 +6,7 @@ import os
 
 import pandas as pd
 from dagster import (
+    MAX_RUNTIME_SECONDS_TAG,
     DefaultScheduleStatus,
     JobDefinition,
     ScheduleDefinition,
@@ -20,6 +21,8 @@ from anomstack.fn.run import define_fn
 from anomstack.jinja.render import render
 from anomstack.llm.completion import get_completion
 from anomstack.sql.read import read_sql
+
+ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv("ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600)
 
 
 def build_llmalert_job(spec) -> JobDefinition:
@@ -36,7 +39,10 @@ def build_llmalert_job(spec) -> JobDefinition:
 
     if spec.get("disable_llmalert"):
 
-        @job(name=f'{spec["metric_batch"]}_llmalert_disabled')
+        @job(
+            name=f'{spec["metric_batch"]}_llmalert_disabled',
+            tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
+        )
         def _dummy_job():
             @op(name=f'{spec["metric_batch"]}_noop')
             def noop():
@@ -54,7 +60,10 @@ def build_llmalert_job(spec) -> JobDefinition:
     llmalert_smooth_n = spec["llmalert_smooth_n"]
     llmalert_metric_rounding = spec.get("llmalert_metric_rounding", 4)
 
-    @job(name=f"{metric_batch}_llmalert_job")
+    @job(
+        name=f"{metric_batch}_llmalert_job",
+        tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
+    )
     def _job():
         """A job that runs the LLM Alert.
 
@@ -145,8 +154,8 @@ def build_llmalert_job(spec) -> JobDefinition:
                             "metric_batch": metric_batch,
                             "metric_name": metric_name,
                             "metric_timestamp": metric_timestamp_max,
-                            "alert_type": "llm"
-                        }
+                            "alert_type": "llm",
+                        },
                     )
 
         llmalert(get_llmalert_data())

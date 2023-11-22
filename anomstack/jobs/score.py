@@ -2,8 +2,11 @@
 Generate score jobs and schedules.
 """
 
+import os
+
 import pandas as pd
 from dagster import (
+    MAX_RUNTIME_SECONDS_TAG,
     DefaultScheduleStatus,
     JobDefinition,
     ScheduleDefinition,
@@ -21,6 +24,8 @@ from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
 from anomstack.validate.validate import validate_df
 
+ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv("ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600)
+
 
 def build_score_job(spec) -> JobDefinition:
     """
@@ -35,7 +40,10 @@ def build_score_job(spec) -> JobDefinition:
 
     if spec.get("disable_score"):
 
-        @job(name=f'{spec["metric_batch"]}_score_disabled')
+        @job(
+            name=f'{spec["metric_batch"]}_score_disabled',
+            tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
+        )
         def _dummy_job():
             @op(name=f'{spec["metric_batch"]}_noop')
             def noop():
@@ -54,7 +62,10 @@ def build_score_job(spec) -> JobDefinition:
     preprocess_params = spec["preprocess_params"]
     score_metric_rounding = spec.get("score_metric_rounding", 4)
 
-    @job(name=f"{metric_batch}_score")
+    @job(
+        name=f"{metric_batch}_score",
+        tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
+    )
     def _job():
         """
         Get data for scoring and score data.

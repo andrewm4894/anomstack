@@ -2,6 +2,7 @@
 """
 
 import base64
+import os
 from io import BytesIO
 from typing import List, Tuple
 
@@ -9,6 +10,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 from dagster import (
+    MAX_RUNTIME_SECONDS_TAG,
     AssetExecutionContext,
     DefaultScheduleStatus,
     JobDefinition,
@@ -26,6 +28,8 @@ from anomstack.jinja.render import render
 from anomstack.plots.plot import make_batch_plot
 from anomstack.sql.read import read_sql
 
+ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv("ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600)
+
 
 def build_plot_job(spec) -> JobDefinition:
     """ """
@@ -34,7 +38,10 @@ def build_plot_job(spec) -> JobDefinition:
 
     if spec.get("disable_plot"):
 
-        @job(name=f'{spec["metric_batch"]}_plot_disabled')
+        @job(
+            name=f'{spec["metric_batch"]}_plot_disabled',
+            tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
+        )
         def _dummy_job():
             @op(name=f'{spec["metric_batch"]}_noop')
             def noop():
@@ -50,7 +57,10 @@ def build_plot_job(spec) -> JobDefinition:
     freq = preprocess_params.get("freq")
     freq_agg = preprocess_params.get("freq_agg")
 
-    @job(name=f"{metric_batch}_plot_job")
+    @job(
+        name=f"{metric_batch}_plot_job",
+        tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
+    )
     def _job():
         """ """
 
