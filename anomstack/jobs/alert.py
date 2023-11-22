@@ -2,8 +2,11 @@
 Generate alert jobs and schedules.
 """
 
+import os
+
 import pandas as pd
 from dagster import (
+    MAX_RUNTIME_SECONDS_TAG,
     DefaultScheduleStatus,
     JobDefinition,
     ScheduleDefinition,
@@ -20,6 +23,8 @@ from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
 from anomstack.validate.validate import validate_df
 
+ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv("ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600)
+
 
 def build_alert_job(spec) -> JobDefinition:
     """
@@ -34,7 +39,10 @@ def build_alert_job(spec) -> JobDefinition:
 
     if spec.get("disable_alerts"):
 
-        @job(name=f'{spec["metric_batch"]}_alerts_disabled')
+        @job(
+            name=f'{spec["metric_batch"]}_alerts_disabled',
+            tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
+        )
         def _dummy_job():
             @op(name=f'{spec["metric_batch"]}_noop')
             def noop():
@@ -52,7 +60,10 @@ def build_alert_job(spec) -> JobDefinition:
     alert_methods = spec["alert_methods"]
     table_key = spec["table_key"]
 
-    @job(name=f"{metric_batch}_alerts")
+    @job(
+        name=f"{metric_batch}_alerts",
+        tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
+    )
     def _job():
         """
         Get data for alerting.

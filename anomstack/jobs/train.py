@@ -2,10 +2,12 @@
 Generate train jobs and schedules.
 """
 
+import os
 from typing import List, Tuple
 
 import pandas as pd
 from dagster import (
+    MAX_RUNTIME_SECONDS_TAG,
     DefaultScheduleStatus,
     JobDefinition,
     ScheduleDefinition,
@@ -22,6 +24,8 @@ from anomstack.jinja.render import render
 from anomstack.ml.train import train_model
 from anomstack.sql.read import read_sql
 
+ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv("ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600)
+
 
 def build_train_job(spec) -> JobDefinition:
     """
@@ -36,7 +40,10 @@ def build_train_job(spec) -> JobDefinition:
 
     if spec.get("disable_train"):
 
-        @job(name=f'{spec["metric_batch"]}_train_disabled')
+        @job(
+            name=f'{spec["metric_batch"]}_train_disabled',
+            tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
+        )
         def _dummy_job():
             @op(name=f'{spec["metric_batch"]}_noop')
             def noop():
@@ -53,7 +60,10 @@ def build_train_job(spec) -> JobDefinition:
     model_name = spec["model_config"]["model_name"]
     model_params = spec["model_config"]["model_params"]
 
-    @job(name=f"{metric_batch}_train")
+    @job(
+        name=f"{metric_batch}_train",
+        tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
+    )
     def _job():
         """
         Get data for training and train models.
