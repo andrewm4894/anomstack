@@ -16,6 +16,8 @@
 
 Painless open source anomaly detection for your metrics! 📈📉🚀
 
+> _Anomstack is nothing without its people_ 💚 ;)
+
 - [What is Anomstack?](#what-is-anomstack)
   - [How it works](#how-it-works)
   - [Why?](#why)
