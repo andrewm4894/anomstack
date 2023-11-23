@@ -16,7 +16,7 @@
 
 Painless open source anomaly detection for your metrics! 📈📉🚀
 
-> _Anomstack is nothing without its people_ 💚 ;)
+> _Anomstack is nothing without [its people](https://github.com/andrewm4894/anomstack/stargazers)_ 💚 ;)
 
 - [What is Anomstack?](#what-is-anomstack)
   - [How it works](#how-it-works)
