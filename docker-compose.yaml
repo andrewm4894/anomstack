@@ -7,9 +7,11 @@ services:
     image: postgres:11
     container_name: anomstack_postgresql
     environment:
-      POSTGRES_USER: "postgres_user"
-      POSTGRES_PASSWORD: "postgres_password"
-      POSTGRES_DB: "postgres_db"
+      POSTGRES_USER: "${ANOMSTACK_POSTGRES_USER:-postgres_user}"
+      POSTGRES_PASSWORD: "${ANOMSTACK_POSTGRES_PASSWORD:-postgres_password}"
+      POSTGRES_DB: "${ANOMSTACK_POSTGRES_DB:-postgres_db}"
+    ports:
+      - "${ANOMSTACK_POSTGRES_FORWARD_PORT:-}:5432"
     networks:
       - anomstack_network
 
@@ -30,9 +32,9 @@ services:
       - ./tmp:/opt/dagster/app/tmp
       - ./tmpdata:/opt/dagster/app/tmpdata
     environment:
-      DAGSTER_POSTGRES_USER: "postgres_user"
-      DAGSTER_POSTGRES_PASSWORD: "postgres_password"
-      DAGSTER_POSTGRES_DB: "postgres_db"
+      DAGSTER_POSTGRES_USER: "${ANOMSTACK_POSTGRES_USER:-postgres_user}"
+      DAGSTER_POSTGRES_PASSWORD: "${ANOMSTACK_POSTGRES_PASSWORD:-postgres_password}"
+      DAGSTER_POSTGRES_DB: "${ANOMSTACK_POSTGRES_DB:-postgres_db}"
       DAGSTER_CURRENT_IMAGE: "anomstack_code_image"
       # read from .env file
       ANOMSTACK_GCP_PROJECT_ID: ${ANOMSTACK_GCP_PROJECT_ID}
@@ -82,9 +84,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DAGSTER_POSTGRES_USER: "postgres_user"
-      DAGSTER_POSTGRES_PASSWORD: "postgres_password"
-      DAGSTER_POSTGRES_DB: "postgres_db"
+      DAGSTER_POSTGRES_USER: "${ANOMSTACK_POSTGRES_USER:-postgres_user}"
+      DAGSTER_POSTGRES_PASSWORD: "${ANOMSTACK_POSTGRES_PASSWORD:-postgres_password}"
+      DAGSTER_POSTGRES_DB: "${ANOMSTACK_POSTGRES_DB:-postgres_db}"
       # read from .env file
       ANOMSTACK_GCP_PROJECT_ID: ${ANOMSTACK_GCP_PROJECT_ID}
       ANOMSTACK_SNOWFLAKE_ACCOUNT: ${ANOMSTACK_SNOWFLAKE_ACCOUNT}
@@ -133,9 +135,9 @@ services:
     container_name: anomstack_daemon
     restart: on-failure
     environment:
-      DAGSTER_POSTGRES_USER: "postgres_user"
-      DAGSTER_POSTGRES_PASSWORD: "postgres_password"
-      DAGSTER_POSTGRES_DB: "postgres_db"
+      DAGSTER_POSTGRES_USER: "${ANOMSTACK_POSTGRES_USER:-postgres_user}"
+      DAGSTER_POSTGRES_PASSWORD: "${ANOMSTACK_POSTGRES_PASSWORD:-postgres_password}"
+      DAGSTER_POSTGRES_DB: "${ANOMSTACK_POSTGRES_DB:-postgres_db}"
       # read from .env file
       ANOMSTACK_GCP_PROJECT_ID: ${ANOMSTACK_GCP_PROJECT_ID}
       ANOMSTACK_SNOWFLAKE_ACCOUNT: ${ANOMSTACK_SNOWFLAKE_ACCOUNT}
