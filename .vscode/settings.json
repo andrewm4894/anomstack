@@ -7,5 +7,6 @@
         "dataframe",
         "llmalert",
         "openai"
-    ]
+    ],
+    "python.pythonPath": "venv\\Scripts\\python.exe"
 }
