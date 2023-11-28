@@ -21,7 +21,7 @@ def ingest() -> pd.DataFrame:
         df['metric_name'] = df['metric_name'].str.lower()
         df['metric_name'] = 'eirgrid_' + df['metric_name']
         df = df[["metric_timestamp", "metric_name", "metric_value"]]
-        
+
         return df
 
     today = date.today().strftime("%d-%b-%Y")
