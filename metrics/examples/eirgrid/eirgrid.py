@@ -7,6 +7,7 @@ def ingest() -> pd.DataFrame:
     """
 
     from datetime import date
+
     import requests
 
     today = date.today().strftime("%d-%b-%Y")
@@ -14,7 +15,7 @@ def ingest() -> pd.DataFrame:
     url = f'https://www.smartgriddashboard.com/DashboardService.svc/data?area=demandactual&region=ALL&datefrom={today}+00%3A00&dateto={today}+23%3A59'
 
     headers = {}
-    
+
     response = requests.get(url, headers=headers)
 
     data = response.json()
