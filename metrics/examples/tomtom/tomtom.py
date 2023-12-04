@@ -7,6 +7,7 @@ def ingest() -> pd.DataFrame:
     """
 
     import os
+
     import requests
 
     tomtom_api_key = os.environ["ANOMSTACK_TOMTOM_API_KEY"]
