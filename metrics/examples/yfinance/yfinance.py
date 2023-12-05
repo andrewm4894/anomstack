@@ -15,9 +15,9 @@ def ingest() -> pd.DataFrame:
     def getCredentials(
         cookieUrl="https://fc.yahoo.com", crumbUrl=apiBase + "/v1/test/getcrumb"
     ):
-        cookie = requests.get(cookieUrl, timeout=10).cookies
+        cookie = requests.get(cookieUrl, timeout=30).cookies
         crumb = requests.get(
-            url=crumbUrl, cookies=cookie, headers=headers, timeout=10
+            url=crumbUrl, cookies=cookie, headers=headers, timeout=30
         ).text
         return {"cookie": cookie, "crumb": crumb}
 
@@ -29,7 +29,7 @@ def ingest() -> pd.DataFrame:
             params=params,
             cookies=credentials["cookie"],
             headers=headers,
-            timeout=10,
+            timeout=30,
         )
         quotes = response.json()["quoteResponse"]["result"]
         return quotes
@@ -55,3 +55,8 @@ def ingest() -> pd.DataFrame:
     df["metric_timestamp"] = pd.Timestamp.utcnow()
 
     return df
+
+
+if __name__ == "__main__":
+    df = ingest()
+    print(df)
