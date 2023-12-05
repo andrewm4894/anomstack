@@ -5,7 +5,6 @@ Generate score jobs and schedules.
 import os
 
 import pandas as pd
-from google.api_core.exceptions import NotFound
 from dagster import (
     MAX_RUNTIME_SECONDS_TAG,
     DefaultScheduleStatus,
@@ -15,6 +14,7 @@ from dagster import (
     job,
     op,
 )
+from google.api_core.exceptions import NotFound
 
 from anomstack.config import specs
 from anomstack.df.save import save_df
