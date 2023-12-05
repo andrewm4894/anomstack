@@ -4,6 +4,7 @@ SHELL=/bin/bash
 .PHONY: local
 .PHONY: docker
 .PHONY: pre-commit
+.PHONY: tests
 
 ## start streamlit dashboard
 dashboard:
@@ -20,6 +21,10 @@ docker:
 ## pre-commit
 pre-commit:
 	pre-commit run --all-files
+
+## run tests
+tests:
+	pytest -v
 
 ## setup local development environment and install dependencies
 dev:
