@@ -50,9 +50,9 @@ def plot_time_series(df, metric_name) -> go.Figure:
             go.Scatter(
                 x=alert_df["metric_timestamp"],
                 y=alert_df["metric_alert"],
-                mode='markers',
+                mode="markers",
                 name="Metric Alert",
-                marker=dict(color='red', size=5)
+                marker=dict(color="red", size=5),
             ),
             secondary_y=True,
         )
@@ -61,7 +61,11 @@ def plot_time_series(df, metric_name) -> go.Figure:
     fig.update_xaxes(showgrid=False, zeroline=False)
     fig.update_yaxes(showgrid=False, zeroline=False, secondary_y=False)
     fig.update_yaxes(
-        showgrid=False, zeroline=False, range=[0, 1.1], tickformat=".0%", secondary_y=True
+        showgrid=False,
+        zeroline=False,
+        range=[0, 1.1],
+        tickformat=".0%",
+        secondary_y=True,
     )
 
     # Set x-axis title
@@ -82,7 +86,7 @@ def plot_time_series(df, metric_name) -> go.Figure:
     return fig
 
 
-@st.cache_data
+@st.cache_data(ttl=60)
 def get_data(sql: str, db: str) -> pd.DataFrame:
     """
     Get data from the database.
@@ -93,7 +97,9 @@ def get_data(sql: str, db: str) -> pd.DataFrame:
 
 
 # Streamlit app
-st.title("Anomstack Metrics Visualization")
+custom_css = """<style>a {text-decoration: none;}</style>"""
+st.markdown(custom_css, unsafe_allow_html=True)
+st.title("[Anomstack](https://github.com/andrewm4894/anomstack) Metrics Visualization")
 
 # get metric batches
 metric_batches = list(specs.keys())
@@ -134,3 +140,6 @@ else:
     # plot
     fig = plot_time_series(filtered_df, metric_selection)
     st.plotly_chart(fig, use_container_width=True)
+
+with st.expander("Show SQL Query"):
+    st.text(sql)
