@@ -97,7 +97,9 @@ def get_data(sql: str, db: str) -> pd.DataFrame:
 
 
 # Streamlit app
-st.title("Anomstack Metrics Visualization")
+custom_css = """<style>a {text-decoration: none;}</style>"""
+st.markdown(custom_css, unsafe_allow_html=True)
+st.title("[Anomstack](https://github.com/andrewm4894/anomstack) Metrics Visualization")
 
 # get metric batches
 metric_batches = list(specs.keys())
