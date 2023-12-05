@@ -5,6 +5,7 @@ Generate score jobs and schedules.
 import os
 
 import pandas as pd
+from google.api_core.exceptions import NotFound
 from dagster import (
     MAX_RUNTIME_SECONDS_TAG,
     DefaultScheduleStatus,
@@ -108,7 +109,15 @@ def build_score_job(spec) -> JobDefinition:
                 logger.debug(f"preprocess {metric_name} in {metric_batch} score job.")
                 logger.debug(f"df_metric:\n{df_metric.head()}")
 
-                model = load_model(metric_name, model_path, metric_batch)
+                # try load model and catch google.api_core.exceptions.NotFound
+                try:
+                    model = load_model(metric_name, model_path, metric_batch)
+                except NotFound as e:
+                    logger.warning(e)
+                    logger.warning(
+                        f"model not found for {metric_name} in {metric_batch} score job."
+                    )
+                    continue
 
                 X = preprocess(df_metric, **preprocess_params)
 
