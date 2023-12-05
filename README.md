@@ -143,7 +143,7 @@ It's still too hard and messy to get decent out of the box anomaly detection on 
 Here is a list of features of Anomstack (emoji alert warning!)
 
 1. 🌟 - You bring your metrics Anomstack will do the ML (❤️[PyOD](https://github.com/yzhao062/pyod)).
-2. 🚀 - Easy to run yourself or via [Dagster Cloud](#dagster-cloud).
+2. 🚀 - Easy to [run yourself](#docker) or via [Dagster Cloud](#dagster-cloud).
 3. ⚙️ - Very flexible config, you can see all params in [`defaults.yaml`](./metrics/defaults/defaults.yaml) and override them in each metric batch config.
 4. 🧠 - Ability to define your own custom python ingest function instead of just SQL, check out the [`python_ingest_simple`](./metrics/examples/python/python_ingest_simple/python_ingest_simple.yaml) example.
 5. 🛠️ - Ability to define your own custom python preprocess function instead of the default at [`/metrics/defaults/python/preprocess.py`](./metrics/defaults/python/preprocess.py).
