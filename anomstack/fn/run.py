@@ -29,8 +29,8 @@ def define_fn(fn_name: str, fn: str) -> str:
 
     logger = get_dagster_logger()
 
-    logger.info(f"fn_name: {fn_name}")
-    logger.info(f"fn: {fn}")
+    logger.debug(f"fn_name: {fn_name}")
+    logger.debug(f"fn: {fn}")
 
     namespace = {}
     exec(fn, globals(), namespace)
