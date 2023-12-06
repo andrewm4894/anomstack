@@ -102,7 +102,7 @@ def build_llmalert_job(spec) -> JobDefinition:
                     df[df.metric_name == metric_name]
                     .sort_values(by="metric_timestamp", ascending=True)
                     .reset_index(drop=True)
-                ).dropna()
+                )
                 df_metric["metric_timestamp"] = pd.to_datetime(
                     df_metric["metric_timestamp"]
                 )
@@ -116,6 +116,9 @@ def build_llmalert_job(spec) -> JobDefinition:
                 df_metric.iloc[
                     -llmalert_recent_n:, df_metric.columns.get_loc("metric_recency")
                 ] = "recent"
+
+                logger.debug(f"df_metric: \n{df_metric}")
+
                 df_prompt = (
                     df_metric[["metric_value", "metric_recency"]]
                     .dropna()
