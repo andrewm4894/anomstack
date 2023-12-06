@@ -42,11 +42,11 @@ def get_completion(prompt: str, max_retries=5):
                                 "properties": {
                                     "is_anomalous": {
                                         "type": "boolean",
-                                        "description": "True if the recent metric values looks anomalous, False otherwise.",
+                                        "description": "True if the recent metric values look anomalous, False otherwise.",
                                     },
                                     "decision_reasoning": {
                                         "type": "string",
-                                        "description": "A detailed description, referencing observations by their index number or value, on why or why not the metric looks anomalous.",
+                                        "description": "A detailed description, referencing observations by their index number or value, on why or why not the metric looks anomalous. Think globally too like a human would if they were eyeballing the data.",
                                     },
                                     "decision_confidence_level": {
                                         "type": "string",
