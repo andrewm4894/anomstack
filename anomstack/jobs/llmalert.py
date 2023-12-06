@@ -127,7 +127,7 @@ def build_llmalert_job(spec) -> JobDefinition:
                     -llmalert_recent_n:, df_metric.columns.get_loc("metric_recency")
                 ] = "recent"
 
-                logger.debug(f"df_metric: \n{df_metric}")
+                # logger.debug(f"df_metric: \n{df_metric}")
 
                 df_prompt = (
                     df_metric[["metric_value", "metric_recency"]]
@@ -135,7 +135,7 @@ def build_llmalert_job(spec) -> JobDefinition:
                     .round(llmalert_metric_rounding)
                 )
 
-                logger.debug(f"df_prompt: \n{df_prompt}")
+                # logger.debug(f"df_prompt: \n{df_prompt}")
 
                 prompt = make_prompt(df_prompt, llmalert_recent_n)
 
