@@ -10,5 +10,6 @@ llmalert_cron_schedule: "*/140 * * * *"
 plot_cron_schedule: "*/140 * * * *"
 alert_always: False
 alert_methods: "email"
+disable_llmalert: False
 ingest_fn: >
   {% include "./examples/weather/ingest_weather.py" %}
