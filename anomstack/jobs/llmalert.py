@@ -122,7 +122,7 @@ def build_llmalert_job(spec) -> JobDefinition:
                     .round(llmalert_metric_rounding)
                 )
 
-                logger.debug(f"df_prompt: \n{prompt}")
+                logger.debug(f"df_prompt: \n{df_prompt}")
 
                 prompt = make_prompt(df_prompt, llmalert_recent_n)
 
