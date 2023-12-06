@@ -55,6 +55,8 @@ def make_prompt(df, llmalert_recent_n) -> str:
     Also think about and provide a confidence level on how confident ('high', 'medium', 'low') you are that the metric is anomalous.
 
     Please think step by step and provide a description, along with evidence, of your thought process as you go through the data.
+    
+    Think globally too like a human would if they were eyeballing the data.
     """
 
     return prompt
