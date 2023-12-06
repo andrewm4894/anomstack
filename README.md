@@ -411,8 +411,17 @@ cd anomstack
 # generate your .env file based on example
 cp .example.env .env
 # run docker compose up to start anomstack
-docker compose up
+docker compose up -d
 # anomstack should now be running on port 3000
+```
+
+To update and rebuild after adding metrics or changing code, you can run:
+
+```bash
+# rebuild docker compose
+docker compose build
+# run docker compose up to re-start anomstack
+docker compose up -d
 ```
 
 ### Local Python env
