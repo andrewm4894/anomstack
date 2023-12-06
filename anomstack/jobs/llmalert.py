@@ -122,9 +122,11 @@ def build_llmalert_job(spec) -> JobDefinition:
                     .round(llmalert_metric_rounding)
                 )
 
+                logger.debug(f"df_prompt: \n{prompt}")
+
                 prompt = make_prompt(df_prompt, llmalert_recent_n)
 
-                logger.info(f"prompt: \n{prompt}")
+                logger.debug(f"prompt: \n{prompt}")
 
                 (
                     is_anomalous,
