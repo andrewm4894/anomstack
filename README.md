@@ -117,7 +117,7 @@ It's similar in scope and goal to this [Airflow Anomaly Detection provider](http
 <details>
 <summary>Quick 10 Minute Video Project Intro</summary>
 
-[![Watch the video](https://img.youtube.com/vi/NyAKQ8H7JMw/0.jpg)](https://www.youtube.com/watch?v=NyAKQ8H7JMw)
+[![Watch the video](https://img.youtube.com/vi/wFxcQW0M9aM/0.jpg)](https://youtu.be/wFxcQW0M9aM)
 
 </details>
 
