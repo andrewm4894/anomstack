@@ -20,7 +20,7 @@ Painless open source anomaly detection for your metrics! 📈📉🚀
 
 > _Anomstack is nothing without [its people](https://github.com/andrewm4894/anomstack/stargazers)_ 💚 ;)
 
-> _Note: If you are already using Airflow then also checkout the [`airflow-provider-anomaly-detection`](https://github.com/andrewm4894/airflow-provider-anomaly-detection) package i also maintain._
+> _Note: If you are already using Airflow then also checkout the [`airflow-provider-anomaly-detection`](https://github.com/andrewm4894/airflow-provider-anomaly-detection) package._
 
 - [What is Anomstack?](#what-is-anomstack)
   - [How it works](#how-it-works)
