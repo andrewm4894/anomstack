@@ -13,6 +13,14 @@ disable_llmalert: True
 plot_cron_schedule: "*/25 * * * *" # plot every 25 minutes
 alert_always: False
 alert_methods: "email"
+# metric_tags is a map of metric key value tags to metric names
+metric_tags:
+  random_1:
+    priority: p1
+  random_2:
+    priority: p2
+  random_3:
+    priority: p3
 ingest_sql: >
   select
     *
