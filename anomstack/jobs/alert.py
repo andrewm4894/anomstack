@@ -59,6 +59,7 @@ def build_alert_job(spec) -> JobDefinition:
     threshold = spec["alert_threshold"]
     alert_methods = spec["alert_methods"]
     table_key = spec["table_key"]
+    metric_tags = spec.get("metric_tags", {})
 
     @job(
         name=f"{metric_batch}_alerts",
@@ -110,18 +111,21 @@ def build_alert_job(spec) -> JobDefinition:
                     alert_title = (
                         f"🔥 [{metric_name}] looks anomalous ({metric_timestamp_max}) 🔥"
                     )
+                    tags = {
+                        "metric_batch": metric_batch,
+                        "metric_name": metric_name,
+                        "metric_timestamp": metric_timestamp_max,
+                        "alert_type": "ml",
+                        **metric_tags[metric_name],
+                    }
+                    logger.debug(f"metric tags:\n{tags}")
                     df_alert = send_alert(
                         metric_name=metric_name,
                         title=alert_title,
                         df=df_alert,
                         threshold=threshold,
                         alert_methods=alert_methods,
-                        tags={
-                            "metric_batch": metric_batch,
-                            "metric_name": metric_name,
-                            "metric_timestamp": metric_timestamp_max,
-                            "alert_type": "ml",
-                        },
+                        tags=tags,
                     )
 
             return df_alerts
