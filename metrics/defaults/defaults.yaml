@@ -9,6 +9,11 @@ model_config:
   model_name: 'PCA'
   model_params:
     contamination: 0.01
+# metric_tags is a map of metric key value tags to metric names
+# metric_tags:
+#   metric_name:
+#     key1: value1
+#     key2: value2
 disable_batch: False # if you want to disable a metric batch for some reason.
 train_max_n: 1000 # max number of observations for training a model.
 train_min_n: 14 # min number of observations for training a model.
