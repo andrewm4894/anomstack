@@ -1,11 +1,8 @@
-import pytest
 import logging
-from anomstack.main import (
-    jobs,
-    schedules,
-    ingest_jobs,
-    ingest_schedules,
-)
+
+import pytest
+
+from anomstack.main import ingest_jobs, ingest_schedules, jobs, schedules
 
 logger = logging.getLogger(__name__)
 
