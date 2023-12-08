@@ -34,7 +34,7 @@ def process_yaml_file(yaml_file):
         metric_batch = metric_specs["metric_batch"]
         merged_specs = {**defaults, **metric_specs}
 
-        if merged_specs["disable_batch"] == True:
+        if merged_specs["disable_batch"]:
             return None
         for env_var in env_vars:
             if env_var in os.environ:
