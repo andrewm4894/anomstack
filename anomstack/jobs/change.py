@@ -97,7 +97,7 @@ def build_change_job(spec) -> JobDefinition:
             # for each metric name
             for metric_name in df_change["metric_name"].unique():
                 df_metric = df_change.query(f"metric_name=='{metric_name}'")
-                df_metric['metric_alert'] = 0
+                df_metric["metric_alert"] = 0
                 detector = MAD()
                 # get the data for that metric excluding last observation
                 X_train = df_metric["metric_value"].values[:-1]
@@ -190,6 +190,10 @@ def build_change_job(spec) -> JobDefinition:
             Returns:
                 DataFrame: A pandas DataFrame containing the saved alerts.
             """
+
+            if len(df_change_alerts) == 0:
+                logger.info("no alerts to save")
+                return df_change_alerts
 
             df_change_alerts = df_change_alerts.query("metric_alert == 1")
 
