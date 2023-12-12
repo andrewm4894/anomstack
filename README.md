@@ -18,7 +18,7 @@
 
 Painless open source anomaly detection for your metrics! 📈📉🚀
 
-> _Anomstack is nothing without [its people](https://github.com/andrewm4894/anomstack/stargazers)_ 💚 ;)
+> _Check out this recent [Data Engineering Podcast](https://www.dataengineeringpodcast.com/anomstack-open-source-business-metric-anomaly-detection-episode-404) where we discussed Anomstack and anomaly detection in general._
 
 > _Note: If you are already using Airflow then also checkout the [`airflow-provider-anomaly-detection`](https://github.com/andrewm4894/airflow-provider-anomaly-detection) package._
 
