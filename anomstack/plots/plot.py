@@ -7,7 +7,12 @@ import pandas as pd
 import seaborn as sns
 
 
-def make_alert_plot(df: pd.DataFrame, metric_name: str, threshold: float = 0.8) -> plt:
+def make_alert_plot(
+    df: pd.DataFrame,
+    metric_name: str,
+    threshold: float = 0.8,
+    score_col: str = "metric_score_smooth",
+) -> plt:
     """
     Creates a plot with two subplots: one for the metric values and another for the anomaly score.
 
@@ -15,6 +20,7 @@ def make_alert_plot(df: pd.DataFrame, metric_name: str, threshold: float = 0.8) 
         df (pd.DataFrame): The dataframe containing the data to plot.
         metric_name (str): The name of the metric to plot.
         threshold (float, optional): The threshold value for the anomaly score. Defaults to 0.8.
+        score_col (str, optional): The name of the column containing the anomaly scores. Defaults to 'metric_score_smooth'.
 
     Returns:
         plt: The matplotlib figure object.
@@ -38,13 +44,13 @@ def make_alert_plot(df: pd.DataFrame, metric_name: str, threshold: float = 0.8) 
     ax1.set_ylabel(metric_name)
     ax1.legend(loc="upper left")
 
-    ax2 = df_plot["metric_score_smooth"].plot(
-        title="Anomaly Score",
+    ax2 = df_plot[score_col].plot(
+        title="Score",
         ax=axes[1],
         rot=45,
         linestyle="--",
         color="seagreen",
-        label="Score Smooth",
+        label=score_col,
     )
     alert_points = df_plot[df_plot["metric_alert"] == 1]
     ax2.scatter(
@@ -59,7 +65,10 @@ def make_alert_plot(df: pd.DataFrame, metric_name: str, threshold: float = 0.8) 
         rotation=45,
     )
     ax2.set_ylabel("Score")
-    ax2.set_ylim(0, 1)
+    if df_plot[score_col].max() <= 1:
+        ax2.set_ylim(0, 1)
+    else:
+        ax2.set_ylim(0, df_plot[score_col].max() * 1.1)
     ax2.legend(loc="upper left")
     ax2.grid(False)
     ax2.locator_params(axis="x", nbins=25)
@@ -125,7 +134,7 @@ def make_batch_plot(df: pd.DataFrame) -> plt.Figure:
             color="red",
             label="Metric Alert",
             marker="o",
-            s=10
+            s=10,
         )
 
         ax1.set_title(f"{metric} - value vs score vs alert (n={n})")

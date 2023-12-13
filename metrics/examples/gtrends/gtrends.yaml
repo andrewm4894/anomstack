@@ -7,6 +7,7 @@ ingest_cron_schedule: "30 17 * * *"
 train_cron_schedule: "35 17 * * *"
 score_cron_schedule: "35 17 * * *"
 alert_cron_schedule: "40 17 * * *"
+change_cron_schedule: "40 17 * * *"
 plot_cron_schedule: "45 17 * * *"
 alert_methods: "email"
 alert_always: False

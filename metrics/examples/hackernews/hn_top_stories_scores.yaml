@@ -6,6 +6,7 @@ ingest_cron_schedule: "*/60 * * * *"
 train_cron_schedule: "*/360 * * * *"
 score_cron_schedule: "*/70 * * * *"
 alert_cron_schedule: "*/80 * * * *"
+change_cron_schedule: "*/80 * * * *"
 llmalert_cron_schedule: "*/80 * * * *"
 plot_cron_schedule: "*/80 * * * *"
 alert_always: False

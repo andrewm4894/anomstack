@@ -514,6 +514,7 @@ def make_alert_message(
     normal_symbol="  ",
     alert_float_format="{:,.2f}",
     tags=None,
+    score_col="metric_score_smooth",
 ):
     df_alert_metric = df_alert_metric.sort_values(
         by="metric_timestamp", ascending=False
@@ -522,7 +523,6 @@ def make_alert_message(
         df_alert_metric["metric_timestamp"]
     )
     x = df_alert_metric["metric_value"].round(2).values.tolist()
-    metric_batch = df_alert_metric["metric_batch"].unique()[0]
     metric_name = df_alert_metric["metric_name"].unique()[0]
     metric_timestamp_from = (
         df_alert_metric["metric_timestamp"].min().strftime("%Y-%m-%d %H:%M")
@@ -532,11 +532,9 @@ def make_alert_message(
     )
     labels = (
         np.where(df_alert_metric["metric_alert"] == 1, anomaly_symbol, normal_symbol)
-        + (df_alert_metric["metric_score_smooth"].round(2) * 100)
-        .astype("int")
-        .astype("str")
+        + (df_alert_metric[score_col].round(2) * 100).astype("int").astype("str")
         + "% "
-    )  # + df_alert_metric['metric_timestamp'].astype('str').values).to_list()
+    )
     data = zip(labels, x)
     graph_title = f"{metric_name} ({metric_timestamp_from} to {metric_timestamp_to})"
 

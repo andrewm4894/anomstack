@@ -18,6 +18,7 @@ def send_alert(
     threshold: float = 0.8,
     description: str = "",
     tags=None,
+    score_col: str = "metric_score_smooth",
 ) -> pd.DataFrame:
     """
     Sends an alert using the specified alert methods.
@@ -34,7 +35,9 @@ def send_alert(
     """
     logger = get_dagster_logger()
     logger.info(f"alerts to send: \n{df}")
-    message = make_alert_message(df, description=description, tags=tags)
+    message = make_alert_message(
+        df, description=description, tags=tags, score_col=score_col
+    )
     if "slack" in alert_methods:
         send_alert_slack(title=title, message=message)
     if "email" in alert_methods:
@@ -45,6 +48,7 @@ def send_alert(
             body=message,
             attachment_name=metric_name,
             threshold=threshold,
+            score_col=score_col,
         )
 
     return df
