@@ -12,6 +12,7 @@ google-auth
 google-cloud-bigquery
 Jinja2
 matplotlib
+numpy
 oscrypto
 openai>=1.2.4
 pandas
