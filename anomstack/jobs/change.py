@@ -22,7 +22,7 @@ from anomstack.df.wrangle import wrangle_df
 from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
 from anomstack.validate.validate import validate_df
-from pyod.models.mad import MAD
+from anomstack.ml.change import detect_change
 
 ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv("ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600)
 
@@ -60,6 +60,9 @@ def build_change_job(spec) -> JobDefinition:
     alert_methods = spec["alert_methods"]
     table_key = spec["table_key"]
     metric_tags = spec.get("metric_tags", {})
+    # threshold = spec.get("change_threshold", 3.5)
+    threshold = 0.5
+    detect_last_n = spec.get("change_detect_last_n", 1)
 
     @job(
         name=f"{metric_batch}_change",
@@ -94,43 +97,14 @@ def build_change_job(spec) -> JobDefinition:
             """
             logger.info(f"running change detection on {len(df_change)} rows")
             df_change_alerts = pd.DataFrame()
-            # for each metric name
             for metric_name in df_change["metric_name"].unique():
-                df_metric = df_change.query(f"metric_name=='{metric_name}'")
-                df_metric["metric_alert"] = 0
-                detector = MAD()
-                # get the data for that metric excluding last observation
-                X_train = df_metric["metric_value"].values[:-1]
-                # ensure X_train is a 2D array
-                X_train = X_train.reshape(-1, 1)
-                X_new = df_metric["metric_value"].values[-1:]
-                # ensure X_new is a 2D array
-                X_new = X_new.reshape(-1, 1)
-                X_new_timestamp = df_metric["metric_timestamp"].values[-1]
-                detector.fit(X_train)
-                X_train_scores = detector.decision_scores_
-                # predict on the new data
-                y_pred = detector.predict(X_new)
-                y_pred_score = detector.decision_function(X_new)
-                # append X_train_scores and y_pred_score to be a metric_score column
-                metric_scores = list(X_train_scores) + list(y_pred_score)
-                df_metric["metric_score"] = metric_scores
-                logger.debug(f"df_metric:\n{df_metric}")
-                # if the prediction is 1, then set metric_alert = 1 at the metric_timestamp of the new data
-                if y_pred[0] == 1:
-                    logger.info(
-                        f"change detected for {metric_name} at {X_new_timestamp}"
-                    )
-                    df_metric.loc[
-                        (df_metric["metric_timestamp"] == X_new_timestamp),
-                        "metric_alert",
-                    ] = 1
-                    # append df_metric to df_change_alerts using concat
-                    df_change_alerts = pd.concat([df_change_alerts, df_metric])
-                else:
-                    logger.info(
-                        f"no change detected for {metric_name} at {X_new_timestamp}"
-                    )
+                df_metric = df_change.query(
+                    f"metric_name=='{metric_name}'"
+                ).sort_values("metric_timestamp")
+                df_metric = detect_change(
+                    df_metric, threshold=threshold, detect_last_n=detect_last_n
+                )
+                df_change_alerts = pd.concat([df_change_alerts, df_metric])
             return df_change_alerts
 
         @op(name=f"{metric_batch}_change_alerts_op")
@@ -164,7 +138,7 @@ def build_change_job(spec) -> JobDefinition:
                         "metric_batch": metric_batch,
                         "metric_name": metric_name,
                         "metric_timestamp": metric_timestamp_max,
-                        "alert_type": "ml",
+                        "alert_type": "change",
                         **metric_tags[metric_name],
                     }
                     logger.debug(f"metric tags:\n{tags}")
@@ -172,9 +146,10 @@ def build_change_job(spec) -> JobDefinition:
                         metric_name=metric_name,
                         title=alert_title,
                         df=df_alert,
-                        threshold=0,
+                        threshold=threshold,
                         alert_methods=alert_methods,
                         tags=tags,
+                        score_col="metric_score",
                     )
 
             return df_change_alerts
