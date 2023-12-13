@@ -116,7 +116,7 @@ def build_alert_job(spec) -> JobDefinition:
                         "metric_name": metric_name,
                         "metric_timestamp": metric_timestamp_max,
                         "alert_type": "ml",
-                        **metric_tags[metric_name],
+                        **metric_tags.get(metric_name,{}),
                     }
                     logger.debug(f"metric tags:\n{tags}")
                     df_alert = send_alert(
