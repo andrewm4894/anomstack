@@ -60,9 +60,8 @@ def build_change_job(spec) -> JobDefinition:
     alert_methods = spec["alert_methods"]
     table_key = spec["table_key"]
     metric_tags = spec.get("metric_tags", {})
-    # threshold = spec.get("change_threshold", 3.5)
-    threshold = 0.5
-    detect_last_n = spec.get("change_detect_last_n", 1)
+    change_threshold = spec.get("change_threshold", 3.5)
+    change_detect_last_n = spec.get("change_detect_last_n", 1)
 
     @job(
         name=f"{metric_batch}_change",
@@ -102,7 +101,7 @@ def build_change_job(spec) -> JobDefinition:
                     f"metric_name=='{metric_name}'"
                 ).sort_values("metric_timestamp")
                 df_metric = detect_change(
-                    df_metric, threshold=threshold, detect_last_n=detect_last_n
+                    df_metric, threshold=change_threshold, detect_last_n=change_detect_last_n
                 )
                 df_change_alerts = pd.concat([df_change_alerts, df_metric])
             return df_change_alerts
@@ -132,7 +131,7 @@ def build_change_job(spec) -> JobDefinition:
                         df_alert["metric_timestamp"].max().strftime("%Y-%m-%d %H:%M")
                     )
                     alert_title = (
-                        f"🔥 [{metric_name}] looks changed ({metric_timestamp_max}) 🔥"
+                        f"Δ [{metric_name}] looks changed ({metric_timestamp_max}) Δ"
                     )
                     tags = {
                         "metric_batch": metric_batch,
@@ -146,7 +145,7 @@ def build_change_job(spec) -> JobDefinition:
                         metric_name=metric_name,
                         title=alert_title,
                         df=df_alert,
-                        threshold=threshold,
+                        threshold=change_threshold,
                         alert_methods=alert_methods,
                         tags=tags,
                         score_col="metric_score",
