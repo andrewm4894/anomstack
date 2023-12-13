@@ -8,19 +8,19 @@ logger = logging.getLogger(__name__)
 
 
 def test_jobs_len():
-    assert len(jobs) == 102
+    assert len(jobs) == 119
 
 
 def test_jobs_len_ingest():
-    assert len(ingest_jobs) == len(jobs) / 6
+    assert len(ingest_jobs) == len(jobs) / 7
 
 
 def test_schedules_len():
-    assert len(schedules) == 102
+    assert len(schedules) == 119
 
 
 def test_schedules_len_ingest():
-    assert len(ingest_schedules) == len(schedules) / 6
+    assert len(ingest_schedules) == len(schedules) / 7
 
 
 def test_jobs_schedules_len_match():
