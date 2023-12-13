@@ -9,6 +9,8 @@ model_config:
   model_name: 'PCA'
   model_params:
     contamination: 0.01
+change_threshold: 3.5 # threshold for PyOD MAD based change detection above which to alert on.
+change_detect_last_n: 1 # number of last n observations to detect changes on.
 # metric_tags is a map of metric key value tags to metric names
 # metric_tags:
 #   metric_name:
