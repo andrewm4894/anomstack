@@ -159,6 +159,7 @@ Here is a list of features of Anomstack (emoji alert warning!)
 13. 📦 - Dockerized for easy deployment.
 14. 🔔 - Scores & Alerts saved to database so you can query them and do whatever you want with them.
 15. 🏷️ - Add custom metric tags for more complex alert routing e.g. priority or subject area based.
+16. 🔄 - Change detection jobs out of the box.
 
 ### Architecture
 
@@ -175,6 +176,7 @@ flowchart LR;
     train[[train]]
     score[[score]]
     alert[[alert]]
+    change[[change]]
     llmalert[[llmalert]]
     plot[[plot]]
     dashboardpy["dashboard.py"]
@@ -191,6 +193,7 @@ flowchart LR;
     train
     score
     alert
+    change
     llmalert
     plot
     end
@@ -235,6 +238,8 @@ flowchart LR;
     score --> alert
     score --> llmalert
     score --> plot
+    ingest --> change
+    change --> alert
 
     metric_batch --> dagster_jobs
 
