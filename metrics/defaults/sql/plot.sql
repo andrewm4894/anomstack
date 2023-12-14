@@ -61,6 +61,25 @@ where
 group by 1,2,3
 ),
 
+metric_change_data as
+(
+select distinct
+  metric_timestamp,
+  metric_batch,
+  metric_name,
+  max(metric_value) as metric_change
+from
+  {{ table_key }}
+where
+  metric_batch = '{{ metric_batch }}'
+  and
+  metric_type = 'change'
+  and
+  -- limit to the last {{ change_metric_timestamp_max_days_ago }} days
+  cast(metric_timestamp as datetime) >= CURRENT_DATE - INTERVAL '{{ change_metric_timestamp_max_days_ago }}' DAY
+group by 1,2,3
+),
+
 metric_value_recency_ranked as
 (
 select distinct
@@ -94,6 +113,7 @@ select
   m.metric_value,
   s.metric_score,
   a.metric_alert,
+  c.metric_change,
   m.metric_value_recency_rank,
   s.metric_score_recency_rank
 from
@@ -114,6 +134,14 @@ on
   m.metric_name = a.metric_name
   and
   m.metric_timestamp = a.metric_timestamp
+left outer join
+  metric_change_data c
+on
+  m.metric_batch = c.metric_batch
+  and
+  m.metric_name = c.metric_name
+  and
+  m.metric_timestamp = c.metric_timestamp
 ),
 
 data_smoothed as
@@ -125,6 +153,7 @@ select
   metric_value,
   metric_score,
   metric_alert,
+  metric_change,
   metric_value_recency_rank,
   metric_score_recency_rank,
   -- smooth the metric score over the last {{ alert_smooth_n }} values
@@ -142,7 +171,8 @@ select
   metric_value,
   metric_score,
   metric_score_smooth,
-  metric_alert
+  metric_alert,
+  metric_change
 from
   data_smoothed
 where
@@ -157,7 +187,8 @@ select
   metric_value,
   metric_score,
   metric_score_smooth,
-  metric_alert
+  metric_alert,
+  metric_change
 from
   data_alerts
 ;
