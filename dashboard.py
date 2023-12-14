@@ -56,7 +56,7 @@ def plot_time_series(df, metric_name) -> go.Figure:
             ),
             secondary_y=True,
         )
-        
+
     change_df = df[df["metric_change"] == 1]
     if not change_df.empty:
         fig.add_trace(
