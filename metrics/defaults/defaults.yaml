@@ -9,27 +9,27 @@ model_config:
   model_name: 'PCA'
   model_params:
     contamination: 0.01
-change_threshold: 3.5 # threshold for PyOD MAD based change detection above which to alert on.
-change_detect_last_n: 1 # number of last n observations to detect changes on.
 # metric_tags is a map of metric key value tags to metric names
 # metric_tags:
 #   metric_name:
 #     key1: value1
 #     key2: value2
 disable_batch: False # if you want to disable a metric batch for some reason.
-train_max_n: 1000 # max number of observations for training a model.
+train_max_n: 2500 # max number of observations for training a model.
 train_min_n: 14 # min number of observations for training a model.
-score_max_n: 20 # max n to pull for scoring to avoid pulling more than needed.
+score_max_n: 25 # max n to pull for scoring to avoid pulling more than needed.
 ingest_metric_rounding: 4 # round metric values to this number of decimal places.
 score_metric_rounding: 4 # round metric scores to this number of decimal places.
-alert_max_n: 180 # max n to include and plot in an alert.
-change_max_n: 180 # max n to include in change detection.
-alert_metric_timestamp_max_days_ago: 30 # don't alert on metrics older than this.
-change_metric_timestamp_max_days_ago: 30 # don't all metrics older than this into change detection.
+alert_max_n: 250 # max n to include and plot in an alert.
+change_max_n: 250 # max n to include in change detection.
+alert_metric_timestamp_max_days_ago: 45 # don't alert on metrics older than this.
+change_metric_timestamp_max_days_ago: 45 # don't all metrics older than this into change detection.
 alert_recent_n: 1 # only alert on recent n so as to avoid continually alerting.
 alert_smooth_n: 3 # smooth anomaly score over rolling n to avoid being too trigger happy.
 change_smooth_n: 1 # smooth metric values as part of change detection.
 alert_threshold: 0.8 # threshold for smoothed anomaly score above which to alert on.
+change_threshold: 3.5 # threshold for PyOD MAD based change detection above which to alert on.
+change_detect_last_n: 1 # number of last n observations to detect changes on.
 alert_always: False # if True, always send alerts, even if no anomalies.
 alert_methods: "email" # comma separated list of alert methods to use eg "email,slack".
 llmalert_recent_n: 5 # only llmalert on recent n so as to avoid continually alerting.
