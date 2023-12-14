@@ -70,6 +70,8 @@ def build_plot_job(spec) -> JobDefinition:
 
             df = read_sql(render("plot_sql", spec), db)
             df["metric_alert"] = df["metric_alert"].fillna(0)
+            if "metric_change" in df.columns:
+                df["metric_change"] = df["metric_change"].fillna(0)
 
             if freq:
                 df = resample(df, freq, freq_agg)
