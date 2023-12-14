@@ -162,7 +162,7 @@ from
   data_ranked
 ),
 
-data_alerts as
+data_final as
 (
 select
   metric_timestamp,
@@ -190,5 +190,5 @@ select
   metric_alert,
   metric_change
 from
-  data_alerts
+  data_final
 ;
