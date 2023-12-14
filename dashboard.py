@@ -56,6 +56,19 @@ def plot_time_series(df, metric_name) -> go.Figure:
             ),
             secondary_y=True,
         )
+        
+    change_df = df[df["metric_change"] == 1]
+    if not change_df.empty:
+        fig.add_trace(
+            go.Scatter(
+                x=change_df["metric_timestamp"],
+                y=change_df["metric_change"],
+                mode="markers",
+                name="Metric Change",
+                marker=dict(color="orange", size=5),
+            ),
+            secondary_y=True,
+        )
 
     # Update x-axis and y-axes to remove gridlines, set the y-axis range for metric score, and format as percentage
     fig.update_xaxes(showgrid=False, zeroline=False)
@@ -109,7 +122,7 @@ last_n = st.sidebar.number_input("Last N:", min_value=1, value=5000)
 batch_selection = st.sidebar.selectbox("Metric Batch:", metric_batches)
 
 # get data
-sql = render("plot_sql", specs[batch_selection], params={"alert_max_n": last_n})
+sql = render("dashboard_sql", specs[batch_selection], params={"alert_max_n": last_n})
 db = specs[batch_selection]["db"]
 df = get_data(sql, db)
 
