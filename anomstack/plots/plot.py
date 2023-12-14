@@ -1,7 +1,6 @@
 """
 """
 
-import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
@@ -137,7 +136,18 @@ def make_batch_plot(df: pd.DataFrame) -> plt.Figure:
             s=10,
         )
 
-        ax1.set_title(f"{metric} - value vs score vs alert (n={n})")
+        if "metric_change" in metric_data.columns:
+            change_data = metric_data[metric_data["metric_change"] == 1]
+            ax2.scatter(
+                change_data["metric_timestamp"],
+                change_data["metric_change"],
+                color="orange",
+                label="Metric Change",
+                marker="o",
+                s=10,
+            )
+
+        ax1.set_title(f"{metric} - value vs score vs alert/change (n={n})")
 
     plt.tight_layout()
 
