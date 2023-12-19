@@ -1,6 +1,9 @@
 import os
 
 from dagster import make_email_on_run_failure_sensor
+from dotenv import load_dotenv
+
+load_dotenv()
 
 email_from = os.getenv(
     "ANOMSTACK_FAILURE_EMAIL_FROM", os.getenv("ANOMSTACK_ALERT_EMAIL_FROM")
