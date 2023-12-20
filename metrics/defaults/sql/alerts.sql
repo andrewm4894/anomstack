@@ -163,10 +163,10 @@ select
 from
   data_alerts
 group by 1,2
-having 
+having
   -- only return metrics that have been triggered
-  max(metric_alert) = 1 
-  and 
+  max(metric_alert) = 1
+  and
   -- respect the snooze period
   max(metric_has_recent_alert) = 0
 )
