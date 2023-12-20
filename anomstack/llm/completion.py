@@ -1,9 +1,12 @@
 import json
-import openai
+import os
 import time
 
+import openai
+from openai import OpenAI
 
-def get_completion(prompt: str, model="gpt-3.5-turbo", max_retries=5):
+
+def get_completion(prompt: str, max_retries=5):
     """
     Get a completion from the OpenAI API.
 
@@ -17,43 +20,56 @@ def get_completion(prompt: str, model="gpt-3.5-turbo", max_retries=5):
         a string describing the anomaly (if is_anomalous=True, else None) and a confidence level.
     """
 
+    client = OpenAI(api_key=os.getenv("ANOMSTACK_OPENAI_KEY"))
+    openai_model = os.getenv("ANOMSTACK_OPENAI_MODEL", "gpt-3.5-turbo")
+
     messages = [{"role": "user", "content": prompt}]
 
     retries = 0
     while retries < max_retries:
         try:
-            completion = openai.ChatCompletion.create(
-                model=model,
+            completion = client.chat.completions.create(
+                model=openai_model,
                 messages=messages,
-                functions=[
+                tools=[
                     {
-                        "name": "trigger_anomaly_alert",
-                        "description": "If the metric looks anomalous then flag it as anomalous.",
-                        "parameters": {
-                            "type": "object",
-                            "properties": {
-                                "is_anomalous": {
-                                    "type": "boolean",
-                                    "description": "True if the recent metric values looks anomalous, False otherwise.",
+                        "type": "function",
+                        "function": {
+                            "name": "trigger_anomaly_alert",
+                            "description": "If the metric looks anomalous then flag it as anomalous.",
+                            "parameters": {
+                                "type": "object",
+                                "properties": {
+                                    "is_anomalous": {
+                                        "type": "boolean",
+                                        "description": "True if the recent metric values look anomalous, False otherwise.",
+                                    },
+                                    "decision_reasoning": {
+                                        "type": "string",
+                                        "description": "A detailed description, referencing observations by their index number or value, on why or why not the metric looks anomalous. Think globally too like a human would if they were eyeballing the data.",
+                                    },
+                                    "decision_confidence_level": {
+                                        "type": "string",
+                                        "enum": ["high", "medium", "low"],
+                                        "description": "Confidence level in the `is_anomalous` flag. 'high' if very confident in the anomaly decision, 'medium' if somewhat confident, 'low' if not confident.",
+                                    },
                                 },
-                                "decision_reasoning": {
-                                    "type": "string",
-                                    "description": "A detailed description, referencing observations by their index number or value, on why or why not the metric looks anomalous.",
-                                },
-                                "decision_confidence_level": {
-                                    "type": "string",
-                                    "enum": ["high", "medium", "low"],
-                                    "description": "Confidence level in the `is_anomalous` flag. 'high' if very confident in the anomaly decision, 'medium' if somewhat confident, 'low' if not confident.",
-                                },
+                                "required": [
+                                    "is_anomalous",
+                                    "decision_reasoning",
+                                    "decision_confidence_level",
+                                ],
                             },
-                            "required": ["is_anomalous", "decision_reasoning", "decision_confidence_level"],
                         },
                     }
                 ],
-                function_call={"name": "trigger_anomaly_alert"},
+                tool_choice={
+                    "type": "function",
+                    "function": {"name": "trigger_anomaly_alert"},
+                },
             )
             break
-        except openai.error.RateLimitError as e:
+        except openai.RateLimitError as e:
             print(f"Rate limit reached. Waiting for {e.retry_after} seconds...")
             time.sleep(e.retry_after)
             retries += 1
@@ -61,12 +77,11 @@ def get_completion(prompt: str, model="gpt-3.5-turbo", max_retries=5):
     if retries == max_retries:
         raise ValueError("Maximum number of retries reached. Aborting.")
 
-    reply_content = completion.choices[0]
-
-    funcs = reply_content["message"].to_dict()["function_call"]["arguments"]
-    funcs = json.loads(funcs)
-    is_anomalous = funcs["is_anomalous"]
-    decision_reasoning = funcs["decision_reasoning"]
-    decision_confidence_level = funcs["decision_confidence_level"]
+    response_message = completion.choices[0].message
+    tool_call = response_message.tool_calls[0]
+    function_args = json.loads(tool_call.function.arguments)
+    is_anomalous = function_args.get("is_anomalous")
+    decision_reasoning = function_args.get("decision_reasoning")
+    decision_confidence_level = function_args.get("decision_confidence_level")
 
     return is_anomalous, decision_reasoning, decision_confidence_level

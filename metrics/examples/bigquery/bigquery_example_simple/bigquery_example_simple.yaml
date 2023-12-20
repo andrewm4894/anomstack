@@ -10,6 +10,9 @@ score_cron_schedule: "*/15 * * * *" # score every 15 minutes
 alert_cron_schedule: "*/20 * * * *" # alert every 20 minutes
 llmalert_cron_schedule: "*/20 * * * *" # llmalert every 20 minutes
 timegptalert_cron_schedule: "*/20 * * * *" # timegptalert every 20 minutes
+change_cron_schedule: "*/20 * * * *" # change detection every 20 minutes
+llmalert_cron_schedule: "*/20 * * * *" # alert every 20 minutes
+disable_llmalert: True
 plot_cron_schedule: "*/25 * * * *" # plot every 25 minutes
 timegptalert_freq: '1H'
 timegptalert_freq_agg: 'mean'
@@ -17,12 +20,20 @@ disable_llmalert: True
 disable_timegptalert: False
 alert_always: False
 alert_methods: "email"
+# metric_tags is a map of metric key value tags to metric names
+metric_tags:
+  random_1:
+    priority: p1
+  random_2:
+    priority: p2
+  random_3:
+    priority: p3
 ingest_sql: >
   select
     *
   from
   (
-  
+
   -- random_1
 
   select
@@ -40,9 +51,9 @@ ingest_sql: >
       else rand() -- Normal value
     end as metric_value
   union all
-  
+
   -- random_2
-  
+
   select
     current_timestamp() as metric_timestamp,
     'random_2' as metric_name,
@@ -58,9 +69,9 @@ ingest_sql: >
       else rand() -- Normal value
     end as metric_value
   union all
-  
+
   -- random_3
-  
+
   select
     current_timestamp() as metric_timestamp,
     'random_3' as metric_name,

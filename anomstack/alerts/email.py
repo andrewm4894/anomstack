@@ -5,17 +5,19 @@ Helper functions for sending alerts via email.
 import os
 import smtplib
 import ssl
+import tempfile
+from email import encoders
+from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.mime.base import MIMEBase
-from email import encoders
-import tempfile
-from anomstack.plots.plot import make_alert_plot
+
 from dagster import get_dagster_logger
+
+from anomstack.plots.plot import make_alert_plot
 
 
 def send_email_with_plot(
-    df, metric_name, subject, body, attachment_name, threshold=0.8
+    df, metric_name, subject, body, attachment_name, threshold=0.8, score_col="metric_score_smooth"
 ) -> None:
     """
     Sends an email with a plot attached.
@@ -27,6 +29,7 @@ def send_email_with_plot(
         body (str): The body of the email.
         attachment_name (str): The name of the attachment.
         threshold (float, optional): The threshold for the anomaly detection. Defaults to 0.8.
+        score_col (str, optional): The name of the column containing the anomaly scores. Defaults to 'metric_score_smooth'.
 
     Returns:
         None
@@ -43,7 +46,7 @@ def send_email_with_plot(
     with tempfile.NamedTemporaryFile(
         prefix=attachment_name, suffix=".png", delete=False
     ) as temp:
-        fig = make_alert_plot(df, metric_name, threshold)
+        fig = make_alert_plot(df, metric_name, threshold, score_col)
         fig.savefig(temp.name)
 
         msg = MIMEMultipart()

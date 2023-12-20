@@ -2,10 +2,11 @@
 This module provides functions for reading data from SQL databases using different database connectors.
 """
 
-from dagster import get_dagster_logger
 import pandas as pd
-from anomstack.external.gcp.bigquery import read_sql_bigquery
+from dagster import get_dagster_logger
+
 from anomstack.external.duckdb.duckdb import read_sql_duckdb
+from anomstack.external.gcp.bigquery import read_sql_bigquery
 from anomstack.external.snowflake.snowflake import read_sql_snowflake
 
 

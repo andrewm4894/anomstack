@@ -12,7 +12,7 @@ ingest_sql: >
     *
   from
   (
-  
+
   -- metric_1
 
   select
@@ -20,17 +20,17 @@ ingest_sql: >
     'metric_1' as metric_name,
     random() as metric_value
   union all
-  
+
   -- metric_2
-  
+
   select
     get_current_timestamp() as metric_timestamp,
     'metric_2' as metric_name,
     random() as metric_value
   union all
-  
+
   -- metric_3
-  
+
   select
     get_current_timestamp() as metric_timestamp,
     'metric_3' as metric_name,

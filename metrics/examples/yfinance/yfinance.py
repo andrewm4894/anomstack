@@ -3,23 +3,21 @@ import pandas as pd
 
 def ingest() -> pd.DataFrame:
     """
-    Credit to: https://stackoverflow.com/a/76580610/1919374 
+    Credit to: https://stackoverflow.com/a/76580610/1919374
     """
 
-    import requests
     import pandas as pd
+    import requests
 
-    
     apiBase = "https://query2.finance.yahoo.com"
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64)"}
-    
-    
+
     def getCredentials(
         cookieUrl="https://fc.yahoo.com", crumbUrl=apiBase + "/v1/test/getcrumb"
     ):
-        cookie = requests.get(cookieUrl, timeout=10).cookies
+        cookie = requests.get(cookieUrl, timeout=30).cookies
         crumb = requests.get(
-            url=crumbUrl, cookies=cookie, headers=headers, timeout=10
+            url=crumbUrl, cookies=cookie, headers=headers, timeout=30
         ).text
         return {"cookie": cookie, "crumb": crumb}
 
@@ -31,11 +29,10 @@ def ingest() -> pd.DataFrame:
             params=params,
             cookies=credentials["cookie"],
             headers=headers,
-            timeout=10,
+            timeout=30,
         )
         quotes = response.json()["quoteResponse"]["result"]
         return quotes
-
 
     symbols = ["GOOG", "TSLA", "AAPL", "MSFT"]
 
@@ -58,3 +55,8 @@ def ingest() -> pd.DataFrame:
     df["metric_timestamp"] = pd.Timestamp.utcnow()
 
     return df
+
+
+if __name__ == "__main__":
+    df = ingest()
+    print(df)

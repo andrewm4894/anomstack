@@ -2,11 +2,12 @@
 Helper functions to send alerts.
 """
 
-from dagster import get_dagster_logger
 import pandas as pd
+from dagster import get_dagster_logger
+
 from anomstack.alerts.asciiart import make_alert_message
-from anomstack.alerts.slack import send_alert_slack
 from anomstack.alerts.email import send_email_with_plot
+from anomstack.alerts.slack import send_alert_slack
 
 
 def send_alert(
@@ -16,6 +17,8 @@ def send_alert(
     alert_methods: str = "email,slack",
     threshold: float = 0.8,
     description: str = "",
+    tags=None,
+    score_col: str = "metric_score_smooth",
 ) -> pd.DataFrame:
     """
     Sends an alert using the specified alert methods.
@@ -32,7 +35,9 @@ def send_alert(
     """
     logger = get_dagster_logger()
     logger.info(f"alerts to send: \n{df}")
-    message = make_alert_message(df, description=description)
+    message = make_alert_message(
+        df, description=description, tags=tags, score_col=score_col
+    )
     if "slack" in alert_methods:
         send_alert_slack(title=title, message=message)
     if "email" in alert_methods:
@@ -43,6 +48,7 @@ def send_alert(
             body=message,
             attachment_name=metric_name,
             threshold=threshold,
+            score_col=score_col,
         )
 
     return df

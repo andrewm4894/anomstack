@@ -1,6 +1,6 @@
 # BigQuery
 
-Example of using BigQuery as a data source. See [`examples/bigquery`](/metrics/examples/bigquery/) directory for an example.
+Example of using BigQuery as a data source. See [`examples/bigquery`](https://github.com/andrewm4894/anomstack/tree/main/metrics/examples/bigquery/) directory for an example.
 
 ## Configuration
 

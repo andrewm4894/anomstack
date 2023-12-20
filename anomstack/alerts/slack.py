@@ -2,9 +2,10 @@
 Helper functions for sending alerts via Slack.
 """
 
-import requests
 import json
 import os
+
+import requests
 from dagster import get_dagster_logger
 
 

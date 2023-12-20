@@ -2,14 +2,15 @@ metric_batch: "hn_top_stories_scores"
 db: "bigquery"
 table_key: "andrewm4894.metrics.metrics"
 model_path: "gs://andrewm4894-tmp/models"
-ingest_cron_schedule: "*/10 * * * *"
-train_cron_schedule: "*/60 * * * *"
-score_cron_schedule: "*/15 * * * *"
-alert_cron_schedule: "*/20 * * * *"
-llmalert_cron_schedule: "*/20 * * * *"
-plot_cron_schedule: "*/25 * * * *"
+ingest_cron_schedule: "*/60 * * * *"
+train_cron_schedule: "*/360 * * * *"
+score_cron_schedule: "*/70 * * * *"
+alert_cron_schedule: "*/80 * * * *"
+change_cron_schedule: "*/80 * * * *"
+llmalert_cron_schedule: "*/80 * * * *"
+plot_cron_schedule: "*/80 * * * *"
 alert_always: False
 alert_methods: "email"
+disable_llmalert: False
 ingest_fn: >
   {% include "./examples/hackernews/hn_top_stories_scores.py" %}
-  

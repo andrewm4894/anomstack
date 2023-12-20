@@ -2,13 +2,13 @@ metric_batch: "weather_forecast"
 db: "snowflake"
 table_key: "ANDREWM4894.METRICS.METRICS"
 model_path: "gs://andrewm4894-tmp/models"
-ingest_cron_schedule: "*/120 * * * *"
-train_cron_schedule: "*/240 * * * *"
-score_cron_schedule: "*/125 * * * *"
-alert_cron_schedule: "*/130 * * * *"
-plot_cron_schedule: "*/130 * * * *"
+ingest_cron_schedule: "*/240 * * * *"
+train_cron_schedule: "*/720 * * * *"
+score_cron_schedule: "*/250 * * * *"
+alert_cron_schedule: "*/260 * * * *"
+change_cron_schedule: "*/260 * * * *"
+plot_cron_schedule: "*/250 * * * *"
 alert_always: False
 alert_methods: "email"
 ingest_sql: >
   {% include "./examples/weather_forecast/weather_forecast.sql" %}
-  

@@ -1,13 +1,15 @@
 from __future__ import unicode_literals
 
+import copy
+import re
+import sys
+
+import numpy as np
+import pandas as pd
+
 # copied from: https://raw.githubusercontent.com/kakwa/py-ascii-graph/09ca5901be94ec3563bdcc25d6396e18fd8ca5df/ascii_graph/__init__.py
 # copied from: https://raw.githubusercontent.com/nyurik/py-ascii-graph/fix-python310/ascii_graph/__init__.py
 
-import pandas as pd
-import numpy as np
-import sys
-import re
-import copy
 
 if (
     sys.version < "3"
@@ -511,13 +513,16 @@ def make_alert_message(
     anomaly_symbol="* ",
     normal_symbol="  ",
     alert_float_format="{:,.2f}",
+    tags=None,
+    score_col="metric_score_smooth",
 ):
     df_alert_metric = df_alert_metric.sort_values(
         by="metric_timestamp", ascending=False
     ).dropna()
-    df_alert_metric["metric_timestamp"] = pd.to_datetime(df_alert_metric["metric_timestamp"])
+    df_alert_metric["metric_timestamp"] = pd.to_datetime(
+        df_alert_metric["metric_timestamp"]
+    )
     x = df_alert_metric["metric_value"].round(2).values.tolist()
-    metric_batch = df_alert_metric["metric_batch"].unique()[0]
     metric_name = df_alert_metric["metric_name"].unique()[0]
     metric_timestamp_from = (
         df_alert_metric["metric_timestamp"].min().strftime("%Y-%m-%d %H:%M")
@@ -527,11 +532,9 @@ def make_alert_message(
     )
     labels = (
         np.where(df_alert_metric["metric_alert"] == 1, anomaly_symbol, normal_symbol)
-        + (df_alert_metric["metric_score_smooth"].round(2) * 100)
-        .astype("int")
-        .astype("str")
+        + (df_alert_metric[score_col].round(2) * 100).astype("int").astype("str")
         + "% "
-    )  # + df_alert_metric['metric_timestamp'].astype('str').values).to_list()
+    )
     data = zip(labels, x)
     graph_title = f"{metric_name} ({metric_timestamp_from} to {metric_timestamp_to})"
 
@@ -558,17 +561,10 @@ def make_alert_message(
             + message
         )
 
-    # generate tags
-    tags = {
-        "metric_batch": metric_batch,
-        "metric_name": metric_name,
-        "metric_timestamp_from": metric_timestamp_from,
-        "metric_timestamp_to": metric_timestamp_to,
-    }
-
     # add tags as a json string to bottom of description
-    message += f"""
-    <pre><code>{tags}</code></pre>
-    """
+    if tags:
+        message += f"""
+        <pre><code>{tags}</code></pre>
+        """
 
     return message

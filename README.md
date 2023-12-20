@@ -1,20 +1,33 @@
 # Anomstack
 
+<img src="./docs/img/anomstack-logo4.png" width="600"/>
+
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/andrewm4894/anomstack)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<div align="left">
+
+<a href="https://github.com/andrewm4894/anomstack/stargazers">![GitHub Repo stars](https://img.shields.io/github/stars/andrewm4894/anomstack?style=social)</a>
+<a href="https://github.com/andrewm4894/anomstack/releases">![GitHub release (latest by date)](https://img.shields.io/github/v/release/andrewm4894/anomstack?label=Release)</a>
+<a href="https://andrewm4894.github.io/anomstack/">![Docs](https://img.shields.io/badge/docs-andrewm4894.github.io%2Fanomstack%2F-blue)</a>
+<a href="https://github.com/andrewm4894/anomstack/blob/main/LICENSE">![License](https://img.shields.io/badge/License-MIT-yellow.svg)</a>
+<a href="https://github.com/andrewm4894/anomstack/actions/workflows/pytest.yaml">![GitHub PyTest Workflow Status](https://img.shields.io/github/actions/workflow/status/andrewm4894/anomstack/pytest.yaml?label=Tests)</a>
+<a href="https://github.com/andrewm4894/anomstack/actions/workflows/deploy.yml">![GitHub Deployment Workflow Status](https://img.shields.io/github/actions/workflow/status/andrewm4894/anomstack/deploy.yml?label=Dagster%20Cloud%20Deployment)</a>
+<a href="https://github.com/andrewm4894/anomstack/actions/workflows/pre-commit.yaml">![GitHub Pre-Commit Workflow Status](https://img.shields.io/github/actions/workflow/status/andrewm4894/anomstack/pre-commit.yaml?label=Pre-Commit)</a>
+
+</div>
 
 Painless open source anomaly detection for your metrics! 📈📉🚀
+
+> _Check out this recent [Data Engineering Podcast](https://www.dataengineeringpodcast.com/anomstack-open-source-business-metric-anomaly-detection-episode-404) where we discussed Anomstack and anomaly detection in general._
+
+> _Note: If you are already using Airflow then also checkout the [`airflow-provider-anomaly-detection`](https://github.com/andrewm4894/airflow-provider-anomaly-detection) package._
 
 - [What is Anomstack?](#what-is-anomstack)
   - [How it works](#how-it-works)
   - [Why?](#why)
+  - [Features](#features)
   - [Architecture](#architecture)
   - [Examples](#examples)
-    - [HackerNews](#hackernews)
-    - [GSOD](#gsod)
-    - [Weather](#weather)
-    - [Yahoo Finance](#yahoo-finance)
 - [Project structure](#project-structure)
 - [Quickstart](#quickstart)
   - [GitHub Codespaces](#github-codespaces)
@@ -26,6 +39,7 @@ Painless open source anomaly detection for your metrics! 📈📉🚀
 - [Concepts](#concepts)
 - [Alerts](#alerts)
 - [LLM Alerts](#llm-alerts)
+- [Contributing](#contributing)
 
 Supported sources and databases for your metrics to live in and be queried from:
 
@@ -100,6 +114,20 @@ Anomstack is a lightweight (README buzzword bingo alert!) data app built on top 
 
 It's similar in scope and goal to this [Airflow Anomaly Detection provider](https://github.com/andrewm4894/airflow-provider-anomaly-detection) i also made, but easier to get going since does not require airflow and so easier to set up and run yourself or via [Dagster Cloud](#dagster-cloud) in a [serverless](https://docs.dagster.io/dagster-cloud/deployment/serverless) manner.
 
+<details>
+<summary>Quick 10 Minute Video Project Intro</summary>
+
+[![Watch the video](https://img.youtube.com/vi/wFxcQW0M9aM/0.jpg)](https://youtu.be/wFxcQW0M9aM)
+
+</details>
+
+<details>
+<summary>GitHub Star History - Lets Gooooo! :)</summary>
+
+[![Star History Chart](https://api.star-history.com/svg?repos=andrewm4894/anomstack&type=Date)](https://star-history.com/#andrewm4894/anomstack&Date)
+
+</details>
+
 ### How it works
 
 1. Define your metrics (part of a ["metric batch"](#concepts)) in a `.sql` file and corresponding config in a `.yaml` file. You can also define your own custom python ingest function instead of just SQL, check out the [`python_ingest_simple`](./metrics/examples/python/python_ingest_simple/python_ingest_simple.yaml) example.
@@ -108,9 +136,35 @@ It's similar in scope and goal to this [Airflow Anomaly Detection provider](http
 
 ### Why?
 
-It's still too hard and messy to get decent out of the box anomaly detection on your metrics with minimal fuss. You either have to build some custom solution yourself or buy some modern data stack tool that does it for you. This project aims to make it as easy as possible to get anomaly detection on your metrics without having to buy anything or build anything from scratch yourself.
+It's still too hard and messy to get decent out of the box anomaly detection on your metrics with minimal fuss. You either have to build some custom solution yourself or buy some sexy modern data stack tool that does it for you. This project aims to make it as easy as possible to get anomaly detection on your metrics without having to buy anything or build anything from scratch yourself.
+
+### Features
+
+[back to top](#anomstack)
+
+Here is a list of features of Anomstack (emoji alert warning!)
+
+1. 🌟 - You bring your metrics Anomstack will do the ML (❤️[PyOD](https://github.com/yzhao062/pyod)).
+2. 🚀 - Easy to [run yourself](#docker) or via [Dagster Cloud](#dagster-cloud).
+3. ⚙️ - Very flexible config, you can see all params in [`defaults.yaml`](./metrics/defaults/defaults.yaml) and override them in each metric batch config.
+4. 🧠 - Ability to define your own custom python ingest function instead of just SQL, check out the [`python_ingest_simple`](./metrics/examples/python/python_ingest_simple/python_ingest_simple.yaml) example.
+5. 🛠️ - Ability to define your own custom python preprocess function instead of the default at [`/metrics/defaults/python/preprocess.py`](./metrics/defaults/python/preprocess.py).
+6. 📧 - Email [alerting](#alerts) with fancy(ish) ascii art plots of your metrics and anomaly scores.
+7. 💬 - Slack alerts too (want to make these nicer).
+8. 🤖 - LLM based alerts (ChatGPT) - see [LLM Alerts](#llm-alerts). p.s. they don't work great yet - experimental :)
+9. 🕒 - Ability to ingest at whatever frequency you want and then agg to a different level for training/scoring, see [`freq`](/metrics/examples/freq/README.md) example.
+10. 📊 - Plot jobs so you can just eyeball your metrics in Dagster job logs, see [#dagster-ui-plots](#dagster-ui-plots).
+11. 🏗️ - Minimal infrastructure requirements, Anomstack just reads from and writes to whatever database you use.
+12. 📈 - A nice little local [Streamlit](https://streamlit.io/) dashboard to visualize your metrics and anomaly scores, see [#streamlit](#streamlit).
+13. 📦 - Dockerized for easy deployment.
+14. 🔔 - Scores & Alerts saved to database so you can query them and do whatever you want with them.
+15. 🏷️ - Add custom metric tags for more complex alert routing e.g. priority or subject area based.
+16. 🔄 - Change detection jobs out of the box.
+17. 😴 - Ability to snooze alerts for a period of time to reduce repeated and duplicate alerts.
 
 ### Architecture
+
+#### The Moving Parts
 
 ```mermaid
 flowchart LR;
@@ -123,6 +177,7 @@ flowchart LR;
     train[[train]]
     score[[score]]
     alert[[alert]]
+    change[[change]]
     llmalert[[llmalert]]
     plot[[plot]]
     dashboardpy["dashboard.py"]
@@ -139,6 +194,7 @@ flowchart LR;
     train
     score
     alert
+    change
     llmalert
     plot
     end
@@ -183,6 +239,8 @@ flowchart LR;
     score --> alert
     score --> llmalert
     score --> plot
+    ingest --> change
+    change --> alert
 
     metric_batch --> dagster_jobs
 
@@ -198,45 +256,120 @@ flowchart LR;
 
 ```
 
+#### Metrics Table
+
+Core to what Anomstack is doing in reading from and appending to a "Metrics" table for each metric batch. This is a "long" format table where new metrics are appended to the table as they come in or are defined and configured as you add new metric batches.
+
+Here are the columns in the metrics table:
+
+- `metric_timestamp`: Timestamp of the metric (Defined in `ingest_sql` or `ingest_fn`).
+- `metric_batch`: Name of the metric batch (Defined from `metric_batch` in the yaml config for the batch).
+- `metric_name`: Name of the metric (Defined in `ingest_sql` or `ingest_fn`).
+- `metric_type`: Type of the metric the row relates to.
+  - `metric` for the raw metric value.
+  - `score` for the anomaly score (a float from 0-1).
+  - `alert` for an alert (a 1 when an alert was raised).
+- `metric_value`: Value of the metric (coming from the ingest, score, or alert jobs (see [concepts](#concepts) for more details).
+
+```SQL
+SELECT
+  metric_timestamp,
+  metric_batch,
+  metric_name,
+  metric_type,
+  metric_value,
+FROM
+  `metrics.metrics`
+WHERE
+  metric_batch = 'gsod'
+  and
+  metric_name = 'gsod_us_temp_avg'
+ORDER BY metric_timestamp DESC
+limit 10
+/*
++--------------------------+------------+----------------+-----------+------------+
+|metric_timestamp          |metric_batch|metric_name     |metric_type|metric_value|
++--------------------------+------------+----------------+-----------+------------+
+|2023-11-12 00:00:00.000000|gsod        |gsod_us_temp_avg|score      |1           |
+|2023-11-12 00:00:00.000000|gsod        |gsod_us_temp_avg|score      |1           |
+|2023-11-12 00:00:00.000000|gsod        |gsod_us_temp_avg|alert      |1           |
+|2023-11-12 00:00:00.000000|gsod        |gsod_us_temp_avg|metric     |44.4758     |
+|2023-11-11 00:00:00.000000|gsod        |gsod_us_temp_avg|score      |1           |
+|2023-11-11 00:00:00.000000|gsod        |gsod_us_temp_avg|score      |1           |
+|2023-11-11 00:00:00.000000|gsod        |gsod_us_temp_avg|score      |1           |
+|2023-11-11 00:00:00.000000|gsod        |gsod_us_temp_avg|metric     |46.3212     |
+|2023-11-11 00:00:00.000000|gsod        |gsod_us_temp_avg|score      |1           |
+|2023-11-11 00:00:00.000000|gsod        |gsod_us_temp_avg|metric     |46.3212     |
++--------------------------+------------+----------------+-----------+------------+
+*/
+```
+
+Of course you can easily pivot this table to get a slightly more "wide" format table if you prefer and is easier for working with your analytics tools etc.
+
+```SQL
+SELECT
+  metric_timestamp,
+  metric_batch,
+  metric_name,
+  avg(if(metric_type='metric', metric_value, null)) as metric_value,
+  avg(if(metric_type='score', metric_value, null)) as metric_score,
+  max(if(metric_type='alert', metric_value, 0)) as metric_alert,
+FROM
+  `metrics.metrics`
+WHERE
+  metric_batch = 'gsod'
+  and
+  metric_name = 'gsod_us_temp_avg'
+GROUP BY 1,2,3
+ORDER BY metric_timestamp DESC
+limit 10
+/*
++--------------------------+------------+----------------+------------------+------------+------------+
+|metric_timestamp          |metric_batch|metric_name     |metric_value      |metric_score|metric_alert|
++--------------------------+------------+----------------+------------------+------------+------------+
+|2023-11-12 00:00:00.000000|gsod        |gsod_us_temp_avg|44.4758           |1           |1           |
+|2023-11-11 00:00:00.000000|gsod        |gsod_us_temp_avg|46.3212           |1           |1           |
+|2023-11-10 00:00:00.000000|gsod        |gsod_us_temp_avg|47.51435          |1           |0           |
+|2023-11-08 00:00:00.000000|gsod        |gsod_us_temp_avg|51.7557           |1           |0           |
+|2023-11-07 00:00:00.000000|gsod        |gsod_us_temp_avg|54.1946           |1           |0           |
+|2023-11-06 00:00:00.000000|gsod        |gsod_us_temp_avg|53.8131           |1           |0           |
+|2023-11-05 00:00:00.000000|gsod        |gsod_us_temp_avg|52.0883           |1           |0           |
+|2023-11-04 00:00:00.000000|gsod        |gsod_us_temp_avg|47.8              |1           |0           |
+|2023-11-03 00:00:00.000000|gsod        |gsod_us_temp_avg|48.752422407267225|1           |0           |
+|2023-11-02 00:00:00.000000|gsod        |gsod_us_temp_avg|38.999010833725855|1           |0           |
++--------------------------+------------+----------------+------------------+------------+------------+
+*/
+```
+
 ### Examples
 
 [back to top](#anomstack)
 
+Here as some specific examples, there are lots more in the [`./metrics/examples/`](./metrics/examples/) folder.
+
 #### HackerNews
 
-<details>
-<summary>Derive metrics from current top stories</summary>
+##### Derive metrics from current top stories
 
 In [`./metrics/examples/hackernews/`](./metrics/examples/hackernews/) you will find an example of using a customer Python function ([`hn_top_stories_scores.py`](./metrics/examples/hackernews/hn_top_stories_scores.py)) to pull current top 10 stories from HackerNew API and derive some metrics based on their score. This is all defined in the [`hn_top_stories_scores.yaml`](./metrics/examples/hackernews/hn_top_stories_scores.yaml)` configuration file for this metric batch.
 
-</details>
-
 #### GSOD
 
-<details>
-<summary>Derive metrics from public GSOD data in BigQuery</summary>
+##### Derive metrics from public GSOD data in BigQuery
 
 In [`./metrics/examples/gsod/`](./metrics/examples/gsod/) you will find an example of just defining some sql to derive a metric batch on data already in BigQuery ([`gsod.sql`](./metrics/examples/gsod/gsod.sql)) and ingest it into a table called `metrics` in a `metrics` dataset in a Google Bigquery project. This is all defined in the [`gsod.yaml`](./metrics/examples/gsod/gsod.yaml)` configuration file for this metric batch.
 
-</details>
-
 #### Weather
 
-<details>
-<summary>Use a custom python function to pull some weather metrics from the Open Meteo API</summary>
+##### Use a custom python function to pull some weather metrics from the Open Meteo API
 
 In [`./metrics/examples/weather/`](./metrics/examples/weather/) you will find an example of using a customer Python function ([`ingest_weather.py`](./metrics/examples/weather/ingest_weather.py)) to pull current temperature data for some cities from the Open Meteo API and ingest it into a table called `metrics` in a `metrics` dataset in a Google Bigquery project. This is all defined in the [`weather.yaml`](./metrics/examples/weather/weather.yaml)` configuration file for this metric batch.
 
-</details>
-
 #### Yahoo Finance
 
-<details>
-<summary>Use a custom python function to pull some Yahoo Finance data.</summary>
+##### Use a custom python function to pull some Yahoo Finance data
 
 In [`./metrics/examples/yfinance/`](./metrics/examples/yfinance/) you will find an example of using a customer Python function ([`yfinance.py`](./metrics/examples/yfinance/yfinance.py)) to pull current stock price data for some stocks and ingest it into a table called `metrics` in a `metrics` dataset in a Google Bigquery project. This is all defined in the [`yfinance.yaml`](./metrics/examples/yfinance/yfinance.yaml)` configuration file for this metric batch.
-
-</details>
 
 ## Project structure
 
@@ -257,6 +390,8 @@ By default Anomstack will run on port 3000, so you can go to http://localhost:30
 
 *Note*: you will need to wait for it to run a dozen or so ingest jobs before there is enough data for train, score and alert jobs to run successfully.
 
+There are some more detailed instructions (WIP) in [`/docs/deployment/`](./docs/deployment/).
+
 ### GitHub Codespaces
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/andrewm4894/anomstack)
@@ -269,7 +404,7 @@ You can see the [`.devcontainer`](./.devcontainer) folder for the config used to
 
 You can run this project in Dagster Cloud. Fork the repo (or make a completely new repo using the `andrewm4894/anomstack` GitHub template) and then follow the instructions [here](https://docs.dagster.io/dagster-cloud/deployment/serverless#with-github) to deploy to Dagster Cloud from your forked repo.
 
-You can then manage you metrics via PR's in your GitHub repo and run them in Dagster Cloud which will just sync with your repo.
+You can then manage you metrics via PR's in your GitHub repo ([here](https://github.com/andrewm4894/anomstack/pull/40/files) is a PR to add Google Trends metrics) and run them in Dagster Cloud which will just sync with your repo.
 
 ### Docker
 
@@ -285,8 +420,17 @@ cd anomstack
 # generate your .env file based on example
 cp .example.env .env
 # run docker compose up to start anomstack
-docker compose up
+docker compose up -d
 # anomstack should now be running on port 3000
+```
+
+To update and rebuild after adding metrics or changing code, you can run:
+
+```bash
+# rebuild docker compose
+docker compose build
+# run docker compose up to re-start anomstack
+docker compose up -d
 ```
 
 ### Local Python env
@@ -319,15 +463,19 @@ dagster dev -f anomstack/main.py
 
 To add metrics, you can add them to the `metrics` folder. You can see some examples in the [`metrics/examples`](./metrics/examples/) folder.
 
+For example, [here](https://github.com/andrewm4894/anomstack/pull/40/files) is the PR that added Google Trends metrics to the examples.
+
 You can customize the default params for your metrics in the [`metrics/defaults`](./metrics/defaults/) folder.
 
 Environment variables for your metrics can be set in the `.env` file (see [`.example.env`](.example.env) for examples and comments) or in the `docker-compose.yml` file.
 
 ## Visualization
 
+[back to top](#anomstack)
+
 Visualization of the metrics and anomaly scores is a bit outside the scope of this project, but we do provide a couple of ways to visualize your metrics and anomaly scores.
 
-### Dagster UI
+### Dagster UI Plots
 
 Within Dagster there is the [`plot.py`](./anomstack/jobs/plot.py) job to generate some plots of your metrics and anomaly scores for quick eyeballing within the dagster UI.
 
@@ -365,8 +513,8 @@ streamlit run .\dashboard.py
 [back to top](#anomstack)
 
 - "**Metric Batch**": You configure metric batches in Anomstack. A metric batch is a collection of metrics that you want to run together and with its own separate set of parameters. Of course a metric batch can contain just one metric if you want but typically it makes more sense to group metrics in ways that make sense for you. A metric batch is just some SQL or custom Python that results in a Pandas DataFrame with `metric_timestamp`, `metric_name` and `metric_value` columns.
-- "**Jobs**": At the core Anomstack runs a few jobs for each metric batch. These jobs are:
-  - "Ingest" ([`ingest.py`](./anomstack/jobs/ingest.py)): This job runs the sql query for the metric batch and ingests the data into the database.
+- "**Jobs**": At the core Anomstack runs a few jobs ([Dagster Jobs](https://docs.dagster.io/concepts/ops-jobs-graphs/jobs)) for each metric batch. These jobs are:
+  - "Ingest" ([`ingest.py`](./anomstack/jobs/ingest.py)): This job runs the sql query (or Python function) for the metric batch and ingests the data into the database.
   - "Train" ([`train.py`](./anomstack/jobs/train.py)): This job trains a model for each metric.
   - "Score" ([`score.py`](./anomstack/jobs/score.py)): This job scores metrics using the latest trained model for each metric.
   - "Alert" ([`alert.py`](./anomstack/jobs/alert.py)): This job alerts you when the metric looks anomalous.
@@ -376,6 +524,8 @@ streamlit run .\dashboard.py
 ## Alerts
 
 [back to top](#anomstack)
+
+_Check out more example alerts in the [anomaly gallery](./gallery/)._
 
 Anomstack supports alerts via email and slack. You can configure these in the `.env` file (see [`.example.env`](.example.env) for examples and comments).
 
@@ -409,3 +559,7 @@ Below you see an example of an LLM alert via email. In this case we add a descri
 ![llmalert2](./docs/img/llmalert2.png)
 
 </details>
+
+## Contributing
+
+Read the [contributing guide](./CONTRIBUTING.md) to learn about our development process, how to propose bugfixes and improvements, and how to build and test your changes to Anomstack.

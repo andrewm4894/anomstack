@@ -3,22 +3,26 @@ Generate llmalert jobs and schedules.
 """
 
 import os
+
 import pandas as pd
 from dagster import (
+    MAX_RUNTIME_SECONDS_TAG,
+    DefaultScheduleStatus,
+    JobDefinition,
+    ScheduleDefinition,
+    get_dagster_logger,
     job,
     op,
-    ScheduleDefinition,
-    JobDefinition,
-    DefaultScheduleStatus,
-    get_dagster_logger,
 )
-import openai
-from anomstack.config import specs
-from anomstack.jinja.render import render
-from anomstack.sql.read import read_sql
+
 from anomstack.alerts.send import send_alert
-from anomstack.llm.completion import get_completion
+from anomstack.config import specs
 from anomstack.fn.run import define_fn
+from anomstack.jinja.render import render
+from anomstack.llm.completion import get_completion
+from anomstack.sql.read import read_sql
+
+ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv("ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600)
 
 
 def build_llmalert_job(spec) -> JobDefinition:
@@ -31,14 +35,14 @@ def build_llmalert_job(spec) -> JobDefinition:
         JobDefinition: A job definition for the LLM Alert job.
     """
 
-    openai.api_key = os.getenv("ANOMSTACK_OPENAI_KEY")
-    openai_model = os.getenv("ANOMSTACK_OPENAI_MODEL", "gpt-3.5-turbo")
-
     logger = get_dagster_logger()
 
     if spec.get("disable_llmalert"):
 
-        @job(name=f'{spec["metric_batch"]}_llmalert_disabled')
+        @job(
+            name=f'{spec["metric_batch"]}_llmalert_disabled',
+            tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
+        )
         def _dummy_job():
             @op(name=f'{spec["metric_batch"]}_llmalert_noop')
             def noop():
@@ -56,7 +60,10 @@ def build_llmalert_job(spec) -> JobDefinition:
     llmalert_smooth_n = spec["llmalert_smooth_n"]
     llmalert_metric_rounding = spec.get("llmalert_metric_rounding", 4)
 
-    @job(name=f"{metric_batch}_llmalert_job")
+    @job(
+        name=f"{metric_batch}_llmalert_job",
+        tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
+    )
     def _job():
         """A job that runs the LLM Alert.
 
@@ -95,29 +102,44 @@ def build_llmalert_job(spec) -> JobDefinition:
                     df[df.metric_name == metric_name]
                     .sort_values(by="metric_timestamp", ascending=True)
                     .reset_index(drop=True)
-                ).dropna()
-                df_metric["metric_timestamp"] = pd.to_datetime(df_metric["metric_timestamp"])
+                )
+                df_metric["metric_alert"] = df_metric["metric_alert"].fillna(0)
+                df_metric["metric_score"] = df_metric["metric_score"].fillna(0)
+                df_metric["metric_score_smooth"] = df_metric["metric_score_smooth"].fillna(0)
+                df_metric = df_metric.dropna()
+                df_metric["metric_timestamp"] = pd.to_datetime(
+                    df_metric["metric_timestamp"]
+                )
 
                 if llmalert_smooth_n > 0:
                     df_metric["metric_value"] = (
                         df_metric["metric_value"].rolling(llmalert_smooth_n).mean()
                     )
 
+                df_metric["metric_recency"] = "baseline"
+                df_metric.iloc[
+                    -llmalert_recent_n:, df_metric.columns.get_loc("metric_recency")
+                ] = "recent"
+
+                # logger.debug(f"df_metric: \n{df_metric}")
+
                 df_prompt = (
-                    df_metric[["metric_value"]]
+                    df_metric[["metric_value", "metric_recency"]]
                     .dropna()
                     .round(llmalert_metric_rounding)
                 )
 
+                # logger.debug(f"df_prompt: \n{df_prompt}")
+
                 prompt = make_prompt(df_prompt, llmalert_recent_n)
 
-                logger.info(f"prompt: \n{prompt}")
+                logger.debug(f"prompt: \n{prompt}")
 
                 (
                     is_anomalous,
                     decision_reasoning,
                     decision_confidence_level,
-                ) = get_completion(prompt, openai_model)
+                ) = get_completion(prompt)
 
                 logger.info(f"is_anomalous: {is_anomalous}")
                 decision_description = (
@@ -137,6 +159,12 @@ def build_llmalert_job(spec) -> JobDefinition:
                         threshold=threshold,
                         alert_methods=alert_methods,
                         description=decision_description,
+                        tags={
+                            "metric_batch": metric_batch,
+                            "metric_name": metric_name,
+                            "metric_timestamp": metric_timestamp_max,
+                            "alert_type": "llm",
+                        },
                     )
 
         llmalert(get_llmalert_data())

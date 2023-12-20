@@ -2,7 +2,14 @@ import pandas as pd
 
 
 def preprocess(
-    df, diff_n=1, smooth_n=3, lags_n=5, shuffle=False, dropna=True, freq=None, freq_agg='mean'
+    df,
+    diff_n=1,
+    smooth_n=3,
+    lags_n=5,
+    shuffle=False,
+    dropna=True,
+    freq=None,
+    freq_agg="mean",
 ) -> pd.DataFrame:
     """
     Prepare data for model training and scoring.
@@ -25,9 +32,9 @@ def preprocess(
     X = X[["metric_value"]]
 
     if freq is not None:
-        if freq_agg == 'mean':
+        if freq_agg == "mean":
             X = X.resample(freq).mean()
-        elif freq_agg == 'sum':
+        elif freq_agg == "sum":
             X = X.resample(freq).sum()
         # Add other aggregation methods as needed
         else:

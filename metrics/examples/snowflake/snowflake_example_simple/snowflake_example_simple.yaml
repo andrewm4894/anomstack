@@ -4,16 +4,18 @@ table_key: "ANDREWM4894.METRICS.METRICS"
 disable_batch: False
 metric_batch: "snowflake_example_simple"
 model_path: "gs://andrewm4894-tmp/models"
-ingest_cron_schedule: "*/10 * * * *" # ingest every 10 minutes
-train_cron_schedule: "15 */1 * * *" # train every 1 hour
-score_cron_schedule: "*/15 * * * *" # score every 15 minutes
-alert_cron_schedule: "*/20 * * * *" # alert every 20 minutes
+ingest_cron_schedule: "*/60 * * * *" # ingest every 60 minutes
+train_cron_schedule: "15 */4 * * *" # train every 4 hours
+score_cron_schedule: "*/70 * * * *" # score every 70 minutes
+plot_cron_schedule: "*/70 * * * *" # plot every 70 minutes
+alert_cron_schedule: "*/75 * * * *" # alert every 75 minutes
+change_cron_schedule: "*/75 * * * *" # change detection every 75 minutes
 ingest_sql: >
   select
     *
   from
   (
-  
+
   -- metric_1
 
   select
@@ -21,17 +23,17 @@ ingest_sql: >
     'metric_1' as metric_name,
     uniform(0::float, 1::float, random()) as metric_value
   union all
-  
+
   -- metric_2
-  
+
   select
     current_timestamp() as metric_timestamp,
     'metric_2' as metric_name,
     uniform(0::float, 1::float, random()) as metric_value
   union all
-  
+
   -- metric_3
-  
+
   select
     current_timestamp() as metric_timestamp,
     'metric_3' as metric_name,

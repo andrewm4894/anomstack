@@ -18,17 +18,17 @@ select
 
 sales_pipeline_success_rate as
 (
-select  
+select
   get_current_timestamp() as metric_timestamp,
   'sales_pipeline_success_rate' as metric_name,
   sales_pipeline_deals_sold.metric_value / sales_pipeline_deals_created.metric_value as metric_value
 from
   sales_pipeline_deals_created
-join 
+join
   sales_pipeline_deals_sold
-on 
+on
   date_trunc('day', sales_pipeline_deals_created.metric_timestamp) = date_trunc('day', sales_pipeline_deals_sold.metric_timestamp)
-)   
+)
 
 select
   metric_timestamp,

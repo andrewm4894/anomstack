@@ -1,6 +1,6 @@
 # gcs
 
-Example of using GCS for model storage. See [`examples/bigquery`](/metrics/examples/bigquery/) directory for an example.
+Example of using GCS for model storage. See [`examples/bigquery`](https://github.com/andrewm4894/anomstack/tree/main/metrics/examples/bigquery/) directory for an example.
 
 ## Configuration
 

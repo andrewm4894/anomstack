@@ -22,15 +22,15 @@ select
 
 users_active_rate_{{ geo }} as
 (
-select  
+select
   get_current_timestamp() as metric_timestamp,
   'users_active_rate_{{ geo }}' as metric_name,
   users_active_{{ geo }}.metric_value / users_total_{{ geo }}.metric_value as metric_value
 from
   users_total_{{ geo }}
-join 
+join
   users_active_{{ geo }}
-on 
+on
   date_trunc('day', users_total_{{ geo }}.metric_timestamp) = date_trunc('day', users_active_{{ geo }}.metric_timestamp)
 )
 {% if not loop.last %},{% endif %}

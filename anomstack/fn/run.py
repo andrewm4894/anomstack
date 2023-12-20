@@ -3,8 +3,9 @@ Functions to read data from a python function.
 """
 
 import ast
-from dagster import get_dagster_logger
+
 import pandas as pd
+from dagster import get_dagster_logger
 
 
 def validate_function_definition(code_str: str, function_name: str) -> bool:
@@ -28,8 +29,8 @@ def define_fn(fn_name: str, fn: str) -> str:
 
     logger = get_dagster_logger()
 
-    logger.info(f'fn_name: {fn_name}')
-    logger.info(f'fn: {fn}')
+    logger.debug(f"fn_name: {fn_name}")
+    logger.debug(f"fn: {fn}")
 
     namespace = {}
     exec(fn, globals(), namespace)
@@ -42,7 +43,7 @@ def run_df_fn(fn_name: str, fn: str) -> pd.DataFrame:
     Run a python function.
     """
 
-    #fn_name = define_fn(fn_name, fn)
+    # fn_name = define_fn(fn_name, fn)
     exec(fn)
 
     df = locals()[fn_name]()

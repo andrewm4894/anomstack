@@ -1,6 +1,6 @@
 # Snowflake
 
-Example of using Snowflake as a data source. See [`examples/snowflake`](/metrics/examples/snowflake/) directory for an example.
+Example of using Snowflake as a data source. See [`examples/snowflake`](https://github.com/andrewm4894/anomstack/tree/main/metrics/examples/snowflake/) directory for an example.
 
 ## Configuration
 

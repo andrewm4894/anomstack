@@ -2,23 +2,30 @@
 Generate score jobs and schedules.
 """
 
+import os
+
 import pandas as pd
 from dagster import (
+    MAX_RUNTIME_SECONDS_TAG,
+    DefaultScheduleStatus,
+    JobDefinition,
+    ScheduleDefinition,
     get_dagster_logger,
     job,
     op,
-    ScheduleDefinition,
-    JobDefinition,
-    DefaultScheduleStatus,
 )
+from google.api_core.exceptions import NotFound
+
 from anomstack.config import specs
 from anomstack.df.save import save_df
+from anomstack.df.wrangle import wrangle_df
+from anomstack.fn.run import define_fn
+from anomstack.io.load import load_model
 from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
-from anomstack.io.load import load_model
-from anomstack.fn.run import define_fn
 from anomstack.validate.validate import validate_df
-from anomstack.df.wrangle import wrangle_df
+
+ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv("ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600)
 
 
 def build_score_job(spec) -> JobDefinition:
@@ -34,7 +41,10 @@ def build_score_job(spec) -> JobDefinition:
 
     if spec.get("disable_score"):
 
-        @job(name=f'{spec["metric_batch"]}_score_disabled')
+        @job(
+            name=f'{spec["metric_batch"]}_score_disabled',
+            tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
+        )
         def _dummy_job():
             @op(name=f'{spec["metric_batch"]}_noop')
             def noop():
@@ -53,7 +63,10 @@ def build_score_job(spec) -> JobDefinition:
     preprocess_params = spec["preprocess_params"]
     score_metric_rounding = spec.get("score_metric_rounding", 4)
 
-    @job(name=f"{metric_batch}_score")
+    @job(
+        name=f"{metric_batch}_score",
+        tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
+    )
     def _job():
         """
         Get data for scoring and score data.
@@ -96,12 +109,22 @@ def build_score_job(spec) -> JobDefinition:
                 logger.debug(f"preprocess {metric_name} in {metric_batch} score job.")
                 logger.debug(f"df_metric:\n{df_metric.head()}")
 
-                model = load_model(metric_name, model_path, metric_batch)
+                # try load model and catch google.api_core.exceptions.NotFound
+                try:
+                    model = load_model(metric_name, model_path, metric_batch)
+                except NotFound as e:
+                    logger.warning(e)
+                    logger.warning(
+                        f"model not found for {metric_name} in {metric_batch} score job."
+                    )
+                    continue
 
                 X = preprocess(df_metric, **preprocess_params)
 
                 if len(X) == 0:
-                    logger.debug(f"X is empty for {metric_name} in {metric_batch} score job.")
+                    logger.debug(
+                        f"X is empty for {metric_name} in {metric_batch} score job."
+                    )
                     continue
 
                 logger.debug(f"X:\n{X.head()}")
@@ -148,7 +171,7 @@ def build_score_job(spec) -> JobDefinition:
             if len(df_scores) == 0:
                 logger.debug(f"df_scores is empty for {metric_batch} score job.")
                 return df_scores
-            
+
             df_scores = wrangle_df(df_scores, rounding=score_metric_rounding)
             df_scores = validate_df(df_scores)
 
@@ -171,7 +194,9 @@ def build_score_job(spec) -> JobDefinition:
             if len(df) > 0:
                 df = save_df(df, db, table_key)
             else:
-                logger.debug(f"no scores to save, df is empty for {metric_batch} score job.")
+                logger.debug(
+                    f"no scores to save, df is empty for {metric_batch} score job."
+                )
 
             return df
 

@@ -2,43 +2,43 @@ with
 
 stations_selected as
 (
-select 
+select
   usaf,
   wban,
   country,
   name,
-from 
+from
   `bigquery-public-data.noaa_gsod.stations`
 where
   country in ('US','UK')
 ),
 
-data_filtered as 
+data_filtered as
 (
-select 
+select
   gsod.*,
   stations.country
-from 
+from
   `bigquery-public-data.noaa_gsod.gsod2023` gsod
 join
   stations_selected stations
 on
   gsod.stn = stations.usaf
-  and 
+  and
   gsod.wban = stations.wban
 where
-  date(date) = date_add(current_date(), interval -4 day)
+  date(date) = date_add(current_date(), interval -5 day)
 ),
 
 -- US
 
 us_temp_avg as
 (
-select 
+select
   timestamp(date) as metric_timestamp,
   'gsod_us_temp_avg' as metric_name,
   avg(temp) as metric_value
-from 
+from
   data_filtered
 where
   country = 'US'
@@ -47,11 +47,11 @@ group by 1,2
 
 us_temp_min as
 (
-select 
+select
   timestamp(date) as metric_timestamp,
   'gsod_us_temp_min' as metric_name,
   min(temp) as metric_value
-from 
+from
   data_filtered
 where
   country = 'US'
@@ -60,11 +60,11 @@ group by 1,2
 
 us_temp_max as
 (
-select 
+select
   timestamp(date) as metric_timestamp,
   'gsod_us_temp_max' as metric_name,
   max(temp) as metric_value
-from 
+from
   data_filtered
 where
   country = 'US'
@@ -75,7 +75,7 @@ group by 1,2
 
 uk_temp_avg as
 (
-select 
+select
   timestamp(date) as metric_timestamp,
   'gsod_uk_temp_avg' as metric_name,
   avg(temp) as metric_value
@@ -88,7 +88,7 @@ group by 1,2
 
 uk_temp_min as
 (
-select 
+select
   timestamp(date) as metric_timestamp,
   'gsod_uk_temp_min' as metric_name,
   min(temp) as metric_value
@@ -101,7 +101,7 @@ group by 1,2
 
 uk_temp_max as
 (
-select 
+select
   timestamp(date) as metric_timestamp,
   'gsod_uk_temp_max' as metric_name,
   max(temp) as metric_value
