@@ -109,11 +109,11 @@ on
 left outer join
   metric_alert_data a
 on
-    m.metric_name = a.metric_name
-    and
-    m.metric_batch = a.metric_batch
-    and
-    m.metric_timestamp = a.metric_timestamp
+  m.metric_name = a.metric_name
+  and
+  m.metric_batch = a.metric_batch
+  and
+  m.metric_timestamp = a.metric_timestamp
 ),
 
 data_smoothed as
