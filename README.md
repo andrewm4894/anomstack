@@ -160,6 +160,7 @@ Here is a list of features of Anomstack (emoji alert warning!)
 14. 🔔 - Scores & Alerts saved to database so you can query them and do whatever you want with them.
 15. 🏷️ - Add custom metric tags for more complex alert routing e.g. priority or subject area based.
 16. 🔄 - Change detection jobs out of the box.
+17. 😴 - Ability to snooze alerts for a period of time to reduce repeated and duplicate alerts.
 
 ### Architecture
 
