@@ -42,25 +42,6 @@ where
 group by 1,2,3
 ),
 
-metric_alert_data as
-(
-select distinct
-  metric_timestamp,
-  metric_batch,
-  metric_name,
-  max(metric_value) as metric_alert
-from
-  {{ table_key }}
-where
-  metric_batch = '{{ metric_batch }}'
-  and
-  metric_type = 'alert'
-  and
-  -- limit to the last {{ alert_metric_timestamp_max_days_ago }} days
-  cast(metric_timestamp as datetime) >= CURRENT_DATE - INTERVAL '{{ alert_metric_timestamp_max_days_ago }}' DAY
-group by 1,2,3
-),
-
 metric_score_recency_ranked as
 (
 select distinct
@@ -94,8 +75,7 @@ select
   m.metric_value,
   s.metric_score,
   m.metric_value_recency_rank,
-  s.metric_score_recency_rank,
-  a.metric_alert
+  s.metric_score_recency_rank
 from
   metric_value_recency_ranked m
 left outer join
@@ -106,14 +86,6 @@ on
   m.metric_batch = s.metric_batch
   and
   m.metric_timestamp = s.metric_timestamp
-left outer join
-  metric_alert_data a
-on
-  m.metric_name = a.metric_name
-  and
-  m.metric_batch = a.metric_batch
-  and
-  m.metric_timestamp = a.metric_timestamp
 ),
 
 data_smoothed as
@@ -127,9 +99,7 @@ select
   metric_value_recency_rank,
   metric_score_recency_rank,
   -- smooth the metric score over the last {{ alert_smooth_n }} values
-  avg(metric_score) over (partition by metric_name order by metric_score_recency_rank rows between {{ alert_smooth_n }} preceding and current row) as metric_score_smooth,
-  -- add a window function to check for previous alerts within the last {{ alert_snooze_n }} values
-  max(metric_alert) over (partition by metric_name order by metric_score_recency_rank rows between {{ alert_snooze_n }} preceding and current row) as metric_has_recent_alert
+  avg(metric_score) over (partition by metric_name order by metric_score_recency_rank rows between {{ alert_smooth_n }} preceding and current row) as metric_score_smooth
 from
   data_ranked
 ),
@@ -143,7 +113,6 @@ select
   metric_value,
   metric_score,
   metric_score_smooth,
-  metric_has_recent_alert,
   -- only alert on the most recent {{ alert_max_n }} values
   case when metric_score_recency_rank <= {{ alert_recent_n }} and (metric_score_smooth >= {{ alert_threshold }} or {{ alert_always }}=True ) then 1 else 0 end as metric_alert
 from
@@ -158,7 +127,6 @@ metrics_triggered as
 select
   metric_batch,
   metric_name,
-  max(metric_has_recent_alert) as metric_has_recent_alert_tmp,
   max(metric_alert) as metric_alert_tmp
 from
   data_alerts
@@ -166,9 +134,6 @@ group by 1,2
 having
   -- only return metrics that have been triggered
   max(metric_alert) = 1
-  and
-  -- respect the snooze period
-  max(metric_has_recent_alert) = 0
 )
 
 select
