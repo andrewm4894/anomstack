@@ -4,6 +4,25 @@ Template for generating the input data for the alert job.
 
 with
 
+metric_value_data as
+(
+select distinct
+  metric_timestamp,
+  metric_batch,
+  metric_name,
+  avg(metric_value) as metric_value
+from
+  {{ table_key }}
+where
+  metric_batch = '{{ metric_batch }}'
+  and
+  metric_type = 'metric'
+  and
+  -- limit to the last {{ alert_metric_timestamp_max_days_ago }} days
+  cast(metric_timestamp as datetime) >= CURRENT_DATE - INTERVAL '{{ alert_metric_timestamp_max_days_ago }}' DAY
+group by 1,2,3
+),
+
 metric_score_data as
 (
 select distinct
@@ -23,19 +42,19 @@ where
 group by 1,2,3
 ),
 
-metric_value_data as
+metric_alert_data as
 (
 select distinct
   metric_timestamp,
   metric_batch,
   metric_name,
-  avg(metric_value) as metric_value
+  avg(metric_value) as metric_alert_historic
 from
   {{ table_key }}
 where
   metric_batch = '{{ metric_batch }}'
   and
-  metric_type = 'metric'
+  metric_type = 'alert'
   and
   -- limit to the last {{ alert_metric_timestamp_max_days_ago }} days
   cast(metric_timestamp as datetime) >= CURRENT_DATE - INTERVAL '{{ alert_metric_timestamp_max_days_ago }}' DAY
@@ -74,6 +93,7 @@ select
   m.metric_name,
   m.metric_value,
   s.metric_score,
+  ifnull(a.metric_alert_historic,0) as metric_alert_historic,
   m.metric_value_recency_rank,
   s.metric_score_recency_rank
 from
@@ -86,6 +106,14 @@ on
   m.metric_batch = s.metric_batch
   and
   m.metric_timestamp = s.metric_timestamp
+left outer join
+  metric_alert_data a
+on
+  m.metric_name = a.metric_name
+  and
+  m.metric_batch = a.metric_batch
+  and
+  m.metric_timestamp = a.metric_timestamp
 ),
 
 data_smoothed as
@@ -96,6 +124,7 @@ select
   metric_name,
   metric_value,
   metric_score,
+  metric_alert_historic,
   metric_value_recency_rank,
   metric_score_recency_rank,
   -- smooth the metric score over the last {{ alert_smooth_n }} values
@@ -112,6 +141,7 @@ select
   metric_name,
   metric_value,
   metric_score,
+  metric_alert_historic,
   metric_score_smooth,
   -- only alert on the most recent {{ alert_max_n }} values
   case when metric_score_recency_rank <= {{ alert_recent_n }} and (metric_score_smooth >= {{ alert_threshold }} or {{ alert_always }}=True ) then 1 else 0 end as metric_alert
@@ -142,6 +172,7 @@ select
   data_alerts.metric_name as metric_name,
   metric_value,
   metric_score,
+  metric_alert_historic,
   metric_score_smooth,
   metric_alert
 from
