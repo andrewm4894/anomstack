@@ -58,6 +58,7 @@ def build_alert_job(spec) -> JobDefinition:
     db = spec["db"]
     threshold = spec["alert_threshold"]
     alert_methods = spec["alert_methods"]
+    alert_snooze_n = spec["alert_snooze_n"]
     table_key = spec["table_key"]
     metric_tags = spec.get("metric_tags", {})
 
@@ -81,8 +82,23 @@ def build_alert_job(spec) -> JobDefinition:
             Returns:
                 pd.DataFrame: A pandas DataFrame containing the data for alerting.
             """
-            df_alerts = read_sql(render("alert_sql", spec), db)
-            return df_alerts
+            df_alerts_raw = read_sql(render("alert_sql", spec), db)
+            return df_alerts_raw
+
+        @op(name=f"{metric_batch}_validate_alerts")
+        def validate_alerts(df_alerts_raw) -> pd.DataFrame:
+            """
+            """
+            df_alerts_validated = pd.DataFrame()
+            for metric_name in df_alerts_raw["metric_name"].unique():
+                df_alert = df_alerts_raw.query(f"metric_name=='{metric_name}'")
+                df_alert = df_alert.sort_values("metric_timestamp")
+                if df_alert["metric_alert"].iloc[-1] == 1:
+                    logger.info(f"alert found for {metric_name}")
+                    df_alerts_validated = pd.concat(
+                        [df_alerts_validated, df_alert]
+                    )
+            return df_alerts_validated
 
         @op(name=f"{metric_batch}_alerts_op")
         def alert(df_alerts) -> pd.DataFrame:
@@ -100,8 +116,8 @@ def build_alert_job(spec) -> JobDefinition:
                 logger.info("no alerts to send")
             else:
                 for metric_name in df_alerts["metric_name"].unique():
-                    logger.info(f"alerting on {metric_name}")
                     df_alert = df_alerts.query(f"metric_name=='{metric_name}'")
+                    logger.info(f"alerting on {metric_name}")
                     df_alert["metric_timestamp"] = pd.to_datetime(
                         df_alert["metric_timestamp"]
                     )
@@ -166,7 +182,7 @@ def build_alert_job(spec) -> JobDefinition:
 
             return df_alerts
 
-        save_alerts(alert(get_alerts()))
+        save_alerts(alert(validate_alerts(get_alerts())))
 
     return _job
 
