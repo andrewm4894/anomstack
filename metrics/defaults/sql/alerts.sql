@@ -141,14 +141,15 @@ select
   metric_name,
   metric_value,
   metric_score,
+  metric_score_recency_rank,
   metric_alert_historic,
   metric_score_smooth,
-  -- only alert on the most recent {{ alert_max_n }} values
-  case when metric_score_recency_rank <= {{ alert_recent_n }} and (metric_score_smooth >= {{ alert_threshold }} or {{ alert_always }}=True ) then 1 else 0 end as metric_alert_calc
+  -- only alert on the most recent {{ alert_recent_n }} values
+  case when metric_score_recency_rank <= {{ alert_recent_n }} and (metric_score_smooth >= {{ alert_threshold }} or {{ alert_always }}=True ) then 1 else 0 end as metric_alert_calculated
 from
   data_smoothed
 where
-  -- only alert on the most recent {{ alert_max_n }} values
+  -- limit data to the most recent {{ alert_max_n }} values
   metric_score_recency_rank <= {{ alert_max_n }}
 ),
 
@@ -157,13 +158,13 @@ metrics_triggered as
 select
   metric_batch,
   metric_name,
-  max(metric_alert_calc) as metric_alert_calc_tmp
+  max(metric_alert_calculated) as metric_alert_calculated_tmp
 from
   data_alerts
 group by 1,2
 having
   -- only return metrics that have been triggered
-  max(metric_alert_calc) = 1
+  max(metric_alert_calculated) = 1
 )
 
 select
@@ -174,7 +175,7 @@ select
   metric_score,
   --metric_alert_historic,
   metric_score_smooth,
-  metric_alert_calc as metric_alert
+  if(metric_score_recency_rank=1,metric_alert_calculated,metric_alert_historic) as metric_alert
 from
   data_alerts
 -- only return metrics that have been triggered or not snoozed
