@@ -172,7 +172,7 @@ select
   data_alerts.metric_name as metric_name,
   metric_value,
   metric_score,
-  metric_alert_historic,
+  --metric_alert_historic,
   metric_score_smooth,
   metric_alert_calc as metric_alert
 from
