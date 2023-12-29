@@ -44,7 +44,7 @@ def build_llmalert_job(spec) -> JobDefinition:
             tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
         )
         def _dummy_job():
-            @op(name=f'{spec["metric_batch"]}_noop')
+            @op(name=f'{spec["metric_batch"]}_llmalert_noop')
             def noop():
                 pass
 
