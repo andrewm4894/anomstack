@@ -150,20 +150,20 @@ select
   -- only alert on the most recent {{ alert_recent_n }} values
   -- only alert if the metric score is above the threshold or if the alert is forced
   -- only alert if the metric has not been alerted on in the last {{ alert_snooze_n }} values
-  case 
+  case
     when
       -- only alert on the most recent {{ alert_recent_n }} values
-      metric_score_recency_rank <= {{ alert_recent_n }} 
-      and 
+      metric_score_recency_rank <= {{ alert_recent_n }}
+      and
       -- only alert if the metric score is above the threshold or if the alert is forced
       (metric_score_smooth >= {{ alert_threshold }} or {{ alert_always }} = True )
       and
       -- only alert if the metric has not been alerted on in the last {{ alert_snooze_n }} values
       metric_has_recent_alert = 0
-    then 
-      1 
-    else 
-      0 
+    then
+      1
+    else
+      0
     end as metric_alert_calculated
 from
   data_smoothed
