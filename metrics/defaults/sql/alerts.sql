@@ -128,7 +128,9 @@ select
   metric_value_recency_rank,
   metric_score_recency_rank,
   -- smooth the metric score over the last {{ alert_smooth_n }} values
-  avg(metric_score) over (partition by metric_name order by metric_score_recency_rank rows between {{ alert_smooth_n }} preceding and current row) as metric_score_smooth
+  avg(metric_score) over (partition by metric_name order by metric_score_recency_rank rows between {{ alert_smooth_n }} preceding and current row) as metric_score_smooth,
+  -- add a window function to check for previous alerts within the last {{ alert_snooze_n }} values
+  max(metric_alert_historic) over (partition by metric_name order by metric_score_recency_rank desc rows between {{ alert_snooze_n }} preceding and 1 preceding) as metric_has_recent_alert
 from
   data_ranked
 ),
@@ -144,8 +146,25 @@ select
   metric_score_recency_rank,
   metric_alert_historic,
   metric_score_smooth,
+  metric_has_recent_alert,
   -- only alert on the most recent {{ alert_recent_n }} values
-  case when metric_score_recency_rank <= {{ alert_recent_n }} and (metric_score_smooth >= {{ alert_threshold }} or {{ alert_always }}=True ) then 1 else 0 end as metric_alert_calculated
+  -- only alert if the metric score is above the threshold or if the alert is forced
+  -- only alert if the metric has not been alerted on in the last {{ alert_snooze_n }} values
+  case 
+    when
+      -- only alert on the most recent {{ alert_recent_n }} values
+      metric_score_recency_rank <= {{ alert_recent_n }} 
+      and 
+      -- only alert if the metric score is above the threshold or if the alert is forced
+      (metric_score_smooth >= {{ alert_threshold }} or {{ alert_always }} = True )
+      and
+      -- only alert if the metric has not been alerted on in the last {{ alert_snooze_n }} values
+      metric_has_recent_alert = 0
+    then 
+      1 
+    else 
+      0 
+    end as metric_alert_calculated
 from
   data_smoothed
 where
