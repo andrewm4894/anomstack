@@ -28,6 +28,13 @@ const sidebars = {
       label: 'Deployment',
       items: ['deployment/gcp'],
     },
+    {
+        type: 'category',
+        label: 'GraphQL',
+        items: [
+            'graphql/examples/start_schedule'
+        ],
+      },
   ],
 };
 
