@@ -9,10 +9,10 @@ You can run this via `/graphql` endpoint in the dagster UI.
 mutation {
 
   # BigQuery
-  startBigqueryExampleSimpleAlertsSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "bigquery_example_simple_alerts_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startBigqueryExampleSimpleAlertsSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "bigquery_example_simple_alerts_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -22,10 +22,10 @@ mutation {
       }
     }
   }
-  startBigqueryExampleSimpleChangeSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "bigquery_example_simple_change_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startBigqueryExampleSimpleChangeSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "bigquery_example_simple_change_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -35,10 +35,10 @@ mutation {
       }
     }
   }
-  startBigqueryExampleSimpleIngestSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "bigquery_example_simple_ingest_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startBigqueryExampleSimpleIngestSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "bigquery_example_simple_ingest_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -48,10 +48,10 @@ mutation {
       }
     }
   }
-  startBigqueryExampleSimplePlotJobSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "bigquery_example_simple_plot_job_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startBigqueryExampleSimplePlotJobSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "bigquery_example_simple_plot_job_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -61,10 +61,10 @@ mutation {
       }
     }
   }
-  startBigqueryExampleSimpleScoreSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "bigquery_example_simple_score_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startBigqueryExampleSimpleScoreSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "bigquery_example_simple_score_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -74,10 +74,10 @@ mutation {
       }
     }
   }
-  startBigqueryExampleSimpleTrainSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "bigquery_example_simple_train_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startBigqueryExampleSimpleTrainSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "bigquery_example_simple_train_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -89,10 +89,10 @@ mutation {
   }
 
   # TomTom
-  startTomTomAlertsSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "tomtom_alerts_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startTomTomAlertsSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "tomtom_alerts_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -102,10 +102,10 @@ mutation {
       }
     }
   }
-  startTomTomChangeSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "tomtom_change_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startTomTomChangeSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "tomtom_change_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -115,10 +115,10 @@ mutation {
       }
     }
   }
-  startTomTomIngestSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "tomtom_ingest_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startTomTomIngestSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "tomtom_ingest_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -128,10 +128,10 @@ mutation {
       }
     }
   }
-  startTomTomPlotJobSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "tomtom_plot_job_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startTomTomPlotJobSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "tomtom_plot_job_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -141,10 +141,10 @@ mutation {
       }
     }
   }
-  startTomTomScoreSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "tomtom_score_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startTomTomScoreSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "tomtom_score_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -154,10 +154,10 @@ mutation {
       }
     }
   }
-  startTomTomTrainSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "tomtom_train_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startTomTomTrainSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "tomtom_train_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -169,10 +169,10 @@ mutation {
   }
 
   # EirGrid
-  startEirGridAlertsSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "eirgrid_alerts_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startEirGridAlertsSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "eirgrid_alerts_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -182,10 +182,10 @@ mutation {
       }
     }
   }
-  startEirGridChangeSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "eirgrid_change_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startEirGridChangeSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "eirgrid_change_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -195,10 +195,10 @@ mutation {
       }
     }
   }
-  startEirGridIngestSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "eirgrid_ingest_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startEirGridIngestSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "eirgrid_ingest_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -208,10 +208,10 @@ mutation {
       }
     }
   }
-  startEirGridPlotJobSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "eirgrid_plot_job_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startEirGridPlotJobSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "eirgrid_plot_job_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -221,10 +221,10 @@ mutation {
       }
     }
   }
-  startEirGridScoreSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "eirgrid_score_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startEirGridScoreSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "eirgrid_score_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -234,10 +234,10 @@ mutation {
       }
     }
   }
-  startEirGridTrainSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "eirgrid_train_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startEirGridTrainSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "eirgrid_train_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -249,10 +249,10 @@ mutation {
   }
 
   # Netdata
-  startNetdataAlertsSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "netdata_alerts_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startNetdataAlertsSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "netdata_alerts_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -262,10 +262,10 @@ mutation {
       }
     }
   }
-  startNetdataChangeSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "netdata_change_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startNetdataChangeSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "netdata_change_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -275,10 +275,10 @@ mutation {
       }
     }
   }
-  startNetdataIngestSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "netdata_ingest_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startNetdataIngestSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "netdata_ingest_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -288,10 +288,10 @@ mutation {
       }
     }
   }
-  startNetdataPlotJobSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "netdata_plot_job_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startNetdataPlotJobSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "netdata_plot_job_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -301,10 +301,10 @@ mutation {
       }
     }
   }
-  startNetdataScoreSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "netdata_score_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startNetdataScoreSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "netdata_score_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -314,10 +314,10 @@ mutation {
       }
     }
   }
-  startNetdataTrainSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "netdata_train_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startNetdataTrainSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "netdata_train_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -329,10 +329,10 @@ mutation {
   }
 
   # NetdataHTTPCheck
-  startNetdataHTTPCheckAlertsSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "netdata_httpcheck_alerts_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startNetdataHTTPCheckAlertsSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "netdata_httpcheck_alerts_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -342,10 +342,10 @@ mutation {
       }
     }
   }
-  startNetdataHTTPCheckChangeSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "netdata_httpcheck_change_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startNetdataHTTPCheckChangeSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "netdata_httpcheck_change_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -355,10 +355,10 @@ mutation {
       }
     }
   }
-  startNetdataHTTPCheckIngestSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "netdata_httpcheck_ingest_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startNetdataHTTPCheckIngestSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "netdata_httpcheck_ingest_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -368,10 +368,10 @@ mutation {
       }
     }
   }
-  startNetdataHTTPCheckPlotJobSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "netdata_httpcheck_plot_job_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startNetdataHTTPCheckPlotJobSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "netdata_httpcheck_plot_job_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -381,10 +381,10 @@ mutation {
       }
     }
   }
-  startNetdataHTTPCheckScoreSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "netdata_httpcheck_score_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startNetdataHTTPCheckScoreSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "netdata_httpcheck_score_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -394,10 +394,10 @@ mutation {
       }
     }
   }
-  startNetdataHTTPCheckTrainSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "netdata_httpcheck_train_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startNetdataHTTPCheckTrainSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "netdata_httpcheck_train_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -409,10 +409,10 @@ mutation {
   }
 
   # GSOD
-  startGSODAlertsSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "gsod_alerts_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startGSODAlertsSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "gsod_alerts_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -422,10 +422,10 @@ mutation {
       }
     }
   }
-  startGSODChangeSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "gsod_change_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startGSODChangeSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "gsod_change_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -435,10 +435,10 @@ mutation {
       }
     }
   }
-  startGSODIngestSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "gsod_ingest_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startGSODIngestSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "gsod_ingest_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -448,10 +448,10 @@ mutation {
       }
     }
   }
-  startGSODPlotJobSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "gsod_plot_job_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startGSODPlotJobSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "gsod_plot_job_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -461,10 +461,10 @@ mutation {
       }
     }
   }
-  startGSODScoreSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "gsod_score_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startGSODScoreSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "gsod_score_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -474,10 +474,10 @@ mutation {
       }
     }
   }
-  startGSODTrainSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "gsod_train_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startGSODTrainSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "gsod_train_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -489,10 +489,10 @@ mutation {
   }
 
   # Gtrends
-  startGtrendsAlertsSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "gtrends_alerts_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startGtrendsAlertsSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "gtrends_alerts_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -502,10 +502,10 @@ mutation {
       }
     }
   }
-  startGtrendsChangeSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "gtrends_change_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startGtrendsChangeSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "gtrends_change_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -515,10 +515,10 @@ mutation {
       }
     }
   }
-  startGtrendsIngestSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "gtrends_ingest_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startGtrendsIngestSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "gtrends_ingest_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -528,10 +528,10 @@ mutation {
       }
     }
   }
-  startGtrendsPlotJobSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "gtrends_plot_job_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startGtrendsPlotJobSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "gtrends_plot_job_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -541,10 +541,10 @@ mutation {
       }
     }
   }
-  startGtrendsScoreSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "gtrends_score_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startGtrendsScoreSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "gtrends_score_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -554,10 +554,10 @@ mutation {
       }
     }
   }
-  startGtrendsTrainSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "gtrends_train_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startGtrendsTrainSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "gtrends_train_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -569,10 +569,10 @@ mutation {
   }
 
   # YFinance
-  startYFinanceAlertsSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "yfinance_alerts_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startYFinanceAlertsSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "yfinance_alerts_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -582,10 +582,10 @@ mutation {
       }
     }
   }
-  startYFinanceChangeSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "yfinance_change_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startYFinanceChangeSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "yfinance_change_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -595,10 +595,10 @@ mutation {
       }
     }
   }
-  startYFinanceIngestSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "yfinance_ingest_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startYFinanceIngestSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "yfinance_ingest_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -608,10 +608,10 @@ mutation {
       }
     }
   }
-  startYFinancePlotJobSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "yfinance_plot_job_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startYFinancePlotJobSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "yfinance_plot_job_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -621,10 +621,10 @@ mutation {
       }
     }
   }
-  startYFinanceScoreSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "yfinance_score_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startYFinanceScoreSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "yfinance_score_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -634,10 +634,10 @@ mutation {
       }
     }
   }
-  startYFinanceTrainSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "yfinance_train_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startYFinanceTrainSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "yfinance_train_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -649,10 +649,10 @@ mutation {
   }
 
   # Weather
-  startWeatherAlertsSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "weather_alerts_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startWeatherAlertsSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "weather_alerts_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -662,10 +662,10 @@ mutation {
       }
     }
   }
-  startWeatherChangeSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "weather_change_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startWeatherChangeSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "weather_change_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -675,10 +675,10 @@ mutation {
       }
     }
   }
-  startWeatherIngestSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "weather_ingest_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startWeatherIngestSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "weather_ingest_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -688,10 +688,10 @@ mutation {
       }
     }
   }
-  startWeatherPlotJobSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "weather_plot_job_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startWeatherPlotJobSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "weather_plot_job_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -701,10 +701,10 @@ mutation {
       }
     }
   }
-  startWeatherScoreSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "weather_score_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startWeatherScoreSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "weather_score_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -714,10 +714,10 @@ mutation {
       }
     }
   }
-  startWeatherTrainSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "weather_train_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startWeatherTrainSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "weather_train_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -729,10 +729,10 @@ mutation {
   }
 
   # HNTopStoriesScores
-  startHNTopStoriesScoresAlertsSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "hn_top_stories_scores_alerts_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startHNTopStoriesScoresAlertsSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "hn_top_stories_scores_alerts_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -742,10 +742,10 @@ mutation {
       }
     }
   }
-  startHNTopStoriesScoresChangeSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "hn_top_stories_scores_change_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startHNTopStoriesScoresChangeSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "hn_top_stories_scores_change_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -755,10 +755,10 @@ mutation {
       }
     }
   }
-  startHNTopStoriesScoresIngestSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "hn_top_stories_scores_ingest_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startHNTopStoriesScoresIngestSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "hn_top_stories_scores_ingest_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -768,10 +768,10 @@ mutation {
       }
     }
   }
-  startHNTopStoriesScoresPlotJobSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "hn_top_stories_scores_plot_job_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startHNTopStoriesScoresPlotJobSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "hn_top_stories_scores_plot_job_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -781,10 +781,10 @@ mutation {
       }
     }
   }
-  startHNTopStoriesScoresScoreSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "hn_top_stories_scores_score_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startHNTopStoriesScoresScoreSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "hn_top_stories_scores_score_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
@@ -794,10 +794,10 @@ mutation {
       }
     }
   }
-  startHNTopStoriesScoresTrainSchedule: startSchedule(scheduleSelector: { 
-    scheduleName: "hn_top_stories_scores_train_schedule", 
-    repositoryName: "__repository__", 
-    repositoryLocationName: "anomstack_code" 
+  startHNTopStoriesScoresTrainSchedule: startSchedule(scheduleSelector: {
+    scheduleName: "hn_top_stories_scores_train_schedule",
+    repositoryName: "__repository__",
+    repositoryLocationName: "anomstack_code"
   }) {
     __typename
     ... on ScheduleStateResult {
