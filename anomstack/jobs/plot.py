@@ -9,13 +9,11 @@ from io import BytesIO
 import pandas as pd
 from dagster import (
     MAX_RUNTIME_SECONDS_TAG,
-    AssetExecutionContext,
     DefaultScheduleStatus,
     JobDefinition,
     MetadataValue,
     ScheduleDefinition,
     asset,
-    get_dagster_logger,
     job,
     op,
 )
@@ -87,7 +85,7 @@ def build_plot_job(spec: dict) -> JobDefinition:
             return df
 
         @asset(name=f"{metric_batch}_plot")
-        def make_plot(context: AssetExecutionContext, df: pd.DataFrame) -> None:
+        def make_plot(context, df: pd.DataFrame) -> None:
             """Generates the plot.
 
             Args:
