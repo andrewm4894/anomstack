@@ -176,7 +176,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
 llmalert_jobs = []
 llmalert_schedules = []
 for spec_name, spec in specs.items():
-    llmalert_job = build_llmalert_job(spec: dict)
+    llmalert_job = build_llmalert_job(spec)
     llmalert_jobs.append(llmalert_job)
     if spec["llmalert_default_schedule_status"] == "RUNNING":
         llmalert_default_schedule_status = DefaultScheduleStatus.RUNNING

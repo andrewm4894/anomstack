@@ -154,7 +154,7 @@ def build_train_job(spec: dict) -> JobDefinition:
 train_jobs = []
 train_schedules = []
 for spec_name, spec in specs.items():
-    train_job = build_train_job(spec: dict)
+    train_job = build_train_job(spec)
     train_jobs.append(train_job)
     if spec["train_default_schedule_status"] == "RUNNING":
         train_default_schedule_status = DefaultScheduleStatus.RUNNING

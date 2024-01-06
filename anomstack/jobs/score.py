@@ -209,7 +209,7 @@ def build_score_job(spec: dict) -> JobDefinition:
 score_jobs = []
 score_schedules = []
 for spec_name, spec in specs.items():
-    score_job = build_score_job(spec: dict)
+    score_job = build_score_job(spec)
     score_jobs.append(score_job)
     if spec["score_default_schedule_status"] == "RUNNING":
         score_default_schedule_status = DefaultScheduleStatus.RUNNING

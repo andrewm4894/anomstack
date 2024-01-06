@@ -113,7 +113,7 @@ def build_plot_job(spec: dict) -> JobDefinition:
 plot_jobs = []
 plot_schedules = []
 for spec_name, spec in specs.items():
-    plot_job = build_plot_job(spec: dict)
+    plot_job = build_plot_job(spec)
     plot_jobs.append(plot_job)
     if spec["plot_default_schedule_status"] == "RUNNING":
         plot_default_schedule_status = DefaultScheduleStatus.RUNNING

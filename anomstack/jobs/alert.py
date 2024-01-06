@@ -173,7 +173,7 @@ def build_alert_job(spec: dict) -> JobDefinition:
 alert_jobs = []
 alert_schedules = []
 for spec_name, spec in specs.items():
-    alert_job = build_alert_job(spec: dict)
+    alert_job = build_alert_job(spec)
     alert_jobs.append(alert_job)
     if spec["alert_default_schedule_status"] == "RUNNING":
         alert_default_schedule_status = DefaultScheduleStatus.RUNNING

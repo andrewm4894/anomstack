@@ -122,7 +122,7 @@ ingest_schedules = []
 for spec_key, spec in specs.items():
     logger.debug(f"Building ingest job for {spec_key}")
     logger.debug(f"Specs: \n{spec}")
-    ingest_job = build_ingest_job(spec: dict)
+    ingest_job = build_ingest_job(spec)
     ingest_jobs.append(ingest_job)
     if spec.get("ingest_default_schedule_status", "STOPPED") == "RUNNING":
         ingest_default_schedule_status = DefaultScheduleStatus.RUNNING

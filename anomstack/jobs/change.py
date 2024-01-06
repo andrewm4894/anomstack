@@ -209,7 +209,7 @@ def build_change_job(spec: dict) -> JobDefinition:
 change_jobs = []
 change_schedules = []
 for spec_name, spec in specs.items():
-    change_job = build_change_job(spec: dict)
+    change_job = build_change_job(spec)
     change_jobs.append(change_job)
     if spec["change_default_schedule_status"] == "RUNNING":
         change_default_schedule_status = DefaultScheduleStatus.RUNNING

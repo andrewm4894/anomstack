@@ -3,7 +3,9 @@ Some helper functions for loading models.
 """
 
 import pickle
+
 from pyod.models.base import BaseDetector
+
 from anomstack.external.aws.s3 import load_model_s3
 from anomstack.external.gcp.gcs import load_model_gcs
 

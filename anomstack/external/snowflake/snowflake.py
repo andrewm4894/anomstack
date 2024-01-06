@@ -3,8 +3,8 @@ Some utilities for working with Snowflake.
 """
 
 import pandas as pd
-from snowflake import connector
 from dagster import get_dagster_logger
+from snowflake import connector
 
 from anomstack.external.snowflake.credentials import get_snowflake_credentials
 
