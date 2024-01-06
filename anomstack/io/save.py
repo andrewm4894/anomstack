@@ -1,3 +1,7 @@
+"""
+Some helper functions for saving models.
+"""
+
 import os
 import pickle
 from typing import List, Tuple
@@ -9,10 +13,18 @@ from anomstack.external.gcp.gcs import save_models_gcs
 
 
 def save_models_local(
-    models, model_path, metric_batch
+    models: List[Tuple[str, BaseDetector]], model_path: str, metric_batch: str
 ) -> List[Tuple[str, BaseDetector]]:
     """
     Save trained models locally.
+
+    Args:
+        models: List of tuples containing metric names and models.
+        model_path: Path to save the models.
+        metric_batch: Name of the metric batch.
+
+    Returns:
+        List of tuples containing metric names and models.
     """
 
     model_path = model_path.replace("local://", "")
@@ -27,9 +39,19 @@ def save_models_local(
     return models
 
 
-def save_models(models, model_path, metric_batch) -> List[Tuple[str, BaseDetector]]:
+def save_models(
+    models: List[Tuple[str, BaseDetector]], model_path: str, metric_batch: str
+) -> List[Tuple[str, BaseDetector]]:
     """
     Save trained models.
+
+    Args:
+        models: List of tuples containing metric names and models.
+        model_path: Path to save the models.
+        metric_batch: Name of the metric batch.
+
+    Returns:
+        List of tuples containing metric names and models.
     """
 
     if model_path.startswith("gs://"):

@@ -14,6 +14,14 @@ def send_alert_slack(
 ) -> requests.Response:
     """
     Send alert via webhook.
+
+    Args:
+        title (str, optional): Title of the alert. Defaults to "alert".
+        message (str, optional): Message of the alert. Defaults to "hello".
+        env_var_webhook_url (str, optional): Environment variable name for the webhook URL. Defaults to "ANOMSTACK_SLACK_WEBHOOK_URL".
+
+    Returns:
+        requests.Response: Response from the Slack API.
     """
 
     logger = get_dagster_logger()
@@ -31,6 +39,6 @@ def send_alert_slack(
         webhook_url, data=json.dumps(payload), headers=headers, timeout=10
     )
 
-    logger.info(f"slack response: {response}")
+    logger.debug(f"slack response: {response}")
 
     return response

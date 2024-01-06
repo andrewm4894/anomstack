@@ -17,7 +17,13 @@ from anomstack.plots.plot import make_alert_plot
 
 
 def send_email_with_plot(
-    df, metric_name, subject, body, attachment_name, threshold=0.8, score_col="metric_score_smooth"
+    df,
+    metric_name,
+    subject,
+    body,
+    attachment_name,
+    threshold=0.8,
+    score_col="metric_score_smooth",
 ) -> None:
     """
     Sends an email with a plot attached.

@@ -76,7 +76,7 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
             Calculate metrics.
 
             Returns:
-                DataFrame: A pandas DataFrame containing the calculated metrics.
+                pd.DataFrame: A pandas DataFrame containing the calculated metrics.
             """
             if ingest_sql:
                 df = read_sql(render("ingest_sql", spec), db)
@@ -100,12 +100,13 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
             Save metrics to db.
 
             Args:
-                df (DataFrame): A pandas DataFrame containing the metrics to be saved.
+                df (pd.DataFrame): A pandas DataFrame containing the metrics to be saved.
 
             Returns:
-                DataFrame: A pandas DataFrame containing the saved metrics.
+                pd.DataFrame: A pandas DataFrame containing the saved metrics.
             """
             df = save_df(df, db, table_key)
+
             return df
 
         save_metrics(create_metrics())
@@ -121,7 +122,7 @@ ingest_schedules = []
 for spec_key, spec in specs.items():
     logger.debug(f"Building ingest job for {spec_key}")
     logger.debug(f"Specs: \n{spec}")
-    ingest_job = build_ingest_job(spec)
+    ingest_job = build_ingest_job(spec: dict)
     ingest_jobs.append(ingest_job)
     if spec.get("ingest_default_schedule_status", "STOPPED") == "RUNNING":
         ingest_default_schedule_status = DefaultScheduleStatus.RUNNING

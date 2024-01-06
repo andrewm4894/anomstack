@@ -1,3 +1,7 @@
+"""
+Some helper functions for retrieving Google credentials.
+"""
+
 import json
 import os
 

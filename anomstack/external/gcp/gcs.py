@@ -1,3 +1,7 @@
+"""
+Some helper functions for interacting with Google Cloud Storage.
+"""
+
 import json
 import os
 import pickle
@@ -12,8 +16,13 @@ from pyod.models.base import BaseDetector
 def split_model_path(model_path) -> Tuple[str, str]:
     """
     Split model path into bucket and prefix.
-    """
 
+    Args:
+        model_path (str): The model path.
+
+    Returns:
+        Tuple[str, str]: The bucket and prefix of the model path.
+    """
     model_path_parts = model_path.split("://")
     model_path_bucket = model_path_parts[1].split("/")[0]
     model_path_prefix = "/".join(model_path_parts[1].split("/")[1:])
@@ -24,8 +33,10 @@ def split_model_path(model_path) -> Tuple[str, str]:
 def get_credentials():
     """
     Get credentials from environment variables.
-    """
 
+    Returns:
+        google.auth.credentials.Credentials: The credentials object.
+    """
     credentials_path = os.getenv("ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS")
     credentials_json = os.getenv("ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS_JSON")
 
@@ -42,8 +53,15 @@ def get_credentials():
 def save_models_gcs(models, model_path, metric_batch) -> List[Tuple[str, BaseDetector]]:
     """
     Save trained models to gcs bucket.
-    """
 
+    Args:
+        models (List[Tuple[str, BaseDetector]]): The list of models to save.
+        model_path (str): The model path.
+        metric_batch (str): The metric batch.
+
+    Returns:
+        List[Tuple[str, BaseDetector]]: The list of saved models.
+    """
     logger = get_dagster_logger()
 
     model_path_bucket, model_path_prefix = split_model_path(model_path)
@@ -67,8 +85,15 @@ def save_models_gcs(models, model_path, metric_batch) -> List[Tuple[str, BaseDet
 def load_model_gcs(metric_name, model_path, metric_batch) -> BaseDetector:
     """
     Load model.
-    """
 
+    Args:
+        metric_name (str): The metric name.
+        model_path (str): The model path.
+        metric_batch (str): The metric batch.
+
+    Returns:
+        BaseDetector: The loaded model.
+    """
     logger = get_dagster_logger()
 
     model_path_bucket, model_path_prefix = split_model_path(model_path)

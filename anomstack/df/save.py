@@ -1,8 +1,5 @@
 """
 This module provides functions to save Pandas DataFrames to various databases.
-
-Functions:
-- save_df: Save a Pandas DataFrame to a database.
 """
 
 import pandas as pd
@@ -12,7 +9,9 @@ from anomstack.external.gcp.bigquery import save_df_bigquery
 from anomstack.external.snowflake.snowflake import save_df_snowflake
 
 
-def save_df(df, db, table_key, if_exists="append") -> pd.DataFrame:
+def save_df(
+    df: pd.DataFrame, db: str, table_key: str, if_exists: str = "append"
+) -> pd.DataFrame:
     """
     Save a Pandas DataFrame to a database.
 

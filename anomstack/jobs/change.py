@@ -27,7 +27,7 @@ from anomstack.validate.validate import validate_df
 ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv("ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600)
 
 
-def build_change_job(spec) -> JobDefinition:
+def build_change_job(spec: dict) -> JobDefinition:
     """
     Build job definitions for change jobs.
 
@@ -70,9 +70,6 @@ def build_change_job(spec) -> JobDefinition:
     def _job():
         """
         Get data for change detection.
-
-        Returns:
-            pd.DataFrame: A pandas DataFrame containing the data for change detection.
         """
 
         @op(name=f"{metric_batch}_get_change_data")
@@ -84,6 +81,7 @@ def build_change_job(spec) -> JobDefinition:
                 pd.DataFrame: A pandas DataFrame containing the data for change detection.
             """
             df_change = read_sql(render("change_sql", spec), db)
+
             return df_change
 
         @op(name=f"{metric_batch}_detect_changes")
@@ -101,9 +99,12 @@ def build_change_job(spec) -> JobDefinition:
                     f"metric_name=='{metric_name}'"
                 ).sort_values("metric_timestamp")
                 df_metric = detect_change(
-                    df_metric, threshold=change_threshold, detect_last_n=change_detect_last_n
+                    df_metric,
+                    threshold=change_threshold,
+                    detect_last_n=change_detect_last_n,
                 )
                 df_change_alerts = pd.concat([df_change_alerts, df_metric])
+
             return df_change_alerts
 
         @op(name=f"{metric_batch}_change_alerts_op")
@@ -138,7 +139,7 @@ def build_change_job(spec) -> JobDefinition:
                         "metric_name": metric_name,
                         "metric_timestamp": metric_timestamp_max,
                         "alert_type": "change",
-                        **metric_tags.get(metric_name,{}),
+                        **metric_tags.get(metric_name, {}),
                     }
                     logger.debug(f"metric tags:\n{tags}")
                     df_alert = send_alert(
@@ -208,7 +209,7 @@ def build_change_job(spec) -> JobDefinition:
 change_jobs = []
 change_schedules = []
 for spec_name, spec in specs.items():
-    change_job = build_change_job(spec)
+    change_job = build_change_job(spec: dict)
     change_jobs.append(change_job)
     if spec["change_default_schedule_status"] == "RUNNING":
         change_default_schedule_status = DefaultScheduleStatus.RUNNING
