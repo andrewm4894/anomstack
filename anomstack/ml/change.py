@@ -1,3 +1,7 @@
+"""
+Module for detecting change in a metric based on the Median Absolute Deviation (MAD) method.
+"""
+
 import numpy as np
 import pandas as pd
 from dagster import get_dagster_logger
@@ -18,6 +22,7 @@ def detect_change(
     Returns:
         pd.DataFrame: DataFrame with the detected change information.
     """
+    # TODO: clean this all up a little once happy with the logic and functionality
     logger = get_dagster_logger()
     metric_name = df_metric["metric_name"].unique()[0]
     logger.debug(f"beginning change detection for {metric_name}")
@@ -39,7 +44,9 @@ def detect_change(
     logger.debug(f"df_metric:\n{df_metric}")
     if df_metric["metric_alert"].sum() > 0:
         logger.info(f"change detected for {metric_name} at {X_detect_timestamps}")
+
         return df_metric
     else:
         logger.info(f"no change detected for {metric_name} at {X_detect_timestamps}")
+
         return pd.DataFrame()

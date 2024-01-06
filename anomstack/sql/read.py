@@ -10,7 +10,7 @@ from anomstack.external.gcp.bigquery import read_sql_bigquery
 from anomstack.external.snowflake.snowflake import read_sql_snowflake
 
 
-def db_translate(sql, db) -> str:
+def db_translate(sql: str, db: str) -> str:
     """
     Replace some functions with their db-specific equivalents.
 
@@ -29,7 +29,7 @@ def db_translate(sql, db) -> str:
     return sql
 
 
-def read_sql(sql, db) -> pd.DataFrame:
+def read_sql(sql: str, db: str) -> pd.DataFrame:
     """
     Read data from SQL.
 

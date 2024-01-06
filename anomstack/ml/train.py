@@ -1,13 +1,29 @@
+"""
+Functions for training models.
+"""
+
 import importlib
 import time
 
 from dagster import get_dagster_logger
 from pyod.models.base import BaseDetector
+import pandas as pd
 
 
-def train_model(X, metric, model_name, model_params) -> BaseDetector:
+def train_model(
+    X: pd.DataFrame, metric: str, model_name: str, model_params: dict
+) -> BaseDetector:
     """
     Train a model.
+
+    Args:
+        X (pd.DataFrame): The input data for training the model.
+        metric (str): The metric used for training the model.
+        model_name (str): The name of the model to be trained.
+        model_params (dict): The parameters for the model.
+
+    Returns:
+        BaseDetector: The trained model.
     """
 
     logger = get_dagster_logger()
@@ -21,7 +37,7 @@ def train_model(X, metric, model_name, model_params) -> BaseDetector:
     model.fit(X)
     time_end_train = time.time()
     train_time = time_end_train - time_start_train
-    logger.info(
+    logger.debug(
         f"trained model ({model_name}({model_params})) for {metric} (n={len(X)}, train_time={round(train_time,2)} secs)"
     )
 

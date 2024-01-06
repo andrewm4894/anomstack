@@ -1,4 +1,5 @@
 """
+Some helper functions for plotting.
 """
 
 import matplotlib.pyplot as plt
@@ -82,8 +83,16 @@ def make_alert_plot(
 
 
 def make_batch_plot(df: pd.DataFrame) -> plt.Figure:
-    """ """
+    """
+    Create a batch plot showing the relationship between metric value, metric score,
+    and metric alerts/changes for each unique metric in the given DataFrame.
 
+    Parameters:
+        df (pd.DataFrame): The DataFrame containing the metric data.
+
+    Returns:
+        plt.Figure: The generated batch plot figure.
+    """
     unique_metrics = df["metric_name"].unique()
     colors = sns.color_palette("viridis", len(unique_metrics))
 
