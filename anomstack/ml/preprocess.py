@@ -27,7 +27,7 @@ def make_x(
 
     Returns:
         pd.DataFrame: The preprocessed dataframe.
-    
+
     Raises:
         ValueError: If mode is not "train" or "score".
     """

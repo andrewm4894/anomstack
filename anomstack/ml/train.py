@@ -5,9 +5,9 @@ Functions for training models.
 import importlib
 import time
 
+import pandas as pd
 from dagster import get_dagster_logger
 from pyod.models.base import BaseDetector
-import pandas as pd
 
 
 def train_model(
