@@ -8,5 +8,6 @@
         "llmalert",
         "openai"
     ],
-    "python.pythonPath": "venv\\Scripts\\python.exe"
+    "python.pythonPath": "venv\\Scripts\\python.exe",
+    "cloudcode.duetAI.inlineSuggestions.enableAuto": true
 }

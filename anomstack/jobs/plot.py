@@ -1,23 +1,19 @@
 """
+Generate plot jobs and schedules.
 """
 
 import base64
 import os
 from io import BytesIO
-from typing import List, Tuple
 
-import matplotlib.pyplot as plt
 import pandas as pd
-import seaborn as sns
 from dagster import (
     MAX_RUNTIME_SECONDS_TAG,
-    AssetExecutionContext,
     DefaultScheduleStatus,
     JobDefinition,
     MetadataValue,
     ScheduleDefinition,
     asset,
-    get_dagster_logger,
     job,
     op,
 )
@@ -31,10 +27,16 @@ from anomstack.sql.read import read_sql
 ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv("ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600)
 
 
-def build_plot_job(spec) -> JobDefinition:
-    """ """
+def build_plot_job(spec: dict) -> JobDefinition:
+    """Builds a plot job based on the given specification.
 
-    logger = get_dagster_logger()
+    Args:
+        spec (dict): The specification for the plot job.
+
+    Returns:
+        JobDefinition: The plot job definition.
+    """
+
 
     if spec.get("disable_plot"):
 
@@ -62,11 +64,15 @@ def build_plot_job(spec) -> JobDefinition:
         tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
     )
     def _job():
-        """ """
+        """The main plot job."""
 
         @op(name=f"{metric_batch}_get_plot_data")
         def get_plot_data() -> pd.DataFrame:
-            """ """
+            """Gets the plot data.
+
+            Returns:
+                pd.DataFrame: The plot data.
+            """
 
             df = read_sql(render("plot_sql", spec), db)
             df["metric_alert"] = df["metric_alert"].fillna(0)
@@ -80,7 +86,12 @@ def build_plot_job(spec) -> JobDefinition:
 
         @asset(name=f"{metric_batch}_plot")
         def make_plot(context, df: pd.DataFrame) -> None:
-            """ """
+            """Generates the plot.
+
+            Args:
+                context (AssetExecutionContext): The asset execution context.
+                df (pd.DataFrame): The plot data.
+            """
 
             fig = make_batch_plot(df)
 

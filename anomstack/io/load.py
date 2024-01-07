@@ -1,5 +1,8 @@
+"""
+Some helper functions for loading models.
+"""
+
 import pickle
-from typing import List, Tuple
 
 from pyod.models.base import BaseDetector
 
@@ -7,9 +10,20 @@ from anomstack.external.aws.s3 import load_model_s3
 from anomstack.external.gcp.gcs import load_model_gcs
 
 
-def load_model(metric_name, model_path, metric_batch) -> BaseDetector:
+def load_model(metric_name: str, model_path: str, metric_batch: str) -> BaseDetector:
     """
     Load model.
+
+    Args:
+        metric_name (str): The name of the metric.
+        model_path (str): The path to the model.
+        metric_batch (str): The batch of the metric.
+
+    Returns:
+        BaseDetector: The loaded model.
+
+    Raises:
+        ValueError: If the model_path is not supported.
     """
 
     if model_path.startswith("gs://"):
@@ -24,9 +38,19 @@ def load_model(metric_name, model_path, metric_batch) -> BaseDetector:
     return model
 
 
-def load_model_local(metric_name, model_path, metric_batch) -> BaseDetector:
+def load_model_local(
+    metric_name: str, model_path: str, metric_batch: str
+) -> BaseDetector:
     """
     Load model locally.
+
+    Args:
+        metric_name (str): The name of the metric.
+        model_path (str): The path to the model.
+        metric_batch (str): The batch of the metric.
+
+    Returns:
+        BaseDetector: The loaded model.
     """
 
     model_path = model_path.replace("local://", "")

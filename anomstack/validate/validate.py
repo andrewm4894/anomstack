@@ -1,3 +1,7 @@
+"""
+Some helper functions to validate dataframes.
+"""
+
 from io import StringIO
 
 import pandas as pd
@@ -7,6 +11,12 @@ from dagster import get_dagster_logger
 def validate_df(df: pd.DataFrame) -> pd.DataFrame:
     """
     Validate the dataframe.
+
+    Args:
+        df (pd.DataFrame): The dataframe to be validated.
+
+    Returns:
+        pd.DataFrame: The validated dataframe.
     """
 
     logger = get_dagster_logger()

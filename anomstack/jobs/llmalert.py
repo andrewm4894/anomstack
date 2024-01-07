@@ -25,7 +25,7 @@ from anomstack.sql.read import read_sql
 ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv("ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600)
 
 
-def build_llmalert_job(spec) -> JobDefinition:
+def build_llmalert_job(spec: dict) -> JobDefinition:
     """Builds a job definition for the LLM Alert job.
 
     Args:
@@ -65,10 +65,8 @@ def build_llmalert_job(spec) -> JobDefinition:
         tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
     )
     def _job():
-        """A job that runs the LLM Alert.
-
-        Returns:
-            None
+        """
+        A job that runs the LLM Alert.
         """
 
         @op(name=f"{metric_batch}_get_llmalert_data")
@@ -105,7 +103,9 @@ def build_llmalert_job(spec) -> JobDefinition:
                 )
                 df_metric["metric_alert"] = df_metric["metric_alert"].fillna(0)
                 df_metric["metric_score"] = df_metric["metric_score"].fillna(0)
-                df_metric["metric_score_smooth"] = df_metric["metric_score_smooth"].fillna(0)
+                df_metric["metric_score_smooth"] = df_metric[
+                    "metric_score_smooth"
+                ].fillna(0)
                 df_metric = df_metric.dropna()
                 df_metric["metric_timestamp"] = pd.to_datetime(
                     df_metric["metric_timestamp"]

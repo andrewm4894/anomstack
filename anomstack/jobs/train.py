@@ -27,7 +27,7 @@ from anomstack.sql.read import read_sql
 ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv("ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600)
 
 
-def build_train_job(spec) -> JobDefinition:
+def build_train_job(spec: dict) -> JobDefinition:
     """
     Build job definitions for train jobs.
 
@@ -67,9 +67,6 @@ def build_train_job(spec) -> JobDefinition:
     def _job():
         """
         Get data for training and train models.
-
-        Returns:
-            List[Tuple[str, BaseDetector]]: A list of tuples containing the metric name and the trained model.
         """
 
         logger = get_dagster_logger()
@@ -107,7 +104,9 @@ def build_train_job(spec) -> JobDefinition:
 
             if len(df) == 0:
                 logger.info(f"no data for {metric_batch} train job.")
+
                 return models
+
             else:
                 for metric_name in df["metric_name"].unique():
                     df_metric = df[df["metric_name"] == metric_name]
@@ -127,6 +126,7 @@ def build_train_job(spec) -> JobDefinition:
                         logger.info(
                             f"no data for {metric_name} in {metric_batch} train job."
                         )
+
                 return models
 
         @op(name=f"{metric_batch}_save_model")

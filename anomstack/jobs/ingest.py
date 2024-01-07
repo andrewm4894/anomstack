@@ -76,7 +76,7 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
             Calculate metrics.
 
             Returns:
-                DataFrame: A pandas DataFrame containing the calculated metrics.
+                pd.DataFrame: A pandas DataFrame containing the calculated metrics.
             """
             if ingest_sql:
                 df = read_sql(render("ingest_sql", spec), db)
@@ -100,12 +100,13 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
             Save metrics to db.
 
             Args:
-                df (DataFrame): A pandas DataFrame containing the metrics to be saved.
+                df (pd.DataFrame): A pandas DataFrame containing the metrics to be saved.
 
             Returns:
-                DataFrame: A pandas DataFrame containing the saved metrics.
+                pd.DataFrame: A pandas DataFrame containing the saved metrics.
             """
             df = save_df(df, db, table_key)
+
             return df
 
         save_metrics(create_metrics())

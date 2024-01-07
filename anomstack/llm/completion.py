@@ -1,3 +1,7 @@
+"""
+Some helper functions for interacting with the OpenAI API.
+"""
+
 import json
 import os
 import time
@@ -12,7 +16,6 @@ def get_completion(prompt: str, max_retries=5):
 
     Args:
         prompt (str): The prompt to send to the OpenAI API.
-        model (str, optional): The model to use for the completion. Defaults to "gpt-3.5-turbo".
         max_retries (int, optional): The maximum number of retries before giving up.
 
     Returns:

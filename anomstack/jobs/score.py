@@ -28,7 +28,7 @@ from anomstack.validate.validate import validate_df
 ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv("ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600)
 
 
-def build_score_job(spec) -> JobDefinition:
+def build_score_job(spec: dict) -> JobDefinition:
     """
     Build job definitions for score jobs.
 
@@ -180,7 +180,7 @@ def build_score_job(spec) -> JobDefinition:
             return df_scores
 
         @op(name=f"{metric_batch}_save_scores")
-        def save_scores(df) -> pd.DataFrame:
+        def save_scores(df: pd.DataFrame) -> pd.DataFrame:
             """
             Save scores to db.
 

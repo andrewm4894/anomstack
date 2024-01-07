@@ -29,12 +29,15 @@ def send_alert(
         df (pd.DataFrame): The data to be included in the alert.
         alert_methods (str, optional): The alert methods to use, separated by commas. Defaults to 'email,slack'.
         threshold (float, optional): The threshold for the alert. Defaults to 0.8.
+        description (str, optional): The description of the alert. Defaults to ''.
+        tags (list, optional): The tags to be included in the alert. Defaults to None.
+        score_col (str, optional): The column name of the score. Defaults to 'metric_score_smooth'.
 
     Returns:
         pd.DataFrame: The input DataFrame.
     """
     logger = get_dagster_logger()
-    logger.info(f"alerts to send: \n{df}")
+    logger.debug(f"alerts to send: \n{df}")
     message = make_alert_message(
         df, description=description, tags=tags, score_col=score_col
     )

@@ -1,4 +1,5 @@
 """
+Some helper functions for interacting with BigQuery.
 """
 
 import os
@@ -14,9 +15,15 @@ from google.cloud.exceptions import TooManyRequests
 from anomstack.external.gcp.credentials import get_google_credentials
 
 
-def read_sql_bigquery(sql) -> pd.DataFrame:
+def read_sql_bigquery(sql: str) -> pd.DataFrame:
     """
     Read data from SQL.
+
+    Args:
+        sql (str): The SQL query to execute.
+
+    Returns:
+        pd.DataFrame: The result of the query as a DataFrame.
     """
 
     logger = get_dagster_logger()
@@ -34,9 +41,19 @@ def read_sql_bigquery(sql) -> pd.DataFrame:
     return df
 
 
-def pandas_save_df_bigquery(df, table_key, if_exists="append") -> pd.DataFrame:
+def pandas_save_df_bigquery(
+    df: pd.DataFrame, table_key: str, if_exists: str = "append"
+) -> pd.DataFrame:
     """
     Save df to db.
+
+    Args:
+        df (pd.DataFrame): The DataFrame to save.
+        table_key (str): The fully qualified table key in the format <project_id>.<dataset_id>.<table_id>.
+        if_exists (str, optional): The action to take if the table already exists. Defaults to "append".
+
+    Returns:
+        pd.DataFrame: The input DataFrame.
     """
 
     table_key_parts = table_key.split(".")
@@ -68,9 +85,20 @@ def pandas_save_df_bigquery(df, table_key, if_exists="append") -> pd.DataFrame:
     return df
 
 
-def save_df_bigquery(df, table_key, if_exists="append", max_retries=5) -> pd.DataFrame:
+def save_df_bigquery(
+    df: pd.DataFrame, table_key: str, if_exists: str = "append", max_retries: int = 5
+) -> pd.DataFrame:
     """
     Save df to db, with exponential backoff retry for handling rate limit exceeded error.
+
+    Args:
+        df (pd.DataFrame): The DataFrame to save.
+        table_key (str): The fully qualified table key in the format <project_id>.<dataset_id>.<table_id>.
+        if_exists (str, optional): The action to take if the table already exists. Defaults to "append".
+        max_retries (int, optional): The maximum number of retries in case of rate limit exceeded error. Defaults to 5.
+
+    Returns:
+        pd.DataFrame: The input DataFrame.
     """
     table_key_parts = table_key.split(".")
     if len(table_key_parts) == 2:
@@ -97,6 +125,7 @@ def save_df_bigquery(df, table_key, if_exists="append", max_retries=5) -> pd.Dat
         else bigquery.job.WriteDisposition.WRITE_TRUNCATE
     )
 
+    # TODO: see if there is a better more native way to do this in the BigQuery API.
     for attempt in range(max_retries):
         try:
             job = client.load_table_from_dataframe(
@@ -104,7 +133,7 @@ def save_df_bigquery(df, table_key, if_exists="append", max_retries=5) -> pd.Dat
             )
             job.result()  # Wait for the job to complete
             break  # Success, exit the retry loop
-        except (TooManyRequests, Forbidden) as e:
+        except (TooManyRequests, Forbidden):
             wait_time = 2**attempt + random.uniform(
                 0, 1
             )  # Exponential backoff with jitter

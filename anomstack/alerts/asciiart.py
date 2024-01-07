@@ -1,3 +1,7 @@
+"""
+# copied from: https://raw.githubusercontent.com/kakwa/py-ascii-graph/09ca5901be94ec3563bdcc25d6396e18fd8ca5df/ascii_graph/__init__.py
+# copied from: https://raw.githubusercontent.com/nyurik/py-ascii-graph/fix-python310/ascii_graph/__init__.py
+"""
 from __future__ import unicode_literals
 
 import copy
@@ -6,10 +10,6 @@ import sys
 
 import numpy as np
 import pandas as pd
-
-# copied from: https://raw.githubusercontent.com/kakwa/py-ascii-graph/09ca5901be94ec3563bdcc25d6396e18fd8ca5df/ascii_graph/__init__.py
-# copied from: https://raw.githubusercontent.com/nyurik/py-ascii-graph/fix-python310/ascii_graph/__init__.py
-
 
 if (
     sys.version < "3"

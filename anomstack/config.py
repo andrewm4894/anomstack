@@ -18,7 +18,7 @@ examples_dir = Path(f"{metrics_dir}/examples")
 specs = {}
 
 
-def process_yaml_file(yaml_file):
+def process_yaml_file(yaml_file: str):
     """
     Process a YAML file and add it to the specs dictionary.
 

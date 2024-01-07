@@ -1,7 +1,27 @@
+"""
+Some helper functions for resampling data.
+"""
+
+import pandas as pd
 from dagster import get_dagster_logger
 
 
-def resample(df, freq, freq_agg):
+def resample(df: pd.DataFrame, freq: str, freq_agg: str = "mean") -> pd.DataFrame:
+    """
+    Resample df to a desired frequency.
+
+    Args:
+        df (pandas.DataFrame): The input DataFrame.
+        freq (str): The desired frequency for resampling.
+        freq_agg (str): The aggregation method for resampling.
+
+    Returns:
+        pandas.DataFrame: The resampled DataFrame.
+
+    Raises:
+        ValueError: If an unsupported aggregation method is provided.
+
+    """
     logger = get_dagster_logger()
 
     df = df.set_index("metric_timestamp")
