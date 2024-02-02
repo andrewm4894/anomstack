@@ -15,10 +15,10 @@ from dagster import (
     op,
 )
 
+from anomstack.alerts.send import send_df
 from anomstack.config import specs
 from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
-from anomstack.alerts.send import send_df
 
 ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv("ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600)
 

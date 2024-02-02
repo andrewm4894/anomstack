@@ -6,7 +6,7 @@ import pandas as pd
 from dagster import get_dagster_logger
 
 from anomstack.alerts.asciiart import make_alert_message
-from anomstack.alerts.email import send_email_with_plot, send_email
+from anomstack.alerts.email import send_email, send_email_with_plot
 from anomstack.alerts.slack import send_alert_slack
 
 
