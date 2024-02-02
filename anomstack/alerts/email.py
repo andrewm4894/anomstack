@@ -82,3 +82,45 @@ def send_email_with_plot(
             server.quit()
 
     logger.info(f"email '{subject}' sent to {to}")
+
+
+def send_email(
+    subject,
+    body,
+) -> None:
+    """
+    Sends an email.
+
+    Args:
+        subject (str): The subject of the email.
+        body (str): The body of the email.
+
+    Returns:
+        None
+    """
+
+    logger = get_dagster_logger()
+
+    sender = os.getenv("ANOMSTACK_ALERT_EMAIL_FROM")
+    password = os.getenv("ANOMSTACK_ALERT_EMAIL_PASSWORD")
+    to = os.getenv("ANOMSTACK_ALERT_EMAIL_TO")
+    host = os.getenv("ANOMSTACK_ALERT_EMAIL_SMTP_HOST")
+    port = os.getenv("ANOMSTACK_ALERT_EMAIL_SMTP_PORT")
+
+    msg = MIMEMultipart()
+    msg["From"] = sender
+    msg["To"] = to
+    msg["Subject"] = subject
+
+    msg.attach(MIMEText(body, "html"))
+
+    context = ssl.create_default_context()
+    with smtplib.SMTP(host, port) as server:
+        server.connect(host, port)
+        server.starttls(context=context)
+        server.login(sender, password)
+        text = msg.as_string()
+        server.sendmail(sender, to, text)
+        server.quit()
+
+    logger.info(f"email '{subject}' sent to {to}")
