@@ -14,7 +14,7 @@ Jinja2
 matplotlib
 numpy
 oscrypto
-openai>=1.2.4
+openai
 pandas
 pandas-gbq
 plotly
