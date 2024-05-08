@@ -2,7 +2,7 @@ import logging
 
 import pytest
 
-from anomstack.main import ingest_jobs, ingest_schedules, jobs, schedules
+from anomstack.main import ingest_jobs, ingest_schedules, jobs, schedules, sensors
 
 logger = logging.getLogger(__name__)
 
