@@ -2,5 +2,12 @@
     "name": "anomstack",
     "forwardPorts": [3000],
     "remoteUser": "root",
-    "postCreateCommand": "bash .devcontainer/post_create_command.sh"
+    "postCreateCommand": "bash .devcontainer/post_create_command.sh",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "github.copilot"
+            ]
+    }
+  }
 }
