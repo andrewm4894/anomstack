@@ -3,5 +3,3 @@ locations:
     code_source:
       python_file: ./anomstack/main.py
     working_directory: .
-    build:
-      directory: ./requirements
