@@ -24,7 +24,7 @@ export MACHINE_TYPE=e2-standard-2
 export RANGE=10.0.0.0/24
 ```
 
-Create a service account:
+Create a service account.
 
 ```bash
 gcloud iam service-accounts create anomstack-service-account \
@@ -33,34 +33,45 @@ gcloud iam service-accounts create anomstack-service-account \
     --display-name="Anomstack service account"
 ```
 
-Create the VPC network for Anomstack:
+Create the VPC network for Anomstack.
 
 ```bash
-# Create the VPC network
 gcloud compute networks create anomstack --project=$PROJECT_ID
+```
 
-# Create the subnet
+Create the subnet.
+
+```bash
 gcloud compute networks subnets create anomstack \
     --network=anomstack \
     --region=$REGION \
     --range=$RANGE \
     --project=$PROJECT_ID
+```
 
-# Create the firewall rule to allow traffic
+Create the firewall rule to allow traffic.
+
+```bash
 gcloud compute firewall-rules create allow-anomstack-internal \
     --network=anomstack \
     --allow=tcp,udp,icmp \
     --source-ranges=$RANGE \
     --project=$PROJECT_ID
+```
 
-# Create the firewall rule to allow SSH traffic
+Create the firewall rule to allow SSH traffic.
+
+```bash
 gcloud compute firewall-rules create allow-ssh \
     --network=anomstack \
     --allow=tcp:22 \
     --source-ranges=$YOUR_IP_ADDRESS \
     --project=$PROJECT_ID
+```
 
-# Create the firewall rule to allow traffic to Dagster UI
+Create the firewall rule to allow traffic to Dagster UI.
+
+```bash
 gcloud compute firewall-rules create allow-anomstack-3000 \
     --network=anomstack \
     --allow=tcp:3000 \
@@ -71,7 +82,6 @@ gcloud compute firewall-rules create allow-anomstack-3000 \
 Create the VM:
 
 ```bash
-# Create the VM
 gcloud compute instances create $INSTANCE_NAME \
 --project=$PROJECT_ID \
 --zone=$ZONE \
