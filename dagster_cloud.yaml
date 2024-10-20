@@ -4,4 +4,4 @@ locations:
       python_file: ./anomstack/main.py
     working_directory: .
     python_requirements:
-      file: ./requirements/requirements.txt
+      file: requirements/requirements.txt
