@@ -23,7 +23,7 @@ services:
   anomstack_code:
     build:
       context: .
-      dockerfile: ./Dockerfile.anomstack_code
+      dockerfile: ./docker/Dockerfile.anomstack_code
     container_name: anomstack_code
     image: anomstack_code_image
     restart: always
@@ -46,7 +46,7 @@ services:
   anomstack_dagit:
     build:
       context: .
-      dockerfile: ./Dockerfile.dagster
+      dockerfile: ./docker/Dockerfile.dagster
     entrypoint:
       - dagit
       - -h
@@ -82,7 +82,7 @@ services:
   anomstack_daemon:
     build:
       context: .
-      dockerfile: ./Dockerfile.dagster
+      dockerfile: ./docker/Dockerfile.dagster
     entrypoint:
       - dagster-daemon
       - run
@@ -109,7 +109,7 @@ services:
   anomstack_dashboard:
     build:
         context: .
-        dockerfile: ./Dockerfile.anomstack_dashboard
+        dockerfile: ./docker/Dockerfile.anomstack_dashboard
     container_name: anomstack_dashboard
     ports:
       - "8501:8501"
