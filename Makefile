@@ -6,6 +6,7 @@ SHELL=/bin/bash
 .PHONY: pre-commit
 .PHONY: tests
 .PHONY: docs
+.PHONY: requirements
 
 ## start streamlit dashboard
 dashboard:
@@ -33,3 +34,6 @@ dev:
 
 docs:
 	cd docs && yarn start
+
+requirements:
+	pip-compile requirements.compile

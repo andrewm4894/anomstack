@@ -4,6 +4,9 @@ set -ex
 
 echo "start post create command..."
 
+# install requirements-dev.txt
+pip install -r requirements-dev.txt
+
 # copy .example.env to .env
 cp .example.env .env
 
