@@ -4,6 +4,7 @@ This module provides functions for reading data from SQL databases using differe
 
 import pandas as pd
 from dagster import get_dagster_logger
+import sqlglot
 
 from anomstack.external.duckdb.duckdb import read_sql_duckdb
 from anomstack.external.gcp.bigquery import read_sql_bigquery
@@ -22,13 +23,9 @@ def db_translate(sql: str, db: str) -> str:
     Returns:
         str: The translated SQL query.
     """
-    if db == "bigquery":
-        sql = sql.replace("now()", "current_timestamp()")
-    elif db == "snowflake":
-        sql = sql.replace("now()", "current_timestamp()")
-    elif db == "sqlite":
-        sql = sql.replace("get_current_timestamp()", "current_timestamp")
-        sql = sql.replace("CURRENT_DATE - INTERVAL '45' DAY", "date('now', '-45 day')")
+    sql = sqlglot.transpile(sql, write=db, identify=True)[0]
+    if db == "sqlite":
+        sql = sql.replace("GET_CURRENT_TIMESTAMP()", "DATETIME('now')")
 
     return sql
 
