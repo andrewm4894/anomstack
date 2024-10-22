@@ -24,7 +24,9 @@ def db_translate(sql: str, db: str) -> str:
     Returns:
         str: The translated SQL query.
     """
+    # Transpile the SQL query to the target database dialect
     sql = sqlglot.transpile(sql, write=db, identify=True, pretty=True)[0]
+    # Replace some functions with their db-specific equivalents
     if db == "sqlite":
         sql = sql.replace("GET_CURRENT_TIMESTAMP()", "DATETIME('now')")
     elif db == "bigquery":
