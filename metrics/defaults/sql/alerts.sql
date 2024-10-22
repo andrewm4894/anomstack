@@ -2,7 +2,7 @@
 Template for generating the input data for the alert job.
 */
 
-WITH 
+WITH
 
 metric_value_data AS (
   SELECT DISTINCT

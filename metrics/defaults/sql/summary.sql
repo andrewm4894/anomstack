@@ -12,4 +12,3 @@ WHERE
 GROUP BY metric_batch, metric_name
 ORDER BY n_alert DESC
 ;
-

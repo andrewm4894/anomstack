@@ -2,7 +2,7 @@
 Template for generating input metric data for scoring.
 */
 
-WITH 
+WITH
 
 data AS (
   SELECT

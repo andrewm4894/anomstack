@@ -2,7 +2,7 @@
 Template for generating the input data for the change detection job.
 */
 
-WITH 
+WITH
 
 metric_value_data AS (
   SELECT DISTINCT

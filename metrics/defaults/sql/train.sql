@@ -2,7 +2,7 @@
 Template for generating the input data for the train job.
 */
 
-WITH 
+WITH
 
 data AS (
   SELECT

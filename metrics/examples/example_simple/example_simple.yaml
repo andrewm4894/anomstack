@@ -5,7 +5,7 @@ ingest_cron_schedule: "*/2 * * * *"
 train_cron_schedule: "*/4 * * * *"
 score_cron_schedule: "*/3 * * * *"
 ingest_sql: >
-  WITH 
+  WITH
 
   metric_1 AS (
     SELECT

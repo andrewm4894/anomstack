@@ -3,8 +3,8 @@ This module provides functions for reading data from SQL databases using differe
 """
 
 import pandas as pd
-from dagster import get_dagster_logger
 import sqlglot
+from dagster import get_dagster_logger
 
 from anomstack.external.duckdb.duckdb import read_sql_duckdb
 from anomstack.external.gcp.bigquery import read_sql_bigquery
