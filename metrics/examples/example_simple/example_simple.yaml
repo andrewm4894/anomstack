@@ -26,7 +26,7 @@ ingest_sql: >
   select
     metric_timestamp,
     metric_name,
-    metric_value,
+    metric_value
   from
     (
     select * from metric_1
