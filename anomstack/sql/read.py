@@ -28,6 +28,7 @@ def db_translate(sql: str, db: str) -> str:
         sql = sql.replace("now()", "current_timestamp()")
     elif db == "sqlite":
         sql = sql.replace("get_current_timestamp()", "current_timestamp")
+        sql = sql.replace("CURRENT_DATE - INTERVAL '45' DAY", "date('now', '-45 day')")
 
     return sql
 
