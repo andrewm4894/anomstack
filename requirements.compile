@@ -22,5 +22,6 @@ pyod
 pyyaml
 snowflake-connector-python[pandas]
 seaborn
+sqlglot
 streamlit
 tabulate
