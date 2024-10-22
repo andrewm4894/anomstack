@@ -40,12 +40,12 @@ def get_credentials():
     credentials_path = os.getenv("ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS")
     credentials_json = os.getenv("ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS_JSON")
 
-    if credentials_path:
-        return service_account.Credentials.from_service_account_file(credentials_path)
-    elif credentials_json:
+    if credentials_json:
         return service_account.Credentials.from_service_account_info(
             json.loads(credentials_json)
         )
+    elif credentials_path:
+        return service_account.Credentials.from_service_account_file(credentials_path)
     else:
         return None
 
