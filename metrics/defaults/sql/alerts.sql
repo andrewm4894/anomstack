@@ -2,206 +2,153 @@
 Template for generating the input data for the alert job.
 */
 
-with
+WITH 
 
-metric_value_data as
-(
-select distinct
-  metric_timestamp,
-  metric_batch,
-  metric_name,
-  avg(metric_value) as metric_value
-from
-  {{ table_key }}
-where
-  metric_batch = '{{ metric_batch }}'
-  and
-  metric_type = 'metric'
-  and
-  -- limit to the last {{ alert_metric_timestamp_max_days_ago }} days
-  cast(metric_timestamp as datetime) >= CURRENT_DATE - INTERVAL '{{ alert_metric_timestamp_max_days_ago }}' DAY
-group by 1,2,3
+metric_value_data AS (
+  SELECT DISTINCT
+    metric_timestamp,
+    metric_batch,
+    metric_name,
+    AVG(metric_value) AS metric_value
+  FROM {{ table_key }}
+  WHERE metric_batch = '{{ metric_batch }}'
+    AND metric_type = 'metric'
+    AND DATE(metric_timestamp) >= DATE('now', '-{{ alert_metric_timestamp_max_days_ago }} day')
+  GROUP BY metric_timestamp, metric_batch, metric_name
 ),
 
-metric_score_data as
-(
-select distinct
-  metric_timestamp,
-  metric_batch,
-  metric_name,
-  avg(metric_value) as metric_score
-from
-  {{ table_key }}
-where
-  metric_batch = '{{ metric_batch }}'
-  and
-  metric_type = 'score'
-  and
-  -- limit to the last {{ alert_metric_timestamp_max_days_ago }} days
-  cast(metric_timestamp as datetime) >= CURRENT_DATE - INTERVAL '{{ alert_metric_timestamp_max_days_ago }}' DAY
-group by 1,2,3
+metric_score_data AS (
+  SELECT DISTINCT
+    metric_timestamp,
+    metric_batch,
+    metric_name,
+    AVG(metric_value) AS metric_score
+  FROM {{ table_key }}
+  WHERE metric_batch = '{{ metric_batch }}'
+    AND metric_type = 'score'
+    AND DATE(metric_timestamp) >= DATE('now', '-{{ alert_metric_timestamp_max_days_ago }} day')
+  GROUP BY metric_timestamp, metric_batch, metric_name
 ),
 
-metric_alert_data as
-(
-select distinct
-  metric_timestamp,
-  metric_batch,
-  metric_name,
-  avg(metric_value) as metric_alert_historic
-from
-  {{ table_key }}
-where
-  metric_batch = '{{ metric_batch }}'
-  and
-  metric_type = 'alert'
-  and
-  -- limit to the last {{ alert_metric_timestamp_max_days_ago }} days
-  cast(metric_timestamp as datetime) >= CURRENT_DATE - INTERVAL '{{ alert_metric_timestamp_max_days_ago }}' DAY
-group by 1,2,3
+metric_alert_data AS (
+  SELECT DISTINCT
+    metric_timestamp,
+    metric_batch,
+    metric_name,
+    AVG(metric_value) AS metric_alert_historic
+  FROM {{ table_key }}
+  WHERE metric_batch = '{{ metric_batch }}'
+    AND metric_type = 'alert'
+    AND DATE(metric_timestamp) >= DATE('now', '-{{ alert_metric_timestamp_max_days_ago }} day')
+  GROUP BY metric_timestamp, metric_batch, metric_name
 ),
 
-metric_score_recency_ranked as
-(
-select distinct
-  metric_timestamp,
-  metric_batch,
-  metric_name,
-  metric_score,
-  rank() over (partition by metric_name order by metric_timestamp desc) as metric_score_recency_rank
-from
-  metric_score_data
+metric_score_recency_ranked AS (
+  SELECT DISTINCT
+    metric_timestamp,
+    metric_batch,
+    metric_name,
+    metric_score,
+    ROW_NUMBER() OVER (PARTITION BY metric_name ORDER BY metric_timestamp DESC) AS metric_score_recency_rank
+  FROM metric_score_data
 ),
 
-metric_value_recency_ranked as
-(
-select distinct
-  metric_timestamp,
-  metric_batch,
-  metric_name,
-  metric_value,
-  rank() over (partition by metric_name order by metric_timestamp desc) as metric_value_recency_rank
-from
-  metric_value_data
+metric_value_recency_ranked AS (
+  SELECT DISTINCT
+    metric_timestamp,
+    metric_batch,
+    metric_name,
+    metric_value,
+    ROW_NUMBER() OVER (PARTITION BY metric_name ORDER BY metric_timestamp DESC) AS metric_value_recency_rank
+  FROM metric_value_data
 ),
 
-data_ranked as
-(
-select
-  m.metric_timestamp,
-  m.metric_batch,
-  m.metric_name,
-  m.metric_value,
-  s.metric_score,
-  ifnull(a.metric_alert_historic,0) as metric_alert_historic,
-  m.metric_value_recency_rank,
-  s.metric_score_recency_rank
-from
-  metric_value_recency_ranked m
-left outer join
-  metric_score_recency_ranked s
-on
-  m.metric_name = s.metric_name
-  and
-  m.metric_batch = s.metric_batch
-  and
-  m.metric_timestamp = s.metric_timestamp
-left outer join
-  metric_alert_data a
-on
-  m.metric_name = a.metric_name
-  and
-  m.metric_batch = a.metric_batch
-  and
-  m.metric_timestamp = a.metric_timestamp
+data_ranked AS (
+  SELECT
+    m.metric_timestamp,
+    m.metric_batch,
+    m.metric_name,
+    m.metric_value,
+    s.metric_score,
+    IFNULL(a.metric_alert_historic, 0) AS metric_alert_historic,
+    m.metric_value_recency_rank,
+    s.metric_score_recency_rank
+  FROM metric_value_recency_ranked m
+  LEFT JOIN metric_score_recency_ranked s
+    ON m.metric_name = s.metric_name
+    AND m.metric_batch = s.metric_batch
+    AND m.metric_timestamp = s.metric_timestamp
+  LEFT JOIN metric_alert_data a
+    ON m.metric_name = a.metric_name
+    AND m.metric_batch = a.metric_batch
+    AND m.metric_timestamp = a.metric_timestamp
 ),
 
-data_smoothed as
-(
-select
-  metric_timestamp,
-  metric_batch,
-  metric_name,
-  metric_value,
-  metric_score,
-  metric_alert_historic,
-  metric_value_recency_rank,
-  metric_score_recency_rank,
-  -- smooth the metric score over the last {{ alert_smooth_n }} values
-  avg(metric_score) over (partition by metric_name order by metric_score_recency_rank rows between {{ alert_smooth_n }} preceding and current row) as metric_score_smooth,
-  -- add a window function to check for previous alerts within the last {{ alert_snooze_n }} values
-  max(metric_alert_historic) over (partition by metric_name order by metric_score_recency_rank desc rows between {{ alert_snooze_n }} preceding and 1 preceding) as metric_has_recent_alert
-from
-  data_ranked
+data_smoothed AS (
+  SELECT
+    metric_timestamp,
+    metric_batch,
+    metric_name,
+    metric_value,
+    metric_score,
+    metric_alert_historic,
+    metric_value_recency_rank,
+    metric_score_recency_rank,
+    -- Smooth the metric score using a custom window
+    (SELECT AVG(ds.metric_score)
+     FROM data_ranked ds
+     WHERE ds.metric_name = dr.metric_name
+     AND ds.metric_score_recency_rank BETWEEN dr.metric_score_recency_rank - {{ alert_smooth_n }} AND dr.metric_score_recency_rank) AS metric_score_smooth,
+    -- Check for recent alerts
+    (SELECT MAX(ds.metric_alert_historic)
+     FROM data_ranked ds
+     WHERE ds.metric_name = dr.metric_name
+     AND ds.metric_score_recency_rank BETWEEN dr.metric_score_recency_rank - {{ alert_snooze_n }} AND dr.metric_score_recency_rank - 1) AS metric_has_recent_alert
+  FROM data_ranked dr
 ),
 
-data_alerts as
-(
-select
-  metric_timestamp,
-  metric_batch,
-  metric_name,
-  metric_value,
-  metric_score,
-  metric_score_recency_rank,
-  metric_alert_historic,
-  metric_score_smooth,
-  metric_has_recent_alert,
-  -- only alert on the most recent {{ alert_recent_n }} values
-  -- only alert if the metric score is above the threshold or if the alert is forced
-  -- only alert if the metric has not been alerted on in the last {{ alert_snooze_n }} values
-  case
-    when
-      -- only alert on the most recent {{ alert_recent_n }} values
-      metric_score_recency_rank <= {{ alert_recent_n }}
-      and
-      -- only alert if the metric score is above the threshold or if the alert is forced
-      (metric_score_smooth >= {{ alert_threshold }} or {{ alert_always }} = True )
-      and
-      -- only alert if the metric has not been alerted on in the last {{ alert_snooze_n }} values
-      metric_has_recent_alert = 0
-    then
-      1
-    else
-      0
-    end as metric_alert_calculated
-from
-  data_smoothed
-where
-  -- limit data to the most recent {{ alert_max_n }} values
-  metric_score_recency_rank <= {{ alert_max_n }}
+data_alerts AS (
+  SELECT
+    metric_timestamp,
+    metric_batch,
+    metric_name,
+    metric_value,
+    metric_score,
+    metric_score_recency_rank,
+    metric_alert_historic,
+    metric_score_smooth,
+    metric_has_recent_alert,
+    CASE
+      WHEN metric_score_recency_rank <= {{ alert_recent_n }}
+        AND (metric_score_smooth >= {{ alert_threshold }} OR {{ alert_always }} = 1)
+        AND metric_has_recent_alert = 0
+      THEN 1
+      ELSE 0
+    END AS metric_alert_calculated
+  FROM data_smoothed
+  WHERE metric_score_recency_rank <= {{ alert_max_n }}
 ),
 
-metrics_triggered as
-(
-select
-  metric_batch,
-  metric_name,
-  max(metric_alert_calculated) as metric_alert_calculated_tmp
-from
-  data_alerts
-group by 1,2
-having
-  -- only return metrics that have been triggered
-  max(metric_alert_calculated) = 1
+metrics_triggered AS (
+  SELECT
+    metric_batch,
+    metric_name,
+    MAX(metric_alert_calculated) AS metric_alert_calculated_tmp
+  FROM data_alerts
+  GROUP BY metric_batch, metric_name
+  HAVING MAX(metric_alert_calculated) = 1
 )
 
-select
+SELECT
   metric_timestamp,
-  data_alerts.metric_batch as metric_batch,
-  data_alerts.metric_name as metric_name,
+  data_alerts.metric_batch AS metric_batch,
+  data_alerts.metric_name AS metric_name,
   metric_value,
   metric_score,
-  --metric_alert_historic,
   metric_score_smooth,
-  if(metric_score_recency_rank=1,metric_alert_calculated,metric_alert_historic) as metric_alert
-from
-  data_alerts
--- only return metrics that have been triggered or not snoozed
-join
-  metrics_triggered
-on
-  data_alerts.metric_batch = metrics_triggered.metric_batch
-  and
-  data_alerts.metric_name = metrics_triggered.metric_name
+  IF(metric_score_recency_rank = 1, metric_alert_calculated, metric_alert_historic) AS metric_alert
+FROM data_alerts
+JOIN metrics_triggered
+  ON data_alerts.metric_batch = metrics_triggered.metric_batch
+  AND data_alerts.metric_name = metrics_triggered.metric_name
 ;

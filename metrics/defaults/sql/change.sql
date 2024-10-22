@@ -2,62 +2,52 @@
 Template for generating the input data for the change detection job.
 */
 
-with
+WITH 
 
-metric_value_data as
-(
-select distinct
-  metric_timestamp,
-  metric_batch,
-  metric_name,
-  avg(metric_value) as metric_value
-from
-  {{ table_key }}
-where
-  metric_batch = '{{ metric_batch }}'
-  and
-  metric_type = 'metric'
-  and
-  -- limit to the last {{ change_metric_timestamp_max_days_ago }} days
-  cast(metric_timestamp as datetime) >= CURRENT_DATE - INTERVAL '{{ change_metric_timestamp_max_days_ago }}' DAY
-group by 1,2,3
+metric_value_data AS (
+  SELECT DISTINCT
+    metric_timestamp,
+    metric_batch,
+    metric_name,
+    AVG(metric_value) AS metric_value
+  FROM {{ table_key }}
+  WHERE metric_batch = '{{ metric_batch }}'
+    AND metric_type = 'metric'
+    AND DATE(metric_timestamp) >= DATE('now', '-{{ change_metric_timestamp_max_days_ago }} day')
+  GROUP BY metric_timestamp, metric_batch, metric_name
 ),
 
-metric_value_recency_ranked as
-(
-select distinct
-  metric_timestamp,
-  metric_batch,
-  metric_name,
-  metric_value,
-  rank() over (partition by metric_name order by metric_timestamp desc) as metric_value_recency_rank
-from
-  metric_value_data
+metric_value_recency_ranked AS (
+  SELECT DISTINCT
+    metric_timestamp,
+    metric_batch,
+    metric_name,
+    metric_value,
+    ROW_NUMBER() OVER (PARTITION BY metric_name ORDER BY metric_timestamp DESC) AS metric_value_recency_rank
+  FROM metric_value_data
 ),
 
-data_smoothed as
-(
-select
-  metric_timestamp,
-  metric_batch,
-  metric_name,
-  metric_value,
-  metric_value_recency_rank,
-  -- smooth the metric value over the last {{ change_smooth_n }} values
-  avg(metric_value) over (partition by metric_name order by metric_value_recency_rank rows between {{ change_smooth_n }} preceding and current row) as metric_value_smooth
-from
-  metric_value_recency_ranked
-where
-  -- only alert on the most recent {{ change_max_n }} values
-  metric_value_recency_rank <= {{ change_max_n }}
+data_smoothed AS (
+  SELECT
+    metric_timestamp,
+    metric_batch,
+    metric_name,
+    metric_value,
+    metric_value_recency_rank,
+    -- Smooth the metric value over the last {{ change_smooth_n }} values
+    (SELECT AVG(mv.metric_value)
+     FROM metric_value_recency_ranked mv
+     WHERE mv.metric_name = mr.metric_name
+     AND mv.metric_value_recency_rank BETWEEN mr.metric_value_recency_rank - {{ change_smooth_n }} AND mr.metric_value_recency_rank) AS metric_value_smooth
+  FROM metric_value_recency_ranked mr
+  WHERE metric_value_recency_rank <= {{ change_max_n }}
 )
 
-select
+SELECT
   metric_timestamp,
   metric_batch,
   metric_name,
   metric_value,
-  metric_value_smooth,
-from
-  data_smoothed
+  metric_value_smooth
+FROM data_smoothed
 ;
