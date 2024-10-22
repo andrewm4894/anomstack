@@ -74,7 +74,8 @@ def build_plot_job(spec: dict) -> JobDefinition:
                 pd.DataFrame: The plot data.
             """
 
-            df = read_sql(render("plot_sql", spec), db)
+            sql = render("plot_sql", spec)
+            df = read_sql(sql, db)
             df["metric_alert"] = df["metric_alert"].fillna(0)
             if "metric_change" in df.columns:
                 df["metric_change"] = df["metric_change"].fillna(0)

@@ -1,14 +1,14 @@
-select
+SELECT
   metric_batch,
   metric_name,
-  max(metric_timestamp) as metric_timestamp_max,
-  sum(if(metric_type='metric',1,0)) as n_metric,
-  sum(if(metric_type='score',1,0)) as n_score,
-  sum(if(metric_type='alert',1,0)) as n_alert,
-from
-  {{ table_key }}
-where
-  -- limit to the last {{ summary_metric_timestamp_max_days_ago }} days
-  cast(metric_timestamp as datetime) >= CURRENT_DATE - INTERVAL '{{ summary_metric_timestamp_max_days_ago }}' DAY
-group by 1,2
-order by 6 desc
+  MAX(metric_timestamp) AS metric_timestamp_max,
+  SUM(CASE WHEN metric_type = 'metric' THEN 1 ELSE 0 END) AS n_metric,
+  SUM(CASE WHEN metric_type = 'score' THEN 1 ELSE 0 END) AS n_score,
+  SUM(CASE WHEN metric_type = 'alert' THEN 1 ELSE 0 END) AS n_alert
+FROM {{ table_key }}
+WHERE
+  -- Limit to the last {{ summary_metric_timestamp_max_days_ago }} days
+  DATE(metric_timestamp) >= DATE('now', '-{{ summary_metric_timestamp_max_days_ago }} day')
+GROUP BY metric_batch, metric_name
+ORDER BY n_alert DESC
+;

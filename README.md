@@ -50,7 +50,7 @@ Supported sources and databases for your metrics to live in and be queried from:
             <th align="center"><a href="./anomstack/external/gcp/bigquery.py">BigQuery</a></th>
             <th align="center"><a href="./anomstack/external/snowflake/snowflake.py">Snowflake</a></th>
             <th align="center"><a href="./anomstack/external/duckdb/duckdb.py">DuckDB</a></th>
-            <th align="center">SQLite</th>
+            <th align="center"><a href="./anomstack/external/sqlite/sqlite.py">SQLite</a></th>
             <th align="center">Redshift</th>
         </tr>
     </thead>
@@ -60,7 +60,7 @@ Supported sources and databases for your metrics to live in and be queried from:
             <td align="center">✅</td>
             <td align="center">✅</td>
             <td align="center">✅</td>
-            <td align="center">🚧</td>
+            <td align="center">✅</td>
             <td align="center">🚧</td>
         </tr>
     </tbody>

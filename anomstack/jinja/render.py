@@ -6,31 +6,6 @@ import jinja2
 from jinja2 import FileSystemLoader
 
 
-def rendered_translated(db: str, rendered_str: str, context: dict) -> str:
-    """
-    Apply database-specific replacements to the template string.
-
-    Args:
-        db (str): The database type.
-        rendered_str (str): The template string to be rendered.
-        context (dict): The context containing the variables for rendering.
-
-    Returns:
-        str: The rendered and translated template string.
-    """
-    rendered_str_translated = rendered_str
-    if db == "snowflake":
-        alert_metric_timestamp_max_days_ago = context[
-            "alert_metric_timestamp_max_days_ago"
-        ]
-        rendered_str_translated = rendered_str_translated.replace(
-            f"CURRENT_DATE - INTERVAL '{alert_metric_timestamp_max_days_ago}' DAY",
-            f"DATEADD(day, -{alert_metric_timestamp_max_days_ago}, CURRENT_TIMESTAMP)",
-        )
-
-    return rendered_str_translated
-
-
 def render(spec_key: str, spec: dict, params: dict = None) -> str:
     """
     Render from a templated spec key.
@@ -59,7 +34,5 @@ def render(spec_key: str, spec: dict, params: dict = None) -> str:
 
     # Render the template with the context
     rendered = template.render(**context)
-
-    rendered = rendered_translated(db, rendered, context)
 
     return rendered
