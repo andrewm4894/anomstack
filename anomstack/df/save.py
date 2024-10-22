@@ -7,6 +7,7 @@ import pandas as pd
 from anomstack.external.duckdb.duckdb import save_df_duckdb
 from anomstack.external.gcp.bigquery import save_df_bigquery
 from anomstack.external.snowflake.snowflake import save_df_snowflake
+from anomstack.external.sqlite.sqlite import save_df_sqlite
 
 
 def save_df(
@@ -30,6 +31,8 @@ def save_df(
         df = save_df_snowflake(df, table_key)
     elif db == "duckdb":
         df = save_df_duckdb(df, table_key)
+    elif db == "sqlite":
+        df = save_df_sqlite(df, table_key)
     else:
         raise ValueError(f"Unknown db: {db}")
 
