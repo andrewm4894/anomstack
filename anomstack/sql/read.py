@@ -26,6 +26,8 @@ def db_translate(sql: str, db: str) -> str:
         sql = sql.replace("now()", "current_timestamp()")
     elif db == "snowflake":
         sql = sql.replace("now()", "current_timestamp()")
+    elif db == "sqlite":
+        sql = sql.replace("get_current_timestamp()", "current_timestamp")
 
     return sql
 
