@@ -120,7 +120,7 @@ data_alerts AS (
     metric_has_recent_alert,
     CASE
       WHEN metric_score_recency_rank <= {{ alert_recent_n }}
-        AND (metric_score_smooth >= {{ alert_threshold }} OR {{ alert_always }} = 1)
+        AND (metric_score_smooth >= {{ alert_threshold }} OR {{ alert_always }} = True)
         AND metric_has_recent_alert = 0
       THEN 1
       ELSE 0
