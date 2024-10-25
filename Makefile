@@ -2,33 +2,38 @@ SHELL=/bin/bash
 
 .PHONY: dashboard
 .PHONY: local
+.PHONY: locald
 .PHONY: docker
 .PHONY: pre-commit
 .PHONY: tests
 .PHONY: docs
 .PHONY: requirements
 
-## start streamlit dashboard
+# start streamlit dashboard
 dashboard:
 	streamlit run ./dashboard.py --server.port 8501
 
-## start dagster locally
+# start dagster locally
 local:
 	dagster dev -f anomstack/main.py
 
-## start docker containers
+# start dagster locally as a daemon
+locald:
+	nohup dagster dev -f anomstack/main.py > dagster.log 2>&1 &
+
+# start docker containers
 docker:
 	docker compose up -d --build
 
-## pre-commit
+# pre-commit
 pre-commit:
 	pre-commit run --all-files
 
-## run tests
+# run tests
 tests:
 	pytest -v
 
-## setup local development environment and install dependencies
+# setup local development environment and install dependencies
 dev:
 	pre-commit install
 
