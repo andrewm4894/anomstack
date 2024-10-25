@@ -25,6 +25,8 @@ def read_sql_sqlite(sql: str) -> pd.DataFrame:
     sqlite_path = os.environ.get("ANOMSTACK_SQLITE_PATH", "tmpdata/anomstack.db")
     logger.info(f"sqlite_path:{sqlite_path}")
 
+    os.makedirs(os.path.dirname(sqlite_path), exist_ok=True)
+
     conn = sqlite3.connect(sqlite_path)
 
     logger.debug(f"sql:\n{sql}")
@@ -51,6 +53,9 @@ def save_df_sqlite(df: pd.DataFrame, table_key: str) -> pd.DataFrame:
 
     sqlite_path = os.environ.get("ANOMSTACK_SQLITE_PATH", "tmpdata/anomstack.db")
     logger.info(f"sqlite_path:{sqlite_path}")
+
+    os.makedirs(os.path.dirname(sqlite_path), exist_ok=True)
+
     conn = sqlite3.connect(sqlite_path)
 
     try:

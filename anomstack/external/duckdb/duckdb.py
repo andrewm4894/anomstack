@@ -25,6 +25,8 @@ def read_sql_duckdb(sql: str) -> pd.DataFrame:
     duckdb_path = os.environ.get("ANOMSTACK_DUCKDB_PATH", "tmpdata/anomstack.db")
     logger.info(f"duckdb_path:{duckdb_path}")
 
+    os.makedirs(os.path.dirname(duckdb_path), exist_ok=True)
+
     conn = connect(duckdb_path)
 
     logger.debug(f"sql:\n{sql}")
@@ -50,6 +52,9 @@ def save_df_duckdb(df: pd.DataFrame, table_key: str) -> pd.DataFrame:
 
     duckdb_path = os.environ.get("ANOMSTACK_DUCKDB_PATH", "tmpdata/anomstack.db")
     logger.info(f"duckdb_path:{duckdb_path}")
+
+    os.makedirs(os.path.dirname(duckdb_path), exist_ok=True)
+
     conn = connect(duckdb_path)
 
     try:
