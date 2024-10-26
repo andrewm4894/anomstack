@@ -40,6 +40,11 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
           path: project-repo
+      
+      - name: Copy requirements.txt to Root
+        if: steps.prerun.outputs.result == 'pex-deploy'
+        run: |
+          cp project-repo/config/requirements.txt project-repo/requirements.txt
 
       - name: Python Executable Deploy
         if: steps.prerun.outputs.result == 'pex-deploy'
@@ -48,7 +53,6 @@ jobs:
           dagster_cloud_file: "$GITHUB_WORKSPACE/project-repo/$DAGSTER_CLOUD_FILE"
           build_output_dir: "$GITHUB_WORKSPACE/build"
           python_version: "${{ env.PYTHON_VERSION }}"
-          deps-file: "$GITHUB_WORKSPACE/project-repo/config/requirements.txt"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
