@@ -6,6 +6,14 @@ import os
 from typing import List, Tuple
 
 import pandas as pd
+from pyod.models.base import BaseDetector
+
+from anomstack.config import specs
+from anomstack.fn.run import define_fn
+from anomstack.io.save import save_models
+from anomstack.jinja.render import render
+from anomstack.ml.train import train_model
+from anomstack.sql.read import read_sql
 from dagster import (
     MAX_RUNTIME_SECONDS_TAG,
     DefaultScheduleStatus,
@@ -15,14 +23,6 @@ from dagster import (
     job,
     op,
 )
-from pyod.models.base import BaseDetector
-
-from anomstack.config import specs
-from anomstack.fn.run import define_fn
-from anomstack.io.save import save_models
-from anomstack.jinja.render import render
-from anomstack.ml.train import train_model
-from anomstack.sql.read import read_sql
 
 ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv("ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600)
 

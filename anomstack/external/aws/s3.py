@@ -6,10 +6,10 @@ import pickle
 from typing import List, Tuple
 
 import boto3
-from dagster import get_dagster_logger
 from pyod.models.base import BaseDetector
 
 from anomstack.external.aws.credentials import get_aws_credentials
+from dagster import get_dagster_logger
 
 
 def split_model_path(model_path: str) -> Tuple[str, str]:

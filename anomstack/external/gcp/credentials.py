@@ -5,8 +5,9 @@ Some helper functions for retrieving Google credentials.
 import json
 import os
 
-from dagster import get_dagster_logger
 from google.oauth2 import service_account
+
+from dagster import get_dagster_logger
 
 
 def get_google_credentials():

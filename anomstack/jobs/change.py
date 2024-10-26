@@ -5,15 +5,6 @@ Generate change detection jobs and schedules.
 import os
 
 import pandas as pd
-from dagster import (
-    MAX_RUNTIME_SECONDS_TAG,
-    DefaultScheduleStatus,
-    JobDefinition,
-    ScheduleDefinition,
-    get_dagster_logger,
-    job,
-    op,
-)
 
 from anomstack.alerts.send import send_alert
 from anomstack.config import specs
@@ -23,6 +14,15 @@ from anomstack.jinja.render import render
 from anomstack.ml.change import detect_change
 from anomstack.sql.read import read_sql
 from anomstack.validate.validate import validate_df
+from dagster import (
+    MAX_RUNTIME_SECONDS_TAG,
+    DefaultScheduleStatus,
+    JobDefinition,
+    ScheduleDefinition,
+    get_dagster_logger,
+    job,
+    op,
+)
 
 ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv("ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600)
 

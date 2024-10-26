@@ -8,6 +8,7 @@ def ingest() -> pd.DataFrame:
 
     import pandas as pd
     import requests
+
     from dagster import get_dagster_logger
 
     logger = get_dagster_logger()

@@ -5,8 +5,9 @@ Some helper functions for duckdb.
 import os
 
 import pandas as pd
-from dagster import get_dagster_logger
 from duckdb import connect, query
+
+from dagster import get_dagster_logger
 
 
 def read_sql_duckdb(sql: str) -> pd.DataFrame:

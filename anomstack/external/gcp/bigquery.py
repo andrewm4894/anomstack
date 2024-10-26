@@ -7,12 +7,12 @@ import random
 import time
 
 import pandas as pd
-from dagster import get_dagster_logger
 from google.api_core.exceptions import Forbidden
 from google.cloud import bigquery
 from google.cloud.exceptions import TooManyRequests
 
 from anomstack.external.gcp.credentials import get_google_credentials
+from dagster import get_dagster_logger
 
 
 def read_sql_bigquery(sql: str) -> pd.DataFrame:
