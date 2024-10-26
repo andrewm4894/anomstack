@@ -8,6 +8,7 @@ SHELL=/bin/bash
 .PHONY: tests
 .PHONY: docs
 .PHONY: requirements
+.PHONY: kill-locald
 
 # start streamlit dashboard
 dashboard:
@@ -20,6 +21,10 @@ local:
 # start dagster locally as a daemon
 locald:
 	nohup dagster dev -f anomstack/main.py > dagster.log 2>&1 &
+
+# kill any running dagster process
+kill-locald:
+	kill -9 $(shell ps aux | grep dagster | grep -v grep | awk '{print $$2}')
 
 # start docker containers
 docker:
