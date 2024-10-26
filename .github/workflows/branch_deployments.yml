@@ -67,7 +67,7 @@ jobs:
           ref: ${{ github.head_ref }}
       - name: Copy requirements.txt to Root
         run: |
-          cp $GITHUB_WORKSPACE/config/requirements.txt project-repo/requirements.txt
+          cp $GITHUB_WORKSPACE/config/requirements.txt requirements.txt
       - name: Build and deploy to Dagster Cloud serverless
         uses: dagster-io/dagster-cloud-action/actions/serverless_branch_deploy@v0.1
         with:
