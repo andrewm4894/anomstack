@@ -12,7 +12,7 @@ env:
   DAGSTER_CLOUD_API_TOKEN: ${{ secrets.DAGSTER_CLOUD_API_TOKEN }}
   ENABLE_FAST_DEPLOYS: 'true'
   PYTHON_VERSION: '3.10'
-  DAGSTER_CLOUD_FILE: 'dagster/dagster_cloud.yaml'
+  DAGSTER_CLOUD_FILE: 'dagster_cloud.yaml'
 
 jobs:
   dagster_cloud_default_deploy:
