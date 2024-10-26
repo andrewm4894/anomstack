@@ -40,7 +40,7 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
           path: project-repo
-      
+
       - name: Copy requirements.txt to Root
         if: steps.prerun.outputs.result == 'pex-deploy'
         run: |
