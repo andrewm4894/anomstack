@@ -161,6 +161,7 @@ cython_debug/
 
 # dagster
 tmp*
+dagster.log
 
 # vscode
 .vscode/*

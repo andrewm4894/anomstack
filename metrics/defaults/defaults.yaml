@@ -1,6 +1,6 @@
 # default values to be applied to all batches unless overridden in metric batch specific yaml files.
 db: "sqlite" # database type to use.
-table_key: "tmpmetrics" # table to store metrics in.
+table_key: "metrics" # table to store metrics in.
 model_path: "local://./models" # path to where models are to be stored.
 # model_path: "gs://your-bucket/models" # gcs path to where models are to be stored.
 # model_path: "s3://your-bucket/models" # s3 path to where models are to be stored.
