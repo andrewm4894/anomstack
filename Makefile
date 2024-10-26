@@ -9,6 +9,7 @@ SHELL=/bin/bash
 .PHONY: docs
 .PHONY: requirements
 .PHONY: kill-locald
+.PHONY: ps-locald
 
 # start streamlit dashboard
 dashboard:
@@ -25,6 +26,10 @@ locald:
 # kill any running dagster process
 kill-locald:
 	kill -9 $(shell ps aux | grep dagster | grep -v grep | awk '{print $$2}')
+
+# list running dagster process
+ps-locald:
+	ps aux | grep dagster | grep -v grep
 
 # start docker containers
 docker:
