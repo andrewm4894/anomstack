@@ -70,6 +70,9 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}
+      - name: Copy requirements.txt to Root
+        run: |
+          cp $GITHUB_WORKSPACE/project-repo/config/requirements.txt project-repo/requirements.txt
       - name: Build and deploy to Dagster Cloud serverless
         uses: dagster-io/dagster-cloud-action/actions/serverless_branch_deploy@v0.1
         with:
