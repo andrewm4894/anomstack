@@ -7,12 +7,12 @@ import re
 
 import pandas as pd
 import sqlglot
+from dagster import get_dagster_logger
 
 from anomstack.external.duckdb.duckdb import read_sql_duckdb
 from anomstack.external.gcp.bigquery import read_sql_bigquery
 from anomstack.external.snowflake.snowflake import read_sql_snowflake
 from anomstack.external.sqlite.sqlite import read_sql_sqlite
-from dagster import get_dagster_logger
 
 
 def db_translate(sql: str, db: str) -> str:

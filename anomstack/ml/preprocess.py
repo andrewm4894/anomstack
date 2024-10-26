@@ -3,7 +3,6 @@ Some functions for preprocessing data for model training and scoring.
 """
 
 import pandas as pd
-
 from dagster import get_dagster_logger
 
 

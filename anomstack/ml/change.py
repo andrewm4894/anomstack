@@ -5,9 +5,8 @@ Module for detecting change in a metric based on the Median Absolute Deviation
 
 import numpy as np
 import pandas as pd
-from pyod.models.mad import MAD
-
 from dagster import get_dagster_logger
+from pyod.models.mad import MAD
 
 
 def detect_change(

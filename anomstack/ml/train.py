@@ -6,9 +6,8 @@ import importlib
 import time
 
 import pandas as pd
-from pyod.models.base import BaseDetector
-
 from dagster import get_dagster_logger
+from pyod.models.base import BaseDetector
 
 
 def train_model(

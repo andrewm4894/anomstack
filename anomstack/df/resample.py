@@ -3,7 +3,6 @@ Some helper functions for resampling data.
 """
 
 import pandas as pd
-
 from dagster import get_dagster_logger
 
 

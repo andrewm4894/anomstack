@@ -7,11 +7,10 @@ import os
 import pickle
 from typing import List, Tuple
 
+from dagster import get_dagster_logger
 from google.cloud import storage
 from google.oauth2 import service_account
 from pyod.models.base import BaseDetector
-
-from dagster import get_dagster_logger
 
 
 def split_model_path(model_path) -> Tuple[str, str]:
