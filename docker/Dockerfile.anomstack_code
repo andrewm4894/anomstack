@@ -4,7 +4,7 @@ RUN apt-get update && apt-get install -y git
 
 WORKDIR /opt/dagster/app
 
-COPY ../requirements.txt /opt/dagster/app/requirements.txt
+COPY ../config/requirements.txt /opt/dagster/app/requirements.txt
 
 RUN pip install -r requirements.txt
 

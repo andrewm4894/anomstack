@@ -16,11 +16,11 @@ dashboard:
 
 # start dagster locally
 local:
-	dagster dev -f anomstack/main.py -w dagster/workspace.yaml
+	dagster dev -f anomstack/main.py -w config/workspace.yaml
 
 # start dagster locally as a daemon
 locald:
-	nohup dagster dev -f anomstack/main.py -w dagster/workspace.yaml > dagster.log 2>&1 &
+	nohup dagster dev -f anomstack/main.py -w config/workspace.yaml > dagster.log 2>&1 &
 
 # kill any running dagster process
 kill-locald:
