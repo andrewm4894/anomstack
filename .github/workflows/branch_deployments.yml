@@ -2,6 +2,9 @@ name: Serverless Branch Deployments
 on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
+  push:
+    branches:
+      - '**'
 
 concurrency:
   # Cancel in-progress deploys to same branch
