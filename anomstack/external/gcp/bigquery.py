@@ -49,8 +49,10 @@ def pandas_save_df_bigquery(
 
     Args:
         df (pd.DataFrame): The DataFrame to save.
-        table_key (str): The fully qualified table key in the format <project_id>.<dataset_id>.<table_id>.
-        if_exists (str, optional): The action to take if the table already exists. Defaults to "append".
+        table_key (str): The fully qualified table key in the format
+            <project_id>.<dataset_id>.<table_id>.
+        if_exists (str, optional): The action to take if the table already
+            exists. Defaults to "append".
 
     Returns:
         pd.DataFrame: The input DataFrame.
@@ -62,12 +64,20 @@ def pandas_save_df_bigquery(
         project_id = os.getenv("ANOMSTACK_GCP_PROJECT_ID")
         assert (
             project_id is not None
-        ), f"ANOMSTACK_GCP_PROJECT_ID must be set in environment if table_key is not fully qualified: {table_key}"
+        ), (
+            f"ANOMSTACK_GCP_PROJECT_ID must be set in environment if table_key "
+            f"is not fully qualified: {table_key}"
+        )
         table_key_parts = [project_id] + table_key_parts
 
     assert (
         len(table_key_parts) == 3
-    ), f"Invalid table_key: {table_key}, should be <project_id>.<dataset_id>.<table_id>"
+    ), (
+        (
+            f"Invalid table_key: {table_key}, should be "
+            f"<project_id>.<dataset_id>.<table_id>"
+        )
+    )
 
     project_id = table_key_parts[0]
     dataset_id = table_key_parts[1]
@@ -86,16 +96,23 @@ def pandas_save_df_bigquery(
 
 
 def save_df_bigquery(
-    df: pd.DataFrame, table_key: str, if_exists: str = "append", max_retries: int = 5
+    df: pd.DataFrame,
+    table_key: str,
+    if_exists: str = "append",
+    max_retries: int = 5
 ) -> pd.DataFrame:
     """
-    Save df to db, with exponential backoff retry for handling rate limit exceeded error.
+    Save df to db, with exponential backoff retry for handling rate limit
+    exceeded error.
 
     Args:
         df (pd.DataFrame): The DataFrame to save.
-        table_key (str): The fully qualified table key in the format <project_id>.<dataset_id>.<table_id>.
-        if_exists (str, optional): The action to take if the table already exists. Defaults to "append".
-        max_retries (int, optional): The maximum number of retries in case of rate limit exceeded error. Defaults to 5.
+        table_key (str): The fully qualified table key in the format
+            <project_id>.<dataset_id>.<table_id>.
+        if_exists (str, optional): The action to take if the table already
+            exists. Defaults to "append".
+        max_retries (int, optional): The maximum number of retries in case of
+            rate limit exceeded error. Defaults to 5.
 
     Returns:
         pd.DataFrame: The input DataFrame.
@@ -103,9 +120,10 @@ def save_df_bigquery(
     table_key_parts = table_key.split(".")
     if len(table_key_parts) == 2:
         project_id = os.getenv("ANOMSTACK_GCP_PROJECT_ID")
-        assert (
-            project_id is not None
-        ), "ANOMSTACK_GCP_PROJECT_ID must be set in environment if table_key is not fully qualified."
+        assert project_id is not None, (
+            "ANOMSTACK_GCP_PROJECT_ID must be set in environment if table_key "
+            "is not fully qualified."
+        )
         table_key_parts = [project_id] + table_key_parts
 
     assert (
@@ -138,7 +156,10 @@ def save_df_bigquery(
                 0, 1
             )  # Exponential backoff with jitter
             get_dagster_logger().warning(
-                f"Exceeded rate limits on attempt {attempt+1}. Retrying in {wait_time} seconds."
+                (
+                    f"Exceeded rate limits on attempt {attempt+1}. "
+                    f"Retrying in {wait_time} seconds."
+                )
             )
             time.sleep(wait_time)
     else:

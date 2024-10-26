@@ -1,5 +1,6 @@
 """
-This module provides functions for reading data from SQL databases using different database connectors.
+This module provides functions for reading data from SQL databases using
+different database connectors.
 """
 
 import re
@@ -32,7 +33,11 @@ def db_translate(sql: str, db: str) -> str:
         sql = sql.replace("GET_CURRENT_TIMESTAMP()", "DATETIME('now')")
     elif db == "bigquery":
         sql = sql.replace("GET_CURRENT_TIMESTAMP()", "CURRENT_TIMESTAMP()")
-        sql = re.sub(r"DATE\('now', '(-?\d+) day'\)", "DATE_ADD(CURRENT_DATE(), INTERVAL \\1 DAY)", sql)
+        sql = re.sub(
+            r"DATE\('now', '(-?\d+) day'\)",
+            "DATE_ADD(CURRENT_DATE(), INTERVAL \\1 DAY)",
+            sql
+        )
 
     return sql
 

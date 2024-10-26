@@ -5,6 +5,7 @@ Some helper functions for plotting.
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+from matplotlib.figure import Figure
 
 
 def make_alert_plot(
@@ -12,15 +13,18 @@ def make_alert_plot(
     metric_name: str,
     threshold: float = 0.8,
     score_col: str = "metric_score_smooth",
-) -> plt:
+) -> Figure:
     """
-    Creates a plot with two subplots: one for the metric values and another for the anomaly score.
+    Creates a plot with two subplots: one for the metric values and another
+        for the anomaly score.
 
     Args:
         df (pd.DataFrame): The dataframe containing the data to plot.
         metric_name (str): The name of the metric to plot.
-        threshold (float, optional): The threshold value for the anomaly score. Defaults to 0.8.
-        score_col (str, optional): The name of the column containing the anomaly scores. Defaults to 'metric_score_smooth'.
+        threshold (float, optional): The threshold value for the anomaly score.
+            Defaults to 0.8.
+        score_col (str, optional): The name of the column containing the
+            anomaly scores. Defaults to 'metric_score_smooth'.
 
     Returns:
         plt: The matplotlib figure object.
@@ -54,10 +58,14 @@ def make_alert_plot(
     )
     alert_points = df_plot[df_plot["metric_alert"] == 1]
     ax2.scatter(
-        alert_points.index, alert_points["metric_alert"], color="red", label="Alerts"
+        alert_points.index,
+        alert_points["metric_alert"],
+        color="red",
+        label="Alerts"
     )
     ax2.axhline(
-        threshold, color="lightgrey", linestyle="-.", label=f"Threshold ({threshold})"
+        threshold, color="lightgrey", linestyle="-.",
+        label=f"Threshold ({threshold})"
     )
     ax2.xaxis.set_major_locator(plt.MaxNLocator(n))
     ax2.set_xticklabels(

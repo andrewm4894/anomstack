@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 def ingest(top_n=10) -> pd.DataFrame:
     """ """
 
@@ -11,7 +14,7 @@ def ingest(top_n=10) -> pd.DataFrame:
     response = requests.get(url)
     if response.status_code != 200:
         print("Error fetching top stories: ", response.status_code)
-        return
+        return pd.DataFrame()
 
     # Get the list of top story IDs
     story_ids = response.json()

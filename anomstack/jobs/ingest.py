@@ -11,7 +11,6 @@ from dagster import (
     DefaultScheduleStatus,
     JobDefinition,
     ScheduleDefinition,
-    asset,
     get_dagster_logger,
     job,
     op,
@@ -100,7 +99,8 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
             Save metrics to db.
 
             Args:
-                df (pd.DataFrame): A pandas DataFrame containing the metrics to be saved.
+                df (pd.DataFrame): A pandas DataFrame containing the metrics
+                    to be saved.
 
             Returns:
                 pd.DataFrame: A pandas DataFrame containing the saved metrics.

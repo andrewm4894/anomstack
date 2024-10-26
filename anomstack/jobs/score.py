@@ -115,7 +115,8 @@ def build_score_job(spec: dict) -> JobDefinition:
                 except NotFound as e:
                     logger.warning(e)
                     logger.warning(
-                        f"model not found for {metric_name} in {metric_batch} score job."
+                        f"model not found for {metric_name} in "
+                        f"{metric_batch} score job."
                     )
                     continue
 

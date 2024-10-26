@@ -78,7 +78,8 @@ def build_change_job(spec: dict) -> JobDefinition:
             Get data for change detection.
 
             Returns:
-                pd.DataFrame: A pandas DataFrame containing the data for change detection.
+                pd.DataFrame: A pandas DataFrame containing the data for
+                    change detection.
             """
             df_change = read_sql(render("change_sql", spec), db)
 
@@ -90,7 +91,8 @@ def build_change_job(spec: dict) -> JobDefinition:
             Run change detection.
 
             Returns:
-                pd.DataFrame: A pandas DataFrame containing the data for change detection.
+                pd.DataFrame: A pandas DataFrame containing the data for
+                    change detection.
             """
             logger.info(f"running change detection on {len(df_change)} rows")
             df_change_alerts = pd.DataFrame()
@@ -113,10 +115,12 @@ def build_change_job(spec: dict) -> JobDefinition:
             Alert on data.
 
             Args:
-                df_change_alerts (pd.DataFrame): A pandas DataFrame containing the data for alerting.
+                df_change_alerts (pd.DataFrame): A pandas DataFrame containing
+                    the data for alerting.
 
             Returns:
-                pd.DataFrame: A pandas DataFrame containing the data for alerting.
+                pd.DataFrame: A pandas DataFrame containing the data for
+                    alerting.
             """
 
             if len(df_change_alerts) == 0:

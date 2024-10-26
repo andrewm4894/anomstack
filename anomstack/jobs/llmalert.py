@@ -87,13 +87,17 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
 
             Args:
                 context: The context of the operation.
-                df (pd.DataFrame): A pandas DataFrame containing the data for the LLM Alert.
+                df (pd.DataFrame): A pandas DataFrame containing the data for
+                    the LLM Alert.
 
             Returns:
                 None
             """
 
-            make_prompt = define_fn(fn_name="make_prompt", fn=render("prompt_fn", spec))
+            make_prompt = define_fn(
+                fn_name="make_prompt",
+                fn=render("prompt_fn", spec)
+            )
 
             for metric_name in df["metric_name"].unique():
                 df_metric = (
@@ -151,7 +155,10 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                     metric_timestamp_max = (
                         df_metric["metric_timestamp"].max().strftime("%Y-%m-%d %H:%M")
                     )
-                    alert_title = f"🤖 LLM says [{metric_name}] looks anomalous ({metric_timestamp_max}) 🤖"
+                    alert_title = (
+                        f"🤖 LLM says [{metric_name}] looks anomalous "
+                        f"({metric_timestamp_max}) 🤖"
+                    )
                     df_metric = send_alert(
                         metric_name=metric_name,
                         title=alert_title,

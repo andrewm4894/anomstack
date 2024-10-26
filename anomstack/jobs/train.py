@@ -90,10 +90,12 @@ def build_train_job(spec: dict) -> JobDefinition:
             Train models.
 
             Args:
-                df (pd.DataFrame): A pandas DataFrame containing the data for training.
+                df (pd.DataFrame): A pandas DataFrame containing the data for
+                    training.
 
             Returns:
-                List[Tuple[str, BaseDetector]]: A list of tuples containing the metric name and the trained model.
+                List[Tuple[str, BaseDetector]]: A list of tuples containing
+                    the metric name and the trained model.
             """
 
             preprocess = define_fn(
@@ -114,13 +116,22 @@ def build_train_job(spec: dict) -> JobDefinition:
                         f"preprocess {metric_name} in {metric_batch} train job."
                     )
                     logger.debug(f"df_metric:\n{df_metric.head()}")
-                    X = preprocess(df_metric, shuffle=True, **preprocess_params)
+                    X = preprocess(
+                        df_metric,
+                        shuffle=True,
+                        **preprocess_params
+                    )
                     logger.debug(f"X:\n{X.head()}")
                     if len(X) > 0:
                         logger.info(
-                            f"training {metric_name} in {metric_batch} train job. len(X)={len(X)}"
+                            (
+                                f"training {metric_name} in {metric_batch} train job. "
+                                f"len(X)={len(X)}"
+                            )
                         )
-                        model = train_model(X, metric_name, model_name, model_params)
+                        model = train_model(
+                            X, metric_name, model_name, model_params
+                        )
                         models.append((metric_name, model))
                     else:
                         logger.info(
@@ -135,10 +146,12 @@ def build_train_job(spec: dict) -> JobDefinition:
             Save trained models.
 
             Args:
-                models (List[Tuple[str, BaseDetector]]): A list of tuples containing the metric name and the trained model.
+                models (List[Tuple[str, BaseDetector]]): A list of tuples
+                    containing the metric name and the trained model.
 
             Returns:
-                List[Tuple[str, BaseDetector]]: A list of tuples containing the metric name and the trained model.
+                List[Tuple[str, BaseDetector]]: A list of tuples containing
+                    the metric name and the trained model.
             """
 
             models = save_models(models, model_path, metric_batch)

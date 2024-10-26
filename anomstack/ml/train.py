@@ -38,7 +38,10 @@ def train_model(
     time_end_train = time.time()
     train_time = time_end_train - time_start_train
     logger.debug(
-        f"trained model ({model_name}({model_params})) for {metric} (n={len(X)}, train_time={round(train_time,2)} secs)"
+        (
+            f"trained model ({model_name}({model_params})) for {metric} "
+            f"(n={len(X)}, train_time={round(train_time, 2)} secs)"
+        )
     )
 
     return model
