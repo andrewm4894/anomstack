@@ -10,7 +10,7 @@ concurrency:
 env:
   DAGSTER_CLOUD_URL: "http://andrewm4894.dagster.cloud"
   DAGSTER_CLOUD_API_TOKEN: ${{ secrets.DAGSTER_CLOUD_API_TOKEN }}
-  ENABLE_FAST_DEPLOYS: 'true'
+  ENABLE_FAST_DEPLOYS: 'false'
   PYTHON_VERSION: '3.10'
   DAGSTER_CLOUD_WORKSPACE_PATH: 'dagster/workspace.yaml'
   DAGSTER_CLOUD_FILE: 'dagster/dagster_cloud.yaml'
@@ -48,6 +48,7 @@ jobs:
           dagster_cloud_file: "$GITHUB_WORKSPACE/project-repo/$DAGSTER_CLOUD_FILE"
           build_output_dir: "$GITHUB_WORKSPACE/build"
           python_version: "${{ env.PYTHON_VERSION }}"
+          deps-file: "$GITHUB_WORKSPACE/requirements.txt"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
