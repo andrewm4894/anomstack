@@ -76,3 +76,5 @@ jobs:
           organization_id: ${{ secrets.ORGANIZATION_ID }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DAGSTER_CLOUD_WORKSPACE_PATH: 'config/workspace.yaml'
+          DAGSTER_CLOUD_FILE: 'config/dagster_cloud.yaml'
