@@ -28,6 +28,8 @@ jobs:
           cache: "pip"
           cache-dependency-path: "**/requirements*.txt"
       - uses: pre-commit/action@v3.0.0
+        with:
+          extra_args: --config config/.pre-commit-config.yaml
       - name: Post PR comment on failure
         if: failure() && github.event_name == 'pull_request_target'
         uses: peter-evans/create-or-update-comment@v2

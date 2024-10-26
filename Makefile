@@ -37,7 +37,7 @@ docker:
 
 # pre-commit
 pre-commit:
-	pre-commit run --all-files
+	pre-commit run --all-files --config config/.pre-commit-config.yaml
 
 # run tests
 tests:

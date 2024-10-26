@@ -44,7 +44,7 @@ jobs:
       - name: Copy requirements.txt to Root
         run: |
           cp $GITHUB_WORKSPACE/config/requirements.txt $GITHUB_WORKSPACE/requirements.txt
-      
+
       - name: Python Executable Deploy
         if: steps.prerun.outputs.result == 'pex-deploy'
         uses: dagster-io/dagster-cloud-action/actions/build_deploy_python_executable@v0.1
