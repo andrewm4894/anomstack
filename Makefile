@@ -17,11 +17,11 @@ dashboard:
 
 # start dagster locally
 local:
-	dagster dev -f anomstack/main.py -w config/workspace.yaml
+	dagster dev -f anomstack/main.py
 
 # start dagster locally as a daemon
 locald:
-	nohup dagster dev -f anomstack/main.py -w config/workspace.yaml > dagster.log 2>&1 &
+	nohup dagster dev -f anomstack/main.py > dagster.log 2>&1 &
 
 # kill any running dagster process
 kill-locald:
@@ -37,7 +37,7 @@ docker:
 
 # pre-commit
 pre-commit:
-	pre-commit run --all-files --config config/.pre-commit-config.yaml
+	pre-commit run --all-files --config .pre-commit-config.yaml
 
 # run tests
 tests:
