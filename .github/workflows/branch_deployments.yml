@@ -10,8 +10,8 @@ concurrency:
 env:
   DAGSTER_CLOUD_URL: "http://andrewm4894.dagster.cloud"
   DAGSTER_CLOUD_API_TOKEN: ${{ secrets.DAGSTER_CLOUD_API_TOKEN }}
-  ENABLE_FAST_DEPLOYS: 'false'
-  PYTHON_VERSION: '3.10'
+  ENABLE_FAST_DEPLOYS: 'true'
+  PYTHON_VERSION: '3.11'
   DAGSTER_CLOUD_WORKSPACE_PATH: 'workspace.yaml'
   DAGSTER_CLOUD_FILE: 'dagster_cloud.yaml'
 
