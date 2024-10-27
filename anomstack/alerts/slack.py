@@ -63,8 +63,6 @@ def send_alert_slack(
         message (str, optional): Message of the alert. Defaults to "hello".
         image_file_path (str, optional): Path to image file to upload.
             Defaults to None.
-        env_var_bot_token (str, optional): Environment variable name for
-            the bot token. Defaults to "ANOMSTACK_SLACK_BOT_TOKEN".
         channel_name (str, optional): Slack channel name to send the message
             to. Defaults to None, in which case the environment variable
             'ANOMSTACK_SLACK_CHANNEL' is used.
@@ -152,7 +150,7 @@ def send_alert_slack_with_plot(
         channel_name = os.environ.get('ANOMSTACK_SLACK_CHANNEL')
 
     with tempfile.NamedTemporaryFile(
-        prefix=metric_name, suffix=".png",
+        prefix=f'{metric_name}_', suffix=".png",
         delete=False
     ) as temp:
         fig = make_alert_plot(
