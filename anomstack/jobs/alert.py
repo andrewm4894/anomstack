@@ -109,7 +109,10 @@ def build_alert_job(spec: dict) -> JobDefinition:
                         df_alert["metric_timestamp"].max().strftime("%Y-%m-%d %H:%M")
                     )
                     alert_title = (
-                        f"🔥 [{metric_name}] looks anomalous ({metric_timestamp_max}) 🔥"
+                        (
+                            f"[{metric_name}] looks anomalous "
+                            f"({metric_timestamp_max})"
+                        )
                     )
                     tags = {
                         "metric_batch": metric_batch,
@@ -136,7 +139,8 @@ def build_alert_job(spec: dict) -> JobDefinition:
             Save alerts to db.
 
             Args:
-                df (DataFrame): A pandas DataFrame containing the alerts to be saved.
+                df (DataFrame): A pandas DataFrame containing the alerts to be
+                    saved.
 
             Returns:
                 DataFrame: A pandas DataFrame containing the saved alerts.
@@ -146,7 +150,9 @@ def build_alert_job(spec: dict) -> JobDefinition:
 
             if len(df_alerts) > 0:
                 df_alerts["metric_type"] = "alert"
-                df_alerts["metric_alert"] = df_alerts["metric_alert"].astype(float)
+                df_alerts["metric_alert"] = df_alerts["metric_alert"].astype(
+                    float
+                )
                 df_alerts = df_alerts[
                     [
                         "metric_timestamp",
@@ -156,10 +162,14 @@ def build_alert_job(spec: dict) -> JobDefinition:
                         "metric_alert",
                     ]
                 ]
-                df_alerts = df_alerts.rename(columns={"metric_alert": "metric_value"})
+                df_alerts = df_alerts.rename(
+                    columns={"metric_alert": "metric_value"}
+                )
                 df_alerts = wrangle_df(df_alerts)
                 df_alerts = validate_df(df_alerts)
-                logger.info(f"saving {len(df_alerts)} alerts to {db} {table_key}")
+                logger.info(
+                    f"saving {len(df_alerts)} alerts to {db} {table_key}"
+                )
                 df_alerts = save_df(df_alerts, db, table_key)
             else:
                 logger.info("no alerts to save")
