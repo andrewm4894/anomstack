@@ -15,7 +15,8 @@ def read_sql_snowflake(sql: str, cols_lowercase: bool = True) -> pd.DataFrame:
 
     Args:
         sql (str): The SQL query to execute.
-        cols_lowercase (bool, optional): Whether to convert column names to lowercase. Defaults to True.
+        cols_lowercase (bool, optional): Whether to convert column names
+        to lowercase. Defaults to True.
 
     Returns:
         pd.DataFrame: The result of the SQL query as a pandas DataFrame.
@@ -53,8 +54,10 @@ def save_df_snowflake(
 
     Args:
         df (pd.DataFrame): The DataFrame to save.
-        table_key (str): The key of the table in the format "database.schema.table".
-        cols_lowercase (bool, optional): Whether to convert column names to lowercase. Defaults to True.
+        table_key (str): The key of the table in the format
+            "database.schema.table".
+        cols_lowercase (bool, optional): Whether to convert column names
+            to lowercase. Defaults to True.
 
     Returns:
         pd.DataFrame: The input DataFrame.
@@ -72,7 +75,9 @@ def save_df_snowflake(
     )
 
     # convert metric timestamp to string
-    # fixes: nowflake.connector.errors.ProgrammingError: 002023 (22000): SQL compilation error: Expression type does not match column data type, expecting TIMESTAMP_NTZ(9) but got NUMBER(38,0) for column METRIC_TIMESTAMP
+    # fixes: snowflake.connector.errors.ProgrammingError: 002023 (22000):
+    # SQL compilation error: Expression type does not match column data type,
+    # expecting TIMESTAMP_NTZ(9) but got NUMBER(38,0) for column METRIC_TIMESTAMP
     # TODO: why do i have to do this?
     df["metric_timestamp"] = df["metric_timestamp"].astype(str)
 

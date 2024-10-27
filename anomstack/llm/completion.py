@@ -16,11 +16,14 @@ def get_completion(prompt: str, max_retries=5):
 
     Args:
         prompt (str): The prompt to send to the OpenAI API.
-        max_retries (int, optional): The maximum number of retries before giving up.
+        max_retries (int, optional): The maximum number of retries before
+            giving up.
 
     Returns:
-        Tuple[bool, str, str]: A tuple containing a boolean indicating whether the metric looks anomalous,
-        a string describing the anomaly (if is_anomalous=True, else None) and a confidence level.
+        Tuple[bool, str, str]: A tuple containing a boolean indicating whether
+            the metric looks anomalous,
+        a string describing the anomaly (if is_anomalous=True, else None) and
+            a confidence level.
     """
 
     client = OpenAI(api_key=os.getenv("ANOMSTACK_OPENAI_KEY"))
@@ -45,16 +48,27 @@ def get_completion(prompt: str, max_retries=5):
                                 "properties": {
                                     "is_anomalous": {
                                         "type": "boolean",
-                                        "description": "True if the recent metric values look anomalous, False otherwise.",
+                                        "description": (
+                                            "True if the recent metric values look anomalous, "
+                                            "False otherwise."
+                                        ),
                                     },
                                     "decision_reasoning": {
                                         "type": "string",
-                                        "description": "A detailed description, referencing observations by their index number or value, on why or why not the metric looks anomalous. Think globally too like a human would if they were eyeballing the data.",
+                                        "description": (
+                                            "A detailed description, referencing observations by their index number or value, "
+                                            "on why or why not the metric looks anomalous. Think globally too like a human would "
+                                            "if they were eyeballing the data."
+                                        ),
                                     },
                                     "decision_confidence_level": {
                                         "type": "string",
                                         "enum": ["high", "medium", "low"],
-                                        "description": "Confidence level in the `is_anomalous` flag. 'high' if very confident in the anomaly decision, 'medium' if somewhat confident, 'low' if not confident.",
+                                        "description": (
+                                            "Confidence level in the `is_anomalous` flag. 'high' if very "
+                                            "confident in the anomaly decision, 'medium' if somewhat confident, "
+                                            "'low' if not confident."
+                                        ),
                                     },
                                 },
                                 "required": [

@@ -18,7 +18,8 @@ def send_alert_slack(
     Args:
         title (str, optional): Title of the alert. Defaults to "alert".
         message (str, optional): Message of the alert. Defaults to "hello".
-        env_var_webhook_url (str, optional): Environment variable name for the webhook URL. Defaults to "ANOMSTACK_SLACK_WEBHOOK_URL".
+        env_var_webhook_url (str, optional): Environment variable name for the
+            webhook URL. Defaults to "ANOMSTACK_SLACK_WEBHOOK_URL".
 
     Returns:
         requests.Response: Response from the Slack API.

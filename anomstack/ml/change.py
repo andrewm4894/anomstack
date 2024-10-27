@@ -1,5 +1,6 @@
 """
-Module for detecting change in a metric based on the Median Absolute Deviation (MAD) method.
+Module for detecting change in a metric based on the Median Absolute Deviation
+(MAD) method.
 """
 
 import numpy as np
@@ -12,17 +13,20 @@ def detect_change(
     df_metric: pd.DataFrame, threshold: float = 3.5, detect_last_n: int = 1
 ) -> pd.DataFrame:
     """
-    Detects change in a metric based on the Median Absolute Deviation (MAD) method.
+    Detects change in a metric based on the Median Absolute Deviation (MAD)
+        method.
 
     Args:
         df_metric (pd.DataFrame): DataFrame containing the metric data.
-        threshold (float, optional): Threshold value for detecting change. Defaults to 3.5.
-        detect_last_n (int, optional): Number of last observations to use for detection. Defaults to 1.
+        threshold (float, optional): Threshold value for detecting change.
+            Defaults to 3.5.
+        detect_last_n (int, optional): Number of last observations to use for
+            detection. Defaults to 1.
 
     Returns:
         pd.DataFrame: DataFrame with the detected change information.
     """
-    # TODO: clean this all up a little once happy with the logic and functionality
+    # TODO: clean this all up a little once happy with the logic
     logger = get_dagster_logger()
     metric_name = df_metric["metric_name"].unique()[0]
     logger.debug(f"beginning change detection for {metric_name}")

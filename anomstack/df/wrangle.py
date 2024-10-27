@@ -12,7 +12,8 @@ def wrangle_df(df: pd.DataFrame, rounding: int = 4) -> pd.DataFrame:
 
     Args:
         df (pd.DataFrame): The DataFrame to be wrangled.
-        rounding (int, optional): The number of decimal places to round the 'metric_value' column to. Defaults to 4.
+        rounding (int, optional): The number of decimal places to round the
+            'metric_value' column to. Defaults to 4.
 
     Returns:
         pd.DataFrame: The wrangled DataFrame.
@@ -37,10 +38,12 @@ def wrangle_df(df: pd.DataFrame, rounding: int = 4) -> pd.DataFrame:
         ]
     ]
 
-    # if we have any nan metric_values then drop them and log how many nan rows we dropped
+    # if we have any nan metric_values then drop them and log how many
+    # nan rows we dropped
     if df["metric_value"].isnull().sum() > 0:
         logger.warning(
-            f"dropping {df['metric_value'].isnull().sum()} nan metric_value rows"
+            f"dropping {df['metric_value'].isnull().sum()} nan "
+            "metric_value rows"
         )
         df = df[~df["metric_value"].isnull()]
 

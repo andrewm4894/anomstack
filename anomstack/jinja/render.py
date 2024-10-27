@@ -13,7 +13,8 @@ def render(spec_key: str, spec: dict, params: dict = None) -> str:
     Args:
         spec_key (str): The key of the template in the spec.
         spec (dict): The spec containing the templates.
-        params (dict, optional): The parameters for rendering the template. Defaults to None.
+        params (dict, optional): The parameters for rendering the template.
+            Defaults to None.
 
     Returns:
         str: The rendered template string.
@@ -23,7 +24,7 @@ def render(spec_key: str, spec: dict, params: dict = None) -> str:
 
     params = {} if params is None else params
 
-    db = spec["db"]
+    spec["db"]
     template_str = spec[spec_key]
 
     template = environment.from_string(template_str)

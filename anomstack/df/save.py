@@ -18,9 +18,11 @@ def save_df(
 
     Args:
     - df: The Pandas DataFrame to save.
-    - db: The name of the database to save to. Must be one of 'bigquery', 'snowflake', or 'duckdb'.
+    - db: The name of the database to save to. Must be one of 'bigquery',
+        'snowflake', or 'duckdb'.
     - table_key: A string identifying the table to save to.
-    - if_exists: What to do if the table already exists. Must be one of 'fail', 'replace', or 'append'. Default is 'append'.
+    - if_exists: What to do if the table already exists. Must be one of
+        'fail', 'replace', or 'append'. Default is 'append'.
 
     Returns:
     - The Pandas DataFrame that was saved.

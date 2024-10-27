@@ -70,7 +70,8 @@ def plot_time_series(df, metric_name) -> go.Figure:
             secondary_y=True,
         )
 
-    # Update x-axis and y-axes to remove gridlines, set the y-axis range for metric score, and format as percentage
+    # Update x-axis and y-axes to remove gridlines, set the y-axis range
+    # for metric score, and format as percentage
     fig.update_xaxes(showgrid=False, zeroline=False)
     fig.update_yaxes(showgrid=False, zeroline=False, secondary_y=False)
     fig.update_yaxes(

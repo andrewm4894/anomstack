@@ -88,10 +88,12 @@ def build_alert_job(spec: dict) -> JobDefinition:
             Alert on data.
 
             Args:
-                df_alerts (pd.DataFrame): A pandas DataFrame containing the data for alerting.
+                df_alerts (pd.DataFrame): A pandas DataFrame containing the
+                    data for alerting.
 
             Returns:
-                pd.DataFrame: A pandas DataFrame containing the data for alerting.
+                pd.DataFrame: A pandas DataFrame containing the data for
+                    alerting.
             """
 
             if len(df_alerts) == 0:

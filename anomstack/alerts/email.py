@@ -34,8 +34,10 @@ def send_email_with_plot(
         subject (str): The subject of the email.
         body (str): The body of the email.
         attachment_name (str): The name of the attachment.
-        threshold (float, optional): The threshold for the anomaly detection. Defaults to 0.8.
-        score_col (str, optional): The name of the column containing the anomaly scores. Defaults to 'metric_score_smooth'.
+        threshold (float, optional): The threshold for the anomaly detection.
+            Defaults to 0.8.
+        score_col (str, optional): The name of the column containing the
+            anomaly scores. Defaults to 'metric_score_smooth'.
 
     Returns:
         None
@@ -118,7 +120,7 @@ def send_email(
     with smtplib.SMTP(host, port) as server:
         server.connect(host, port)
         server.starttls(context=context)
-        server.login(sender, password)
+        server.login(sender, password) # type: ignore
         text = msg.as_string()
         server.sendmail(sender, to, text)
         server.quit()

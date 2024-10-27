@@ -27,11 +27,16 @@ def send_alert(
         metric_name (str): The name of the metric.
         title (str): The title of the alert.
         df (pd.DataFrame): The data to be included in the alert.
-        alert_methods (str, optional): The alert methods to use, separated by commas. Defaults to 'email,slack'.
-        threshold (float, optional): The threshold for the alert. Defaults to 0.8.
-        description (str, optional): The description of the alert. Defaults to ''.
-        tags (list, optional): The tags to be included in the alert. Defaults to None.
-        score_col (str, optional): The column name of the score. Defaults to 'metric_score_smooth'.
+        alert_methods (str, optional): The alert methods to use, separated by
+            commas. Defaults to 'email,slack'.
+        threshold (float, optional): The threshold for the alert.
+            Defaults to 0.8.
+        description (str, optional): The description of the alert.
+            Defaults to ''.
+        tags (list, optional): The tags to be included in the alert.
+            Defaults to None.
+        score_col (str, optional): The column name of the score.
+            Defaults to 'metric_score_smooth'.
 
     Returns:
         pd.DataFrame: The input DataFrame.
@@ -69,9 +74,12 @@ def send_df(
     Args:
         title (str): The title of the alert.
         df (pd.DataFrame): The data to be included in the alert.
-        alert_methods (str, optional): The alert methods to use, separated by commas. Defaults to 'email,slack'.
-        description (str, optional): The description of the alert. Defaults to ''.
-        tags (list, optional): The tags to be included in the alert. Defaults to None.
+        alert_methods (str, optional): The alert methods to use, separated by
+            commas. Defaults to 'email,slack'.
+        description (str, optional): The description of the alert.
+            Defaults to ''.
+        tags (list, optional): The tags to be included in the alert.
+            Defaults to None.
 
     Returns:
         pd.DataFrame: The input DataFrame.
