@@ -10,7 +10,9 @@ from dagster import get_dagster_logger
 
 
 def send_alert_slack(
-    title="alert", message="hello", env_var_webhook_url="ANOMSTACK_SLACK_WEBHOOK_URL"
+    title="alert",
+    message="hello",
+    env_var_webhook_url="ANOMSTACK_SLACK_WEBHOOK_URL"
 ) -> requests.Response:
     """
     Send alert via webhook.
