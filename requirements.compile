@@ -20,8 +20,9 @@ pandas-gbq
 plotly
 pyod
 pyyaml
-snowflake-connector-python[pandas]
 seaborn
+slack_sdk
+snowflake-connector-python[pandas]
 sqlglot
 streamlit
 tabulate

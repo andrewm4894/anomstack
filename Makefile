@@ -21,6 +21,7 @@ local:
 
 # start dagster locally as a daemon
 locald:
+	rm -f dagster.log
 	nohup dagster dev -f anomstack/main.py > dagster.log 2>&1 &
 
 # kill any running dagster process
