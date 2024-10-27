@@ -156,8 +156,8 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                         df_metric["metric_timestamp"].max().strftime("%Y-%m-%d %H:%M")
                     )
                     alert_title = (
-                        f"🤖 LLM says [{metric_name}] looks anomalous "
-                        f"({metric_timestamp_max}) 🤖"
+                        f"LLM says [{metric_name}] looks anomalous "
+                        f"({metric_timestamp_max})"
                     )
                     df_metric = send_alert(
                         metric_name=metric_name,
