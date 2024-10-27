@@ -50,10 +50,7 @@ from anomstack.plots.plot import make_alert_plot
 
 
 def send_alert_slack(
-    title="alert",
-    message="hello",
-    image_file_path=None,
-    channel_name=None
+    title="alert", message="hello", image_file_path=None, channel_name=None
 ) -> None:
     """
     Send alert via Slack API, optionally with an image.
@@ -73,7 +70,7 @@ def send_alert_slack(
 
     logger = get_dagster_logger()
 
-    slack_token = os.environ.get('ANOMSTACK_SLACK_BOT_TOKEN')
+    slack_token = os.environ.get("ANOMSTACK_SLACK_BOT_TOKEN")
     if not slack_token:
         raise ValueError(
             (
@@ -85,7 +82,7 @@ def send_alert_slack(
     client = WebClient(token=slack_token)
 
     if not channel_name:
-        channel_name = os.environ.get('ANOMSTACK_SLACK_CHANNEL')
+        channel_name = os.environ.get("ANOMSTACK_SLACK_CHANNEL")
         if not channel_name:
             raise ValueError(
                 (
@@ -94,18 +91,16 @@ def send_alert_slack(
                 )
             )
 
-    if channel_name.startswith('#'):
+    if channel_name.startswith("#"):
         channel_name = channel_name[1:]
 
     try:
-        response = client.conversations_list(
-            types='public_channel,private_channel'
-        )
-        channels = response['channels']
+        response = client.conversations_list(types="public_channel,private_channel")
+        channels = response["channels"]
         channel_id = None
         for channel in channels:
-            if channel['name'] == channel_name:
-                channel_id = channel['id']
+            if channel["name"] == channel_name:
+                channel_id = channel["id"]
                 break
         if not channel_id:
             logger.error(f"Channel {channel_name} not found.")
@@ -116,17 +111,16 @@ def send_alert_slack(
 
     try:
         if image_file_path:
-            with open(image_file_path, 'rb') as file_content:
+            with open(image_file_path, "rb") as file_content:
                 response = client.files_upload_v2(
                     channels=[channel_id],
                     initial_comment=f"*{title}*\n{message}",
                     file=file_content,
-                    filename=os.path.basename(image_file_path)
+                    filename=os.path.basename(image_file_path),
                 )
         else:
             response = client.chat_postMessage(
-                channel=channel_id,
-                text=f"*{title}*\n{message}"
+                channel=channel_id, text=f"*{title}*\n{message}"
             )
         logger.debug(f"Slack response: {response}")
     except SlackApiError as e:
@@ -140,23 +134,19 @@ def send_alert_slack_with_plot(
     message,
     threshold=0.8,
     score_col="metric_score_smooth",
-    channel_name=None
+    channel_name=None,
 ) -> None:
     """
     Sends an alert to Slack with a plot attached.
     """
 
     if not channel_name:
-        channel_name = os.environ.get('ANOMSTACK_SLACK_CHANNEL')
+        channel_name = os.environ.get("ANOMSTACK_SLACK_CHANNEL")
 
     with tempfile.NamedTemporaryFile(
-        prefix=f'{metric_name}_', suffix=".png",
-        delete=False
+        prefix=f"{metric_name}_", suffix=".png", delete=False
     ) as temp:
-        fig = make_alert_plot(
-            df, metric_name, threshold,
-            score_col
-        )
+        fig = make_alert_plot(df, metric_name, threshold, score_col)
         fig.savefig(temp.name)
         plt.close(fig)
 
@@ -165,7 +155,7 @@ def send_alert_slack_with_plot(
                 title=title,
                 message=message,
                 image_file_path=temp.name,
-                channel_name=channel_name
+                channel_name=channel_name,
             )
         finally:
             os.unlink(temp.name)
