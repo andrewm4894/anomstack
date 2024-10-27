@@ -2,11 +2,11 @@
 Some helper functions for plotting.
 """
 
+import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 from matplotlib.figure import Figure
-import matplotlib.dates as mdates
 from matplotlib.ticker import MaxNLocator
 
 
