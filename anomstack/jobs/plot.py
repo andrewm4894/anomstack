@@ -24,7 +24,9 @@ from anomstack.jinja.render import render
 from anomstack.plots.plot import make_batch_plot
 from anomstack.sql.read import read_sql
 
-ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv("ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600)
+ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv(
+    "ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600
+)
 
 
 def build_plot_job(spec: dict) -> JobDefinition:
@@ -36,7 +38,6 @@ def build_plot_job(spec: dict) -> JobDefinition:
     Returns:
         JobDefinition: The plot job definition.
     """
-
 
     if spec.get("disable_plot"):
 

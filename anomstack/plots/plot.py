@@ -2,10 +2,12 @@
 Some helper functions for plotting.
 """
 
+import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 from matplotlib.figure import Figure
+from matplotlib.ticker import MaxNLocator
 
 
 def make_alert_plot(
@@ -101,6 +103,7 @@ def make_batch_plot(df: pd.DataFrame) -> plt.Figure:
     Returns:
         plt.Figure: The generated batch plot figure.
     """
+    df['metric_timestamp'] = pd.to_datetime(df['metric_timestamp'])
     unique_metrics = df["metric_name"].unique()
     colors = sns.color_palette("viridis", len(unique_metrics))
 
@@ -123,10 +126,13 @@ def make_batch_plot(df: pd.DataFrame) -> plt.Figure:
             label="Metric Value",
             color=colors[i],
             ax=ax1,
-            legend=True,
+            legend=False,
         )
         ax1.set_ylabel("Metric Value")
         ax1.tick_params(axis="y", labelcolor=colors[i])
+
+        ax1.xaxis.set_major_locator(MaxNLocator(nbins=5))
+        ax1.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d %H:%M"))
 
         ax2 = ax1.twinx()
         sns.lineplot(
