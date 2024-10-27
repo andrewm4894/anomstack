@@ -1,7 +1,6 @@
 metric_batch: "yfinance"
-db: "bigquery"
-table_key: "andrewm4894.metrics.metrics"
-model_path: "gs://andrewm4894-tmp/models"
+db: "sqlite"
+table_key: "metrics"
 ingest_cron_schedule: "*/120 * * * *"
 train_cron_schedule: "*/360 * * * *"
 score_cron_schedule: "*/130 * * * *"
@@ -10,6 +9,6 @@ change_cron_schedule: "*/140 * * * *"
 llmalert_cron_schedule: "*/140 * * * *"
 plot_cron_schedule: "*/140 * * * *"
 alert_always: False
-alert_methods: "email"
+alert_methods: "email,slack"
 ingest_fn: >
   {% include "./examples/yfinance/yfinance.py" %}
