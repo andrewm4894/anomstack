@@ -7,7 +7,7 @@ from dagster import get_dagster_logger
 
 from anomstack.alerts.asciiart import make_alert_message
 from anomstack.alerts.email import send_email, send_email_with_plot
-from anomstack.alerts.slack import send_alert_slack
+from anomstack.alerts.slack import send_alert_slack, bot_send_slack_alert_with_file
 
 
 def send_alert(
@@ -47,7 +47,8 @@ def send_alert(
         df, description=description, tags=tags, score_col=score_col
     )
     if "slack" in alert_methods:
-        send_alert_slack(title=title, message=message)
+        # send_alert_slack(title=title, message=message)
+        bot_send_slack_alert_with_file(df, metric_name)
     if "email" in alert_methods:
         send_email_with_plot(
             df=df,
