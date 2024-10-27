@@ -135,6 +135,7 @@ def send_alert_slack_with_plot(
     threshold=0.8,
     score_col="metric_score_smooth",
     channel_name=None,
+    metric_timestamp=None,
 ) -> None:
     """
     Sends an alert to Slack with a plot attached.
@@ -144,7 +145,9 @@ def send_alert_slack_with_plot(
         channel_name = os.environ.get("ANOMSTACK_SLACK_CHANNEL")
 
     with tempfile.NamedTemporaryFile(
-        prefix=f"{metric_name}_", suffix=".png", delete=False
+        prefix=f"{metric_name}_{metric_timestamp}_",
+        suffix=".png",
+        delete=False
     ) as temp:
         fig = make_alert_plot(df, metric_name, threshold, score_col)
         fig.savefig(temp.name)

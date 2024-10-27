@@ -126,6 +126,7 @@ def build_alert_job(spec: dict) -> JobDefinition:
                         threshold=threshold,
                         alert_methods=alert_methods,
                         tags=tags,
+                        metric_timestamp=metric_timestamp_max
                     )
 
             return df_alerts

@@ -19,6 +19,7 @@ def send_alert(
     description: str = "",
     tags=None,
     score_col: str = "metric_score_smooth",
+    metric_timestamp=None,
 ) -> pd.DataFrame:
     """
     Sends an alert using the specified alert methods.
@@ -37,6 +38,7 @@ def send_alert(
             Defaults to None.
         score_col (str, optional): The column name of the score.
             Defaults to 'metric_score_smooth'.
+        metric_timestamp (str, optional): The timestamp of the metric.
 
     Returns:
         pd.DataFrame: The input DataFrame.
@@ -54,6 +56,7 @@ def send_alert(
             message=description,
             threshold=threshold,
             score_col=score_col,
+            metric_timestamp=metric_timestamp,
         )
     if "email" in alert_methods:
         send_email_with_plot(
