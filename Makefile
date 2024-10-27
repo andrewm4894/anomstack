@@ -1,6 +1,7 @@
 SHELL=/bin/bash
 
 .PHONY: dashboard
+.PHONY: dashboardd
 .PHONY: local
 .PHONY: locald
 .PHONY: docker
@@ -14,6 +15,11 @@ SHELL=/bin/bash
 # start streamlit dashboard
 dashboard:
 	streamlit run ./dashboard.py --server.port 8501
+
+# start streamlit dashboard as a daemon
+dashboardd:
+	rm -f dashboard.log
+	nohup streamlit run ./dashboard.py --server.port 8501 > dashboard.log 2>&1 &
 
 # start dagster locally
 local:
