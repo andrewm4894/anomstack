@@ -47,15 +47,13 @@ def send_alert(
         df, description=description, tags=tags, score_col=score_col
     )
     if "slack" in alert_methods:
-        send_alert_slack(title=title, message=message)
         send_alert_slack_with_plot(
             df=df,
             metric_name=metric_name,
             title=title,
-            message=message,
-            threshold=0.8,
-            score_col='metric_score_smooth',
-            channel_name='dev-bot'  # Optional, can be set via environment variable
+            message=description,
+            threshold=threshold,
+            score_col=score_col,
         )
     if "email" in alert_methods:
         send_email_with_plot(
