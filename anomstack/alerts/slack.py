@@ -6,6 +6,10 @@ import os
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 from dagster import get_dagster_logger
+import matplotlib.pyplot as plt
+import tempfile
+from anomstack.plots.plot import make_alert_plot
+
 
 def send_alert_slack(
     title="alert",
@@ -87,9 +91,6 @@ def send_alert_slack(
         logger.error(f"Error sending message to Slack: {e.response['error']}")
 
 
-import tempfile
-from anomstack.plots.plot import make_alert_plot
-
 def send_alert_slack_with_plot(
     df,
     metric_name,
@@ -102,34 +103,16 @@ def send_alert_slack_with_plot(
 ) -> None:
     """
     Sends an alert to Slack with a plot attached.
-
-    Args:
-        df (pandas.DataFrame): The dataframe containing the data to plot.
-        metric_name (str): The name of the metric being plotted.
-        title (str): The title of the alert.
-        message (str): The message of the alert.
-        threshold (float, optional): The threshold for the anomaly detection.
-            Defaults to 0.8.
-        score_col (str, optional): The name of the column containing the
-            anomaly scores. Defaults to 'metric_score_smooth'.
-        env_var_bot_token (str, optional): Environment variable name for the bot token.
-            Defaults to "ANOMSTACK_SLACK_BOT_TOKEN".
-        channel_name (str, optional): Slack channel name to send the message to.
-            Defaults to None.
-
-    Returns:
-        None
     """
-
     logger = get_dagster_logger()
 
     # Generate the plot and save to temporary file
     with tempfile.NamedTemporaryFile(prefix=metric_name, suffix=".png", delete=False) as temp:
         fig = make_alert_plot(df, metric_name, threshold, score_col)
         fig.savefig(temp.name)
-        fig.close()
+        plt.close(fig)  # Properly close the figure
 
-        # Call send_alert_slack with the image file path
+        # Send the alert to Slack
         try:
             send_alert_slack(
                 title=title,
