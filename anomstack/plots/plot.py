@@ -127,6 +127,7 @@ def make_batch_plot(df: pd.DataFrame) -> plt.Figure:
             color=colors[i],
             ax=ax1,
             legend=False,
+            linewidth=1,
         )
         ax1.set_ylabel("Metric Value")
         ax1.tick_params(axis="y", labelcolor=colors[i])
@@ -144,6 +145,7 @@ def make_batch_plot(df: pd.DataFrame) -> plt.Figure:
             linestyle="dashed",
             ax=ax2,
             legend=False,
+            linewidth=1,
         )
         ax2.set_ylabel("Metric Score")
         ax2.set_ylim(0, 1.1)
