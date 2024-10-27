@@ -126,7 +126,7 @@ data_alerts AS (
       ELSE 0
     END AS metric_alert_calculated
   FROM data_smoothed
-  WHERE metric_score_recency_rank <= {{ alert_max_n }}
+  WHERE metric_score_recency_rank <= {{ alert_max_n }} OR {{ alert_always }} = True
 ),
 
 metrics_triggered AS (
@@ -136,7 +136,7 @@ metrics_triggered AS (
     MAX(metric_alert_calculated) AS metric_alert_calculated_tmp
   FROM data_alerts
   GROUP BY metric_batch, metric_name
-  HAVING MAX(metric_alert_calculated) = 1
+  HAVING MAX(metric_alert_calculated) = 1 OR {{ alert_always }} = True
 )
 
 SELECT

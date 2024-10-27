@@ -7,7 +7,7 @@ from dagster import get_dagster_logger
 
 from anomstack.alerts.asciiart import make_alert_message
 from anomstack.alerts.email import send_email, send_email_with_plot
-from anomstack.alerts.slack import send_alert_slack
+from anomstack.alerts.slack import send_alert_slack, send_alert_slack_with_plot
 
 
 def send_alert(
@@ -19,6 +19,7 @@ def send_alert(
     description: str = "",
     tags=None,
     score_col: str = "metric_score_smooth",
+    metric_timestamp=None,
 ) -> pd.DataFrame:
     """
     Sends an alert using the specified alert methods.
@@ -37,6 +38,7 @@ def send_alert(
             Defaults to None.
         score_col (str, optional): The column name of the score.
             Defaults to 'metric_score_smooth'.
+        metric_timestamp (str, optional): The timestamp of the metric.
 
     Returns:
         pd.DataFrame: The input DataFrame.
@@ -47,7 +49,15 @@ def send_alert(
         df, description=description, tags=tags, score_col=score_col
     )
     if "slack" in alert_methods:
-        send_alert_slack(title=title, message=message)
+        send_alert_slack_with_plot(
+            df=df,
+            metric_name=metric_name,
+            title=title,
+            message=description,
+            threshold=threshold,
+            score_col=score_col,
+            metric_timestamp=metric_timestamp,
+        )
     if "email" in alert_methods:
         send_email_with_plot(
             df=df,

@@ -4,6 +4,7 @@
     },
     "python.formatting.provider": "none",
     "cSpell.words": [
+        "ANOMSTACK",
         "dataframe",
         "llmalert",
         "openai"
