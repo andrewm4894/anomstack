@@ -4,6 +4,7 @@ Template for generating the input data for the alert job.
 
 WITH
 
+-- Filter the data to the relevant metric batch for metrics
 metric_value_data AS (
   SELECT DISTINCT
     metric_timestamp,
@@ -17,6 +18,7 @@ metric_value_data AS (
   GROUP BY metric_timestamp, metric_batch, metric_name
 ),
 
+-- Filter the data to the relevant metric batch for scores
 metric_score_data AS (
   SELECT DISTINCT
     metric_timestamp,
@@ -30,6 +32,7 @@ metric_score_data AS (
   GROUP BY metric_timestamp, metric_batch, metric_name
 ),
 
+-- Filter the data to the relevant metric batch for alerts
 metric_alert_data AS (
   SELECT DISTINCT
     metric_timestamp,
@@ -43,6 +46,7 @@ metric_alert_data AS (
   GROUP BY metric_timestamp, metric_batch, metric_name
 ),
 
+-- Rank the score data by recency
 metric_score_recency_ranked AS (
   SELECT DISTINCT
     metric_timestamp,
@@ -53,6 +57,7 @@ metric_score_recency_ranked AS (
   FROM metric_score_data
 ),
 
+-- Rank the value data by recency
 metric_value_recency_ranked AS (
   SELECT DISTINCT
     metric_timestamp,
@@ -63,6 +68,7 @@ metric_value_recency_ranked AS (
   FROM metric_value_data
 ),
 
+-- Join the data together
 data_ranked AS (
   SELECT
     m.metric_timestamp,
@@ -84,6 +90,7 @@ data_ranked AS (
     AND m.metric_timestamp = a.metric_timestamp
 ),
 
+-- Smooth the data
 data_smoothed AS (
   SELECT
     metric_timestamp,
@@ -107,6 +114,7 @@ data_smoothed AS (
   FROM data_ranked dr
 ),
 
+-- Calculate the alerts
 data_alerts AS (
   SELECT
     metric_timestamp,
@@ -129,6 +137,7 @@ data_alerts AS (
   WHERE metric_score_recency_rank <= {{ alert_max_n }} OR {{ alert_always }} = True
 ),
 
+-- Filter the data to the metrics with triggered alerts
 metrics_triggered AS (
   SELECT
     metric_batch,
@@ -139,6 +148,7 @@ metrics_triggered AS (
   HAVING MAX(metric_alert_calculated) = 1 OR {{ alert_always }} = True
 )
 
+-- Return the data
 SELECT
   metric_timestamp,
   data_alerts.metric_batch AS metric_batch,
