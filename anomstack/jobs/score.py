@@ -58,7 +58,8 @@ def build_score_job(spec: dict) -> JobDefinition:
 
     metric_batch = spec["metric_batch"]
     model_path = spec["model_path"]
-    model_tag = spec["model_config"].get("model_tag", "")
+    model_configs = spec["model_configs"]
+    model_combination_method = spec.get("model_combination_method", "mean")
     table_key = spec["table_key"]
     db = spec["db"]
     preprocess_params = spec["preprocess_params"]
@@ -110,17 +111,6 @@ def build_score_job(spec: dict) -> JobDefinition:
                 logger.debug(f"preprocess {metric_name} in {metric_batch} score job.")
                 logger.debug(f"df_metric:\n{df_metric.head()}")
 
-                # try load model and catch google.api_core.exceptions.NotFound
-                try:
-                    model = load_model(metric_name, model_path, metric_batch, model_tag)
-                except NotFound as e:
-                    logger.warning(e)
-                    logger.warning(
-                        f"model not found for {metric_name} in "
-                        f"{metric_batch} score job."
-                    )
-                    continue
-
                 X = preprocess(df_metric, **preprocess_params)
 
                 if len(X) == 0:
@@ -131,11 +121,40 @@ def build_score_job(spec: dict) -> JobDefinition:
 
                 logger.debug(f"X:\n{X.head()}")
 
-                scores = model.predict_proba(X)
+                scores = {}
+                for model_config in model_configs:
+
+                    model_tag = model_config.get("model_tag", "")
+
+                    try:
+                        model = load_model(
+                            metric_name, model_path, metric_batch, model_tag
+                        )
+                        scores_tmp = model.predict_proba(X)
+                        scores_tmp = scores_tmp[:, 1]  # probability of anomaly
+                        scores[f'{metric_name}_{model_tag}'] = scores_tmp
+                    except NotFound as e:
+                        logger.warning(e)
+                        logger.warning(
+                            f"model not found for {metric_name} in "
+                            f"{metric_batch} score job."
+                        )
+                        continue
+
+                if model_combination_method == "mean":
+                    scores = pd.DataFrame(scores).mean(axis=1).values
+                elif model_combination_method == "max":
+                    scores = pd.DataFrame(scores).max(axis=1).values
+                elif model_combination_method == "min":
+                    scores = pd.DataFrame(scores).min(axis=1).values
+                else:
+                    raise ValueError(
+                        f"model_combination_method {model_combination_method} not supported."
+                    )
 
                 # create initial df_score
                 df_score = pd.DataFrame(
-                    data=scores[:, 1],  # probability of anomaly
+                    data=scores,
                     index=X.index,
                     columns=["metric_value"],
                 ).round(3)

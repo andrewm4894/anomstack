@@ -1,7 +1,6 @@
 metric_batch: "netdata"
-db: "bigquery"
-table_key: "andrewm4894.metrics.metrics"
-model_path: "gs://andrewm4894-tmp/models"
+db: "sqlite"
+table_key: "metrics"
 ingest_cron_schedule: "*/10 * * * *"
 train_cron_schedule: "*/60 * * * *"
 score_cron_schedule: "*/15 * * * *"
@@ -11,6 +10,6 @@ llmalert_cron_schedule: "*/20 * * * *"
 plot_cron_schedule: "*/25 * * * *"
 alert_always: False
 disable_llmalert: False
-alert_methods: "email"
+alert_methods: "email,slack"
 ingest_fn: >
   {% include "./examples/netdata/netdata.py" %}

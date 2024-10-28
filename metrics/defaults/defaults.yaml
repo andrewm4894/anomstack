@@ -5,12 +5,16 @@ model_path: "local://./models" # path to where models are to be stored.
 # model_path: "gs://your-bucket/models" # gcs path to where models are to be stored.
 # model_path: "s3://your-bucket/models" # s3 path to where models are to be stored.
 # model configs to pass to PyOD, model_params are passed to the model constructor.
-model_config:
-  model_name: 'PCA'
-  model_tag: 'pca_default'
-  model_params:
-    contamination: 0.01
-# metric_tags is a map of metric key value tags to metric names
+model_configs:
+  - model_name: 'PCA'
+    model_tag: 'pca_default'
+    model_params:
+      contamination: 0.01
+  - model_name: 'KNN'
+    model_tag: 'knn_default'
+    model_params:
+      contamination: 0.01
+model_combination_method: 'mean' # method to combine model scores, 'mean', 'min' or 'max'.
 # metric_tags:
 #   metric_name:
 #     key1: value1
