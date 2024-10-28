@@ -78,7 +78,9 @@ def save_models_s3(
     return models
 
 
-def load_model_s3(metric_name: str, model_path: str, metric_batch) -> BaseDetector:
+def load_model_s3(
+    metric_name: str, model_path: str, metric_batch, model_tag: str
+) -> BaseDetector:
     """
     Load a model from S3.
 
@@ -86,6 +88,7 @@ def load_model_s3(metric_name: str, model_path: str, metric_batch) -> BaseDetect
         metric_name (str): The name of the metric.
         model_path (str): The S3 model path.
         metric_batch: The metric batch.
+        model_tag (str): The tag of the model.
 
     Returns:
         BaseDetector: The loaded model.
@@ -93,13 +96,14 @@ def load_model_s3(metric_name: str, model_path: str, metric_batch) -> BaseDetect
     logger = get_dagster_logger()
     model_path_bucket, model_path_prefix = split_model_path(model_path)
 
-    model_name = f"{metric_name}.pkl"
+    model_name = f"{metric_name}_{model_tag}.pkl"
     logger.info(f"loading {model_name} from {model_path}")
 
     s3_client = get_s3_client()
 
     model_obj = s3_client.get_object(
-        Bucket=model_path_bucket, Key=f"{model_path_prefix}/{metric_batch}/{model_name}"
+        Bucket=model_path_bucket,
+        Key=f"{model_path_prefix}/{metric_batch}/{model_name}"
     )
 
     model_byte_stream = model_obj["Body"].read()

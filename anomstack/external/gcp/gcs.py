@@ -50,7 +50,9 @@ def get_credentials():
         return None
 
 
-def save_models_gcs(models, model_path, metric_batch) -> List[Tuple[str, BaseDetector, str]]:
+def save_models_gcs(
+    models, model_path, metric_batch
+) -> List[Tuple[str, BaseDetector, str]]:
     """
     Save trained models to gcs bucket.
 
@@ -82,7 +84,9 @@ def save_models_gcs(models, model_path, metric_batch) -> List[Tuple[str, BaseDet
     return models
 
 
-def load_model_gcs(metric_name, model_path, metric_batch) -> BaseDetector:
+def load_model_gcs(
+    metric_name: str, model_path: str, metric_batch: str, model_tag: str
+) -> BaseDetector:
     """
     Load model.
 
@@ -102,7 +106,7 @@ def load_model_gcs(metric_name, model_path, metric_batch) -> BaseDetector:
     storage_client = storage.Client(credentials=credentials)
     bucket = storage_client.get_bucket(model_path_bucket)
 
-    model_name = f"{metric_name}.pkl"
+    model_name = f"{metric_name}_{model_tag}.pkl"
     logger.info(f"loading {model_name} from {model_path}")
 
     blob = bucket.blob(f"{model_path_prefix}/{metric_batch}/{model_name}")
