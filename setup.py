@@ -8,7 +8,7 @@ def read_requirements():
 
 setup(
     name='anomstack',
-    version='0.0.12',
+    version='0.0.13',
     packages=find_packages(),
     install_requires=read_requirements()
 )
