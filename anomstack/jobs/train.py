@@ -58,6 +58,7 @@ def build_train_job(spec: dict) -> JobDefinition:
     model_path = spec["model_path"]
     preprocess_params = spec["preprocess_params"]
     model_name = spec["model_config"]["model_name"]
+    model_tag = spec["model_config"].get("model_tag", "")
     model_params = spec["model_config"]["model_params"]
 
     @job(
@@ -85,7 +86,7 @@ def build_train_job(spec: dict) -> JobDefinition:
             return df
 
         @op(name=f"{metric_batch}_train_models")
-        def train(df) -> List[Tuple[str, BaseDetector]]:
+        def train(df) -> List[Tuple[str, BaseDetector, str]]:
             """
             Train models.
 
@@ -94,7 +95,7 @@ def build_train_job(spec: dict) -> JobDefinition:
                     training.
 
             Returns:
-                List[Tuple[str, BaseDetector]]: A list of tuples containing
+                List[Tuple[str, BaseDetector, str]]: A list of tuples containing
                     the metric name and the trained model.
             """
 
@@ -130,9 +131,9 @@ def build_train_job(spec: dict) -> JobDefinition:
                             )
                         )
                         model = train_model(
-                            X, metric_name, model_name, model_params
+                            X, metric_name, model_name, model_params, model_tag
                         )
-                        models.append((metric_name, model))
+                        models.append((metric_name, model, model_tag))
                     else:
                         logger.info(
                             f"no data for {metric_name} in {metric_batch} train job."
@@ -141,16 +142,16 @@ def build_train_job(spec: dict) -> JobDefinition:
                 return models
 
         @op(name=f"{metric_batch}_save_model")
-        def save(models) -> List[Tuple[str, BaseDetector]]:
+        def save(models) -> List[Tuple[str, BaseDetector, str]]:
             """
             Save trained models.
 
             Args:
-                models (List[Tuple[str, BaseDetector]]): A list of tuples
+                models (List[Tuple[str, BaseDetector, str]]): A list of tuples
                     containing the metric name and the trained model.
 
             Returns:
-                List[Tuple[str, BaseDetector]]: A list of tuples containing
+                List[Tuple[str, BaseDetector, str]]: A list of tuples containing
                     the metric name and the trained model.
             """
 
