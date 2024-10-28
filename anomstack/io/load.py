@@ -3,7 +3,6 @@ Some helper functions for loading models.
 """
 
 import pickle
-from turtle import mode
 
 from pyod.models.base import BaseDetector
 
