@@ -58,6 +58,7 @@ def build_score_job(spec: dict) -> JobDefinition:
 
     metric_batch = spec["metric_batch"]
     model_path = spec["model_path"]
+    model_tag = spec["model_config"].get("model_tag", "")
     table_key = spec["table_key"]
     db = spec["db"]
     preprocess_params = spec["preprocess_params"]
@@ -111,7 +112,7 @@ def build_score_job(spec: dict) -> JobDefinition:
 
                 # try load model and catch google.api_core.exceptions.NotFound
                 try:
-                    model = load_model(metric_name, model_path, metric_batch)
+                    model = load_model(metric_name, model_path, metric_batch, model_tag)
                 except NotFound as e:
                     logger.warning(e)
                     logger.warning(
