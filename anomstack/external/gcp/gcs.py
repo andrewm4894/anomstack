@@ -50,17 +50,17 @@ def get_credentials():
         return None
 
 
-def save_models_gcs(models, model_path, metric_batch) -> List[Tuple[str, BaseDetector]]:
+def save_models_gcs(models, model_path, metric_batch) -> List[Tuple[str, BaseDetector, str]]:
     """
     Save trained models to gcs bucket.
 
     Args:
-        models (List[Tuple[str, BaseDetector]]): The list of models to save.
+        models (List[Tuple[str, BaseDetector, str]]): The list of models to save.
         model_path (str): The model path.
         metric_batch (str): The metric batch.
 
     Returns:
-        List[Tuple[str, BaseDetector]]: The list of saved models.
+        List[Tuple[str, BaseDetector, str]]: The list of saved models.
     """
     logger = get_dagster_logger()
 
@@ -70,8 +70,8 @@ def save_models_gcs(models, model_path, metric_batch) -> List[Tuple[str, BaseDet
     storage_client = storage.Client(credentials=credentials)
     bucket = storage_client.get_bucket(model_path_bucket)
 
-    for metric, model in models:
-        model_name = f"{metric}.pkl"
+    for metric, model, model_tag in models:
+        model_name = f"{metric}_{model_tag}.pkl"
         logger.info(f"saving {model_name} to {model_path}")
 
         blob = bucket.blob(f"{model_path_prefix}/{metric_batch}/{model_name}")

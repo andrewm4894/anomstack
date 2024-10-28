@@ -46,26 +46,26 @@ def get_s3_client() -> boto3.client:
 
 
 def save_models_s3(
-    models: List[Tuple[str, BaseDetector]], model_path: str, metric_batch
-) -> List[Tuple[str, BaseDetector]]:
+    models: List[Tuple[str, BaseDetector, str]], model_path: str, metric_batch
+) -> List[Tuple[str, BaseDetector, str]]:
     """
     Save models to S3.
 
     Args:
-        models (List[Tuple[str, BaseDetector]]): The models to be saved.
+        models (List[Tuple[str, BaseDetector, str]]): The models to be saved.
         model_path (str): The S3 model path.
         metric_batch: The metric batch.
 
     Returns:
-        List[Tuple[str, BaseDetector]]: The list of saved models.
+        List[Tuple[str, BaseDetector, str]]: The list of saved models.
     """
     logger = get_dagster_logger()
     model_path_bucket, model_path_prefix = split_model_path(model_path)
 
     s3_client = get_s3_client()
 
-    for metric, model in models:
-        model_name = f"{metric}.pkl"
+    for metric, model, model_tag in models:
+        model_name = f"{metric}_{model_tag}.pkl"
         logger.info(f"saving {model_name} to {model_path}")
 
         model_byte_stream = pickle.dumps(model)

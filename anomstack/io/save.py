@@ -13,8 +13,8 @@ from anomstack.external.gcp.gcs import save_models_gcs
 
 
 def save_models_local(
-    models: List[Tuple[str, BaseDetector]], model_path: str, metric_batch: str
-) -> List[Tuple[str, BaseDetector]]:
+    models: List[Tuple[str, BaseDetector, str]], model_path: str, metric_batch: str
+) -> List[Tuple[str, BaseDetector, str]]:
     """
     Save trained models locally.
 
@@ -32,16 +32,16 @@ def save_models_local(
     if not os.path.exists(f"{model_path}/{metric_batch}"):
         os.makedirs(f"{model_path}/{metric_batch}")
 
-    for metric_name, model in models:
-        with open(f"{model_path}/{metric_batch}/{metric_name}.pkl", "wb") as f:
+    for metric_name, model, model_tag in models:
+        with open(f"{model_path}/{metric_batch}/{metric_name}_{model_tag}.pkl", "wb") as f:
             pickle.dump(model, f)
 
     return models
 
 
 def save_models(
-    models: List[Tuple[str, BaseDetector]], model_path: str, metric_batch: str
-) -> List[Tuple[str, BaseDetector]]:
+    models: List[Tuple[str, BaseDetector, str]], model_path: str, metric_batch: str
+) -> List[Tuple[str, BaseDetector, str]]:
     """
     Save trained models.
 
