@@ -57,9 +57,7 @@ def build_train_job(spec: dict) -> JobDefinition:
     db = spec["db"]
     model_path = spec["model_path"]
     preprocess_params = spec["preprocess_params"]
-    model_name = spec["model_config"]["model_name"]
-    model_tag = spec["model_config"].get("model_tag", "")
-    model_params = spec["model_config"]["model_params"]
+    model_configs = spec["model_configs"]
 
     @job(
         name=f"{metric_batch}_train",
@@ -130,10 +128,18 @@ def build_train_job(spec: dict) -> JobDefinition:
                                 f"len(X)={len(X)}"
                             )
                         )
-                        model = train_model(
-                            X, metric_name, model_name, model_params, model_tag
-                        )
-                        models.append((metric_name, model, model_tag))
+                        for model_config in model_configs:
+                            model_name = model_config["model_name"]
+                            model_params = model_config["model_params"]
+                            model_tag = model_config.get("model_tag", "")
+                            model = train_model(
+                                X,
+                                metric_name,
+                                model_name,
+                                model_params,
+                                model_tag
+                            )
+                            models.append((metric_name, model, model_tag))
                     else:
                         logger.info(
                             f"no data for {metric_name} in {metric_batch} train job."
