@@ -18,8 +18,7 @@ dashboard:
 
 # start streamlit dashboard as a daemon
 dashboardd:
-	rm -f dashboard.log
-	nohup streamlit run ./dashboard.py --server.port 8501 > dashboard.log 2>&1 &
+	nohup streamlit run ./dashboard.py --server.port 8501 &
 
 # start dagster locally
 local:
@@ -27,8 +26,7 @@ local:
 
 # start dagster locally as a daemon
 locald:
-	rm -f dagster.log
-	nohup dagster dev -f anomstack/main.py > dagster.log 2>&1 &
+	nohup dagster dev -f anomstack/main.py &
 
 # kill any running dagster process
 kill-locald:
