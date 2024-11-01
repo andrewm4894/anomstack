@@ -45,11 +45,18 @@ def make_alert_plot(
     n = len(df_plot)
 
     ax1 = df_plot["metric_value"].plot(
-        title=f"{metric_name} (n={n})", ax=axes[0], style="-o", color="royalblue"
+        title=f"{metric_name} (n={n})",
+        ax=axes[0],
+        style="-",
+        color="royalblue",
+        markersize=3,
     )
     if "metric_value_smooth" in df_plot.columns:
         df_plot["metric_value_smooth"].plot(
-            ax=axes[0], style="--", color="darkorange", label="Value Smooth"
+            ax=axes[0],
+            style="--",
+            color="darkorange",
+            label="metric_value_smooth"
         )
     ax1.axes.get_xaxis().set_visible(False)
     ax1.grid(True, which="both", linestyle="--", linewidth=0.5)
@@ -67,9 +74,10 @@ def make_alert_plot(
     alert_points = df_plot[df_plot["metric_alert"] == 1]
     ax2.scatter(
         alert_points.index,
-        alert_points["metric_alert"],
+        alert_points["metric_score"],
         color="red",
-        label=alert_type
+        label=alert_type,
+        s=5,
     )
     ax2.axhline(
         threshold, color="lightgrey", linestyle="-.",
@@ -90,8 +98,8 @@ def make_alert_plot(
     ax2.locator_params(axis="x", nbins=25)
 
     for idx in alert_points.index:
-        ax1.axvline(idx, color="yellow", alpha=0.3)
-        ax2.axvline(idx, color="yellow", alpha=0.3)
+        ax1.axvline(idx, color="grey", alpha=0.2)
+        ax2.axvline(idx, color="grey", alpha=0.2)
 
     plt.tight_layout()
 
