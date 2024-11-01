@@ -115,7 +115,7 @@ def build_alert_job(spec: dict) -> JobDefinition:
                         "metric_batch": metric_batch,
                         "metric_name": metric_name,
                         "metric_timestamp": metric_timestamp_max,
-                        "alert_type": "ml",
+                        "alert_type": "anomaly",
                         **metric_tags.get(metric_name, {}),
                     }
                     logger.debug(f"metric tags:\n{tags}")
