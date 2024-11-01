@@ -87,7 +87,7 @@ Supported storage for your trained models:
     </tbody>
 </table>
 
-Supported ways to receive alerts:
+Supported ways to receive [alerts](#alerts):
 
 <table>
     <thead>
