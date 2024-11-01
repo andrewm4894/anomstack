@@ -17,6 +17,7 @@ from dagster import (
     job,
     op,
 )
+from dagster import get_dagster_logger
 
 from anomstack.config import specs
 from anomstack.df.resample import resample
@@ -38,6 +39,8 @@ def build_plot_job(spec: dict) -> JobDefinition:
     Returns:
         JobDefinition: The plot job definition.
     """
+
+    logger = get_dagster_logger()
 
     if spec.get("disable_plot"):
 
@@ -95,14 +98,20 @@ def build_plot_job(spec: dict) -> JobDefinition:
                 df (pd.DataFrame): The plot data.
             """
 
-            fig = make_batch_plot(df)
+            if len(df) > 0:
 
-            buffer = BytesIO()
-            fig.savefig(buffer, format="png")
-            image_data = base64.b64encode(buffer.getvalue())
-            md_content = f"![img](data:image/png;base64,{image_data.decode()})"
+                fig = make_batch_plot(df)
 
-            context.add_output_metadata({"plot": MetadataValue.md(md_content)})
+                buffer = BytesIO()
+                fig.savefig(buffer, format="png")
+                image_data = base64.b64encode(buffer.getvalue())
+                md_content = f"![img](data:image/png;base64,{image_data.decode()})"
+
+                context.add_output_metadata({"plot": MetadataValue.md(md_content)})
+
+            else:
+
+                logger.info("no data to plot")
 
         make_plot(get_plot_data())
 
