@@ -39,14 +39,9 @@ def detect_change(
     y_detect_scores = detector.decision_function(X_detect)
     logger.debug(f"y_detect_scores: {y_detect_scores}")
     df_metric["metric_score"] = list(X_train_scores) + list(y_detect_scores)
-    df_metric["metric_alert"] = np.where(
-        (df_metric["metric_score"] > threshold)
-        & (df_metric["metric_timestamp"].isin(X_detect_timestamps)),
-        1,
-        0,
-    )
+    df_metric["metric_alert"] = np.where((df_metric["metric_score"] > threshold),1,0)
     logger.debug(f"df_metric:\n{df_metric}")
-    if df_metric["metric_alert"].sum() > 0:
+    if df_metric["metric_alert"].tail(detect_last_n).sum() > 0:
         logger.info(f"change detected for {metric_name} at {X_detect_timestamps}")
 
         return df_metric

@@ -24,7 +24,8 @@ def send_email_with_plot(
     attachment_name,
     threshold=0.8,
     score_col="metric_score_smooth",
-    score_title="anomaly_score"
+    score_title="anomaly_score",
+    tags=None,
 ) -> None:
     """
     Sends an email with a plot attached.
@@ -58,7 +59,7 @@ def send_email_with_plot(
         prefix=attachment_name, suffix=".png", delete=False
     ) as temp:
         fig = make_alert_plot(
-            df, metric_name, threshold, score_col, score_title
+            df, metric_name, threshold, score_col, score_title, tags=tags
         )
         fig.savefig(temp.name)
 
