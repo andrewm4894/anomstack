@@ -1,15 +1,35 @@
+"""
+Some functions for preprocessing data for model training and scoring.
+"""
+
 import pandas as pd
 from dagster import get_dagster_logger
 
 
-def make_x(df, mode="train", diff_n=0, smooth_n=0, lags_n=0, score_n=1) -> pd.DataFrame:
+def make_x(
+    df: pd.DataFrame,
+    mode: str = "train",
+    diff_n: int = 0,
+    smooth_n: int = 0,
+    lags_n: int = 0,
+    score_n: int = 1,
+) -> pd.DataFrame:
     """
     Prepare data for model training and scoring.
 
     Parameters:
-        diff_n (int): The order of differencing.
-        smooth_n (int): The window size for smoothing (moving average).
-        lags_n (list): The list of lags to include.
+        df (pd.DataFrame): The input dataframe.
+        mode (str): The mode of operation "train" or "score". Default is "train".
+        diff_n (int): The order of differencing. Default is 0.
+        smooth_n (int): The window size for smoothing (moving average). Default is 0.
+        lags_n (int): The number of lags to include. Default is 0.
+        score_n (int): The number of rows to include in score mode. Default is 1.
+
+    Returns:
+        pd.DataFrame: The preprocessed dataframe.
+
+    Raises:
+        ValueError: If mode is not "train" or "score".
     """
 
     logger = get_dagster_logger()
@@ -38,10 +58,10 @@ def make_x(df, mode="train", diff_n=0, smooth_n=0, lags_n=0, score_n=1) -> pd.Da
         X = X.tail(score_n)
 
     else:
-        raise ValueError(f"mode must be 'train' or 'score'")
+        raise ValueError("mode must be 'train' or 'score'")
 
     X = X.dropna()
 
-    logger.info(f"X=\n{X}")
+    logger.debug(f"X=\n{X}")
 
     return X

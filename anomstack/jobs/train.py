@@ -27,7 +27,7 @@ from anomstack.sql.read import read_sql
 ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv("ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600)
 
 
-def build_train_job(spec) -> JobDefinition:
+def build_train_job(spec: dict) -> JobDefinition:
     """
     Build job definitions for train jobs.
 
@@ -57,8 +57,7 @@ def build_train_job(spec) -> JobDefinition:
     db = spec["db"]
     model_path = spec["model_path"]
     preprocess_params = spec["preprocess_params"]
-    model_name = spec["model_config"]["model_name"]
-    model_params = spec["model_config"]["model_params"]
+    model_configs = spec["model_configs"]
 
     @job(
         name=f"{metric_batch}_train",
@@ -67,9 +66,6 @@ def build_train_job(spec) -> JobDefinition:
     def _job():
         """
         Get data for training and train models.
-
-        Returns:
-            List[Tuple[str, BaseDetector]]: A list of tuples containing the metric name and the trained model.
         """
 
         logger = get_dagster_logger()
@@ -88,15 +84,17 @@ def build_train_job(spec) -> JobDefinition:
             return df
 
         @op(name=f"{metric_batch}_train_models")
-        def train(df) -> List[Tuple[str, BaseDetector]]:
+        def train(df) -> List[Tuple[str, BaseDetector, str]]:
             """
             Train models.
 
             Args:
-                df (pd.DataFrame): A pandas DataFrame containing the data for training.
+                df (pd.DataFrame): A pandas DataFrame containing the data for
+                    training.
 
             Returns:
-                List[Tuple[str, BaseDetector]]: A list of tuples containing the metric name and the trained model.
+                List[Tuple[str, BaseDetector, str]]: A list of tuples containing
+                    the metric name and the trained model.
             """
 
             preprocess = define_fn(
@@ -107,7 +105,9 @@ def build_train_job(spec) -> JobDefinition:
 
             if len(df) == 0:
                 logger.info(f"no data for {metric_batch} train job.")
+
                 return models
+
             else:
                 for metric_name in df["metric_name"].unique():
                     df_metric = df[df["metric_name"] == metric_name]
@@ -115,30 +115,50 @@ def build_train_job(spec) -> JobDefinition:
                         f"preprocess {metric_name} in {metric_batch} train job."
                     )
                     logger.debug(f"df_metric:\n{df_metric.head()}")
-                    X = preprocess(df_metric, shuffle=True, **preprocess_params)
+                    X = preprocess(
+                        df_metric,
+                        shuffle=True,
+                        **preprocess_params
+                    )
                     logger.debug(f"X:\n{X.head()}")
                     if len(X) > 0:
                         logger.info(
-                            f"training {metric_name} in {metric_batch} train job. len(X)={len(X)}"
+                            (
+                                f"training {metric_name} in {metric_batch} train job. "
+                                f"len(X)={len(X)}"
+                            )
                         )
-                        model = train_model(X, metric_name, model_name, model_params)
-                        models.append((metric_name, model))
+                        for model_config in model_configs:
+                            model_name = model_config["model_name"]
+                            model_params = model_config["model_params"]
+                            model_tag = model_config.get("model_tag", "")
+                            model = train_model(
+                                X,
+                                metric_name,
+                                model_name,
+                                model_params,
+                                model_tag
+                            )
+                            models.append((metric_name, model, model_tag))
                     else:
                         logger.info(
                             f"no data for {metric_name} in {metric_batch} train job."
                         )
+
                 return models
 
         @op(name=f"{metric_batch}_save_model")
-        def save(models) -> List[Tuple[str, BaseDetector]]:
+        def save(models) -> List[Tuple[str, BaseDetector, str]]:
             """
             Save trained models.
 
             Args:
-                models (List[Tuple[str, BaseDetector]]): A list of tuples containing the metric name and the trained model.
+                models (List[Tuple[str, BaseDetector, str]]): A list of tuples
+                    containing the metric name and the trained model.
 
             Returns:
-                List[Tuple[str, BaseDetector]]: A list of tuples containing the metric name and the trained model.
+                List[Tuple[str, BaseDetector, str]]: A list of tuples containing
+                    the metric name and the trained model.
             """
 
             models = save_models(models, model_path, metric_batch)

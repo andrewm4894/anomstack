@@ -1,36 +1,34 @@
 # a basic minimal example of a batch
 disable_batch: False
 metric_batch: "example_simple"
+alert_always: False
+alert_methods: "email,slack"
 ingest_cron_schedule: "*/2 * * * *"
 train_cron_schedule: "*/4 * * * *"
 score_cron_schedule: "*/3 * * * *"
 ingest_sql: >
-  with
+  WITH
 
-  metric_1 as
-  (
-  select
-    get_current_timestamp() as metric_timestamp,
-    'metric_1' as metric_name,
-    random() as metric_value
+  metric_1 AS (
+    SELECT
+      DATETIME('now') AS metric_timestamp,
+      'metric_1' AS metric_name,
+      RANDOM() / 9223372036854775807.0 AS metric_value
   ),
 
-  metric_2 as
-  (
-  select
-    get_current_timestamp() as metric_timestamp,
-    'metric_2' as metric_name,
-    random() as metric_value
+  metric_2 AS (
+    SELECT
+      DATETIME('now') AS metric_timestamp,
+      'metric_2' AS metric_name,
+      RANDOM() / 9223372036854775807.0 AS metric_value
   )
 
-  select
+  SELECT
     metric_timestamp,
     metric_name,
-    metric_value,
-  from
-    (
-    select * from metric_1
-    union all
-    select * from metric_2
-    )
-  ;
+    metric_value
+  FROM (
+    SELECT * FROM metric_1
+    UNION ALL
+    SELECT * FROM metric_2
+  );

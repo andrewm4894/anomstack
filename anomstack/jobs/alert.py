@@ -26,7 +26,7 @@ from anomstack.validate.validate import validate_df
 ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv("ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600)
 
 
-def build_alert_job(spec) -> JobDefinition:
+def build_alert_job(spec: dict) -> JobDefinition:
     """
     Build job definitions for alert jobs.
 
@@ -68,9 +68,6 @@ def build_alert_job(spec) -> JobDefinition:
     def _job():
         """
         Get data for alerting.
-
-        Returns:
-            pd.DataFrame: A pandas DataFrame containing the data for alerting.
         """
 
         @op(name=f"{metric_batch}_get_alerts")
@@ -82,6 +79,7 @@ def build_alert_job(spec) -> JobDefinition:
                 pd.DataFrame: A pandas DataFrame containing the data for alerting.
             """
             df_alerts = read_sql(render("alert_sql", spec), db)
+
             return df_alerts
 
         @op(name=f"{metric_batch}_alerts_op")
@@ -90,10 +88,12 @@ def build_alert_job(spec) -> JobDefinition:
             Alert on data.
 
             Args:
-                df_alerts (pd.DataFrame): A pandas DataFrame containing the data for alerting.
+                df_alerts (pd.DataFrame): A pandas DataFrame containing the
+                    data for alerting.
 
             Returns:
-                pd.DataFrame: A pandas DataFrame containing the data for alerting.
+                pd.DataFrame: A pandas DataFrame containing the data for
+                    alerting.
             """
 
             if len(df_alerts) == 0:
@@ -115,8 +115,8 @@ def build_alert_job(spec) -> JobDefinition:
                         "metric_batch": metric_batch,
                         "metric_name": metric_name,
                         "metric_timestamp": metric_timestamp_max,
-                        "alert_type": "ml",
-                        **metric_tags.get(metric_name,{}),
+                        "alert_type": "anomaly",
+                        **metric_tags.get(metric_name, {}),
                     }
                     logger.debug(f"metric tags:\n{tags}")
                     df_alert = send_alert(
@@ -126,6 +126,7 @@ def build_alert_job(spec) -> JobDefinition:
                         threshold=threshold,
                         alert_methods=alert_methods,
                         tags=tags,
+                        metric_timestamp=metric_timestamp_max
                     )
 
             return df_alerts

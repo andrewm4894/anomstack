@@ -2,41 +2,33 @@
 Template for generating the input data for the train job.
 */
 
-with
+WITH
 
-data as
-(
-select
-  metric_timestamp,
-  metric_name,
-  avg(metric_value) as metric_value
-from
-  {{ table_key }}
-where
-  metric_batch = '{{ metric_batch }}'
-  and
-  metric_type = 'metric'
-group by 1,2
+data AS (
+  SELECT
+    metric_timestamp,
+    metric_name,
+    AVG(metric_value) AS metric_value
+  FROM {{ table_key }}
+  WHERE metric_batch = '{{ metric_batch }}'
+    AND metric_type = 'metric'
+  GROUP BY metric_timestamp, metric_name
 ),
 
-data_ranked as
-(
-select
-  *,
-  -- rank the records by recency for determining the most recent {{ train_max_n }} records
-  rank() over (partition by metric_name order by metric_timestamp desc) as metric_recency_rank
-from
-  data
+data_ranked AS (
+  SELECT
+    *,
+    ROW_NUMBER() OVER (PARTITION BY metric_name ORDER BY metric_timestamp DESC) AS metric_recency_rank
+  FROM data
 )
 
-select
+SELECT
   *
-from
-  data_ranked
-where
-  -- only include the most recent {{ train_max_n }} records
+FROM data_ranked
+WHERE
+  -- Only include the most recent {{ train_max_n }} records
   metric_recency_rank <= {{ train_max_n }}
-  and
-  -- must be at least {{ train_min_n }} records
+  AND
+  -- Must be at least {{ train_min_n }} records
   metric_recency_rank >= {{ train_min_n }}
 ;

@@ -1,15 +1,20 @@
 # default values to be applied to all batches unless overridden in metric batch specific yaml files.
-db: "duckdb" # database type to use.
-table_key: "tmp.metrics" # table to store metrics in.
+db: "sqlite" # database type to use.
+table_key: "metrics" # table to store metrics in.
 model_path: "local://./models" # path to where models are to be stored.
 # model_path: "gs://your-bucket/models" # gcs path to where models are to be stored.
 # model_path: "s3://your-bucket/models" # s3 path to where models are to be stored.
 # model configs to pass to PyOD, model_params are passed to the model constructor.
-model_config:
-  model_name: 'PCA'
-  model_params:
-    contamination: 0.01
-# metric_tags is a map of metric key value tags to metric names
+model_configs:
+  - model_name: 'PCA'
+    model_tag: 'pca_default'
+    model_params:
+      contamination: 0.01
+  - model_name: 'KNN'
+    model_tag: 'knn_default'
+    model_params:
+      contamination: 0.01
+model_combination_method: 'mean' # method to combine model scores, 'mean', 'min' or 'max'.
 # metric_tags:
 #   metric_name:
 #     key1: value1
@@ -24,8 +29,10 @@ alert_max_n: 250 # max n to include and plot in an alert.
 change_max_n: 250 # max n to include in change detection.
 alert_metric_timestamp_max_days_ago: 45 # don't alert on metrics older than this.
 change_metric_timestamp_max_days_ago: 45 # don't all metrics older than this into change detection.
+summary_metric_timestamp_max_days_ago: 1 # number of days to look over for summary email.
 alert_recent_n: 1 # only alert on recent n so as to avoid continually alerting.
 alert_smooth_n: 3 # smooth anomaly score over rolling n to avoid being too trigger happy.
+alert_snooze_n: 3 # snooze alerts for n periods after an alert.
 change_smooth_n: 1 # smooth metric values as part of change detection.
 alert_threshold: 0.8 # threshold for smoothed anomaly score above which to alert on.
 change_threshold: 3.5 # threshold for PyOD MAD based change detection above which to alert on.
@@ -57,6 +64,7 @@ llmalert_cron_schedule: "*/5 * * * *" # cron schedule for llmalerting jobs
 llmalert_default_schedule_status: 'STOPPED' # default schedule status for llmalert jobs (RUNNING or STOPPED)
 plot_cron_schedule: "*/5 * * * *" # cron schedule for plot jobs
 plot_default_schedule_status: 'STOPPED' # default schedule status for plot jobs (RUNNING or STOPPED)
+summary_cron_schedule: "0 9 * * *" # cron schedule for summary job
 # default templated train sql
 train_sql: >
   {% include "./defaults/sql/train.sql" %}
@@ -74,6 +82,9 @@ plot_sql: >
 # default templated dashboard sql
 dashboard_sql: >
   {% include "./defaults/sql/dashboard.sql" %}
+# default templated summary sql
+summary_sql: >
+  {% include "./defaults/sql/summary.sql" %}
 disable_ingest: False # if you want to disable ingest job for some reason.
 disable_train: False # if you want to disable train job for some reason.
 disable_score: False # if you want to disable score job for some reason.
@@ -81,5 +92,6 @@ disable_alert: False # if you want to disable alert job for some reason.
 disable_change: False # if you want to disable change detection job for some reason.
 disable_llmalert: True # if you want to disable llmalert job for some reason.
 disable_plot: False # if you want to disable plot job for some reason.
+disable_summary: False # if you want to disable summary job for some reason.
 prompt_fn: >
   {% include "./defaults/python/prompt.py" %}

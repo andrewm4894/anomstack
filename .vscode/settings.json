@@ -4,9 +4,20 @@
     },
     "python.formatting.provider": "none",
     "cSpell.words": [
+        "ANOMSTACK",
         "dataframe",
         "llmalert",
         "openai"
     ],
-    "python.pythonPath": "venv\\Scripts\\python.exe"
+    "python.pythonPath": "venv\\Scripts\\python.exe",
+    "cloudcode.duetAI.inlineSuggestions.enableAuto": true,
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "database": "${workspaceFolder:anomstack}/tmpdata/anomstack.db",
+            "name": "tmpdata/anomstack.db"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
 }

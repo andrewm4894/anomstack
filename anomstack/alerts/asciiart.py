@@ -1,3 +1,8 @@
+"""
+# copied from: https://raw.githubusercontent.com/kakwa/py-ascii-graph/09ca5901be94ec3563bdcc25d6396e18fd8ca5df/ascii_graph/__init__.py
+# copied from: https://raw.githubusercontent.com/nyurik/py-ascii-graph/fix-python310/ascii_graph/__init__.py
+"""
+
 from __future__ import unicode_literals
 
 import copy
@@ -6,10 +11,6 @@ import sys
 
 import numpy as np
 import pandas as pd
-
-# copied from: https://raw.githubusercontent.com/kakwa/py-ascii-graph/09ca5901be94ec3563bdcc25d6396e18fd8ca5df/ascii_graph/__init__.py
-# copied from: https://raw.githubusercontent.com/nyurik/py-ascii-graph/fix-python310/ascii_graph/__init__.py
-
 
 if (
     sys.version < "3"
@@ -115,8 +116,7 @@ class Pyasciigraph:
 
     @staticmethod
     def _len_noansi(string):
-        l = len(re.sub("\x1b[^m]*m", "", string))
-        return l
+        return len(re.sub("\x1b[^m]*m", "", string))
 
     def _trans_hr(self, value):
         if self.divider is None:
@@ -165,7 +165,6 @@ class Pyasciigraph:
 
             # If we have a list of values for the item
             if isinstance(value, Iterable):
-                icount = 0
                 maxvalue = 0
                 minvalue = 0
                 for ivalue, icolor in value:
@@ -235,14 +234,12 @@ class Pyasciigraph:
         all_width = max_value + abs(min_neg_value)
 
         if all_width == 0:
-            bar_width = 0
             neg_width = 0
-            pos_width = 0
         else:
             neg_width = int(
                 abs(float(min_neg_value)) * float(graph_length) / float(all_width)
             )
-            pos_width = int(abs(max_value) * graph_length / all_width)
+            int(abs(max_value) * graph_length / all_width)
 
         if isinstance(value, Iterable):
             accuvalue = 0
@@ -372,14 +369,14 @@ class Pyasciigraph:
         input_type = type(string)
         if input_type is str:
             if sys.version < "3":
-                info = unicode(string)
+                info = unicode(string)  # noqa: F821
             else:
                 info = string
         elif input_type is unicode_type:
             info = string
         elif input_type is int or input_type is float:
             if sys.version < "3":
-                info = unicode(string)
+                info = unicode(string)  # noqa: F821
             else:
                 info = str(string)
         return info
@@ -441,7 +438,7 @@ class Pyasciigraph:
         san_data = self._sanitize_data(data)
         all_thre = self._get_thresholds(san_data)
 
-        if not label is None:
+        if label is not None:
             san_label = self._sanitize_string(label)
             label_len = self._len_noansi(san_label)
         else:
@@ -477,7 +474,7 @@ class Pyasciigraph:
             # calcul of the real line length
             real_line_length = min_line_length
 
-        if not label is None:
+        if label is not None:
             result.append(san_label)
             result.append(Pyasciigraph._u(self.titlebar) * real_line_length)
 
@@ -515,6 +512,7 @@ def make_alert_message(
     alert_float_format="{:,.2f}",
     tags=None,
     score_col="metric_score_smooth",
+    ascii_graph=False,
 ):
     df_alert_metric = df_alert_metric.sort_values(
         by="metric_timestamp", ascending=False
@@ -537,20 +535,19 @@ def make_alert_message(
     )
     data = zip(labels, x)
     graph_title = f"{metric_name} ({metric_timestamp_from} to {metric_timestamp_to})"
-
-    graph = Pyasciigraph(
-        titlebar=" ", graphsymbol=graph_symbol, float_format=alert_float_format
-    ).graph(graph_title, data)
     message = ""
-    for i, line in enumerate(graph):
-        if i <= 1:
-            message += "\n" + line
-        else:
-            message += "\n" + f"t={0-i+2}".ljust(6, " ") + line
-
-    message = f"""
-    <pre><code>{message}</code></pre>
-    """
+    if ascii_graph:
+        graph = Pyasciigraph(
+            titlebar=" ", graphsymbol=graph_symbol, float_format=alert_float_format
+        ).graph(graph_title, data)
+        for i, line in enumerate(graph):
+            if i <= 1:
+                message += "\n" + line
+            else:
+                message += "\n" + f"t={0-i+2}".ljust(6, " ") + line
+        message += f"""
+        <pre><code>{message}</code></pre>
+        """
 
     # if description is not '' then prepend it to the message
     if description != "":

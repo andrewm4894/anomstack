@@ -18,7 +18,7 @@
 
 Painless open source anomaly detection for your metrics! 📈📉🚀
 
-> _Check out this recent [Data Engineering Podcast](https://www.dataengineeringpodcast.com/anomstack-open-source-business-metric-anomaly-detection-episode-404) where we discussed Anomstack and anomaly detection in general._
+> _Check out this [Data Engineering Podcast](https://www.dataengineeringpodcast.com/anomstack-open-source-business-metric-anomaly-detection-episode-404) where we discussed Anomstack and anomaly detection in general._
 
 > _Note: If you are already using Airflow then also checkout the [`airflow-provider-anomaly-detection`](https://github.com/andrewm4894/airflow-provider-anomaly-detection) package._
 
@@ -50,11 +50,13 @@ Supported sources and databases for your metrics to live in and be queried from:
             <th align="center"><a href="./anomstack/external/gcp/bigquery.py">BigQuery</a></th>
             <th align="center"><a href="./anomstack/external/snowflake/snowflake.py">Snowflake</a></th>
             <th align="center"><a href="./anomstack/external/duckdb/duckdb.py">DuckDB</a></th>
+            <th align="center"><a href="./anomstack/external/sqlite/sqlite.py">SQLite</a></th>
             <th align="center">Redshift</th>
         </tr>
     </thead>
     <tbody>
         <tr>
+            <td align="center">✅</td>
             <td align="center">✅</td>
             <td align="center">✅</td>
             <td align="center">✅</td>
@@ -160,6 +162,8 @@ Here is a list of features of Anomstack (emoji alert warning!)
 14. 🔔 - Scores & Alerts saved to database so you can query them and do whatever you want with them.
 15. 🏷️ - Add custom metric tags for more complex alert routing e.g. priority or subject area based.
 16. 🔄 - Change detection jobs out of the box.
+17. 😴 - Ability to snooze alerts for a period of time to reduce repeated and duplicate alerts.
+18. 🗞️ - Daily summary emails.
 
 ### Architecture
 

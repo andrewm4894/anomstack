@@ -1,9 +1,13 @@
 """
+Some helper functions for plotting.
 """
 
+import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+from matplotlib.figure import Figure
+from matplotlib.ticker import MaxNLocator
 
 
 def make_alert_plot(
@@ -11,15 +15,22 @@ def make_alert_plot(
     metric_name: str,
     threshold: float = 0.8,
     score_col: str = "metric_score_smooth",
-) -> plt:
+    score_title: str = "anomaly_score",
+    tags=None,
+) -> Figure:
     """
-    Creates a plot with two subplots: one for the metric values and another for the anomaly score.
+    Creates a plot with two subplots: one for the metric values and another
+        for the anomaly score.
 
     Args:
         df (pd.DataFrame): The dataframe containing the data to plot.
         metric_name (str): The name of the metric to plot.
-        threshold (float, optional): The threshold value for the anomaly score. Defaults to 0.8.
-        score_col (str, optional): The name of the column containing the anomaly scores. Defaults to 'metric_score_smooth'.
+        threshold (float, optional): The threshold value for the anomaly score.
+            Defaults to 0.8.
+        score_col (str, optional): The name of the column containing the
+            anomaly scores. Defaults to 'metric_score_smooth'.
+        score_title (str, optional): The label for the y-axis of the score
+            plot.
 
     Returns:
         plt: The matplotlib figure object.
@@ -28,15 +39,24 @@ def make_alert_plot(
         nrows=2, ncols=1, figsize=(20, 10), gridspec_kw={"height_ratios": [2, 1]}
     )
 
+    alert_type = tags.get("alert_type", "alert") if tags else "alert"
+
     df_plot = df.set_index("metric_timestamp").sort_index()
     n = len(df_plot)
 
     ax1 = df_plot["metric_value"].plot(
-        title=f"{metric_name} (n={n})", ax=axes[0], style="-o", color="royalblue"
+        title=f"{metric_name} (n={n})",
+        ax=axes[0],
+        style="-",
+        color="royalblue",
+        markersize=3,
     )
     if "metric_value_smooth" in df_plot.columns:
         df_plot["metric_value_smooth"].plot(
-            ax=axes[0], style="--", color="darkorange", label="Value Smooth"
+            ax=axes[0],
+            style="--",
+            color="darkorange",
+            label="metric_value_smooth"
         )
     ax1.axes.get_xaxis().set_visible(False)
     ax1.grid(True, which="both", linestyle="--", linewidth=0.5)
@@ -44,7 +64,7 @@ def make_alert_plot(
     ax1.legend(loc="upper left")
 
     ax2 = df_plot[score_col].plot(
-        title="Score",
+        title=score_title,
         ax=axes[1],
         rot=45,
         linestyle="--",
@@ -53,17 +73,22 @@ def make_alert_plot(
     )
     alert_points = df_plot[df_plot["metric_alert"] == 1]
     ax2.scatter(
-        alert_points.index, alert_points["metric_alert"], color="red", label="Alerts"
+        alert_points.index,
+        alert_points["metric_score"],
+        color="red",
+        label=alert_type,
+        s=5,
     )
     ax2.axhline(
-        threshold, color="lightgrey", linestyle="-.", label=f"Threshold ({threshold})"
+        threshold, color="lightgrey", linestyle="-.",
+        label=f"threshold ({threshold})"
     )
     ax2.xaxis.set_major_locator(plt.MaxNLocator(n))
     ax2.set_xticklabels(
         [f'{item.strftime("%Y-%m-%d %H:%M")}' for item in df_plot.index.tolist()],
         rotation=45,
     )
-    ax2.set_ylabel("Score")
+    ax2.set_ylabel(score_title)
     if df_plot[score_col].max() <= 1:
         ax2.set_ylim(0, 1)
     else:
@@ -73,8 +98,8 @@ def make_alert_plot(
     ax2.locator_params(axis="x", nbins=25)
 
     for idx in alert_points.index:
-        ax1.axvline(idx, color="yellow", alpha=0.3)
-        ax2.axvline(idx, color="yellow", alpha=0.3)
+        ax1.axvline(idx, color="grey", alpha=0.2)
+        ax2.axvline(idx, color="grey", alpha=0.2)
 
     plt.tight_layout()
 
@@ -82,8 +107,17 @@ def make_alert_plot(
 
 
 def make_batch_plot(df: pd.DataFrame) -> plt.Figure:
-    """ """
+    """
+    Create a batch plot showing the relationship between metric value, metric score,
+    and metric alerts/changes for each unique metric in the given DataFrame.
 
+    Parameters:
+        df (pd.DataFrame): The DataFrame containing the metric data.
+
+    Returns:
+        plt.Figure: The generated batch plot figure.
+    """
+    df['metric_timestamp'] = pd.to_datetime(df['metric_timestamp'])
     unique_metrics = df["metric_name"].unique()
     colors = sns.color_palette("viridis", len(unique_metrics))
 
@@ -106,10 +140,14 @@ def make_batch_plot(df: pd.DataFrame) -> plt.Figure:
             label="Metric Value",
             color=colors[i],
             ax=ax1,
-            legend=True,
+            legend=False,
+            linewidth=1,
         )
         ax1.set_ylabel("Metric Value")
         ax1.tick_params(axis="y", labelcolor=colors[i])
+
+        ax1.xaxis.set_major_locator(MaxNLocator(nbins=5))
+        ax1.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d %H:%M"))
 
         ax2 = ax1.twinx()
         sns.lineplot(
@@ -121,6 +159,7 @@ def make_batch_plot(df: pd.DataFrame) -> plt.Figure:
             linestyle="dashed",
             ax=ax2,
             legend=False,
+            linewidth=1,
         )
         ax2.set_ylabel("Metric Score")
         ax2.set_ylim(0, 1.1)
