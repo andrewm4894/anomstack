@@ -46,11 +46,11 @@ Supported sources and databases for your metrics to live in and be queried from:
 <table>
     <thead>
         <tr>
-            <th align="center"><a href="./anomstack/fn/run.py">Python</a></th>
-            <th align="center"><a href="./anomstack/external/gcp/bigquery.py">BigQuery</a></th>
-            <th align="center"><a href="./anomstack/external/snowflake/snowflake.py">Snowflake</a></th>
-            <th align="center"><a href="./anomstack/external/duckdb/duckdb.py">DuckDB</a></th>
-            <th align="center"><a href="./anomstack/external/sqlite/sqlite.py">SQLite</a></th>
+            <th align="center"><a href="./anomstack/fn/run.py" target="_blank">Python</a></th>
+            <th align="center"><a href="./anomstack/external/gcp/bigquery.py" target="_blank">BigQuery</a></th>
+            <th align="center"><a href="./anomstack/external/snowflake/snowflake.py" target="_blank">Snowflake</a></th>
+            <th align="center"><a href="./anomstack/external/duckdb/duckdb.py" target="_blank">DuckDB</a></th>
+            <th align="center"><a href="./anomstack/external/sqlite/sqlite.py" target="_blank">SQLite</a></th>
             <th align="center">Redshift</th>
         </tr>
     </thead>
@@ -71,9 +71,9 @@ Supported storage for your trained models:
 <table>
     <thead>
         <tr>
-            <th align="center"><a href="./anomstack/io/save.py">Local</a></th>
-            <th align="center"><a href="./anomstack/external/gcp/gcs.py">GCS</a></th>
-            <th align="center"><a href="./anomstack/external/aws/s3.py">S3</a></th>
+            <th align="center"><a href="./anomstack/io/save.py" target="_blank">Local</a></th>
+            <th align="center"><a href="./anomstack/external/gcp/gcs.py" target="_blank">GCS</a></th>
+            <th align="center"><a href="./anomstack/external/aws/s3.py" target="_blank">S3</a></th>
             <th align="center">Azure Blob</th>
         </tr>
     </thead>
@@ -83,6 +83,23 @@ Supported storage for your trained models:
             <td align="center">✅</td>
             <td align="center">✅</td>
             <td align="center">🚧</td>
+        </tr>
+    </tbody>
+</table>
+
+Supported ways to receive alerts:
+
+<table>
+    <thead>
+        <tr>
+            <th align="center"><a href="./anomstack/alerts/email.py" target="_blank">Email</a></th>
+            <th align="center"><a href="./anomstack/alerts/slack.py" target="_blank">Slack</a></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
         </tr>
     </tbody>
 </table>
