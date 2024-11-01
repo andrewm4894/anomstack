@@ -9,7 +9,7 @@ email_password = os.getenv(
     "ANOMSTACK_FAILURE_EMAIL_PASSWORD", os.getenv("ANOMSTACK_ALERT_EMAIL_PASSWORD")
 )
 email_to = os.getenv(
-    "ANOMSTACK_FAILURE_EMAIL_TO", os.getenv("ANOMSTACK_ALERT_EMAIL_TO")
+    "ANOMSTACK_FAILURE_EMAIL_TO", os.getenv("ANOMSTACK_ALERT_EMAIL_TO", "")
 ).split(",")
 
 email_on_run_failure = make_email_on_run_failure_sensor(
