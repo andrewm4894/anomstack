@@ -20,6 +20,7 @@ def send_alert(
     tags=None,
     score_col: str = "metric_score_smooth",
     metric_timestamp=None,
+    score_title="anomaly_score",
 ) -> pd.DataFrame:
     """
     Sends an alert using the specified alert methods.
@@ -57,6 +58,7 @@ def send_alert(
             threshold=threshold,
             score_col=score_col,
             metric_timestamp=metric_timestamp,
+            score_title=score_title,
         )
     if "email" in alert_methods:
         send_email_with_plot(
@@ -67,6 +69,7 @@ def send_alert(
             attachment_name=metric_name,
             threshold=threshold,
             score_col=score_col,
+            score_title=score_title,
         )
 
     return df

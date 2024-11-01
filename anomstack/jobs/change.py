@@ -154,6 +154,7 @@ def build_change_job(spec: dict) -> JobDefinition:
                         alert_methods=alert_methods,
                         tags=tags,
                         score_col="metric_score",
+                        score_title="change_score",
                     )
 
             return df_change_alerts

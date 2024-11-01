@@ -136,6 +136,7 @@ def send_alert_slack_with_plot(
     score_col="metric_score_smooth",
     channel_name=None,
     metric_timestamp=None,
+    score_title="anomaly_score",
 ) -> None:
     """
     Sends an alert to Slack with a plot attached.
@@ -149,7 +150,9 @@ def send_alert_slack_with_plot(
         suffix=".png",
         delete=False
     ) as temp:
-        fig = make_alert_plot(df, metric_name, threshold, score_col)
+        fig = make_alert_plot(
+            df, metric_name, threshold, score_col, score_title
+        )
         fig.savefig(temp.name)
         plt.close(fig)
 
