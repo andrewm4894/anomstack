@@ -19,9 +19,10 @@ def ingest():
     # Different anomaly types
     anomaly_types = ["spike", "drop", "plateau"]
 
-    # Generate random metrics and introduce occasional anomalies (1-5% chance)
+    # Generate random metrics and introduce occasional anomalies (1% chance)
     anomaly_chance = random.random()
-    anomaly_type = random.choice(anomaly_types) if anomaly_chance <= 0.05 else None
+    anomaly_type = (random.choice(anomaly_types)
+                    if anomaly_chance <= 0.01 else None)
 
     for metric in metrics:
         if anomaly_type == "spike":
