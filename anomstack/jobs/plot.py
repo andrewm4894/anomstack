@@ -14,10 +14,10 @@ from dagster import (
     MetadataValue,
     ScheduleDefinition,
     asset,
+    get_dagster_logger,
     job,
     op,
 )
-from dagster import get_dagster_logger
 
 from anomstack.config import specs
 from anomstack.df.resample import resample
