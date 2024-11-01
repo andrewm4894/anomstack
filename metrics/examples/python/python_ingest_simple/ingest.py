@@ -1,11 +1,12 @@
 def ingest():
     """
-    Generate random metrics data with occasional anomalies (spikes, drops, 
+    Generate random metrics data with occasional anomalies (spikes, drops,
     or plateaus).
     """
 
     import random
     import time
+
     import pandas as pd
 
     # Define the number of metrics
