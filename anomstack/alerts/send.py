@@ -59,6 +59,7 @@ def send_alert(
             score_col=score_col,
             metric_timestamp=metric_timestamp,
             score_title=score_title,
+            tags=tags,
         )
     if "email" in alert_methods:
         send_email_with_plot(
@@ -70,6 +71,7 @@ def send_alert(
             threshold=threshold,
             score_col=score_col,
             score_title=score_title,
+            tags=tags,
         )
 
     return df

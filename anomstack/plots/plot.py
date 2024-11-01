@@ -16,6 +16,7 @@ def make_alert_plot(
     threshold: float = 0.8,
     score_col: str = "metric_score_smooth",
     score_title: str = "anomaly_score",
+    tags=None,
 ) -> Figure:
     """
     Creates a plot with two subplots: one for the metric values and another
@@ -37,6 +38,8 @@ def make_alert_plot(
     fig, axes = plt.subplots(
         nrows=2, ncols=1, figsize=(20, 10), gridspec_kw={"height_ratios": [2, 1]}
     )
+
+    alert_type = tags.get("alert_type", "alert") if tags else "alert"
 
     df_plot = df.set_index("metric_timestamp").sort_index()
     n = len(df_plot)
@@ -66,11 +69,11 @@ def make_alert_plot(
         alert_points.index,
         alert_points["metric_alert"],
         color="red",
-        label="Alerts"
+        label=alert_type
     )
     ax2.axhline(
         threshold, color="lightgrey", linestyle="-.",
-        label=f"Threshold ({threshold})"
+        label=f"threshold ({threshold})"
     )
     ax2.xaxis.set_major_locator(plt.MaxNLocator(n))
     ax2.set_xticklabels(
