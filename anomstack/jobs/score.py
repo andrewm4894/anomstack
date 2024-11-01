@@ -149,7 +149,8 @@ def build_score_job(spec: dict) -> JobDefinition:
                     scores = pd.DataFrame(scores).min(axis=1).values
                 else:
                     raise ValueError(
-                        f"model_combination_method {model_combination_method} not supported."
+                        f"model_combination_method {model_combination_method} "
+                        f"not supported."
                     )
 
                 # create initial df_score

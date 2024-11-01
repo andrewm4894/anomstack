@@ -15,6 +15,7 @@ def make_alert_plot(
     metric_name: str,
     threshold: float = 0.8,
     score_col: str = "metric_score_smooth",
+    score_title: str = "anomaly_score",
 ) -> Figure:
     """
     Creates a plot with two subplots: one for the metric values and another
@@ -27,6 +28,8 @@ def make_alert_plot(
             Defaults to 0.8.
         score_col (str, optional): The name of the column containing the
             anomaly scores. Defaults to 'metric_score_smooth'.
+        score_title (str, optional): The label for the y-axis of the score
+            plot.
 
     Returns:
         plt: The matplotlib figure object.
@@ -51,7 +54,7 @@ def make_alert_plot(
     ax1.legend(loc="upper left")
 
     ax2 = df_plot[score_col].plot(
-        title="Score",
+        title=score_title,
         ax=axes[1],
         rot=45,
         linestyle="--",
@@ -74,7 +77,7 @@ def make_alert_plot(
         [f'{item.strftime("%Y-%m-%d %H:%M")}' for item in df_plot.index.tolist()],
         rotation=45,
     )
-    ax2.set_ylabel("Score")
+    ax2.set_ylabel(score_title)
     if df_plot[score_col].max() <= 1:
         ax2.set_ylim(0, 1)
     else:

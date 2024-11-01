@@ -24,6 +24,7 @@ def send_email_with_plot(
     attachment_name,
     threshold=0.8,
     score_col="metric_score_smooth",
+    score_title="anomaly_score"
 ) -> None:
     """
     Sends an email with a plot attached.
@@ -38,6 +39,8 @@ def send_email_with_plot(
             Defaults to 0.8.
         score_col (str, optional): The name of the column containing the
             anomaly scores. Defaults to 'metric_score_smooth'.
+        score_title (str, optional): The title of the score plot. Defaults to
+            'anomaly_score'.
 
     Returns:
         None
@@ -54,7 +57,9 @@ def send_email_with_plot(
     with tempfile.NamedTemporaryFile(
         prefix=attachment_name, suffix=".png", delete=False
     ) as temp:
-        fig = make_alert_plot(df, metric_name, threshold, score_col)
+        fig = make_alert_plot(
+            df, metric_name, threshold, score_col, score_title
+        )
         fig.savefig(temp.name)
 
         msg = MIMEMultipart()
