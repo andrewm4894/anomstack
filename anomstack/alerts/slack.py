@@ -122,7 +122,6 @@ def send_alert_slack(
             response = client.chat_postMessage(
                 channel=channel_id, text=f"*{title}*\n{message}"
             )
-        logger.debug(f"Slack response: {response}")
     except SlackApiError as e:
         logger.error(f"Error sending message to Slack: {e.response['error']}")
 
