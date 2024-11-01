@@ -512,6 +512,7 @@ def make_alert_message(
     alert_float_format="{:,.2f}",
     tags=None,
     score_col="metric_score_smooth",
+    ascii_graph=False,
 ):
     df_alert_metric = df_alert_metric.sort_values(
         by="metric_timestamp", ascending=False
@@ -534,20 +535,19 @@ def make_alert_message(
     )
     data = zip(labels, x)
     graph_title = f"{metric_name} ({metric_timestamp_from} to {metric_timestamp_to})"
-
-    graph = Pyasciigraph(
-        titlebar=" ", graphsymbol=graph_symbol, float_format=alert_float_format
-    ).graph(graph_title, data)
     message = ""
-    for i, line in enumerate(graph):
-        if i <= 1:
-            message += "\n" + line
-        else:
-            message += "\n" + f"t={0-i+2}".ljust(6, " ") + line
-
-    message = f"""
-    <pre><code>{message}</code></pre>
-    """
+    if ascii_graph:
+        graph = Pyasciigraph(
+            titlebar=" ", graphsymbol=graph_symbol, float_format=alert_float_format
+        ).graph(graph_title, data)
+        for i, line in enumerate(graph):
+            if i <= 1:
+                message += "\n" + line
+            else:
+                message += "\n" + f"t={0-i+2}".ljust(6, " ") + line
+        message += f"""
+        <pre><code>{message}</code></pre>
+        """
 
     # if description is not '' then prepend it to the message
     if description != "":
