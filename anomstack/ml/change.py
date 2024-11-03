@@ -49,6 +49,9 @@ def detect_change(
     change_detected_count = df_metric["metric_alert"].tail(detect_last_n).sum()
     recent_change_detected_count = df_metric["metric_alert"].tail(snooze_n).sum()
     if change_detected_count > 0:
+        # TODO: clean up the logic here as this could stay
+        # snoozed for a long time until we see sufficient 0's
+        # in last snooze_n so its more like a dyanmic suppression
         if recent_change_detected_count <= 1:
             logger.info(f"change detected for {metric_name} at {X_detect_timestamps}")
             return df_metric
