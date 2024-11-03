@@ -10,7 +10,10 @@ from pyod.models.mad import MAD
 
 
 def detect_change(
-    df_metric: pd.DataFrame, threshold: float = 3.5, detect_last_n: int = 1
+    df_metric: pd.DataFrame,
+    threshold: float = 3.5,
+    detect_last_n: int = 1,
+    snooze_n: int = 3
 ) -> pd.DataFrame:
     """
     Detects change in a metric based on the Median Absolute Deviation (MAD)
@@ -22,6 +25,8 @@ def detect_change(
             Defaults to 3.5.
         detect_last_n (int, optional): Number of last observations to use for
             detection. Defaults to 1.
+        snooze_n (int, optional): Number of observations to snooze after a
+            change is detected. Defaults to 3.
 
     Returns:
         pd.DataFrame: DataFrame with the detected change information.
@@ -41,10 +46,21 @@ def detect_change(
     df_metric["metric_score"] = list(X_train_scores) + list(y_detect_scores)
     df_metric["metric_alert"] = np.where((df_metric["metric_score"] > threshold),1,0)
     logger.debug(f"df_metric:\n{df_metric}")
-    if df_metric["metric_alert"].tail(detect_last_n).sum() > 0:
-        logger.info(f"change detected for {metric_name} at {X_detect_timestamps}")
-
-        return df_metric
+    change_detected_count = df_metric["metric_alert"].tail(detect_last_n).sum()
+    recent_change_detected_count = df_metric["metric_alert"].tail(snooze_n).sum()
+    if change_detected_count > 0:
+        # TODO: clean up the logic here as this could stay
+        # snoozed for a long time until we see sufficient 0's
+        # in last snooze_n so its more like a dyanmic suppression
+        if recent_change_detected_count <= 1:
+            logger.info(f"change detected for {metric_name} at {X_detect_timestamps}")
+            return df_metric
+        else:
+            logger.info(
+                f"change detected for {metric_name} at {X_detect_timestamps}, "
+                f"but snoozing as {recent_change_detected_count} recent changes already detected"
+            )
+            return pd.DataFrame()
     else:
         logger.info(f"no change detected for {metric_name} at {X_detect_timestamps}")
 

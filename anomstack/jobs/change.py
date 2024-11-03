@@ -62,6 +62,7 @@ def build_change_job(spec: dict) -> JobDefinition:
     metric_tags = spec.get("metric_tags", {})
     change_threshold = spec.get("change_threshold", 3.5)
     change_detect_last_n = spec.get("change_detect_last_n", 1)
+    change_snooze_n = spec.get("change_snooze_n", 3)
 
     @job(
         name=f"{metric_batch}_change",
