@@ -1,7 +1,10 @@
 # default values to be applied to all batches unless overridden in metric batch specific yaml files.
 db: "sqlite" # database type to use.
 table_key: "metrics" # table to store metrics in.
+
+############################################
 # model params
+############################################
 model_path: "local://./models" # path to where models are to be stored.
 # model_path: "gs://your-bucket/models" # gcs path to where models are to be stored.
 # model_path: "s3://your-bucket/models" # s3 path to where models are to be stored.
@@ -19,7 +22,16 @@ model_combination_method: 'mean' # method to combine model scores, 'mean', 'min'
 train_max_n: 2500 # max number of observations for training a model.
 train_min_n: 14 # min number of observations for training a model.
 score_max_n: 25 # max n to pull for scoring to avoid pulling more than needed.
+preprocess_params:
+  diff_n: 1 # 1 will use diff, 0 will use raw metric values.
+  smooth_n: 3 # how much smoothing to apply in preprocessing.
+  lags_n: 5 # how many lags to include in feature vector.
+  freq: null # how often to resample for different aggregation levels than ingested at. Default of null means no resampling.
+  freq_agg: 'mean' # default aggregation function to use for resampling if freq != None.
+
+############################################
 # alert params
+############################################
 alert_methods: "email,slack" # comma separated list of alert methods to use eg "email,slack".
 alert_always: False # if True, always send alerts, even if no anomalies.
 alert_metric_timestamp_max_days_ago: 45 # don't alert on metrics older than this.
@@ -28,7 +40,10 @@ alert_max_n: 250 # max n to include and plot in an alert.
 alert_smooth_n: 3 # smooth anomaly score over rolling n to avoid being too trigger happy.
 alert_snooze_n: 3 # snooze alerts for n periods after an alert.
 alert_threshold: 0.8 # threshold for smoothed anomaly score above which to alert on.
+
+############################################
 # change detection params
+############################################
 change_metric_timestamp_max_days_ago: 45 # don't all metrics older than this into change detection.
 change_max_n: 250 # max n to include in change detection.
 change_smooth_n: 1 # smooth metric values as part of change detection.
@@ -41,28 +56,17 @@ change_detect_last_n: 1 # number of last n observations to detect changes on.
 # optional list of metrics to exclude from change detection.
 # change_exclude_metrics:
 #   - 'dummy_exclude_metric'
+
+############################################
 # llmalert params
+############################################
 llmalert_recent_n: 5 # only llmalert on recent n so as to avoid continually alerting.
 llmalert_smooth_n: 3 # smooth metric value prior to sending to llm.
 llmalert_metric_rounding: 4 # round metric values to this number of decimal places.
-# other params
-disable_batch: False # if you want to disable a metric batch for some reason.
-ingest_metric_rounding: 4 # round metric values to this number of decimal places.
-score_metric_rounding: 4 # round metric scores to this number of decimal places.
-summary_metric_timestamp_max_days_ago: 1 # number of days to look over for summary email.
-# metric_tags:
-#   metric_name:
-#     key1: value1
-#     key2: value2
-preprocess_fn: >
-  {% include "./defaults/python/preprocess.py" %}
-preprocess_params:
-  diff_n: 1 # 1 will use diff, 0 will use raw metric values.
-  smooth_n: 3 # how much smoothing to apply in preprocessing.
-  lags_n: 5 # how many lags to include in feature vector.
-  freq: null # how often to resample for different aggregation levels than ingested at. Default of null means no resampling.
-  freq_agg: 'mean' # default aggregation function to use for resampling if freq != None.
+
+############################################
 # schedules
+############################################
 ingest_cron_schedule: "*/3 * * * *" # cron schedule for ingest jobs
 ingest_default_schedule_status: 'STOPPED' # default schedule status for ingest jobs (RUNNING or STOPPED)
 train_cron_schedule: "*/5 * * * *" # cron schedule for training jobs
@@ -78,7 +82,10 @@ llmalert_default_schedule_status: 'STOPPED' # default schedule status for llmale
 plot_cron_schedule: "*/5 * * * *" # cron schedule for plot jobs
 plot_default_schedule_status: 'STOPPED' # default schedule status for plot jobs (RUNNING or STOPPED)
 summary_cron_schedule: "0 9 * * *" # cron schedule for summary job
-# sql templates
+
+############################################
+# templates
+############################################
 # default templated train sql
 train_sql: >
   {% include "./defaults/sql/train.sql" %}
@@ -99,6 +106,22 @@ dashboard_sql: >
 # default templated summary sql
 summary_sql: >
   {% include "./defaults/sql/summary.sql" %}
+preprocess_fn: >
+  {% include "./defaults/python/preprocess.py" %}
+prompt_fn: >
+  {% include "./defaults/python/prompt.py" %}
+
+############################################
+# other params
+############################################
+disable_batch: False # if you want to disable a metric batch for some reason.
+ingest_metric_rounding: 4 # round metric values to this number of decimal places.
+score_metric_rounding: 4 # round metric scores to this number of decimal places.
+summary_metric_timestamp_max_days_ago: 1 # number of days to look over for summary email.
+# metric_tags:
+#   metric_name:
+#     key1: value1
+#     key2: value2
 disable_ingest: False # if you want to disable ingest job for some reason.
 disable_train: False # if you want to disable train job for some reason.
 disable_score: False # if you want to disable score job for some reason.
@@ -107,5 +130,3 @@ disable_change: False # if you want to disable change detection job for some rea
 disable_llmalert: True # if you want to disable llmalert job for some reason.
 disable_plot: False # if you want to disable plot job for some reason.
 disable_summary: False # if you want to disable summary job for some reason.
-prompt_fn: >
-  {% include "./defaults/python/prompt.py" %}
