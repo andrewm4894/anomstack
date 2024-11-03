@@ -9,10 +9,13 @@ import pandas as pd
 import sqlglot
 from dagster import get_dagster_logger
 
+from anomstack.df.utils import log_df_info
 from anomstack.external.duckdb.duckdb import read_sql_duckdb
 from anomstack.external.gcp.bigquery import read_sql_bigquery
 from anomstack.external.snowflake.snowflake import read_sql_snowflake
 from anomstack.external.sqlite.sqlite import read_sql_sqlite
+
+pd.options.display.max_columns = 10
 
 
 def db_translate(sql: str, db: str) -> str:
@@ -58,7 +61,7 @@ def read_sql(sql: str, db: str) -> pd.DataFrame:
 
     sql = db_translate(sql, db)
 
-    logger.debug(f"sql:\n{sql}")
+    logger.debug(f"-- read_sql() is about to read this qry:\n{sql}")
 
     if db == "bigquery":
         df = read_sql_bigquery(sql)
@@ -71,6 +74,8 @@ def read_sql(sql: str, db: str) -> pd.DataFrame:
     else:
         raise ValueError(f"Unknown db: {db}")
 
-    logger.debug(f"df:\n{df}")
+    log_df_info(df, logger)
+    logger.debug(f"df.head():\n{df.head()}")
+    logger.debug(f"df.tail():\n{df.tail()}")
 
     return df
