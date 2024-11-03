@@ -29,9 +29,7 @@ def read_sql_sqlite(sql: str) -> pd.DataFrame:
 
     conn = sqlite3.connect(sqlite_path)
 
-    logger.debug(f"sql:\n{sql}")
     df = pd.read_sql_query(sql, conn)
-    logger.debug(f"df:\n{df}")
 
     conn.close()
     return df
