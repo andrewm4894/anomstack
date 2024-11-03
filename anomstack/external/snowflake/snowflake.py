@@ -3,7 +3,6 @@ Some utilities for working with Snowflake.
 """
 
 import pandas as pd
-from dagster import get_dagster_logger
 from snowflake import connector
 
 from anomstack.external.snowflake.credentials import get_snowflake_credentials
@@ -21,11 +20,6 @@ def read_sql_snowflake(sql: str, cols_lowercase: bool = True) -> pd.DataFrame:
     Returns:
         pd.DataFrame: The result of the SQL query as a pandas DataFrame.
     """
-
-    logger = get_dagster_logger()
-
-    logger.debug(f"sql:\n{sql}")
-
     credentials = get_snowflake_credentials()
 
     conn = connector.connect(
@@ -40,8 +34,6 @@ def read_sql_snowflake(sql: str, cols_lowercase: bool = True) -> pd.DataFrame:
 
     if cols_lowercase:
         df.columns = df.columns.str.lower()
-
-    logger.debug(f"df:\n{df}")
 
     return df
 

@@ -1,53 +1,123 @@
 /*
 Template for generating the input data for the change detection job.
+
+Written for SQLite but will be translated to target dialect based on `db` param via sqlglot.
 */
 
-WITH
+with
 
-metric_value_data AS (
-  SELECT DISTINCT
-    metric_timestamp,
-    metric_batch,
-    metric_name,
-    AVG(metric_value) AS metric_value
-  FROM {{ table_key }}
-  WHERE metric_batch = '{{ metric_batch }}'
-    AND metric_type = 'metric'
-    AND DATE(metric_timestamp) >= DATE('now', '-{{ change_metric_timestamp_max_days_ago }} day')
-  GROUP BY metric_timestamp, metric_batch, metric_name
+metric_value_data as
+(
+select distinct
+  metric_timestamp,
+  metric_batch,
+  metric_name,
+  avg(metric_value) as metric_value
+from
+  {{ table_key }}
+where
+  metric_batch = '{{ metric_batch }}'
+  and
+  metric_type = 'metric'
+  and
+  -- Filter to the last {{ change_metric_timestamp_max_days_ago }} days
+  date(metric_timestamp) >= date('now', '-{{ change_metric_timestamp_max_days_ago }} day')
+group by
+  metric_timestamp, metric_batch, metric_name
 ),
 
-metric_value_recency_ranked AS (
-  SELECT DISTINCT
-    metric_timestamp,
-    metric_batch,
-    metric_name,
-    metric_value,
-    ROW_NUMBER() OVER (PARTITION BY metric_name ORDER BY metric_timestamp DESC) AS metric_value_recency_rank
-  FROM metric_value_data
+metric_change_alert_data as
+(
+select distinct
+  metric_timestamp,
+  metric_batch,
+  metric_name,
+  max(metric_value) as metric_change_alert
+from
+  {{ table_key }}
+where
+  metric_batch = '{{ metric_batch }}'
+  and
+  metric_type = 'change'
+  and
+  -- Filter to the last {{ change_metric_timestamp_max_days_ago }} days
+  date(metric_timestamp) >= date('now', '-{{ change_metric_timestamp_max_days_ago }} day')
+group by
+  metric_timestamp, metric_batch, metric_name
 ),
 
-data_smoothed AS (
-  SELECT
-    metric_timestamp,
-    metric_batch,
-    metric_name,
-    metric_value,
-    metric_value_recency_rank,
-    -- Smooth the metric value over the last {{ change_smooth_n }} values
-    (SELECT AVG(mv.metric_value)
-     FROM metric_value_recency_ranked mv
-     WHERE mv.metric_name = mr.metric_name
-     AND mv.metric_value_recency_rank BETWEEN mr.metric_value_recency_rank - {{ change_smooth_n }} AND mr.metric_value_recency_rank) AS metric_value_smooth
-  FROM metric_value_recency_ranked mr
-  WHERE metric_value_recency_rank <= {{ change_max_n }}
+metric_value_recency_ranked as
+(
+select distinct
+  metric_value_data.metric_timestamp,
+  metric_value_data.metric_batch,
+  metric_value_data.metric_name,
+  metric_value_data.metric_value,
+  -- If change alert not found found for the metric, default to 0
+  coalesce(metric_change_alert_data.metric_change_alert, 0) as metric_change_alert,
+  -- Rank the metric values by recency, with 1 being the most recent
+  row_number() over (partition by metric_value_data.metric_name order by metric_value_data.metric_timestamp desc) as metric_value_recency_rank
+from
+  metric_value_data
+left outer join
+  metric_change_alert_data
+on
+  metric_value_data.metric_batch = metric_change_alert_data.metric_batch
+  and
+  metric_value_data.metric_name = metric_change_alert_data.metric_name
+  and
+  metric_value_data.metric_timestamp = metric_change_alert_data.metric_timestamp
+),
+
+-- Snooze any metrics with change alerts in the last {{ change_snooze_n }} values
+snoozed_metric_names as
+(
+select distinct
+  metric_name
+from
+  metric_value_recency_ranked
+where
+  -- Exclude metrics with change alerts in the last {{ change_snooze_n }} values
+  metric_change_alert = 1
+  and
+  metric_value_recency_rank <= {{ change_snooze_n }}
+),
+
+data_smoothed as
+(
+select
+  metric_timestamp,
+  metric_batch,
+  metric_name,
+  metric_value,
+  metric_change_alert,
+  metric_value_recency_rank,
+  -- Smooth the metric value over the last {{ change_smooth_n }} values
+  (
+    select
+      avg(mv.metric_value)
+    from
+      metric_value_recency_ranked mv
+    where
+      mv.metric_name = mr.metric_name
+      and
+      mv.metric_value_recency_rank between mr.metric_value_recency_rank - {{ change_smooth_n }} and mr.metric_value_recency_rank
+  ) as metric_value_smooth
+from
+  metric_value_recency_ranked mr
+where
+  metric_value_recency_rank <= {{ change_max_n }}
+  and
+  -- Exclude snoozed metrics
+  metric_name not in (select metric_name from snoozed_metric_names)
 )
 
-SELECT
+select
   metric_timestamp,
   metric_batch,
   metric_name,
   metric_value,
   metric_value_smooth
-FROM data_smoothed
+from
+  data_smoothed
 ;

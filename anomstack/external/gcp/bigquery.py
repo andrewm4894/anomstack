@@ -25,18 +25,11 @@ def read_sql_bigquery(sql: str) -> pd.DataFrame:
     Returns:
         pd.DataFrame: The result of the query as a DataFrame.
     """
-
-    logger = get_dagster_logger()
-
-    logger.debug(f"sql:\n{sql}")
-
     credentials = get_google_credentials()
-
     df = pd.read_gbq(
         query=sql,
         credentials=credentials,
     )
-    logger.debug(f"df:\n{df}")
 
     return df
 

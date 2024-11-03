@@ -28,10 +28,7 @@ def read_sql_duckdb(sql: str) -> pd.DataFrame:
     os.makedirs(os.path.dirname(duckdb_path), exist_ok=True)
 
     conn = connect(duckdb_path)
-
-    logger.debug(f"sql:\n{sql}")
     df = query(connection=conn, query=sql).df()
-    logger.debug(f"df:\n{df}")
 
     return df
 
