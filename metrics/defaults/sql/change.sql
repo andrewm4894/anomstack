@@ -22,6 +22,16 @@ where
   and
   -- Filter to the last {{ change_metric_timestamp_max_days_ago }} days
   date(metric_timestamp) >= date('now', '-{{ change_metric_timestamp_max_days_ago }} day')
+  {% if change_include_metrics is defined %}
+  and
+  -- Include only the specified metrics
+  metric_name in ({{ ','.join(change_include_metrics) }})
+  {% endif %}
+  {% if change_exclude_metrics is defined %}
+  and
+  -- Exclude the specified metrics
+  metric_name not in ({{ ','.join(change_exclude_metrics) }})
+  {% endif %}
 group by
   metric_timestamp, metric_batch, metric_name
 ),
@@ -42,6 +52,16 @@ where
   and
   -- Filter to the last {{ change_metric_timestamp_max_days_ago }} days
   date(metric_timestamp) >= date('now', '-{{ change_metric_timestamp_max_days_ago }} day')
+  {% if change_include_metrics is defined %}
+  and
+  -- Include only the specified metrics
+  metric_name in ({{ ','.join(change_include_metrics) }})
+  {% endif %}
+  {% if change_exclude_metrics is defined %}
+  and
+  -- Exclude the specified metrics
+  metric_name not in ({{ ','.join(change_exclude_metrics) }})
+  {% endif %}
 group by
   metric_timestamp, metric_batch, metric_name
 ),

@@ -1,5 +1,7 @@
-disable_batch: False
+db: "sqlite"
+table_key: "metrics"
 metric_batch: "python_ingest_simple"
+alert_methods: "email,slack"
 ingest_cron_schedule: "*/2 * * * *"
 train_cron_schedule: "*/4 * * * *"
 score_cron_schedule: "*/3 * * * *"
