@@ -32,7 +32,7 @@ select distinct
   metric_timestamp,
   metric_batch,
   metric_name,
-  max(metric_value) as metric_change_alert
+  max(metric_value) as metric_change
 from
   {{ table_key }}
 where
@@ -53,8 +53,7 @@ select distinct
   metric_value_data.metric_batch,
   metric_value_data.metric_name,
   metric_value_data.metric_value,
-  -- If change alert not found found for the metric, default to 0
-  coalesce(metric_change_alert_data.metric_change_alert, 0) as metric_change_alert,
+  metric_change_alert_data.metric_change as metric_change,
   -- Rank the metric values by recency, with 1 being the most recent
   row_number() over (partition by metric_value_data.metric_name order by metric_value_data.metric_timestamp desc) as metric_value_recency_rank
 from
@@ -78,7 +77,7 @@ from
   metric_value_recency_ranked
 where
   -- Exclude metrics with change alerts in the last {{ change_snooze_n }} values
-  metric_change_alert = 1
+  metric_change = 1
   and
   metric_value_recency_rank <= {{ change_snooze_n }}
 ),
@@ -90,7 +89,7 @@ select
   metric_batch,
   metric_name,
   metric_value,
-  metric_change_alert,
+  metric_change,
   metric_value_recency_rank,
   -- Smooth the metric value over the last {{ change_smooth_n }} values
   (
@@ -117,7 +116,8 @@ select
   metric_batch,
   metric_name,
   metric_value,
-  metric_value_smooth
+  metric_value_smooth,
+  metric_change
 from
   data_smoothed
 ;
