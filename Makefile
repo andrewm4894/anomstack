@@ -16,17 +16,17 @@ SHELL=/bin/bash
 dashboard:
 	streamlit run ./dashboard.py --server.port 8501
 
-# start streamlit dashboard as a daemon
+# start streamlit dashboard as a daemon with no log file
 dashboardd:
-	nohup streamlit run ./dashboard.py --server.port 8501 &
+	nohup streamlit run ./dashboard.py --server.port 8501 > /dev/null 2>&1 &
 
 # start dagster locally
 local:
 	dagster dev -f anomstack/main.py
 
-# start dagster locally as a daemon
+# start dagster locally as a daemon with no log file
 locald:
-	nohup dagster dev -f anomstack/main.py &
+	nohup dagster dev -f anomstack/main.py > /dev/null 2>&1 &
 
 # kill any running dagster process
 kill-locald:
