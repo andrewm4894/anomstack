@@ -8,6 +8,10 @@ import pandas as pd
 from dagster import get_dagster_logger
 from pyod.models.mad import MAD
 
+from anomstack.df.utils import log_df_info
+
+pd.options.display.max_columns = 10
+
 
 def detect_change(
     df_metric: pd.DataFrame,
@@ -41,10 +45,15 @@ def detect_change(
     y_detect_scores = detector.decision_function(X_detect)
     logger.debug(f"y_detect_scores: {y_detect_scores}")
     df_metric["metric_score"] = list(X_train_scores) + list(y_detect_scores)
-    df_metric["metric_alert"] = np.where(
+    df_metric["metric_change_calculated"] = np.where(
         df_metric["metric_score"] > threshold, 1, 0
     )
-    logger.debug(f"df_metric:\n{df_metric}")
+    df_metric["metric_alert"] = df_metric["metric_change"].combine_first(
+        df_metric["metric_change_calculated"]
+    )
+    log_df_info(df_metric, logger)
+    logger.debug(f"df_metric.head(10):\n{df_metric.head(10)}")
+    logger.debug(f"df_metric.tail(10):\n{df_metric.tail(10)}")
     change_detected_count = df_metric["metric_alert"].tail(detect_last_n).sum()
     if change_detected_count > 0:
         logger.info(
