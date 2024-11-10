@@ -32,6 +32,10 @@ locald:
 kill-locald:
 	kill -9 $(shell ps aux | grep dagster | grep -v grep | awk '{print $$2}')
 
+# list any running dagster process
+ps-locald:
+	ps aux | grep dagster | grep -v grep
+
 # list running dagster process
 ps-locald:
 	ps aux | grep dagster | grep -v grep
