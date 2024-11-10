@@ -42,7 +42,7 @@ select distinct
   metric_timestamp,
   metric_batch,
   metric_name,
-  max(metric_value) as metric_change
+  max(ifnull(metric_value,0)) as metric_change
 from
   {{ table_key }}
 where
@@ -73,7 +73,7 @@ select distinct
   metric_value_data.metric_batch,
   metric_value_data.metric_name,
   metric_value_data.metric_value,
-  metric_change_alert_data.metric_change as metric_change,
+  ifnull(metric_change_alert_data.metric_change,0) as metric_change,
   -- Rank the metric values by recency, with 1 being the most recent
   row_number() over (partition by metric_value_data.metric_name order by metric_value_data.metric_timestamp desc) as metric_value_recency_rank
 from
