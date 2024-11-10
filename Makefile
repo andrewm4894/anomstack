@@ -36,10 +36,6 @@ kill-locald:
 ps-locald:
 	ps aux | grep dagster | grep -v grep
 
-# list running dagster process
-ps-locald:
-	ps aux | grep dagster | grep -v grep
-
 # start docker containers
 docker:
 	docker compose up -d --build
