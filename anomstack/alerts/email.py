@@ -81,7 +81,7 @@ def send_email_with_plot(
         msg.attach(payload)
 
         context = ssl.create_default_context()
-        with smtplib.SMTP(host, port) as server:
+        with smtplib.SMTP(host, port, timeout=30) as server:
             server.connect(host, port)
             server.starttls(context=context)
             server.login(sender, password)
