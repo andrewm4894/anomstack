@@ -130,8 +130,8 @@ data_alerts AS (
     metric_value,
     metric_score,
     metric_score_smooth,
-    metric_alert,
-    metric_change
+    ifnull(metric_alert,0) as metric_alert,
+    ifnull(metric_change,0) as metric_change
   FROM data_smoothed
   WHERE metric_value_recency_rank <= {{ alert_max_n }}
 )
