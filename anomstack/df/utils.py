@@ -1,6 +1,7 @@
 from io import StringIO
-from dagster import get_dagster_logger
+
 import pandas as pd
+from dagster import get_dagster_logger
 
 
 def log_df_info(df: pd.DataFrame, logger=None):
