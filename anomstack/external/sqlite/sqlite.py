@@ -60,7 +60,8 @@ def save_df_sqlite(df: pd.DataFrame, table_key: str) -> pd.DataFrame:
             if "database is locked" in str(e):
                 attempt += 1
                 logger.warning(
-                    f"Database is locked; attempt {attempt} of {MAX_RETRIES}. Retrying in {RETRY_DELAY} seconds..."
+                    f"Database is locked; attempt {attempt} of {MAX_RETRIES}. "
+                    f"Retrying in {RETRY_DELAY} seconds..."
                 )
                 time.sleep(RETRY_DELAY)
             else:
