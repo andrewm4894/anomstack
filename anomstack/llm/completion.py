@@ -5,7 +5,6 @@ Some helper functions for interacting with the OpenAI API.
 import json
 import os
 import time
-from ctypes import DEFAULT_MODE
 
 import openai
 from dagster import get_dagster_logger
