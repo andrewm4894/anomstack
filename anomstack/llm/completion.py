@@ -7,7 +7,10 @@ import os
 import time
 
 import openai
+from dagster import get_dagster_logger
 from openai import OpenAI
+
+DEFAULT_OPENAI_MODEL = "gpt-4o-mini"
 
 
 def get_completion(prompt: str, max_retries=5):
@@ -27,7 +30,10 @@ def get_completion(prompt: str, max_retries=5):
     """
 
     client = OpenAI(api_key=os.getenv("ANOMSTACK_OPENAI_KEY"))
-    openai_model = os.getenv("ANOMSTACK_OPENAI_MODEL", "gpt-3.5-turbo")
+    openai_model = os.getenv("ANOMSTACK_OPENAI_MODEL", DEFAULT_OPENAI_MODEL)
+
+    logger = get_dagster_logger()
+    logger.debug(f"using openai model: {openai_model}")
 
     messages = [{"role": "user", "content": prompt}]
 

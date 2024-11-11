@@ -128,7 +128,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                 # logger.debug(f"df_metric: \n{df_metric}")
 
                 df_prompt = (
-                    df_metric[["metric_value", "metric_recency"]]
+                    df_metric[["metric_timestamp", "metric_value", "metric_recency"]]
                     .dropna()
                     .round(llmalert_metric_rounding)
                 )

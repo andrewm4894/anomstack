@@ -5,16 +5,12 @@ def ingest():
     """
 
     import random
-    import time
 
     import pandas as pd
 
     # Define the number of metrics
     metrics = ["metric1", "metric2", "metric3", "metric4", "metric5"]
     metric_values = []
-
-    # Get current timestamp
-    current_timestamp = int(time.time())
 
     # Different anomaly types
     anomaly_types = ["spike", "drop", "plateau"]
@@ -24,7 +20,7 @@ def ingest():
     anomaly_type = (random.choice(anomaly_types)
                     if anomaly_chance <= 0.01 else None)
 
-    for metric in metrics:
+    for _ in metrics:
         if anomaly_type == "spike":
             # Generate a spike (e.g., a value significantly higher than normal)
             metric_value = random.uniform(15, 30)
@@ -46,7 +42,7 @@ def ingest():
     data = {
         "metric_name": metrics,
         "metric_value": metric_values,
-        "metric_timestamp": [current_timestamp] * len(metrics),
+        "metric_timestamp": pd.Timestamp.now(),
     }
     df = pd.DataFrame(data)
 
