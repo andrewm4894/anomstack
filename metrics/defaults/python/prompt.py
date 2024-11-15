@@ -17,11 +17,10 @@ def make_prompt(df, llmalert_recent_n) -> str:
     )
 
     prompt = f"""
-    You are a seasoned time series expert who has worked with time series data for many years and are very acomplished at spotting and explaining anomalies in time series data.
-
     Can you help me check if there is an anomaly in this time series data for this metric?
 
-    I am solely interested in looking at the last {llmalert_recent_n} observations (when metric_recency=recent) and if it looks like the more recent data may be anomalous or if it looks not all that much different from the rest of the data (metric_recency=baseline).
+    I am solely interested in looking at the last {llmalert_recent_n} observations (when metric_recency=recent).
+    If it looks like the more recent data may be anomalous in comparison to rest of the data (when metric_recency=baseline).
 
     Here are some questions to think about:
 
@@ -29,7 +28,6 @@ def make_prompt(df, llmalert_recent_n) -> str:
     - Are there any anomalies or outliers in the recent {llmalert_recent_n} observations of metric in df?
     - Can you identify any patterns or trends in the recent {llmalert_recent_n} values of the metric in df that could be indicative of an anomaly?
     - How does the distribution of the recent {llmalert_recent_n} values of the metric in df compare to the distribution of the entire dataset?
-    - Are there any changes in the mean, median, or standard deviation of the metric in the recent {llmalert_recent_n} observations that could be indicative of an anomaly?
     - Is there a sudden increase or decrease in the metric in the recent {llmalert_recent_n} observations?
     - Is there a change in the slope of the metric trend line in the recent {llmalert_recent_n} observations?
     - Are there any spikes or dips in the metric in the recent {llmalert_recent_n} observations?
