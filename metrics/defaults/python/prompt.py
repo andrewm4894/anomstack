@@ -10,17 +10,12 @@ def make_prompt(df, llmalert_recent_n) -> str:
         str: A prompt for the user to check if there is an anomaly in the time series data.
     """
 
-    from tabulate import tabulate
-
-    text_representation = tabulate(
-        df.reset_index(), headers="keys", tablefmt="pipe", showindex=False
-    )
+    text_representation = df.to_markdown()
 
     prompt = f"""
-    Can you help me check if there is an anomaly in this time series data for this metric?
+    Can you help me check if there is an anomaly in the below time series data?
 
-    I am solely interested in looking at the last {llmalert_recent_n} observations (when metric_recency=recent).
-    If it looks like the more recent data may be anomalous in comparison to rest of the data (when metric_recency=baseline).
+    I am solely interested in looking at the last {llmalert_recent_n} observations (when metric_recency=recent) and if it looks like the more recent data may be anomalous in comparison to rest of the data (when metric_recency=baseline).
 
     Here are some questions to think about:
 
@@ -42,10 +37,6 @@ def make_prompt(df, llmalert_recent_n) -> str:
     - Focus only on how the most recent {llmalert_recent_n} observations and if they look anomalous or not in reference to the earlier baseline data.
     - The data comes from a pandas dataframe.
 
-    Here is the data (ordered in ascending order, so from oldest to newest (top to bottom)):
-
-    {text_representation}
-
     I need a yes or no answer as to if you think the recent data looks anomalous or not.
 
     Please also provide a description on why the metric looks anomalous if you think it does.
@@ -55,6 +46,10 @@ def make_prompt(df, llmalert_recent_n) -> str:
     Please think step by step and provide a description, along with evidence, of your thought process as you go through the data.
 
     Think globally too like a human would if they were eyeballing the data.
+
+    Here is the data (ordered in ascending order, so from oldest to newest (top to bottom)):
+
+    {text_representation}
     """
 
     return prompt
