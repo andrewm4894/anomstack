@@ -61,8 +61,8 @@ change_detect_last_n: 1 # number of last n observations to detect changes on.
 # llmalert params
 ############################################
 llmalert_recent_n: 5 # only llmalert on recent n so as to avoid continually alerting.
-llmalert_smooth_n: 3 # smooth metric value prior to sending to llm.
-llmalert_metric_rounding: 4 # round metric values to this number of decimal places.
+llmalert_smooth_n: 0 # smooth metric value prior to sending to llm.
+llmalert_metric_rounding: -1 # round metric values to this number of decimal places.
 
 ############################################
 # schedules
@@ -100,6 +100,9 @@ change_sql: >
 # default templated plot sql
 plot_sql: >
   {% include "./defaults/sql/plot.sql" %}
+# default templated llmalert sql
+llmalert_sql: >
+  {% include "./defaults/sql/llmalert.sql" %}
 # default templated dashboard sql
 dashboard_sql: >
   {% include "./defaults/sql/dashboard.sql" %}
