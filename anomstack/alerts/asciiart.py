@@ -527,16 +527,16 @@ def make_alert_message(
     )
     metric_timestamp_to = (
         df_alert_metric["metric_timestamp"].max().strftime("%Y-%m-%d %H:%M")
-    )
-    labels = (
-        np.where(df_alert_metric["metric_alert"] == 1, anomaly_symbol, normal_symbol)
-        + (df_alert_metric[score_col].round(2) * 100).astype("int").astype("str")
-        + "% "
-    )
-    data = zip(labels, x)
+    )    
     graph_title = f"{metric_name} ({metric_timestamp_from} to {metric_timestamp_to})"
     message = ""
     if ascii_graph:
+        labels = (
+            np.where(df_alert_metric["metric_alert"] == 1, anomaly_symbol, normal_symbol)
+            + (df_alert_metric[score_col].round(2) * 100).astype("int").astype("str")
+            + "% "
+        )
+        data = zip(labels, x)
         graph = Pyasciigraph(
             titlebar=" ", graphsymbol=graph_symbol, float_format=alert_float_format
         ).graph(graph_title, data)
