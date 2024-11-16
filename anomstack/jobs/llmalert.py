@@ -105,11 +105,6 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                     .sort_values(by="metric_timestamp", ascending=True)
                     .reset_index(drop=True)
                 )
-                df_metric["metric_alert"] = df_metric["metric_alert"].fillna(0)
-                df_metric["metric_score"] = df_metric["metric_score"].fillna(0)
-                df_metric["metric_score_smooth"] = df_metric[
-                    "metric_score_smooth"
-                ].fillna(0)
                 df_metric = df_metric.dropna()
                 df_metric["metric_timestamp"] = pd.to_datetime(
                     df_metric["metric_timestamp"]
