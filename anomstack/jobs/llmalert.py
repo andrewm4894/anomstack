@@ -172,6 +172,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                             "metric_timestamp": metric_timestamp_max,
                             "alert_type": "llm",
                         },
+                        score_col="metric_score"
                     )
 
         llmalert(get_llmalert_data())
