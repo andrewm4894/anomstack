@@ -527,7 +527,7 @@ def make_alert_message(
     )
     metric_timestamp_to = (
         df_alert_metric["metric_timestamp"].max().strftime("%Y-%m-%d %H:%M")
-    )    
+    )
     graph_title = f"{metric_name} ({metric_timestamp_from} to {metric_timestamp_to})"
     message = ""
     if ascii_graph:

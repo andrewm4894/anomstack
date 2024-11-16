@@ -4,61 +4,61 @@ Template for generating the input data for the llmalert job.
 
 with
 
-metric_value_data as 
+metric_value_data as
 (
 select distinct
   metric_timestamp,
   metric_batch,
   metric_name,
   avg(metric_value) AS metric_value
-from 
+from
   {{ table_key }}
 where
   metric_batch = '{{ metric_batch }}'
-  and 
+  and
   metric_type = 'metric'
-  and 
+  and
   date(metric_timestamp) >= date('now', '-{{ llmalert_metric_timestamp_max_days_ago }} day')
 group by metric_timestamp, metric_batch, metric_name
 ),
 
-metric_score_data as 
+metric_score_data as
 (
 select distinct
   metric_timestamp,
   metric_batch,
   metric_name,
   avg(metric_value) AS metric_score
-from 
+from
   {{ table_key }}
 where
   metric_batch = '{{ metric_batch }}'
-  and 
+  and
   metric_type = 'score'
-  and 
+  and
   date(metric_timestamp) >= date('now', '-{{ llmalert_metric_timestamp_max_days_ago }} day')
 group by metric_timestamp, metric_batch, metric_name
 ),
 
-metric_alert_data as 
+metric_alert_data as
 (
 select distinct
   metric_timestamp,
   metric_batch,
   metric_name,
   avg(metric_value) AS metric_alert
-from 
+from
   {{ table_key }}
 where
   metric_batch = '{{ metric_batch }}'
-  and 
+  and
   metric_type = 'alert'
-  and 
+  and
   date(metric_timestamp) >= date('now', '-{{ llmalert_metric_timestamp_max_days_ago }} day')
 group by metric_timestamp, metric_batch, metric_name
 ),
 
-metric_value_recency_ranked as 
+metric_value_recency_ranked as
 (
 select
   metric_timestamp,
@@ -77,7 +77,7 @@ select
   m.metric_value,
   ifnull(s.metric_score,0) as metric_score,
   ifnull(a.metric_alert,0) as metric_alert
-from 
+from
   metric_value_recency_ranked m
 left join
   metric_score_data s
