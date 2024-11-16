@@ -25,4 +25,3 @@ slack_sdk
 snowflake-connector-python[pandas]
 sqlglot
 streamlit
-tabulate
