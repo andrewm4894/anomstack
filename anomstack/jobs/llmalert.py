@@ -58,7 +58,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
     alert_methods = spec["alert_methods"]
     llmalert_recent_n = spec["llmalert_recent_n"]
     llmalert_smooth_n = spec["llmalert_smooth_n"]
-    llmalert_metric_rounding = spec.get("llmalert_metric_rounding", 4)
+    llmalert_metric_rounding = spec.get("llmalert_metric_rounding", -1)
 
     @job(
         name=f"{metric_batch}_llmalert_job",
@@ -77,7 +77,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                 pd.DataFrame: A pandas DataFrame containing the data for the LLM Alert.
             """
 
-            df = read_sql(render("plot_sql", spec), db)
+            df = read_sql(render("llmalert_sql", spec), db)
 
             return df
 
@@ -105,11 +105,6 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                     .sort_values(by="metric_timestamp", ascending=True)
                     .reset_index(drop=True)
                 )
-                df_metric["metric_alert"] = df_metric["metric_alert"].fillna(0)
-                df_metric["metric_score"] = df_metric["metric_score"].fillna(0)
-                df_metric["metric_score_smooth"] = df_metric[
-                    "metric_score_smooth"
-                ].fillna(0)
                 df_metric = df_metric.dropna()
                 df_metric["metric_timestamp"] = pd.to_datetime(
                     df_metric["metric_timestamp"]
@@ -130,8 +125,13 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                 df_prompt = (
                     df_metric[["metric_timestamp", "metric_value", "metric_recency"]]
                     .dropna()
-                    .round(llmalert_metric_rounding)
                 )
+                df_prompt["metric_timestamp"] = df_metric[
+                    "metric_timestamp"
+                ].dt.strftime("%Y-%m-%d %H:%M:%S")
+                df_prompt = df_prompt.set_index("metric_timestamp")
+                if llmalert_metric_rounding >= 0:
+                    df_prompt = df_prompt.round(llmalert_metric_rounding)
 
                 # logger.debug(f"df_prompt: \n{df_prompt}")
 
@@ -172,6 +172,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                             "metric_timestamp": metric_timestamp_max,
                             "alert_type": "llm",
                         },
+                        score_col="metric_score"
                     )
 
         llmalert(get_llmalert_data())

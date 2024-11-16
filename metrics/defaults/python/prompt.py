@@ -10,18 +10,12 @@ def make_prompt(df, llmalert_recent_n) -> str:
         str: A prompt for the user to check if there is an anomaly in the time series data.
     """
 
-    from tabulate import tabulate
-
-    text_representation = tabulate(
-        df.reset_index(), headers="keys", tablefmt="pipe", showindex=False
-    )
+    text_representation = df.to_markdown()
 
     prompt = f"""
-    You are a seasoned time series expert who has worked with time series data for many years and are very acomplished at spotting and explaining anomalies in time series data.
+    Can you help me check if there is an anomaly in the below time series data?
 
-    Can you help me check if there is an anomaly in this time series data for this metric?
-
-    I am solely interested in looking at the last {llmalert_recent_n} observations (when metric_recency=recent) and if it looks like the more recent data may be anomalous or if it looks not all that much different from the rest of the data (metric_recency=baseline).
+    I am solely interested in looking at the last {llmalert_recent_n} observations (when metric_recency=recent) and if it looks like the more recent data may be anomalous in comparison to rest of the data (when metric_recency=baseline).
 
     Here are some questions to think about:
 
@@ -29,7 +23,6 @@ def make_prompt(df, llmalert_recent_n) -> str:
     - Are there any anomalies or outliers in the recent {llmalert_recent_n} observations of metric in df?
     - Can you identify any patterns or trends in the recent {llmalert_recent_n} values of the metric in df that could be indicative of an anomaly?
     - How does the distribution of the recent {llmalert_recent_n} values of the metric in df compare to the distribution of the entire dataset?
-    - Are there any changes in the mean, median, or standard deviation of the metric in the recent {llmalert_recent_n} observations that could be indicative of an anomaly?
     - Is there a sudden increase or decrease in the metric in the recent {llmalert_recent_n} observations?
     - Is there a change in the slope of the metric trend line in the recent {llmalert_recent_n} observations?
     - Are there any spikes or dips in the metric in the recent {llmalert_recent_n} observations?
@@ -44,10 +37,6 @@ def make_prompt(df, llmalert_recent_n) -> str:
     - Focus only on how the most recent {llmalert_recent_n} observations and if they look anomalous or not in reference to the earlier baseline data.
     - The data comes from a pandas dataframe.
 
-    Here is the data (ordered in ascending order, so from oldest to newest (top to bottom)):
-
-    {text_representation}
-
     I need a yes or no answer as to if you think the recent data looks anomalous or not.
 
     Please also provide a description on why the metric looks anomalous if you think it does.
@@ -57,6 +46,10 @@ def make_prompt(df, llmalert_recent_n) -> str:
     Please think step by step and provide a description, along with evidence, of your thought process as you go through the data.
 
     Think globally too like a human would if they were eyeballing the data.
+
+    Here is the data (ordered in ascending order, so from oldest to newest (top to bottom)):
+
+    {text_representation}
     """
 
     return prompt
