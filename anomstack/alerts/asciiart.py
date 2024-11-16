@@ -532,8 +532,14 @@ def make_alert_message(
     message = ""
     if ascii_graph:
         labels = (
-            np.where(df_alert_metric["metric_alert"] == 1, anomaly_symbol, normal_symbol)
-            + (df_alert_metric[score_col].round(2) * 100).astype("int").astype("str")
+            np.where(
+                df_alert_metric["metric_alert"] == 1,
+                anomaly_symbol,
+                normal_symbol
+            )
+            + (df_alert_metric[score_col].round(2) * 100)
+            .astype("int")
+            .astype("str")
             + "% "
         )
         data = zip(labels, x)

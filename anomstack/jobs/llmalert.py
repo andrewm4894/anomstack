@@ -126,9 +126,9 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                     df_metric[["metric_timestamp", "metric_value", "metric_recency"]]
                     .dropna()
                 )
-                df_prompt["metric_timestamp"] = df_metric["metric_timestamp"].dt.strftime(
-                    "%Y-%m-%d %H:%M:%S"
-                )
+                df_prompt["metric_timestamp"] = df_metric[
+                    "metric_timestamp"
+                ].dt.strftime("%Y-%m-%d %H:%M:%S")
                 df_prompt = df_prompt.set_index("metric_timestamp")
                 if llmalert_metric_rounding >= 0:
                     df_prompt = df_prompt.round(llmalert_metric_rounding)
