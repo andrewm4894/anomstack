@@ -28,10 +28,8 @@ def ingest() -> pd.DataFrame:
 
     area_list = [
         'demandactual',
-        'demandforecast',
         'generationactual',
         'windactual',
-        'windforecast',
         'frequency'
     ]
 
