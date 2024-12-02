@@ -13,13 +13,13 @@ select distinct
   metric_batch,
   metric_name,
   avg(metric_value) as metric_value
-from 
+from
   {{ table_key }}
-where 
+where
   metric_batch = '{{ metric_batch }}'
-  and 
+  and
   metric_type = 'metric'
-  and 
+  and
   date(metric_timestamp) >= date('now', '-{{ alert_metric_timestamp_max_days_ago }} day')
   {% if alert_exclude_metrics is defined %}
   and
@@ -36,13 +36,13 @@ select distinct
   metric_batch,
   metric_name,
   avg(metric_value) as metric_score
-from 
+from
   {{ table_key }}
-where 
+where
   metric_batch = '{{ metric_batch }}'
-  and 
+  and
   metric_type = 'score'
-  and 
+  and
   date(metric_timestamp) >= date('now', '-{{ alert_metric_timestamp_max_days_ago }} day')
 group by metric_timestamp, metric_batch, metric_name
 ),
@@ -54,13 +54,13 @@ select distinct
   metric_batch,
   metric_name,
   avg(metric_value) as metric_alert_historic
-from 
+from
   {{ table_key }}
-where 
+where
   metric_batch = '{{ metric_batch }}'
-  and 
+  and
   metric_type = 'alert'
-  and 
+  and
   date(metric_timestamp) >= date('now', '-{{ alert_metric_timestamp_max_days_ago }} day')
 group by metric_timestamp, metric_batch, metric_name
 ),
@@ -73,7 +73,7 @@ select distinct
   metric_name,
   metric_score,
   row_number() over (partition by metric_name order by metric_timestamp desc) as metric_score_recency_rank
-from 
+from
   metric_score_data
 ),
 
@@ -85,7 +85,7 @@ select distinct
   metric_name,
   metric_value,
   row_number() over (partition by metric_name order by metric_timestamp desc) as metric_value_recency_rank
-from 
+from
   metric_value_data
 ),
 
@@ -100,23 +100,23 @@ select
   ifnull(a.metric_alert_historic, 0) as metric_alert_historic,
   m.metric_value_recency_rank,
   s.metric_score_recency_rank
-from 
+from
   metric_value_recency_ranked m
-left join 
+left join
   metric_score_recency_ranked s
-on 
+on
   m.metric_name = s.metric_name
-  and 
+  and
   m.metric_batch = s.metric_batch
-  and 
+  and
   m.metric_timestamp = s.metric_timestamp
-left join 
+left join
   metric_alert_data a
-on 
+on
   m.metric_name = a.metric_name
-  and 
+  and
   m.metric_batch = a.metric_batch
-  and 
+  and
   m.metric_timestamp = a.metric_timestamp
 ),
 
@@ -143,7 +143,7 @@ select
     where ds.metric_name = dr.metric_name
     and ds.metric_score_recency_rank between dr.metric_score_recency_rank - {{ alert_snooze_n }} and dr.metric_score_recency_rank - 1
   ) as metric_has_recent_alert
-from 
+from
   data_ranked dr
 ),
 
@@ -160,20 +160,20 @@ select
   metric_score_smooth,
   metric_has_recent_alert,
   case
-    when 
+    when
       metric_score_recency_rank <= {{ alert_recent_n }}
-      and 
+      and
       (metric_score_smooth >= {{ alert_threshold }} OR {{ alert_always }} = True)
-      and 
+      and
       ifnull(metric_has_recent_alert,0) = 0
     then 1
     else 0
   end as metric_alert_calculated
-from 
+from
   data_smoothed
-where 
-  metric_score_recency_rank <= {{ alert_max_n }} 
-  or 
+where
+  metric_score_recency_rank <= {{ alert_max_n }}
+  or
   -- flag for always alerting if set
   {{ alert_always }} = True
 ),
@@ -184,7 +184,7 @@ select
   metric_batch,
   metric_name,
   max(metric_alert_calculated) as metric_alert_calculated_tmp
-from 
+from
   data_alerts
 group by metric_batch, metric_name
 having max(metric_alert_calculated) = 1 or {{ alert_always }} = True
@@ -199,11 +199,11 @@ select
   metric_score,
   metric_score_smooth,
   if(metric_score_recency_rank = 1, metric_alert_calculated, metric_alert_historic) as metric_alert
-from 
+from
   data_alerts
-join 
+join
   metrics_triggered
-on 
+on
   data_alerts.metric_batch = metrics_triggered.metric_batch
   and
   data_alerts.metric_name = metrics_triggered.metric_name

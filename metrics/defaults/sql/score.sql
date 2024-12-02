@@ -4,7 +4,7 @@ Template for generating input metric data for scoring.
 
 with
 
-data as 
+data as
 (
 select
   metric_timestamp,
@@ -12,11 +12,11 @@ select
   metric_name,
   avg(case when metric_type = 'metric' then metric_value else null end) as metric_value,
   avg(case when metric_type = 'score' then metric_value else null end) as metric_score
-from 
+from
   {{ table_key }}
-where 
+where
   metric_batch = '{{ metric_batch }}'
-  and 
+  and
   metric_type in ('metric', 'score')
   {% if score_exclude_metrics is defined %}
   and
@@ -34,7 +34,7 @@ select
   metric_value,
   metric_score,
   row_number() over (partition by metric_name order by metric_timestamp desc) as metric_recency_rank
-from 
+from
   data
 )
 
@@ -44,7 +44,7 @@ select
   metric_name,
   metric_value,
   metric_score
-from 
+from
   data_ranked
 where
   -- Limit to the most recent {{ score_max_n }} records
