@@ -11,5 +11,17 @@ plot_cron_schedule: "*/140 * * * *"
 alert_always: False
 alert_methods: "email,slack"
 disable_llmalert: False
+train_exclude_metrics:
+  - eirgrid_demand_forecast_value
+  - eirgrid_wind_fcast
+alert_exclude_metrics:
+  - eirgrid_demand_forecast_value
+  - eirgrid_wind_fcast
+score_exclude_metrics:
+  - eirgrid_demand_forecast_value
+  - eirgrid_wind_fcast
+change_exclude_metrics:
+  - eirgrid_demand_forecast_value
+  - eirgrid_wind_fcast
 ingest_fn: >
   {% include "./examples/eirgrid/eirgrid.py" %}
