@@ -15,7 +15,7 @@ RETRY_DELAY = 1
 
 def read_sql_sqlite(sql: str) -> pd.DataFrame:
     """
-    Read data from SQL.
+    Read data from SQLite with retry logic.
 
     Args:
         sql (str): The SQL query to execute.
@@ -28,10 +28,31 @@ def read_sql_sqlite(sql: str) -> pd.DataFrame:
     logger.info(f"sqlite_path: {sqlite_path}")
     os.makedirs(os.path.dirname(sqlite_path), exist_ok=True)
 
-    conn = sqlite3.connect(sqlite_path)
-    df = pd.read_sql_query(sql, conn)
-    conn.close()
-    return df
+    attempt = 0
+    while attempt < MAX_RETRIES:
+        try:
+            conn = sqlite3.connect(sqlite_path)
+            df = pd.read_sql_query(sql, conn)
+            conn.close()
+            return df
+        except sqlite3.OperationalError as e:
+            if "database is locked" in str(e):
+                attempt += 1
+                logger.warning(
+                    f"Database is locked; attempt {attempt} of {MAX_RETRIES}. "
+                    f"Retrying in {RETRY_DELAY} seconds..."
+                )
+                time.sleep(RETRY_DELAY)
+            else:
+                logger.error(f"Error reading from SQLite: {e}")
+                raise
+        finally:
+            if 'conn' in locals():
+                conn.close()
+
+    # If all retries fail, raise an error
+    raise sqlite3.OperationalError("Database is locked after multiple attempts.")
+
 
 def save_df_sqlite(df: pd.DataFrame, table_key: str) -> pd.DataFrame:
     """
