@@ -564,6 +564,7 @@ And the attached plot will look something like this:
 Yes! I have managed to find a way to ram a large language model (LLM) into this project. But you know what, it might just work...
 
 **Update**: It works horribly, but it works! 🤣. Still need to do a lot more prompt engineering to get this to work well, but it's a start.
+**Update Update**: I know how to make this work much better and more reliable + latest models are better - going to refactor this soon.
 
 Idea here is to just send the metric data and prompt to a LLM (ChatGPT) and ask it if it thinks the metric looks anomalous. If it does, we alert.
 
