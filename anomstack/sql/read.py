@@ -3,55 +3,28 @@ This module provides functions for reading data from SQL databases using
 different database connectors.
 """
 
-import re
 
 import pandas as pd
-import sqlglot
 from dagster import get_dagster_logger
 
 from anomstack.df.utils import log_df_info
-from anomstack.external.duckdb.duckdb import read_sql_duckdb
+from anomstack.external.duckdb.duckdb import read_sql_duckdb, run_sql_duckdb
 from anomstack.external.gcp.bigquery import read_sql_bigquery
 from anomstack.external.snowflake.snowflake import read_sql_snowflake
-from anomstack.external.sqlite.sqlite import read_sql_sqlite
+from anomstack.external.sqlite.sqlite import read_sql_sqlite, run_sql_sqlite
+from anomstack.sql.translate import db_translate
 
 pd.options.display.max_columns = 10
 
 
-def db_translate(sql: str, db: str) -> str:
-    """
-    Replace some functions with their db-specific equivalents.
-
-    Args:
-        sql (str): The SQL query to be translated.
-        db (str): The name of the database to which the query will be sent.
-
-    Returns:
-        str: The translated SQL query.
-    """
-    # Transpile the SQL query to the target database dialect
-    sql = sqlglot.transpile(sql, write=db, identify=True, pretty=True)[0]
-    # Replace some functions with their db-specific equivalents
-    if db == "sqlite":
-        sql = sql.replace("GET_CURRENT_TIMESTAMP()", "DATETIME('now')")
-    elif db == "bigquery":
-        sql = sql.replace("GET_CURRENT_TIMESTAMP()", "CURRENT_TIMESTAMP()")
-        sql = re.sub(
-            r"DATE\('now', '(-?\d+) day'\)",
-            "DATE_ADD(CURRENT_DATE(), INTERVAL \\1 DAY)",
-            sql
-        )
-
-    return sql
-
-
-def read_sql(sql: str, db: str) -> pd.DataFrame:
+def read_sql(sql: str, db: str, returns_df: bool = True) -> pd.DataFrame:
     """
     Read data from SQL.
 
     Args:
         sql (str): SQL query to execute.
         db (str): Name of the database to connect to.
+        returns_df (bool, optional): Whether the query expects a DataFrame as a result.
 
     Returns:
         pd.DataFrame: A pandas DataFrame containing the results of the SQL query.
@@ -64,13 +37,31 @@ def read_sql(sql: str, db: str) -> pd.DataFrame:
     logger.debug(f"-- read_sql() is about to read this qry:\n{sql}")
 
     if db == "bigquery":
-        df = read_sql_bigquery(sql)
+        if returns_df:
+            df = read_sql_bigquery(sql)
+        elif not returns_df:
+            raise NotImplementedError(
+                "BigQuery not yet implemented for non-returns_df queries."
+            )
     elif db == "snowflake":
-        df = read_sql_snowflake(sql)
+        if returns_df:
+            df = read_sql_snowflake(sql)
+        elif not returns_df:
+            raise NotImplementedError(
+                "Snowflake not yet implemented for non-returns_df queries."
+            )
     elif db == "duckdb":
-        df = read_sql_duckdb(sql)
+        if returns_df:
+            df = read_sql_duckdb(sql)
+        elif not returns_df:
+            run_sql_duckdb(sql)
+            df = pd.DataFrame()
     elif db == "sqlite":
-        df = read_sql_sqlite(sql)
+        if returns_df:
+            df = read_sql_sqlite(sql)
+        elif not returns_df:
+            run_sql_sqlite(sql)
+            df = pd.DataFrame()
     else:
         raise ValueError(f"Unknown db: {db}")
 

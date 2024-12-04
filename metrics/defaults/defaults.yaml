@@ -87,6 +87,8 @@ alert_cron_schedule: "*/5 * * * *" # cron schedule for alerting jobs
 alert_default_schedule_status: 'STOPPED' # default schedule status for alert jobs (RUNNING or STOPPED)
 change_cron_schedule: "*/5 * * * *" # cron schedule for change detection jobs
 change_default_schedule_status: 'STOPPED' # default schedule status for alert jobs (RUNNING or STOPPED)
+delete_cron_schedule: "0 6 * * *" # cron schedule for delete jobs
+delete_default_schedule_status: 'STOPPED' # default schedule status for delete jobs (RUNNING or STOPPED)
 llmalert_cron_schedule: "*/5 * * * *" # cron schedule for llmalerting jobs
 llmalert_default_schedule_status: 'STOPPED' # default schedule status for llmalert jobs (RUNNING or STOPPED)
 plot_cron_schedule: "*/5 * * * *" # cron schedule for plot jobs
@@ -116,6 +118,9 @@ llmalert_sql: >
 # default templated dashboard sql
 dashboard_sql: >
   {% include "./defaults/sql/dashboard.sql" %}
+# default templated delete sql
+delete_sql: >
+  {% include "./defaults/sql/delete.sql" %}
 # default templated summary sql
 summary_sql: >
   {% include "./defaults/sql/summary.sql" %}
@@ -143,3 +148,5 @@ disable_change: False # if you want to disable change detection job for some rea
 disable_llmalert: True # if you want to disable llmalert job for some reason.
 disable_plot: False # if you want to disable plot job for some reason.
 disable_summary: False # if you want to disable summary job for some reason.
+disable_delete: False # if you want to disable delete job for some reason.
+delete_after_n_days: 365 # delete metrics older than this number of days.

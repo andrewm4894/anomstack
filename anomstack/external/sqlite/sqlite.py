@@ -90,3 +90,47 @@ def save_df_sqlite(df: pd.DataFrame, table_key: str) -> pd.DataFrame:
                 raise
     # If all retries fail, raise an error
     raise sqlite3.OperationalError("Database is locked after multiple attempts.")
+
+
+def run_sql_sqlite(sql: str) -> None:
+    """
+    Execute a non-returning SQL statement in SQLite with retry logic.
+
+    Args:
+        sql (str): The SQL statement to execute.
+
+    Returns:
+        None
+    """
+    logger = get_dagster_logger()
+    sqlite_path = os.environ.get("ANOMSTACK_SQLITE_PATH", "tmpdata/anomstack.db")
+    logger.info(f"sqlite_path: {sqlite_path}")
+    os.makedirs(os.path.dirname(sqlite_path), exist_ok=True)
+
+    attempt = 0
+    while attempt < MAX_RETRIES:
+        try:
+            conn = sqlite3.connect(sqlite_path)
+            cursor = conn.cursor()
+            cursor.execute(sql)
+            conn.commit()
+            cursor.close()
+            conn.close()
+            return
+        except sqlite3.OperationalError as e:
+            if "database is locked" in str(e):
+                attempt += 1
+                logger.warning(
+                    f"Database is locked; attempt {attempt} of {MAX_RETRIES}. "
+                    f"Retrying in {RETRY_DELAY} seconds..."
+                )
+                time.sleep(RETRY_DELAY)
+            else:
+                logger.error(f"Error executing SQL statement: {e}")
+                raise
+        finally:
+            if 'conn' in locals():
+                conn.close()
+
+    # If all retries fail, raise an error
+    raise sqlite3.OperationalError("Database is locked after multiple attempts.")

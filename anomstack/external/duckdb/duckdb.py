@@ -63,3 +63,31 @@ def save_df_duckdb(df: pd.DataFrame, table_key: str) -> pd.DataFrame:
         query(connection=conn, query=f"CREATE TABLE {table_key} AS SELECT * FROM df")
 
     return df
+
+
+def run_sql_duckdb(sql: str) -> None:
+    """
+    Execute a non-returning SQL statement in DuckDB.
+
+    Args:
+        sql (str): The SQL statement to execute.
+
+    Returns:
+        None
+    """
+    logger = get_dagster_logger()
+
+    duckdb_path = os.environ.get("ANOMSTACK_DUCKDB_PATH", "tmpdata/anomstack.db")
+    logger.info(f"duckdb_path: {duckdb_path}")
+
+    os.makedirs(os.path.dirname(duckdb_path), exist_ok=True)
+
+    conn = connect(duckdb_path)
+
+    try:
+        query(connection=conn, query=sql)
+    except Exception as e:
+        logger.error(f"Error executing SQL statement in DuckDB: {e}")
+        raise
+    finally:
+        conn.close()
