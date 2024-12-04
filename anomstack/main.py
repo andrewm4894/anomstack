@@ -6,6 +6,7 @@ from dagster import Definitions
 
 from anomstack.jobs.alert import alert_jobs, alert_schedules
 from anomstack.jobs.change import change_jobs, change_schedules
+from anomstack.jobs.delete import delete_jobs, delete_schedules
 from anomstack.jobs.ingest import ingest_jobs, ingest_schedules
 from anomstack.jobs.llmalert import llmalert_jobs, llmalert_schedules
 from anomstack.jobs.plot import plot_jobs, plot_schedules
@@ -23,6 +24,7 @@ jobs = (
     + plot_jobs
     + change_jobs
     + summary_jobs
+    + delete_jobs
 )
 sensors = [email_on_run_failure]
 schedules = (
@@ -34,6 +36,7 @@ schedules = (
     + plot_schedules
     + change_schedules
     + summary_schedules
+    + delete_schedules
 )
 
 defs = Definitions(
