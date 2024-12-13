@@ -10,6 +10,7 @@ SHELL=/bin/bash
 .PHONY: docs
 .PHONY: requirements
 .PHONY: kill-locald
+.PHONY: kill-dashboardd
 .PHONY: ps-locald
 
 # start streamlit dashboard
@@ -31,6 +32,10 @@ locald:
 # kill any running dagster process
 kill-locald:
 	kill -9 $(shell ps aux | grep dagster | grep -v grep | awk '{print $$2}')
+
+# kill any running streamlit process
+kill-dashboardd:
+	kill -9 $(shell ps aux | grep streamlit | grep -v grep | awk '{print $$2}')
 
 # list any running dagster process
 ps-locald:
