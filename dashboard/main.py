@@ -11,11 +11,12 @@ app,rt = fast_app()
 
 @rt('/')
 def get():
+    print(999)
     metric_batches = list(specs.keys())
 
-    for smetric_batch in specs:
+    for metric_batch in specs:
 
-        spec = specs[smetric_batch]
+        spec = specs[metric_batch]
 
         # get data
         sql = render("dashboard_sql", spec, params={"alert_max_n": 90})
@@ -26,4 +27,4 @@ def get():
     return Div(P(metric_batches))
 
 
-serve()
+serve(host="0.0.0.0", port=5002)
