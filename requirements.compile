@@ -19,6 +19,7 @@ pandas
 pandas-gbq
 plotly
 pyod
+python-fasthtml
 pyyaml
 seaborn
 slack_sdk
