@@ -1,10 +1,14 @@
 
-
+import logging
+import os
+from dotenv import load_dotenv
 import plotly.graph_objects as go
-import plotly.graph_objs as go
 import plotly.io as pio
 import requests
 from plotly.subplots import make_subplots
+
+
+log = logging.getLogger("fasthtml")
 
 
 def plot_time_series(df, metric_name) -> str:
@@ -69,7 +73,8 @@ def plot_time_series(df, metric_name) -> str:
 
     return html_str
 
-def get_enabled_dagster_jobs(api_url: str) -> list:
+
+def get_enabled_dagster_jobs() -> list:
     """
     Fetches all enabled jobs (with active schedules) from a Dagster instance using the GraphQL API.
 
@@ -79,6 +84,20 @@ def get_enabled_dagster_jobs(api_url: str) -> list:
     Returns:
         list: A list of enabled job names.
     """
+
+    load_dotenv('./.env')
+
+    # Resolve DAGSTER_HOME to an absolute path
+    dagster_home = os.getenv("DAGSTER_HOME", "./")
+    dagster_home_absolute = os.path.abspath(dagster_home)
+    os.environ["DAGSTER_HOME"] = dagster_home_absolute
+
+    # Infer Dagster GraphQL API URL from environment variable or default to localhost
+    dagster_host = os.getenv("DAGSTER_HOST", "http://localhost")
+    dagster_port = os.getenv("DAGSTER_PORT", "3000")
+    dagster_graphql_url = f"{dagster_host}:{dagster_port}/graphql"
+
+
     query = """
     query {
       workspaceOrError {
@@ -110,7 +129,7 @@ def get_enabled_dagster_jobs(api_url: str) -> list:
     """
 
     try:
-        response = requests.post(api_url, json={"query": query})
+        response = requests.post(dagster_graphql_url, json={"query": query})
         if response.status_code == 200:
             data = response.json()
             enabled_jobs = []
@@ -127,9 +146,9 @@ def get_enabled_dagster_jobs(api_url: str) -> list:
                                 enabled_jobs.append(job["name"])
             return enabled_jobs
         else:
-            print(f"Error: Received status code {response.status_code}")
-            print(f"Response: {response.text}")
+            log.info(f"Error: Received status code {response.status_code}")
+            log.info(f"Response: {response.text}")
             return []
     except requests.exceptions.RequestException as e:
-        print(f"Error connecting to Dagster GraphQL API: {e}")
+        log.info(f"Error connecting to Dagster GraphQL API: {e}")
         return []
