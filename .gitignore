@@ -179,3 +179,4 @@ models/*
 tmp
 tmpdata
 .sesskey
+.telemetry/id.yaml
