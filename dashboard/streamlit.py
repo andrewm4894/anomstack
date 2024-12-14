@@ -6,10 +6,9 @@ $ streamlit run streamlit.py
 """
 
 import pandas as pd
-import plotly.graph_objs as go
 import streamlit as st
 from dotenv import load_dotenv
-from plotly.subplots import make_subplots
+from utils import plot_time_series, get_enabled_dagster_jobs
 
 from anomstack.config import specs
 from anomstack.jinja.render import render
@@ -18,86 +17,6 @@ from anomstack.sql.read import read_sql
 load_dotenv()
 
 st.set_page_config(layout="wide")
-
-
-def plot_time_series(df, metric_name) -> go.Figure:
-    """
-    Plot a time series with metric value and metric score.
-    """
-
-    # Create a figure with secondary y-axis
-    fig = make_subplots(specs=[[{"secondary_y": True}]])
-
-    # Add traces/lines for metric_value, metric_score, and metric_alert
-    fig.add_trace(
-        go.Scatter(x=df["metric_timestamp"], y=df["metric_value"], name="Metric Value"),
-        secondary_y=False,
-    )
-
-    fig.add_trace(
-        go.Scatter(
-            x=df["metric_timestamp"],
-            y=df["metric_score"],
-            name="Metric Score",
-            line=dict(dash="dot"),
-        ),
-        secondary_y=True,
-    )
-
-    alert_df = df[df["metric_alert"] == 1]
-    if not alert_df.empty:
-        fig.add_trace(
-            go.Scatter(
-                x=alert_df["metric_timestamp"],
-                y=alert_df["metric_alert"],
-                mode="markers",
-                name="Metric Alert",
-                marker=dict(color="red", size=5),
-            ),
-            secondary_y=True,
-        )
-
-    change_df = df[df["metric_change"] == 1]
-    if not change_df.empty:
-        fig.add_trace(
-            go.Scatter(
-                x=change_df["metric_timestamp"],
-                y=change_df["metric_change"],
-                mode="markers",
-                name="Metric Change",
-                marker=dict(color="orange", size=5),
-            ),
-            secondary_y=True,
-        )
-
-    # Update x-axis and y-axes to remove gridlines, set the y-axis range
-    # for metric score, and format as percentage
-    fig.update_xaxes(showgrid=False, zeroline=False)
-    fig.update_yaxes(showgrid=False, zeroline=False, secondary_y=False)
-    fig.update_yaxes(
-        showgrid=False,
-        zeroline=False,
-        range=[0, 1.1],
-        tickformat=".0%",
-        secondary_y=True,
-    )
-
-    # Set x-axis title
-    fig.update_xaxes(title_text="Timestamp")
-
-    # Set y-axes titles
-    fig.update_yaxes(title_text="Metric Value", secondary_y=False)
-    fig.update_yaxes(title_text="Metric Score", secondary_y=True)
-
-    # Move legend to the top of the plot
-    fig.update_layout(
-        title_text=f"{metric_name} (n={len(df)})",
-        hovermode="x",
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-        autosize=True,
-    )
-
-    return fig
 
 
 @st.cache_data(ttl=60)
@@ -115,8 +34,9 @@ custom_css = """<style>a {text-decoration: none;}</style>"""
 st.markdown(custom_css, unsafe_allow_html=True)
 st.title("[Anomstack](https://github.com/andrewm4894/anomstack) Metrics Visualization")
 
-# get metric batches
-metric_batches = list(specs.keys())
+# get metric batches of enabled jobs
+enabled_jobs = get_enabled_dagster_jobs()
+metric_batches = [batch for batch in list(specs.keys()) if f"{batch}_ingest" in enabled_jobs]
 
 # inputs
 last_n = st.sidebar.number_input("Last N:", min_value=1, value=5000)
