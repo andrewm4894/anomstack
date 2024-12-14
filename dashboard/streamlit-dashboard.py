@@ -67,6 +67,10 @@ for i, batch_selection in enumerate(metric_batches):
         db = specs[batch_selection]["db"]
         df = get_data(sql, db)
 
+        if df.empty:
+            st.warning("No data found.")
+            continue
+
         # data based inputs
         metric_names = ["ALL"]
         unique_metrics = sorted(
