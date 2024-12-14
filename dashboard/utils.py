@@ -7,7 +7,6 @@ import requests
 from plotly.subplots import make_subplots
 
 
-
 def plot_time_series(df, metric_name) -> str:
     """
     Plot a time series with metric value and metric score and return the HTML representation.
