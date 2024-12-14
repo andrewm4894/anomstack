@@ -152,7 +152,7 @@ def get_enabled_dagster_jobs() -> list:
             data = response.json()
             enabled_jobs = []
             for location in data["data"]["workspaceOrError"]["locationEntries"]:
-                if "locationOrLoadError" in location and "repositories" in location["locationOrLoadError"]:
+                if "locationOrLoadError" in location and "repositories" in location["locationOrLoadError"]:  # noqa: E501
                     for repo in location["locationOrLoadError"]["repositories"]:
                         for job in repo["jobs"]:
                             # Check if the job has any active schedules
