@@ -1,17 +1,11 @@
 
-import os
-import requests
-import logging
-from dotenv import load_dotenv
-from fasthtml.common import Div, P, fast_app, serve
-import plotly.graph_objs as go
+
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
+import plotly.graph_objs as go
 import plotly.io as pio
+import requests
 from plotly.subplots import make_subplots
-from anomstack.config import specs
-from anomstack.jinja.render import render
-from anomstack.sql.read import read_sql
+
 
 
 def plot_time_series(df, metric_name) -> str:

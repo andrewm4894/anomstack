@@ -1,14 +1,13 @@
-import os
-import requests
 import logging
+import os
+
 from dotenv import load_dotenv
-from fasthtml.common import Div, P, fast_app, serve, Table
-from plotly.io import to_html
+from fasthtml.common import Div, P, Table, fast_app, serve
+from utils import get_enabled_dagster_jobs
+
 from anomstack.config import specs
 from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
-
-from utils import get_enabled_dagster_jobs, plot_time_series
 
 load_dotenv('./.env')
 
@@ -44,7 +43,7 @@ def get():
 
     # loop through metric batches
     for i, metric_batch in enumerate(specs, start=1):
-        
+
         if i > 3:
             break
 
