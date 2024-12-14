@@ -1,7 +1,7 @@
 SHELL=/bin/bash
 
-.PHONY: dashboard
-.PHONY: dashboardd
+.PHONY: streamlit
+.PHONY: streamlitd
 .PHONY: local
 .PHONY: locald
 .PHONY: docker
@@ -10,16 +10,16 @@ SHELL=/bin/bash
 .PHONY: docs
 .PHONY: requirements
 .PHONY: kill-locald
-.PHONY: kill-dashboardd
+.PHONY: kill-streamlitd
 .PHONY: ps-locald
 
 # start streamlit dashboard
-dashboard:
-	streamlit run ./dashboard.py --server.port 8501
+streamlit:
+	streamlit run ./dashboard/streamlit.py --server.port 8501
 
 # start streamlit dashboard as a daemon with no log file
-dashboardd:
-	nohup streamlit run ./dashboard.py --server.port 8501 > /dev/null 2>&1 &
+streamlitd:
+	nohup streamlit run ./dashboard/streamlit.py --server.port 8501 > /dev/null 2>&1 &
 
 # start dagster locally
 local:
@@ -34,7 +34,7 @@ kill-locald:
 	kill -9 $(shell ps aux | grep dagster | grep -v grep | awk '{print $$2}')
 
 # kill any running streamlit process
-kill-dashboardd:
+kill-streamlitd:
 	kill -9 $(shell ps aux | grep streamlit | grep -v grep | awk '{print $$2}')
 
 # list any running dagster process
