@@ -136,6 +136,8 @@ fastcore==1.7.26
     #   sqlite-minutils
 fastlite==0.0.13
     # via python-fasthtml
+fh-plotly==0.2.1
+    # via -r requirements.compile
 filelock==3.16.1
     # via
     #   dagster
@@ -354,7 +356,9 @@ pillow==10.4.0
 platformdirs==4.3.6
     # via snowflake-connector-python
 plotly==5.24.1
-    # via -r requirements.compile
+    # via
+    #   -r requirements.compile
+    #   fh-plotly
 prompt-toolkit==3.0.36
     # via questionary
 proto-plus==1.24.0
@@ -425,7 +429,9 @@ python-dotenv==1.0.1
     #   dagster
     #   uvicorn
 python-fasthtml==0.10.1
-    # via -r requirements.compile
+    # via
+    #   -r requirements.compile
+    #   fh-plotly
 python-multipart==0.0.19
     # via python-fasthtml
 pytz==2024.2
