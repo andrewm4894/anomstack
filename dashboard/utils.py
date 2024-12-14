@@ -92,10 +92,12 @@ def plot_time_series(df, metric_name) -> go.Figure:
 
 def get_enabled_dagster_jobs() -> list:
     """
-    Fetches all enabled jobs (with active schedules) from a Dagster instance using the GraphQL API.
+    Fetches all enabled jobs (with active schedules) from a Dagster instance
+    using the GraphQL API.
 
     Args:
-        api_url (str): The URL of the Dagster GraphQL API (e.g., http://localhost:3000/graphql).
+        api_url (str): The URL of the Dagster GraphQL API
+            (e.g., http://localhost:3000/graphql).
 
     Returns:
         list: A list of enabled job names.

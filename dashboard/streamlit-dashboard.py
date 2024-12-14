@@ -35,7 +35,9 @@ st.title("[Anomstack](https://github.com/andrewm4894/anomstack) Metrics Visualiz
 
 # get metric batches of enabled jobs
 enabled_jobs = get_enabled_dagster_jobs()
-metric_batches = sorted([batch for batch in list(specs.keys()) if f"{batch}_ingest" in enabled_jobs])
+metric_batches = sorted(
+    [batch for batch in list(specs.keys()) if f"{batch}_ingest" in enabled_jobs]
+)
 
 
 # Create tabs for each metric batch
@@ -48,10 +50,20 @@ for i, batch_selection in enumerate(metric_batches):
             cols = st.columns([1, 6])
 
         with cols[0]:
-            last_n = st.number_input("Last N:", min_value=1, value=5000, help="Specify the number of recent records to fetch.", key=f"last_n_{batch_selection}")
+            last_n = st.number_input(
+                "Last N:",
+                min_value=1,
+                value=5000,
+                help="Specify the number of recent records to fetch.",
+                key=f"last_n_{batch_selection}"
+            )
 
         # get data
-        sql = render("dashboard_sql", specs[batch_selection], params={"alert_max_n": last_n})
+        sql = render(
+            "dashboard_sql",
+            specs[batch_selection],
+            params={"alert_max_n": last_n}
+        )
         db = specs[batch_selection]["db"]
         df = get_data(sql, db)
 
@@ -63,13 +75,19 @@ for i, batch_selection in enumerate(metric_batches):
         metric_names.extend(unique_metrics)
 
         with cols[1]:
-            metric_selection = st.selectbox(f"Metric Name ({batch_selection}):", metric_names, key=f"metric_selection_{batch_selection}", help="Select a metric to visualize.")
+            metric_selection = st.selectbox(
+                f"Metric Name ({batch_selection}):",
+                metric_names,
+                key=f"metric_selection_{batch_selection}",
+                help="Select a metric to visualize."
+            )
 
         # filter data and plot
         if metric_selection == "ALL":
             for metric in unique_metrics:
                 filtered_df = df[
-                    (df["metric_batch"] == batch_selection) & (df["metric_name"] == metric)
+                    (df["metric_batch"] == batch_selection)
+                    & (df["metric_name"] == metric)
                 ].sort_values(by="metric_timestamp")
 
                 # plot
