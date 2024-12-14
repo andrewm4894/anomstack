@@ -17,11 +17,11 @@ SHELL=/bin/bash
 
 # start streamlit dashboard
 streamlit:
-	streamlit run ./dashboard/streamlit.py --server.port 8501
+	streamlit run ./dashboard/streamlit-dashboard.py --server.port 8501
 
 # start streamlit dashboard as a daemon with no log file
 streamlitd:
-	nohup streamlit run ./dashboard/streamlit.py --server.port 8501 > /dev/null 2>&1 &
+	nohup streamlit run ./dashboard/streamlit-dashboard.py --server.port 8501 > /dev/null 2>&1 &
 
 # start dagster locally
 local:
@@ -66,7 +66,7 @@ requirements:
 	pip-compile requirements.compile
 
 fasthtml:
-	python dashboard/main.py
+	python dashboard/fasthtml-dashboard.py
 
 fasthtmld:
-	nohup python dashboard/main.py > /dev/null 2>&1 &
+	nohup python dashboard/fasthtml-dashboard.py > /dev/null 2>&1 &
