@@ -1,12 +1,12 @@
 import logging
-from fasthtml.common import Div, P, Table, fast_app, serve, Title
-from utils import get_enabled_dagster_jobs, plot_time_series
+
+from fasthtml.common import Title, fast_app, serve
 from fh_plotly import plotly2fasthtml, plotly_headers
+from utils import get_enabled_dagster_jobs, plot_time_series
 
 from anomstack.config import specs
 from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
-
 
 log = logging.getLogger("fasthtml")
 
@@ -45,7 +45,7 @@ def home():
             log.debug(f"job {metric_batch}_ingest is not enabled.")
 
     return (
-        Title("Anomstack"), 
+        Title("Anomstack"),
         figs
         )
 

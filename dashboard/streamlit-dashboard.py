@@ -8,7 +8,7 @@ $ streamlit run streamlit-dashboard.py
 import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
-from utils import plot_time_series, get_enabled_dagster_jobs
+from utils import get_enabled_dagster_jobs, plot_time_series
 
 from anomstack.config import specs
 from anomstack.jinja.render import render

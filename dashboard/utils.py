@@ -1,12 +1,11 @@
 
 import logging
 import os
-from dotenv import load_dotenv
-import plotly.graph_objects as go
-import plotly.io as pio
-import requests
-from plotly.subplots import make_subplots
 
+import plotly.graph_objects as go
+import requests
+from dotenv import load_dotenv
+from plotly.subplots import make_subplots
 
 log = logging.getLogger("fasthtml")
 
