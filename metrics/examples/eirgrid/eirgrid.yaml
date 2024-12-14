@@ -1,6 +1,4 @@
 metric_batch: "eirgrid"
-db: "sqlite"
-table_key: "metrics"
 ingest_cron_schedule: "*/120 * * * *"
 train_cron_schedule: "*/360 * * * *"
 score_cron_schedule: "*/130 * * * *"
@@ -11,17 +9,17 @@ plot_cron_schedule: "*/140 * * * *"
 alert_always: False
 alert_methods: "email,slack"
 disable_llmalert: False
-train_exclude_metrics:
-  - eirgrid_demand_forecast_value
-  - eirgrid_wind_fcast
-alert_exclude_metrics:
-  - eirgrid_demand_forecast_value
-  - eirgrid_wind_fcast
-score_exclude_metrics:
-  - eirgrid_demand_forecast_value
-  - eirgrid_wind_fcast
-change_exclude_metrics:
-  - eirgrid_demand_forecast_value
-  - eirgrid_wind_fcast
+# train_exclude_metrics:
+#   - eirgrid_demand_forecast_value
+#   - eirgrid_wind_fcast
+# alert_exclude_metrics:
+#   - eirgrid_demand_forecast_value
+#   - eirgrid_wind_fcast
+# score_exclude_metrics:
+#   - eirgrid_demand_forecast_value
+#   - eirgrid_wind_fcast
+# change_exclude_metrics:
+#   - eirgrid_demand_forecast_value
+#   - eirgrid_wind_fcast
 ingest_fn: >
   {% include "./examples/eirgrid/eirgrid.py" %}

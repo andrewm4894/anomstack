@@ -29,6 +29,8 @@ attrs==24.2.0
     #   referencing
 backoff==2.2.1
     # via gql
+beautifulsoup4==4.12.3
+    # via python-fasthtml
 blinker==1.8.2
     # via streamlit
 boto3==1.35.24
@@ -126,6 +128,15 @@ docker-image-py==0.1.13
 docstring-parser==0.16
     # via dagster
 duckdb==1.1.0
+    # via -r requirements.compile
+fastcore==1.7.26
+    # via
+    #   fastlite
+    #   python-fasthtml
+    #   sqlite-minutils
+fastlite==0.0.13
+    # via python-fasthtml
+fh-plotly==0.2.1
     # via -r requirements.compile
 filelock==3.16.1
     # via
@@ -226,7 +237,9 @@ httplib2==0.22.0
 httptools==0.6.1
     # via uvicorn
 httpx==0.27.2
-    # via openai
+    # via
+    #   openai
+    #   python-fasthtml
 humanfriendly==10.0
     # via coloredlogs
 idna==3.10
@@ -236,6 +249,8 @@ idna==3.10
     #   requests
     #   snowflake-connector-python
     #   yarl
+itsdangerous==2.2.0
+    # via python-fasthtml
 jinja2==3.1.4
     # via
     #   -r requirements.compile
@@ -300,7 +315,9 @@ numpy==2.0.2
 oauth2client==4.1.3
     # via dagster-gcp
 oauthlib==3.2.2
-    # via requests-oauthlib
+    # via
+    #   python-fasthtml
+    #   requests-oauthlib
 openai==1.47.0
     # via -r requirements.compile
 oscrypto==1.3.0
@@ -311,6 +328,7 @@ packaging==24.1
     #   dagster
     #   dagster-cloud-cli
     #   db-dtypes
+    #   fastcore
     #   google-cloud-bigquery
     #   matplotlib
     #   pandas-gbq
@@ -338,7 +356,9 @@ pillow==10.4.0
 platformdirs==4.3.6
     # via snowflake-connector-python
 plotly==5.24.1
-    # via -r requirements.compile
+    # via
+    #   -r requirements.compile
+    #   fh-plotly
 prompt-toolkit==3.0.36
     # via questionary
 proto-plus==1.24.0
@@ -403,10 +423,17 @@ python-dateutil==2.9.0.post0
     #   google-cloud-bigquery
     #   matplotlib
     #   pandas
+    #   python-fasthtml
 python-dotenv==1.0.1
     # via
     #   dagster
     #   uvicorn
+python-fasthtml==0.10.1
+    # via
+    #   -r requirements.compile
+    #   fh-plotly
+python-multipart==0.0.19
+    # via python-fasthtml
 pytz==2024.2
     # via
     #   croniter
@@ -491,16 +518,21 @@ snowflake-connector-python[pandas]==3.12.2
     # via -r requirements.compile
 sortedcontainers==2.4.0
     # via snowflake-connector-python
+soupsieve==2.6
+    # via beautifulsoup4
 sqlalchemy==2.0.35
     # via
     #   alembic
     #   dagster
 sqlglot==25.26.0
     # via -r requirements.compile
+sqlite-minutils==4.0.3
+    # via fastlite
 starlette==0.38.6
     # via
     #   dagster-graphql
     #   dagster-webserver
+    #   python-fasthtml
 streamlit==1.38.0
     # via -r requirements.compile
 structlog==24.4.0
@@ -557,7 +589,9 @@ urllib3==2.2.3
     #   docker
     #   requests
 uvicorn[standard]==0.30.6
-    # via dagster-webserver
+    # via
+    #   dagster-webserver
+    #   python-fasthtml
 uvloop==0.20.0
     # via uvicorn
 watchdog==4.0.2

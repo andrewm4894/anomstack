@@ -22,7 +22,7 @@ def read_sql_duckdb(sql: str) -> pd.DataFrame:
 
     logger = get_dagster_logger()
 
-    duckdb_path = os.environ.get("ANOMSTACK_DUCKDB_PATH", "tmpdata/anomstack.db")
+    duckdb_path = os.environ.get("ANOMSTACK_DUCKDB_PATH", "tmpdata/anomstack-duckdb.db")
     logger.info(f"duckdb_path:{duckdb_path}")
 
     os.makedirs(os.path.dirname(duckdb_path), exist_ok=True)
@@ -47,7 +47,7 @@ def save_df_duckdb(df: pd.DataFrame, table_key: str) -> pd.DataFrame:
 
     logger = get_dagster_logger()
 
-    duckdb_path = os.environ.get("ANOMSTACK_DUCKDB_PATH", "tmpdata/anomstack.db")
+    duckdb_path = os.environ.get("ANOMSTACK_DUCKDB_PATH", "tmpdata/anomstack-duckdb.db")
     logger.info(f"duckdb_path:{duckdb_path}")
 
     os.makedirs(os.path.dirname(duckdb_path), exist_ok=True)
@@ -77,7 +77,7 @@ def run_sql_duckdb(sql: str) -> None:
     """
     logger = get_dagster_logger()
 
-    duckdb_path = os.environ.get("ANOMSTACK_DUCKDB_PATH", "tmpdata/anomstack.db")
+    duckdb_path = os.environ.get("ANOMSTACK_DUCKDB_PATH", "tmpdata/anomstack-duckdb.db")
     logger.info(f"duckdb_path: {duckdb_path}")
 
     os.makedirs(os.path.dirname(duckdb_path), exist_ok=True)

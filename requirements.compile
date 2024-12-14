@@ -8,6 +8,7 @@ dagster-postgres
 dagster-webserver
 dagster-cloud
 duckdb
+fh-plotly
 google-auth
 google-cloud-bigquery
 Jinja2
@@ -19,6 +20,7 @@ pandas
 pandas-gbq
 plotly
 pyod
+python-fasthtml
 pyyaml
 seaborn
 slack_sdk

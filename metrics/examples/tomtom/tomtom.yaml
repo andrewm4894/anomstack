@@ -1,7 +1,4 @@
 metric_batch: "tomtom"
-db: "bigquery"
-table_key: "andrewm4894.metrics.metrics"
-model_path: "gs://andrewm4894-tmp/models"
 ingest_cron_schedule: "*/120 * * * *"
 train_cron_schedule: "*/360 * * * *"
 score_cron_schedule: "*/130 * * * *"
