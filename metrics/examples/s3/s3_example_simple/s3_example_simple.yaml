@@ -1,6 +1,4 @@
 # a basic minimal example of a batch
-db: "duckdb"
-table_key: "tmp.metrics"
 disable_batch: False
 metric_batch: "s3_example_simple"
 model_path: "s3://andrewm4894-tmp/models"
