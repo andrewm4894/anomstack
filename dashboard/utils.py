@@ -11,10 +11,11 @@ from plotly.subplots import make_subplots
 log = logging.getLogger("fasthtml")
 
 
-def plot_time_series(df, metric_name) -> str:
+def plot_time_series(df, metric_name) -> go.Figure:
     """
-    Plot a time series with metric value and metric score and return the HTML representation.
+    Plot a time series with metric value and metric score.
     """
+
     # Create a figure with secondary y-axis
     fig = make_subplots(specs=[[{"secondary_y": True}]])
 
@@ -60,18 +61,34 @@ def plot_time_series(df, metric_name) -> str:
             secondary_y=True,
         )
 
-    # Customize the layout
-    fig.update_layout(
-        title=f"{metric_name} Time Series",
-        xaxis_title="Timestamp",
-        yaxis_title="Metric Value",
-        legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5),
+    # Update x-axis and y-axes to remove gridlines, set the y-axis range
+    # for metric score, and format as percentage
+    fig.update_xaxes(showgrid=False, zeroline=False)
+    fig.update_yaxes(showgrid=False, zeroline=False, secondary_y=False)
+    fig.update_yaxes(
+        showgrid=False,
+        zeroline=False,
+        range=[0, 1.1],
+        tickformat=".0%",
+        secondary_y=True,
     )
 
-    # Generate HTML string
-    html_str = pio.to_html(fig, full_html=False)
+    # Set x-axis title
+    fig.update_xaxes(title_text="Timestamp")
 
-    return html_str
+    # Set y-axes titles
+    fig.update_yaxes(title_text="Metric Value", secondary_y=False)
+    fig.update_yaxes(title_text="Metric Score", secondary_y=True)
+
+    # Move legend to the top of the plot
+    fig.update_layout(
+        title_text=f"{metric_name} (n={len(df)})",
+        hovermode="x",
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        autosize=True,
+    )
+
+    return fig
 
 
 def get_enabled_dagster_jobs() -> list:
