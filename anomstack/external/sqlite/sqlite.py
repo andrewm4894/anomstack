@@ -24,7 +24,7 @@ def read_sql_sqlite(sql: str) -> pd.DataFrame:
         pd.DataFrame: The result of the SQL query as a pandas DataFrame.
     """
     logger = get_dagster_logger()
-    sqlite_path = os.environ.get("ANOMSTACK_SQLITE_PATH", "tmpdata/anomstack.db")
+    sqlite_path = os.environ.get("ANOMSTACK_SQLITE_PATH", "tmpdata/anomstack-sqlite.db")
     logger.info(f"sqlite_path: {sqlite_path}")
     os.makedirs(os.path.dirname(sqlite_path), exist_ok=True)
 
@@ -66,7 +66,7 @@ def save_df_sqlite(df: pd.DataFrame, table_key: str) -> pd.DataFrame:
         pd.DataFrame: The input DataFrame.
     """
     logger = get_dagster_logger()
-    sqlite_path = os.environ.get("ANOMSTACK_SQLITE_PATH", "tmpdata/anomstack.db")
+    sqlite_path = os.environ.get("ANOMSTACK_SQLITE_PATH", "tmpdata/anomstack-sqlite.db")
     logger.info(f"sqlite_path: {sqlite_path}")
     os.makedirs(os.path.dirname(sqlite_path), exist_ok=True)
 
@@ -103,7 +103,7 @@ def run_sql_sqlite(sql: str) -> None:
         None
     """
     logger = get_dagster_logger()
-    sqlite_path = os.environ.get("ANOMSTACK_SQLITE_PATH", "tmpdata/anomstack.db")
+    sqlite_path = os.environ.get("ANOMSTACK_SQLITE_PATH", "tmpdata/anomstack-sqlite.db")
     logger.info(f"sqlite_path: {sqlite_path}")
     os.makedirs(os.path.dirname(sqlite_path), exist_ok=True)
 
