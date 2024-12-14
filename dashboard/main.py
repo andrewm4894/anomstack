@@ -1,6 +1,7 @@
 import logging
 from fasthtml.common import Div, P, Table, fast_app, serve, Title
-from utils import get_enabled_dagster_jobs
+from utils import get_enabled_dagster_jobs, plot_time_series
+from fh_plotly import plotly2fasthtml, plotly_headers
 
 from anomstack.config import specs
 from anomstack.jinja.render import render
@@ -9,7 +10,7 @@ from anomstack.sql.read import read_sql
 
 log = logging.getLogger("fasthtml")
 
-app,rt = fast_app(debug=False)
+app, rt = fast_app(hdrs=(plotly_headers,))
 
 
 @app.get('/')
@@ -37,8 +38,8 @@ def home():
             for metric_name in df["metric_name"].unique():
 
                 metric_df = df[df["metric_name"] == metric_name]
-                # fig = plot_time_series(metric_df, metric_name)
-                figs.append(Div(Table(metric_df.columns, metric_df.head().to_html())))
+                fig = plotly2fasthtml(plot_time_series(metric_df, metric_name))
+                figs.append(fig)
 
         else:
             log.debug(f"job {metric_batch}_ingest is not enabled.")
