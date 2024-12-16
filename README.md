@@ -495,6 +495,8 @@ Environment variables for your metrics can be set in the `.env` file (see [`.exa
 
 Visualization of the metrics and anomaly scores is a bit outside the scope of this project, but we do provide a couple of ways to visualize your metrics and anomaly scores.
 
+🚧 WIP: [FastHTML](https://fastht.ml/) based dashboard - initial minimal starter code in [`./dashboard/fasthtml-dashboard.py`](./dashboard/fasthtml-dashboard.py). Idea being a bot more of a full fledged app than possible using Streamlit but its early days. Help would be very much appreciated here, especially if you know how to make things look fancy :)
+
 ### Dagster UI Plots
 
 Within Dagster there is the [`plot.py`](./anomstack/jobs/plot.py) job to generate some plots of your metrics and anomaly scores for quick eyeballing within the dagster UI.
@@ -510,14 +512,14 @@ Within Dagster there is the [`plot.py`](./anomstack/jobs/plot.py) job to generat
 
 ### Streamlit
 
-You can also use the little streamlit app in [`./dashboard.py`](./dashboard.py) to visualize your metrics and anomaly scores.
+You can also use the little streamlit app in [`./dashboard/streamlit-dashboard.py`](./dashboard/streamlit-dashboard.py) to visualize your metrics and anomaly scores.
 
 ```bash
 # run streamlit app
-streamlit run .\dashboard.py
+streamlit run ./dashboard/streamlit-dashboard.py --server.port 8501
 ```
 
-...Or you can run it via `make dashboard`.
+...Or you can run it via `make streamlit` or `make streamlitd` (to run as a daemon).
 
 <details>
 <summary>Click to see some screenshots</summary>
