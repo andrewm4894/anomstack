@@ -1,41 +1,64 @@
 """
-Some helper functions for interacting with the OpenAI API.
+Helper functions for interacting with the OpenAI API to detect anomalies.
 """
 
 import json
 import os
 import time
+from typing import List, Dict, Any
 
 import openai
 from dagster import get_dagster_logger
-from openai import OpenAI
+from pydantic import ValidationError, BaseModel, Field
+
+
+class Anomaly(BaseModel):
+    anomaly_timestamp: str = Field(..., description="The timestamp where the anomaly was detected.")
+    anomaly_explanation: str = Field(..., description="A brief explanation of why this point is considered anomalous.")
+
+
+class DetectAnomaliesResponse(BaseModel):
+    anomalies: List[Anomaly] = Field(..., description="A list of detected anomalies, if any, with their timestamps and explanations.")
+
+
+detect_anomalies_schema = DetectAnomaliesResponse.schema()
 
 DEFAULT_OPENAI_MODEL = "gpt-4o-mini"
 
 
-def get_completion(prompt: str, max_retries=5):
+def detect_anomalies(prompt: str, max_retries: int = 5) -> List[Dict[str, Any]]:
     """
-    Get a completion from the OpenAI API.
+    Detect anomalies using the OpenAI API.
 
     Args:
-        prompt (str): The prompt to send to the OpenAI API.
-        max_retries (int, optional): The maximum number of retries before
-            giving up.
+        prompt (str): The prompt or data to analyze for anomalies.
+        max_retries (int, optional): The maximum number of retries before giving up.
 
     Returns:
-        Tuple[bool, str, str]: A tuple containing a boolean indicating whether
-            the metric looks anomalous,
-        a string describing the anomaly (if is_anomalous=True, else None) and
-            a confidence level.
+        List[Dict[str, Any]]: A list of anomalies, each with 'anomaly_timestamp' and 'anomaly_explanation'.
     """
+    api_key = os.getenv("ANOMSTACK_OPENAI_KEY")
+    if not api_key:
+        raise EnvironmentError("ANOMSTACK_OPENAI_KEY is not set.")
 
-    client = OpenAI(api_key=os.getenv("ANOMSTACK_OPENAI_KEY"))
+    client = openai.OpenAI(api_key=api_key)
+
     openai_model = os.getenv("ANOMSTACK_OPENAI_MODEL", DEFAULT_OPENAI_MODEL)
 
     logger = get_dagster_logger()
-    logger.debug(f"using openai model: {openai_model}")
+    logger.debug(f"Using OpenAI model: {openai_model}")
 
     messages = [{"role": "user", "content": prompt}]
+
+    tools = [
+        {
+            "type": "function",
+            "function": {
+                "name": "detect_anomalies",
+                "parameters": detect_anomalies_schema,
+            },
+        }
+    ]
 
     retries = 0
     while retries < max_retries:
@@ -43,68 +66,33 @@ def get_completion(prompt: str, max_retries=5):
             completion = client.chat.completions.create(
                 model=openai_model,
                 messages=messages,
-                tools=[
-                    {
-                        "type": "function",
-                        "function": {
-                            "name": "trigger_anomaly_alert",
-                            "description": "If the metric looks anomalous then flag it as anomalous.",
-                            "parameters": {
-                                "type": "object",
-                                "properties": {
-                                    "is_anomalous": {
-                                        "type": "boolean",
-                                        "description": (
-                                            "True if the recent metric values look anomalous, "
-                                            "False otherwise."
-                                        ),
-                                    },
-                                    "decision_reasoning": {
-                                        "type": "string",
-                                        "description": (
-                                            "A detailed description, referencing observations by their index number or value, "
-                                            "on why or why not the metric looks anomalous. Think globally too like a human would "
-                                            "if they were eyeballing the data."
-                                        ),
-                                    },
-                                    "decision_confidence_level": {
-                                        "type": "string",
-                                        "enum": ["high", "medium", "low"],
-                                        "description": (
-                                            "Confidence level in the `is_anomalous` flag. 'high' if very "
-                                            "confident in the anomaly decision, 'medium' if somewhat confident, "
-                                            "'low' if not confident."
-                                        ),
-                                    },
-                                },
-                                "required": [
-                                    "is_anomalous",
-                                    "decision_reasoning",
-                                    "decision_confidence_level",
-                                ],
-                            },
-                        },
-                    }
-                ],
-                tool_choice={
-                    "type": "function",
-                    "function": {"name": "trigger_anomaly_alert"},
-                },
+                tools=tools,
             )
             break
         except openai.RateLimitError as e:
-            print(f"Rate limit reached. Waiting for {e.retry_after} seconds...")
+            logger.warning(f"Rate limit reached. Waiting for {e.retry_after} seconds...")
             time.sleep(e.retry_after)
             retries += 1
+        except openai.OpenAIError as e:
+            logger.error(f"OpenAI API error: {e}")
+            raise
 
     if retries == max_retries:
         raise ValueError("Maximum number of retries reached. Aborting.")
 
     response_message = completion.choices[0].message
     tool_call = response_message.tool_calls[0]
-    function_args = json.loads(tool_call.function.arguments)
-    is_anomalous = function_args.get("is_anomalous")
-    decision_reasoning = function_args.get("decision_reasoning")
-    decision_confidence_level = function_args.get("decision_confidence_level")
 
-    return is_anomalous, decision_reasoning, decision_confidence_level
+    try:
+        function_args = json.loads(tool_call.function.arguments)
+        response_data = DetectAnomaliesResponse(**function_args)
+    except json.JSONDecodeError as e:
+        logger.error(f"Error decoding JSON: {e}")
+        raise ValueError("Invalid JSON format in tool call arguments.")
+    except ValidationError as e:
+        logger.error(f"Validation error: {e}")
+        raise ValueError("Response does not match the expected schema.")
+
+    anomalies = [anomaly.dict() for anomaly in response_data.anomalies]
+
+    return anomalies
