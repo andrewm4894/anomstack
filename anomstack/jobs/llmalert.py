@@ -21,6 +21,9 @@ from anomstack.fn.run import define_fn
 from anomstack.jinja.render import render
 from anomstack.llm.completion import detect_anomalies
 from anomstack.sql.read import read_sql
+from anomstack.df.save import save_df
+from anomstack.df.wrangle import wrangle_df
+from anomstack.validate.validate import validate_df
 
 ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv("ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600)
 
@@ -54,6 +57,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
 
     metric_batch = spec["metric_batch"]
     db = spec["db"]
+    table_key = spec["table_key"]
     threshold = spec["alert_threshold"]
     alert_methods = spec["alert_methods"]
     llmalert_recent_n = spec["llmalert_recent_n"]
@@ -84,7 +88,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
             return df
 
         @op(name=f"{metric_batch}_llmalert")
-        def llmalert(context, df: pd.DataFrame) -> None:
+        def llmalert(context, df: pd.DataFrame) -> pd.DataFrame:
             """An operation that runs the LLM Alert.
 
             Args:
@@ -100,6 +104,8 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                 fn_name="make_prompt",
                 fn=render("prompt_fn", spec)
             )
+
+            df_alerts = pd.DataFrame()
 
             for metric_name in df["metric_name"].unique():
                 df_metric = (
@@ -193,7 +199,48 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                         score_col="metric_score"
                     )
 
-        llmalert(get_llmalert_data())
+                    # append the alerts to the df_alerts
+                    df_alerts = pd.concat([df_alerts, df_metric])
+            
+            return df_alerts
+        
+        @op(name=f"{metric_batch}_save_llmalerts")
+        def save_llmalerts(df_alerts: pd.DataFrame) -> pd.DataFrame:
+            """
+            Save alerts to db.
+
+            Args:
+                df (DataFrame): A pandas DataFrame containing the alerts to be saved.
+
+            Returns:
+                DataFrame: A pandas DataFrame containing the saved alerts.
+            """
+
+            df_alerts = df_alerts.query("metric_alert == 1")
+
+            if len(df_alerts) > 0:
+                df_alerts["metric_type"] = "llmalert"
+                df_alerts["metric_alert"] = df_alerts["metric_alert"].astype(float)
+                df_alerts = df_alerts[
+                    [
+                        "metric_timestamp",
+                        "metric_batch",
+                        "metric_name",
+                        "metric_type",
+                        "metric_alert",
+                    ]
+                ]
+                df_alerts = df_alerts.rename(columns={"metric_alert": "metric_value"})
+                df_alerts = wrangle_df(df_alerts)
+                df_alerts = validate_df(df_alerts)
+                logger.info(f"saving {len(df_alerts)} llmalerts to {db} {table_key}")
+                df_alerts = save_df(df_alerts, db, table_key)
+            else:
+                logger.info("no alerts to save")
+
+            return df_alerts
+
+        save_llmalerts(llmalert(get_llmalert_data()))
 
     return _job
 
