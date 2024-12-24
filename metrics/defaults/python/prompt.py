@@ -1,53 +1,37 @@
-def make_prompt(df, llmalert_recent_n) -> str:
+import pandas as pd
+
+
+def make_prompt(df: pd.DataFrame) -> str:
     """
-    Generates a prompt for the user to check if there is an anomaly in a time series data.
+    Generates a prompt for detecting anomalies in time series data.
 
     Args:
-        df (pandas.DataFrame): The time series data to check for anomalies.
-        llmalert_recent_n (int): The number of most recent observations to consider.
+        df (pandas.DataFrame): The time series data to analyze.
 
     Returns:
-        str: A prompt for the user to check if there is an anomaly in the time series data.
+        str: A prompt tailored for anomaly detection using the OpenAI API.
     """
+    # Convert the DataFrame to a string table for better readability
+    text_representation = df.to_string(index=False)
 
-    text_representation = df.to_markdown()
-
+    # Simplified and adapted prompt
     prompt = f"""
-    Can you help me check if there is an anomaly in the below time series data?
+    Analyze the following time series data and identify any anomalies in the data.
 
-    I am solely interested in looking at the last {llmalert_recent_n} observations (when metric_recency=recent) and if it looks like the more recent data may be anomalous in comparison to rest of the data (when metric_recency=baseline).
+    **Instructions:**
+    - Identify if there are any anomalies or unusual patterns.
+    - For each detected anomaly, provide the timestamp and a brief explanation.
 
-    Here are some questions to think about:
+    **Data Details:**
+    - The `metric_value` column represents the raw metric values.
+    - The `metric_timestamp` column represents the timestamp of each metric value.
 
-    - Is there anything unusual about the last {llmalert_recent_n} recent values of the metric in the df DataFrame?
-    - Are there any anomalies or outliers in the recent {llmalert_recent_n} observations of metric in df?
-    - Can you identify any patterns or trends in the recent {llmalert_recent_n} values of the metric in df that could be indicative of an anomaly?
-    - How does the distribution of the recent {llmalert_recent_n} values of the metric in df compare to the distribution of the entire dataset?
-    - Is there a sudden increase or decrease in the metric in the recent {llmalert_recent_n} observations?
-    - Is there a change in the slope of the metric trend line in the recent {llmalert_recent_n} observations?
-    - Are there any spikes or dips in the metric in the recent {llmalert_recent_n} observations?
-    - Do the recent {llmalert_recent_n} observations fall outside of the normal baseline range of the metric?
-    - Are there any patterns in the timing of the anomalies in the recent {llmalert_recent_n} observations?
+    **Expected Output:**
+    - A list of anomalies, each containing:
+        - `anomaly_timestamp`: The timestamp where the anomaly was detected.
+        - `anomaly_explanation`: A brief explanation of why this point is considered anomalous.
 
-    Notes about the data:
-    - The metric_value column is the raw metric value.
-    - The data is ordered by the index in ascending order, oldest to newest. So the most recent observations are at the bottom of the table.
-    - There is a metric_recency column that indicates if the observation is recent or baseline. We are interesting in understanding if the recent observations are anomalous or not in comparison to the baseline.
-    - Pay attention to the ordering of the data. This is time series data so the order is very important.
-    - Focus only on how the most recent {llmalert_recent_n} observations and if they look anomalous or not in reference to the earlier baseline data.
-    - The data comes from a pandas dataframe.
-
-    I need a yes or no answer as to if you think the recent data looks anomalous or not.
-
-    Please also provide a description on why the metric looks anomalous if you think it does.
-
-    Also think about and provide a confidence level on how confident ('high', 'medium', 'low') you are that the metric is anomalous.
-
-    Please think step by step and provide a description, along with evidence, of your thought process as you go through the data.
-
-    Think globally too like a human would if they were eyeballing the data.
-
-    Here is the data (ordered in ascending order, so from oldest to newest (top to bottom)):
+    **Data:**
 
     {text_representation}
     """
