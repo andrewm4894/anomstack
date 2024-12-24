@@ -158,7 +158,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                 num_anomalies_recent = df_metric["metric_alert"].tail(llmalert_recent_n).sum()
 
                 logger.debug(f"{num_anomalies_recent} anomalies detected in the last {llmalert_recent_n} rows of {metric_name}")
-                
+
                 # if any anomalies were detected in llmaltert_recent_n rows of df_metric then send an alert
                 if num_anomalies_recent > 0:
 

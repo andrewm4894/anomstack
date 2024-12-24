@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def make_prompt(df: pd.DataFrame) -> str:
     """
     Generates a prompt for detecting anomalies in time series data.

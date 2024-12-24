@@ -5,11 +5,11 @@ Helper functions for interacting with the OpenAI API to detect anomalies.
 import json
 import os
 import time
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 import openai
 from dagster import get_dagster_logger
-from pydantic import ValidationError, BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 
 
 class Anomaly(BaseModel):
