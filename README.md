@@ -551,11 +551,7 @@ _Check out more example alerts in the [anomaly gallery](./gallery/)._
 
 Anomstack supports alerts via email and slack. You can configure these in the `.env` file (see [`.example.env`](.example.env) for examples and comments).
 
-Below is an example of an alert via email. It has some ascii art plotting recent metric values and which observations were anomalous. Attached is a png plot with more details.
-
-![email alert](./docs/img/email_alert.png)
-
-And the attached plot will look something like this:
+Below is an example of an alert via email. Attached is a png plot with more details.
 
 ![plot](./docs/img/random_1.png)
 
@@ -565,11 +561,11 @@ And the attached plot will look something like this:
 
 Yes! I have managed to find a way to ram a large language model (LLM) into this project. But you know what, it might just work...
 
-**Update**: It works horribly, but it works! 🤣. Still need to do a lot more prompt engineering to get this to work well, but it's a start.
+~~**Update**: It works horribly, but it works! 🤣. Still need to do a lot more prompt engineering to get this to work well, but it's a start.~~
 
-**Update Update**: I know how to make this work much better and more reliable + latest models are better - going to refactor this soon.
+**Update Update**: I know how to make this work much better and more reliable + latest models are better - going to refactor this soon (done [here](https://github.com/andrewm4894/anomstack/pull/127)).
 
-Idea here is to just send the metric data and prompt to a LLM (ChatGPT) and ask it if it thinks the metric looks anomalous. If it does, we alert.
+Idea here is to just send the metric data and prompt to a LLM (ChatGPT) and ask it if it thinks the metric looks anomalous (and provide back an explanation). If it does, we alert.
 
 Note: If you don't want to send your metric data to OpenAI then just set `disable_llmalert` to `True` in your metric batch config.
 
