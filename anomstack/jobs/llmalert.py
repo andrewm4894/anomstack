@@ -149,6 +149,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                     left_on="metric_timestamp",
                     right_on="anomaly_timestamp",
                 )
+                df_metric['metrics_timestamp'] = pd.to_datetime(df_metric['metric_timestamp'])
 
                 # if there are detected anomalies set metric_alert to 1 if it is not already 1
                 if not df_metric["metric_alert"].any():
