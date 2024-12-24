@@ -1,6 +1,6 @@
 import pandas as pd
 
-def make_prompt(df: pd.DataFrame, max_rows: int = 1000) -> str:
+def make_prompt(df: pd.DataFrame) -> str:
     """
     Generates a prompt for detecting anomalies in time series data.
 
@@ -11,7 +11,7 @@ def make_prompt(df: pd.DataFrame, max_rows: int = 1000) -> str:
         str: A prompt tailored for anomaly detection using the OpenAI API.
     """
     # Convert the DataFrame to a string table for better readability
-    text_representation = df.tail(max_rows).to_string(index=False)
+    text_representation = df.to_string(index=False)
 
     # Simplified and adapted prompt
     prompt = f"""
@@ -19,7 +19,7 @@ def make_prompt(df: pd.DataFrame, max_rows: int = 1000) -> str:
 
     **Instructions:**
     - Identify if there are any anomalies or unusual patterns.
-    - For each detected anomaly, provide the timestamp and a detailed explanation.
+    - For each detected anomaly, provide the timestamp and a brief explanation.
 
     **Data Details:**
     - The `metric_value` column represents the raw metric values.
