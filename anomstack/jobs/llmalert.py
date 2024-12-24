@@ -216,6 +216,10 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                 DataFrame: A pandas DataFrame containing the saved alerts.
             """
 
+            if df_alerts.empty:
+                logger.info("no alerts to save")
+                return df_alerts
+            
             df_alerts = df_alerts.query("metric_alert == 1")
 
             if len(df_alerts) > 0:
@@ -235,8 +239,6 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                 df_alerts = validate_df(df_alerts)
                 logger.info(f"saving {len(df_alerts)} llmalerts to {db} {table_key}")
                 df_alerts = save_df(df_alerts, db, table_key)
-            else:
-                logger.info("no alerts to save")
 
             return df_alerts
 
