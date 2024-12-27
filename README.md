@@ -1,7 +1,5 @@
 # Anomstack
 
-<img src="./docs/img/anomstack-logo4.png" width="600"/>
-
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/andrewm4894/anomstack)
 
 <div align="left">
