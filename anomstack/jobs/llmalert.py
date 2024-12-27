@@ -176,7 +176,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                         df_metric["anomaly_timestamp"].notnull()
                     ][["anomaly_timestamp", "anomaly_explanation"]].apply(
                         lambda x: f"{x[0]}: {x[1]}", axis=1
-                    ).sort_values(ascending=False)
+                    ).tail(llmalert_recent_n).sort_values(ascending=False)
                     anomaly_explanations = "\n- ".join(anomaly_explanations)
                     metric_timestamp_max = df_metric["metric_timestamp"].max()
                     alert_title = (
