@@ -21,6 +21,7 @@ def make_prompt(df: pd.DataFrame) -> str:
     **Instructions:**
     - Identify if there are any anomalies or unusual patterns.
     - For each detected anomaly, provide the timestamp and a brief explanation.
+    - Think globally, consider the entire dataset.
 
     **Data Details:**
     - The `metric_value` column represents the raw metric values.
