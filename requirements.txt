@@ -12,8 +12,11 @@ aniso8601==9.0.1
     # via graphene
 annotated-types==0.7.0
     # via pydantic
+anthropic==0.42.0
+    # via -r requirements.compile
 anyio==4.6.0
     # via
+    #   anthropic
     #   gql
     #   httpx
     #   openai
@@ -120,7 +123,9 @@ db-dtypes==1.3.0
     #   dagster-gcp
     #   pandas-gbq
 distro==1.9.0
-    # via openai
+    # via
+    #   anthropic
+    #   openai
 docker==7.1.0
     # via dagster-docker
 docker-image-py==0.1.13
@@ -238,6 +243,7 @@ httptools==0.6.1
     # via uvicorn
 httpx==0.27.2
     # via
+    #   anthropic
     #   openai
     #   python-fasthtml
 humanfriendly==10.0
@@ -258,7 +264,9 @@ jinja2==3.1.4
     #   dagster
     #   pydeck
 jiter==0.5.0
-    # via openai
+    # via
+    #   anthropic
+    #   openai
 jmespath==1.0.1
     # via
     #   boto3
@@ -393,6 +401,7 @@ pycparser==2.22
     # via cffi
 pydantic==2.9.2
     # via
+    #   anthropic
     #   dagster
     #   openai
 pydantic-core==2.23.4
@@ -511,6 +520,7 @@ smmap==5.0.1
     # via gitdb
 sniffio==1.3.1
     # via
+    #   anthropic
     #   anyio
     #   httpx
     #   openai
@@ -567,6 +577,7 @@ typing-extensions==4.12.2
     # via
     #   alembic
     #   altair
+    #   anthropic
     #   dagster
     #   openai
     #   pydantic

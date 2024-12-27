@@ -1,7 +1,3 @@
-"""
-Helper functions for interacting with the OpenAI API to detect anomalies.
-"""
-
 import json
 import os
 import time
@@ -9,24 +5,14 @@ from typing import Any, Dict, List
 
 import openai
 from dagster import get_dagster_logger
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import ValidationError
 
-
-class Anomaly(BaseModel):
-    anomaly_timestamp: str = Field(..., description="The timestamp where the anomaly was detected.")
-    anomaly_explanation: str = Field(..., description="A brief explanation of why this point is considered anomalous.")
-
-
-class DetectAnomaliesResponse(BaseModel):
-    anomalies: List[Anomaly] = Field(..., description="A list of detected anomalies, if any, with their timestamps and explanations.")
-
-
-detect_anomalies_schema = DetectAnomaliesResponse.schema()
+from anomstack.llm.models import DetectAnomaliesResponse, detect_anomalies_schema
 
 DEFAULT_OPENAI_MODEL = "gpt-4o-mini"
 
 
-def detect_anomalies(prompt: str, max_retries: int = 5) -> List[Dict[str, Any]]:
+def detect_anomalies_openai(prompt: str, max_retries: int = 5) -> List[Dict[str, Any]]:
     """
     Detect anomalies using the OpenAI API.
 
@@ -42,7 +28,6 @@ def detect_anomalies(prompt: str, max_retries: int = 5) -> List[Dict[str, Any]]:
         raise EnvironmentError("ANOMSTACK_OPENAI_KEY is not set.")
 
     client = openai.OpenAI(api_key=api_key)
-
     openai_model = os.getenv("ANOMSTACK_OPENAI_MODEL", DEFAULT_OPENAI_MODEL)
 
     logger = get_dagster_logger()
@@ -61,6 +46,7 @@ def detect_anomalies(prompt: str, max_retries: int = 5) -> List[Dict[str, Any]]:
     ]
 
     retries = 0
+    completion = None
     while retries < max_retries:
         try:
             completion = client.chat.completions.create(
@@ -77,7 +63,7 @@ def detect_anomalies(prompt: str, max_retries: int = 5) -> List[Dict[str, Any]]:
             logger.error(f"OpenAI API error: {e}")
             raise
 
-    if retries == max_retries:
+    if completion is None:
         raise ValueError("Maximum number of retries reached. Aborting.")
 
     response_message = completion.choices[0].message
@@ -94,5 +80,4 @@ def detect_anomalies(prompt: str, max_retries: int = 5) -> List[Dict[str, Any]]:
         raise ValueError("Response does not match the expected schema.")
 
     anomalies = [anomaly.dict() for anomaly in response_data.anomalies]
-
     return anomalies
