@@ -4,11 +4,10 @@ import time
 from typing import Any, Dict, List
 
 import anthropic
-
 from dagster import get_dagster_logger
 from pydantic import ValidationError
-from anomstack.llm.models import DetectAnomaliesResponse, detect_anomalies_schema
 
+from anomstack.llm.models import DetectAnomaliesResponse, detect_anomalies_schema
 
 DEFAULT_ANTHROPIC_MODEL = "claude-3-5-haiku-20241022"
 

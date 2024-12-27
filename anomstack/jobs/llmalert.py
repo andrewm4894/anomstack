@@ -17,12 +17,12 @@ from dagster import (
 
 from anomstack.alerts.send import send_alert
 from anomstack.config import specs
+from anomstack.df.save import save_df
+from anomstack.df.wrangle import wrangle_df
 from anomstack.fn.run import define_fn
 from anomstack.jinja.render import render
 from anomstack.llm.detect import detect_anomalies
 from anomstack.sql.read import read_sql
-from anomstack.df.save import save_df
-from anomstack.df.wrangle import wrangle_df
 from anomstack.validate.validate import validate_df
 
 ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv("ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600)
@@ -155,7 +155,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                     left_on="metric_timestamp",
                     right_on="anomaly_timestamp",
                 )
-                df_metric["metric_timestamp"] = pd.to_datetime(df_metric["metric_timestamp"], format="%Y-%m-%d %H:%M:%S")                
+                df_metric["metric_timestamp"] = pd.to_datetime(df_metric["metric_timestamp"], format="%Y-%m-%d %H:%M:%S")
 
                 # if there are detected anomalies set metric_alert to 1
                 df_metric["metric_alert"] = df_metric["anomaly_timestamp"].notnull().astype(int)
@@ -202,9 +202,9 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
 
                     # append the alerts to the df_alerts
                     df_alerts = pd.concat([df_alerts, df_metric])
-            
+
             return df_alerts
-        
+
         @op(name=f"{metric_batch}_save_llmalerts")
         def save_llmalerts(df_alerts: pd.DataFrame) -> pd.DataFrame:
             """
@@ -220,7 +220,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
             if df_alerts.empty:
                 logger.info("no alerts to save")
                 return df_alerts
-            
+
             df_alerts = df_alerts.query("metric_alert == 1")
 
             if len(df_alerts) > 0:

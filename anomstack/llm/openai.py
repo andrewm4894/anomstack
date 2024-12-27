@@ -4,11 +4,10 @@ import time
 from typing import Any, Dict, List
 
 import openai
-
 from dagster import get_dagster_logger
 from pydantic import ValidationError
-from anomstack.llm.models import DetectAnomaliesResponse, detect_anomalies_schema
 
+from anomstack.llm.models import DetectAnomaliesResponse, detect_anomalies_schema
 
 DEFAULT_OPENAI_MODEL = "gpt-4o-mini"
 
