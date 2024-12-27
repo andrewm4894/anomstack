@@ -565,7 +565,9 @@ Yes! I have managed to find a way to ram a large language model (LLM) into this 
 
 Idea here is to just send the metric data and prompt to a LLM (ChatGPT) and ask it if it thinks the metric looks anomalous (and provide back an explanation). If it does, we alert.
 
-Note: If you don't want to send your metric data to OpenAI then just set `disable_llmalert` to `True` in your metric batch config.
+Notes: 
+- If you don't want to send your metric data to OpenAI then just set `disable_llmalert` to `True` in your metric batch config.
+- Support for Anthropic models added [here](https://github.com/andrewm4894/anomstack/pull/128)
 
 <details>
 <summary>Click to see some LLM Alert screenshots</summary>
