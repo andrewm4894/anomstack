@@ -19,7 +19,7 @@ from anomstack.alerts.send import send_alert
 from anomstack.config import specs
 from anomstack.fn.run import define_fn
 from anomstack.jinja.render import render
-from anomstack.llm.completion import detect_anomalies
+from anomstack.llm.detect import detect_anomalies
 from anomstack.sql.read import read_sql
 from anomstack.df.save import save_df
 from anomstack.df.wrangle import wrangle_df
