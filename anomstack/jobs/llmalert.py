@@ -157,9 +157,8 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                 )
                 df_metric["metric_timestamp"] = pd.to_datetime(df_metric["metric_timestamp"], format="%Y-%m-%d %H:%M:%S")                
 
-                # if there are detected anomalies set metric_alert to 1 if it is not already 1
-                if not df_metric["metric_alert"].any():
-                    df_metric["metric_alert"] = df_metric["anomaly_timestamp"].notnull().astype(int)
+                # if there are detected anomalies set metric_alert to 1
+                df_metric["metric_alert"] = df_metric["anomaly_timestamp"].notnull().astype(int)
 
                 num_anomalies_recent = df_metric["metric_alert"].tail(llmalert_recent_n).sum()
 
@@ -175,9 +174,10 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                     anomaly_explanations = df_metric[
                         df_metric["anomaly_timestamp"].notnull()
                     ][["anomaly_timestamp", "anomaly_explanation"]].apply(
-                        lambda x: f"{x[0]}: {x[1]}", axis=1
-                    ).tail(llmalert_recent_n).sort_values(ascending=False)
-                    anomaly_explanations = "\n- ".join(anomaly_explanations)
+                        lambda x: f"- {x[0]}: {x[1]}", axis=1
+                    ).sort_values(ascending=False)
+                    anomaly_explanations = anomaly_explanations.head(llmalert_recent_n)
+                    anomaly_explanations = "\n".join(anomaly_explanations)
                     metric_timestamp_max = df_metric["metric_timestamp"].max()
                     alert_title = (
                         f"🤖 LLM says [{metric_name}] looks anomalous "
