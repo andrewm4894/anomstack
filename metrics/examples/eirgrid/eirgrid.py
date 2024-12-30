@@ -12,6 +12,11 @@ def ingest() -> pd.DataFrame:
 
     def make_df(data) -> pd.DataFrame:
 
+        if 'Rows' not in data:
+            print('No data found')
+            print(data)
+            return pd.DataFrame()
+        
         df = pd.DataFrame(data['Rows'])
         df = df[['EffectiveTime', 'FieldName', 'Value']]
         df.columns = ['metric_timestamp', 'metric_name', 'metric_value']
