@@ -168,7 +168,7 @@ Here is a list of features of Anomstack (emoji alert warning!)
 5. 🛠️ - Ability to define your own custom python preprocess function instead of the default at [`/metrics/defaults/python/preprocess.py`](./metrics/defaults/python/preprocess.py).
 6. 📧 - Email [alerting](#alerts) with fancy(ish) ascii art plots of your metrics and anomaly scores.
 7. 💬 - Slack alerts too (want to make these nicer).
-8. 🤖 - LLM based alerts (ChatGPT) - see [LLM Alerts](#llm-alerts). p.s. they don't work great yet - experimental :)
+8. 🤖 - LLM based alerts ([OpenAI](./anomstack/llm/openai.py) & [Anthropic](./anomstack/llm/anthropic.py)) - see [LLM Alerts](#llm-alerts). p.s. they don't work great yet - experimental :)
 9. 🕒 - Ability to ingest at whatever frequency you want and then agg to a different level for training/scoring, see [`freq`](/metrics/examples/freq/README.md) example.
 10. 📊 - Plot jobs so you can just eyeball your metrics in Dagster job logs, see [#dagster-ui-plots](#dagster-ui-plots).
 11. 🏗️ - Minimal infrastructure requirements, Anomstack just reads from and writes to whatever database you use.
