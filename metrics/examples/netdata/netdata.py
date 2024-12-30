@@ -18,6 +18,14 @@ def ingest() -> pd.DataFrame:
         ("london.my-netdata.io", "system.cpu", "-600", "0"),
         ("london.my-netdata.io", "system.io", "-600", "0"),
         ("london.my-netdata.io", "system.ram", "-600", "0"),
+        ("bangalore.my-netdata.io", "system.net", "-600", "0"),
+        ("bangalore.my-netdata.io", "system.cpu", "-600", "0"),
+        ("bangalore.my-netdata.io", "system.io", "-600", "0"),
+        ("bangalore.my-netdata.io", "system.ram", "-600", "0"),
+        ("frankfurt.my-netdata.io", "system.net", "-600", "0"),
+        ("frankfurt.my-netdata.io", "system.cpu", "-600", "0"),
+        ("frankfurt.my-netdata.io", "system.io", "-600", "0"),
+        ("frankfurt.my-netdata.io", "system.ram", "-600", "0"),
     ]
 
     urls = [
@@ -26,7 +34,12 @@ def ingest() -> pd.DataFrame:
     ]
     df = pd.DataFrame()
     for url, (host, chart, _, _) in zip(urls, inputs):
-        res = requests.get(url)
+        try:
+            res = requests.get(url, timeout=10)
+            res.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Failed to fetch data from {url}: {e}")
+            continue
         data = res.text.split("\r\n")
         cols = data[0].split(",")
         values = data[1].split(",")

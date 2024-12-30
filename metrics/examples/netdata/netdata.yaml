@@ -11,5 +11,3 @@ disable_llmalert: False
 alert_methods: "email,slack"
 ingest_fn: >
   {% include "./examples/netdata/netdata.py" %}
-change_exclude_metrics:
-- london__system_io_reads

@@ -64,7 +64,12 @@ def ingest() -> pd.DataFrame:
     ]
     df = pd.DataFrame()
     for url, (host, chart, _, _) in zip(urls, inputs):
-        res = requests.get(url)
+        try:
+            res = requests.get(url, timeout=10)
+            res.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Failed to fetch data from {url}: {e}")
+            continue
         data = res.text.split("\r\n")
         cols = data[0].split(",")
         cols[0] = "metric_timestamp"
