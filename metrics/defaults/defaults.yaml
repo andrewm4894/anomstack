@@ -1,5 +1,5 @@
 # default values to be applied to all batches unless overridden in metric batch specific yaml files.
-db: "sqlite" # database type to use.
+db: "duckdb" # database type to use.
 table_key: "metrics" # table to store metrics in.
 
 ############################################

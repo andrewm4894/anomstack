@@ -49,11 +49,13 @@ Supported sources and databases for your metrics to live in and be queried from:
             <th align="center"><a href="./anomstack/external/snowflake/snowflake.py" target="_blank">Snowflake</a></th>
             <th align="center"><a href="./anomstack/external/duckdb/duckdb.py" target="_blank">DuckDB</a></th>
             <th align="center"><a href="./anomstack/external/sqlite/sqlite.py" target="_blank">SQLite</a></th>
+            <th align="center"><a href="./anomstack/external/duckdb/duckdb.py" target="_blank">MotherDuck</a></th>
             <th align="center">Redshift</th>
         </tr>
     </thead>
     <tbody>
         <tr>
+            <td align="center">✅</td>
             <td align="center">✅</td>
             <td align="center">✅</td>
             <td align="center">✅</td>
@@ -565,7 +567,7 @@ Yes! I have managed to find a way to ram a large language model (LLM) into this 
 
 Idea here is to just send the metric data and prompt to a LLM (ChatGPT) and ask it if it thinks the metric looks anomalous (and provide back an explanation). If it does, we alert.
 
-Notes: 
+Notes:
 - If you don't want to send your metric data to OpenAI then just set `disable_llmalert` to `True` in your metric batch config.
 - Support for Anthropic models added [here](https://github.com/andrewm4894/anomstack/pull/128)
 
