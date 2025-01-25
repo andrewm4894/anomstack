@@ -16,7 +16,7 @@ def ingest() -> pd.DataFrame:
             print('No data found')
             print(data)
             return pd.DataFrame()
-        
+
         df = pd.DataFrame(data['Rows'])
         df = df[['EffectiveTime', 'FieldName', 'Value']]
         df.columns = ['metric_timestamp', 'metric_name', 'metric_value']

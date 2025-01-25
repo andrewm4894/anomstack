@@ -24,7 +24,7 @@ def read_sql_duckdb(sql: str) -> pd.DataFrame:
 
     duckdb_path = os.environ.get("ANOMSTACK_DUCKDB_PATH", "tmpdata/anomstack-duckdb.db")
     logger.info(f"duckdb_path:{duckdb_path}")
-    
+
     if duckdb_path.startswith("md:"):
         motherduck_token = os.environ.get("ANOMSTACK_MOTHERDUCK_TOKEN", None)
         duckdb_path = duckdb_path + f"?motherduck_token={motherduck_token}"
@@ -53,7 +53,7 @@ def save_df_duckdb(df: pd.DataFrame, table_key: str) -> pd.DataFrame:
 
     duckdb_path = os.environ.get("ANOMSTACK_DUCKDB_PATH", "tmpdata/anomstack-duckdb.db")
     logger.info(f"duckdb_path:{duckdb_path}")
-    
+
     if duckdb_path.startswith("md:"):
         motherduck_token = os.environ.get("ANOMSTACK_MOTHERDUCK_TOKEN", None)
         duckdb_path = duckdb_path + f"?motherduck_token={motherduck_token}"
@@ -89,7 +89,7 @@ def run_sql_duckdb(sql: str) -> None:
     logger.info(f"duckdb_path: {duckdb_path}")
 
     os.makedirs(os.path.dirname(duckdb_path), exist_ok=True)
-    
+
     if duckdb_path.startswith("md:"):
         motherduck_token = os.environ.get("ANOMSTACK_MOTHERDUCK_TOKEN", None)
         duckdb_path = duckdb_path + f"?motherduck_token={motherduck_token}"
