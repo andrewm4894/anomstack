@@ -4,14 +4,14 @@ Helper functions for SQLite (or Turso) with retry logic.
 
 import os
 import time
-import pandas as pd
 from contextlib import contextmanager
 
-from dagster import get_dagster_logger
 import libsql_experimental as libsql
+import pandas as pd
+from dagster import get_dagster_logger
 
-from anomstack.sql.utils import get_columns_from_sql
 from anomstack.df.utils import generate_insert_sql
+from anomstack.sql.utils import get_columns_from_sql
 
 MAX_RETRIES = 5
 RETRY_DELAY = 1
@@ -21,7 +21,7 @@ def get_sqlite_path() -> str:
     """
     Returns the path to the SQLite (or Turso) database,
     creating directories if needed.
-    
+
     By default, uses the env var ANOMSTACK_SQLITE_PATH,
     or falls back to "tmpdata/anomstack-sqlite.db".
     """
@@ -36,15 +36,15 @@ def get_sqlite_path() -> str:
 def get_conn(sqlite_path: str) -> libsql.Connection:
     """
     Get a connection to the SQLite or Turso database.
-    
+
     If the path ends with 'turso.io', it uses the
     ANOMSTACK_TURSO_DATABASE_URL and ANOMSTACK_TURSO_AUTH_TOKEN
     environment variables for authentication.
     Otherwise, it connects to a local SQLite database.
-    
+
     Args:
         sqlite_path (str): The path or URL of the database.
-    
+
     Returns:
         libsql.Connection: The connection object.
     """
@@ -59,16 +59,16 @@ def get_conn(sqlite_path: str) -> libsql.Connection:
 def with_sqlite_retry(action, logger=None, max_retries=MAX_RETRIES, retry_delay=RETRY_DELAY):
     """
     Executes a callable with retry logic if the database is locked.
-    
+
     Args:
         action (callable): A zero-argument function that performs the DB action and returns a value.
         logger (Logger, optional): Logger for logging warnings/errors. Defaults to None.
         max_retries (int, optional): Maximum number of retries. Defaults to MAX_RETRIES.
         retry_delay (float, optional): Delay in seconds between retries. Defaults to RETRY_DELAY.
-    
+
     Returns:
         The result of 'action' if successful.
-    
+
     Raises:
         Exception: If the database remains locked after all retries or another error occurs.
     """
@@ -103,10 +103,10 @@ def sqlite_connection():
 def infer_sqlite_type(dtype) -> str:
     """
     Map pandas dtypes to SQLite types.
-    
+
     Args:
         dtype: A pandas dtype (e.g. df.dtypes[col]).
-        
+
     Returns:
         str: The corresponding SQLite type name.
     """
@@ -123,11 +123,11 @@ def infer_sqlite_type(dtype) -> str:
 def generate_create_table_sql(df: pd.DataFrame, table_name: str) -> str:
     """
     Generate the CREATE TABLE statement for a given DataFrame.
-    
+
     Args:
         df (pd.DataFrame): The DataFrame whose columns are used to infer table schema.
         table_name (str): The name of the table.
-    
+
     Returns:
         str: The CREATE TABLE SQL statement.
     """
@@ -141,10 +141,10 @@ def generate_create_table_sql(df: pd.DataFrame, table_name: str) -> str:
 def read_sql_sqlite(sql: str) -> pd.DataFrame:
     """
     Read data from SQLite (or Turso) with retry logic.
-    
+
     Args:
         sql (str): The SQL query to execute.
-    
+
     Returns:
         pd.DataFrame: The result of the SQL query as a pandas DataFrame.
     """
@@ -164,11 +164,11 @@ def read_sql_sqlite(sql: str) -> pd.DataFrame:
 def save_df_sqlite(df: pd.DataFrame, table_key: str) -> pd.DataFrame:
     """
     Save a DataFrame to the database (SQLite or Turso) with retry logic.
-    
+
     Args:
         df (pd.DataFrame): The DataFrame to save.
         table_key (str): The table name to save the DataFrame as.
-    
+
     Returns:
         pd.DataFrame: The input DataFrame (unchanged).
     """
@@ -191,10 +191,10 @@ def save_df_sqlite(df: pd.DataFrame, table_key: str) -> pd.DataFrame:
 def run_sql_sqlite(sql: str) -> None:
     """
     Execute a non-returning SQL statement (e.g. CREATE, INSERT, UPDATE, DELETE) with retry logic.
-    
+
     Args:
         sql (str): The SQL statement to execute.
-    
+
     Returns:
         None
     """

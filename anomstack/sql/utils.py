@@ -1,4 +1,5 @@
 from typing import List
+
 import sqlglot
 import sqlglot.expressions as exp
 

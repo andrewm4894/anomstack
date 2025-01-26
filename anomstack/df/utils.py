@@ -37,5 +37,5 @@ def generate_insert_sql(df, table_name, batch_size=100) -> str:
         values = ', '.join(values_list)
         insert_sql = f"INSERT INTO {table_name} ({columns}) VALUES {values};"
         insert_sqls.append(insert_sql)
-        
+
         return insert_sqls
