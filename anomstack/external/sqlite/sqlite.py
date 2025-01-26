@@ -1,12 +1,10 @@
 """
-Refactored helper functions for SQLite (or Turso) with retry logic.
+Helper functions for SQLite (or Turso) with retry logic.
 """
 
 import os
 import time
 import pandas as pd
-
-# Use the contextlib library for the connection context manager
 from contextlib import contextmanager
 
 from dagster import get_dagster_logger
