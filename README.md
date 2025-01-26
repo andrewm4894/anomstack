@@ -50,11 +50,13 @@ Supported sources and databases for your metrics to live in and be queried from:
             <th align="center"><a href="./anomstack/external/duckdb/duckdb.py" target="_blank">DuckDB</a></th>
             <th align="center"><a href="./anomstack/external/sqlite/sqlite.py" target="_blank">SQLite</a></th>
             <th align="center"><a href="./anomstack/external/duckdb/duckdb.py" target="_blank">MotherDuck</a></th>
+            <th align="center"><a href="./anomstack/external/sqlite/sqlite.py" target="_blank">Turso</a></th>
             <th align="center">Redshift</th>
         </tr>
     </thead>
     <tbody>
         <tr>
+            <td align="center">✅</td>
             <td align="center">✅</td>
             <td align="center">✅</td>
             <td align="center">✅</td>

@@ -13,6 +13,7 @@ fh-plotly
 google-auth
 google-cloud-bigquery
 Jinja2
+libsql-experimental
 matplotlib
 numpy
 oscrypto
