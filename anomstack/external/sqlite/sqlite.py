@@ -172,7 +172,6 @@ def run_sql_sqlite(sql: str) -> None:
             cursor.execute(sql)
             conn.commit()
             cursor.close()
-            conn.close()
             return
         except Exception as e:
             if "database is locked" in str(e):
@@ -185,9 +184,6 @@ def run_sql_sqlite(sql: str) -> None:
             else:
                 logger.error(f"Error executing SQL statement: {e}")
                 raise
-        finally:
-            if 'conn' in locals():
-                conn.close()
 
     # If all retries fail, raise an error
     raise Exception("Database is locked after multiple attempts.")
