@@ -6,6 +6,7 @@ import os
 import libsql_experimental as libsql
 import time
 
+from anomstack.sql.utils import get_columns_from_sql
 import pandas as pd
 from dagster import get_dagster_logger
 from anomstack.df.utils import generate_insert_sql
@@ -80,7 +81,11 @@ def read_sql_sqlite(sql: str) -> pd.DataFrame:
     while attempt < MAX_RETRIES:
         try:
             conn = get_conn(sqlite_path)
-            df = pd.read_sql_query(sql, conn)
+            cursor = conn.execute(sql)
+            rows = cursor.fetchall()
+            columns = [desc[0] for desc in cursor.description] if cursor.description else get_columns_from_sql(sql)
+            df = pd.DataFrame(rows, columns=columns)
+            cursor.close()
             return df
         except Exception as e:
             if "database is locked" in str(e):
