@@ -170,7 +170,7 @@ def save_df_sqlite(df: pd.DataFrame, table_key: str) -> pd.DataFrame:
         table_key (str): The table name to save the DataFrame as.
 
     Returns:
-        pd.DataFrame: The input DataFrame (unchanged).
+        pd.DataFrame: The input DataFrame.
     """
     logger = get_dagster_logger()
     logger.info(f"Saving DataFrame to DB path: {get_sqlite_path()}")
