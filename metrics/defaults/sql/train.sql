@@ -27,14 +27,19 @@ group by metric_timestamp, metric_name
 data_ranked as
 (
 select
-  *,
+  metric_timestamp,
+  metric_name,
+  metric_value,
   row_number() over (partition by metric_name order by metric_timestamp desc) as metric_recency_rank
 from
   data
 )
 
 select
-  *
+  metric_timestamp,
+  metric_name,
+  metric_value,
+  metric_recency_rank
 from
   data_ranked
 where
