@@ -1,11 +1,11 @@
 metric_batch: "yfinance"
-ingest_cron_schedule: "18 45 * * *"
-train_cron_schedule: "20 15 * * *"
-score_cron_schedule: "19 15 * * *"
-alert_cron_schedule: "19 30 * * *"
-change_cron_schedule: "19 45 * * *"
-llmalert_cron_schedule: "19 45 * * *"
-plot_cron_schedule: "21 15 * * *"
+ingest_cron_schedule: "45 18 * * *"
+train_cron_schedule: "15 20 * * *"
+score_cron_schedule: "15 19 * * *"
+alert_cron_schedule: "30 19 * * *"
+change_cron_schedule: "45 19 * * *"
+llmalert_cron_schedule: "45 19 * * *"
+plot_cron_schedule: "15 21 * * *"
 alert_always: False
 alert_methods: "email,slack"
 ingest_fn: >

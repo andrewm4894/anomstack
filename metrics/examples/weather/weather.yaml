@@ -1,11 +1,11 @@
 metric_batch: "weather"
-ingest_cron_schedule: "14 45 * * *"
+ingest_cron_schedule: "45 14 * * *"
 train_cron_schedule: "15 15 * * *"
-score_cron_schedule: "14 15 * * *"
-alert_cron_schedule: "14 30 * * *"
-change_cron_schedule: "14 45 * * *"
-llmalert_cron_schedule: "15 45 * * *"
-plot_cron_schedule: "16 15 * * *"
+score_cron_schedule: "15 14 * * *"
+alert_cron_schedule: "30 14 * * *"
+change_cron_schedule: "45 14 * * *"
+llmalert_cron_schedule: "45 15 * * *"
+plot_cron_schedule: "15 16 * * *"
 alert_methods: "email,slack"
 disable_llmalert: False
 ingest_fn: >

@@ -1,11 +1,11 @@
 metric_batch: "hn_top_stories_scores"
-ingest_cron_schedule: "6 45 * * *"
-train_cron_schedule: "8 15 * * *"
-score_cron_schedule: "7 15 * * *"
-alert_cron_schedule: "7 30 * * *"
-change_cron_schedule: "7 45 * * *"
-llmalert_cron_schedule: "8 45 * * *"
-plot_cron_schedule: "9 15 * * *"
+ingest_cron_schedule: "45 6 * * *"
+train_cron_schedule: "15 8 * * *"
+score_cron_schedule: "15 7 * * *"
+alert_cron_schedule: "30 7 * * *"
+change_cron_schedule: "45 7 * * *"
+llmalert_cron_schedule: "45 8 * * *"
+plot_cron_schedule: "15 9 * * *"
 alert_methods: "email,slack"
 disable_llmalert: False
 ingest_fn: >
