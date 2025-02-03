@@ -1,11 +1,11 @@
 metric_batch: "netdata_httpcheck"
-ingest_cron_schedule: "*/10 * * * *"
-train_cron_schedule: "*/60 * * * *"
-score_cron_schedule: "*/15 * * * *"
-alert_cron_schedule: "*/20 * * * *"
-change_cron_schedule: "*/20 * * * *"
-llmalert_cron_schedule: "*/20 * * * *"
-plot_cron_schedule: "*/25 * * * *"
+ingest_cron_schedule: "*/30 * * * *"
+train_cron_schedule: "*/180 * * * *"
+score_cron_schedule: "*/40 * * * *"
+alert_cron_schedule: "*/45 * * * *"
+change_cron_schedule: "*/45 * * * *"
+llmalert_cron_schedule: "*/45 * * * *"
+plot_cron_schedule: "*/40 * * * *"
 alert_always: False
 disable_llmalert: False
 alert_methods: "email,slack"

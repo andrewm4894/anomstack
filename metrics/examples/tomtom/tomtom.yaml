@@ -1,11 +1,11 @@
 metric_batch: "tomtom"
-ingest_cron_schedule: "*/120 * * * *"
-train_cron_schedule: "*/360 * * * *"
-score_cron_schedule: "*/130 * * * *"
-alert_cron_schedule: "*/140 * * * *"
-change_cron_schedule: "*/140 * * * *"
-llmalert_cron_schedule: "*/140 * * * *"
-plot_cron_schedule: "*/140 * * * *"
+ingest_cron_schedule: "10 45 * * *"
+train_cron_schedule: "11 15 * * *"
+score_cron_schedule: "10 15 * * *"
+alert_cron_schedule: "10 30 * * *"
+change_cron_schedule: "10 45 * * *"
+llmalert_cron_schedule: "11 45 * * *"
+plot_cron_schedule: "12 15 * * *"
 alert_always: False
 alert_methods: "email"
 ingest_fn: >

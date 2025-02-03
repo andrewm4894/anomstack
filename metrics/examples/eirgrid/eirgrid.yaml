@@ -1,11 +1,11 @@
 metric_batch: "eirgrid"
-ingest_cron_schedule: "*/120 * * * *"
-train_cron_schedule: "*/360 * * * *"
-score_cron_schedule: "*/130 * * * *"
-alert_cron_schedule: "*/140 * * * *"
-change_cron_schedule: "*/140 * * * *"
-llmalert_cron_schedule: "*/140 * * * *"
-plot_cron_schedule: "*/140 * * * *"
+ingest_cron_schedule: "6 30 * * *"
+train_cron_schedule: "8 0 * * *"
+score_cron_schedule: "7 0 * * *"
+alert_cron_schedule: "7 15 * * *"
+change_cron_schedule: "7 30 * * *"
+llmalert_cron_schedule: "8 30 * * *"
+plot_cron_schedule: "9 0 * * *"
 alert_always: False
 alert_methods: "email,slack"
 disable_llmalert: False
