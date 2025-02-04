@@ -106,7 +106,7 @@ def send_alert_slack(
             logger.error(f"Channel {channel_name} not found.")
             return
     except SlackApiError as e:
-        logger.error(f"Error fetching channel ID: {e.response['error']}")
+        logger.error(f"Error fetching channel ID: {e}")
         return
 
     try:
@@ -123,7 +123,7 @@ def send_alert_slack(
                 channel=channel_id, text=f"*{title}*\n{message}"
             )
     except SlackApiError as e:
-        logger.error(f"Error sending message to Slack: {e.response['error']}")
+        logger.error(f"Error sending message to Slack channel {channel_name, channel_id}: {e}")
 
 
 def send_alert_slack_with_plot(
