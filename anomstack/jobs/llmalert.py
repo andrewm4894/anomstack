@@ -142,7 +142,6 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                         "anomaly_description": "anomaly_explanation"
                         }
                     )
-                logger.debug(f"df_detected_anomalies: \n{df_detected_anomalies}")
 
                 num_anomalies_total = len(df_detected_anomalies)
                 logger.debug(f"{num_anomalies_total} total anomalies detected in {metric_name}")

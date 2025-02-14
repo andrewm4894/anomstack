@@ -15,6 +15,6 @@ def detect_anomalies(df: pd.DataFrame) -> pd.DataFrame:
     """
     anomaly_agent = AnomalyAgent()
     anomalies = anomaly_agent.detect_anomalies(df, timestamp_col="metric_timestamp")
-    df_anomalies_long = anomaly_agent.get_anomalies_df(anomalies)
+    df_anomalies = anomaly_agent.get_anomalies_df(anomalies)
 
-    return df_anomalies_long
+    return df_anomalies
