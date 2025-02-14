@@ -1,5 +1,4 @@
 anomaly-agent
-anthropic
 boto3
 dagit
 dagster
@@ -18,7 +17,6 @@ libsql-experimental
 matplotlib
 numpy
 oscrypto
-openai
 pandas
 pandas-gbq
 plotly
