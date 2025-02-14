@@ -21,7 +21,7 @@ from anomstack.df.save import save_df
 from anomstack.df.wrangle import wrangle_df
 from anomstack.fn.run import define_fn
 from anomstack.jinja.render import render
-from anomstack.llm.detect import detect_anomalies
+from anomstack.llm.agent import detect_anomalies_agent as detect_anomalies
 from anomstack.sql.read import read_sql
 from anomstack.validate.validate import validate_df
 
@@ -135,20 +135,23 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                 if llmalert_metric_rounding >= 0:
                     df_prompt = df_prompt.round(llmalert_metric_rounding)
 
-                # logger.debug(f"df_prompt: \n{df_prompt}")
-
-                prompt = make_prompt(df_prompt)
-
-                # logger.debug(f"prompt: \n{prompt}")
-
-                detected_anomalies = detect_anomalies(prompt)
-                df_detected_anomalies = pd.DataFrame(detected_anomalies)
+                df_detected_anomalies = detect_anomalies(df_prompt)
+                df_detected_anomalies = df_detected_anomalies.rename(
+                    columns={
+                        "metric_timestamp": "anomaly_timestamp",
+                        "anomaly_description": "anomaly_explanation"
+                        }
+                    )
+                logger.debug(f"df_detected_anomalies: \n{df_detected_anomalies}")
 
                 num_anomalies_total = len(df_detected_anomalies)
                 logger.debug(f"{num_anomalies_total} total anomalies detected in {metric_name}")
 
                 # ensure both columns are datetime64[ns] type before merging
                 df_metric["metric_timestamp"] = df_metric["metric_timestamp"].dt.strftime("%Y-%m-%d %H:%M:%S")
+                df_detected_anomalies["anomaly_timestamp"] = df_detected_anomalies["anomaly_timestamp"].dt.strftime("%Y-%m-%d %H:%M:%S")
+
+                # merge the two dataframes on the metric_timestamp column
                 df_metric = df_metric.merge(
                     df_detected_anomalies,
                     how="left",
