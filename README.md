@@ -36,7 +36,7 @@ Painless open source anomaly detection for your metrics! 📈📉🚀
 - [Visualization](#visualization)
 - [Concepts](#concepts)
 - [Alerts](#alerts)
-- [LLM Alerts](#llm-alerts)
+- [LLM Agent Alerts](#llm-agent-alerts)
 - [Contributing](#contributing)
 
 Supported sources and databases for your metrics to live in and be queried from:
@@ -172,7 +172,7 @@ Here is a list of features of Anomstack (emoji alert warning!)
 5. 🛠️ - Ability to define your own custom python preprocess function instead of the default at [`/metrics/defaults/python/preprocess.py`](./metrics/defaults/python/preprocess.py).
 6. 📧 - Email [alerting](#alerts) with fancy(ish) ascii art plots of your metrics and anomaly scores.
 7. 💬 - Slack alerts too (want to make these nicer).
-8. 🤖 - LLM based alerts ([OpenAI](./anomstack/llm/openai.py) & [Anthropic](./anomstack/llm/anthropic.py)) - see [LLM Alerts](#llm-alerts). p.s. they don't work great yet - experimental :)
+8. 🤖 - aGeNtIc LLM based alerts - use an [anomaly-agent](https://github.com/andrewm4894/anomaly-agent) to do anomaly detection and alerting - see [LLM Agent Alerts](#llm-agent-alerts).
 9. 🕒 - Ability to ingest at whatever frequency you want and then agg to a different level for training/scoring, see [`freq`](/metrics/examples/freq/README.md) example.
 10. 📊 - Plot jobs so you can just eyeball your metrics in Dagster job logs, see [#dagster-ui-plots](#dagster-ui-plots).
 11. 🏗️ - Minimal infrastructure requirements, Anomstack just reads from and writes to whatever database you use.
@@ -557,21 +557,18 @@ Below is an example of an alert via email. Attached is a png plot with more deta
 
 ![plot](./docs/img/random_1.png)
 
-## LLM Alerts
+## LLM Agent Alerts
 
 [back to top](#anomstack)
 
-Yes! I have managed to find a way to ram a large language model (LLM) into this project. But you know what, it might just work...
+Yes! I have managed to find a way to ram a large language (LLM) ~~model~~ 🚀AGENT🚀 into this project.
 
-~~**Update**: It works horribly, but it works! 🤣. Still need to do a lot more prompt engineering to get this to work well, but it's a start.~~
-
-**Update Update**: I know how to make this work much better and more reliable + latest models are better - going to refactor this soon (done [here](https://github.com/andrewm4894/anomstack/pull/127)).
-
-Idea here is to just send the metric data and prompt to a LLM (ChatGPT) and ask it if it thinks the metric looks anomalous (and provide back an explanation). If it does, we alert.
+Idea here is to just send the metric data and prompt to an LLM Agent (built with the [anomaly-agent](https://github.com/andrewm4894/anomaly-agent)) and ask it if it thinks the metric looks anomalous (and run a verification chain to check it and also provide back an explanation for each anomaly). If it does, we alert.
 
 Notes:
 - If you don't want to send your metric data to OpenAI then just set `disable_llmalert` to `True` in your metric batch config.
-- Support for Anthropic models added [here](https://github.com/andrewm4894/anomstack/pull/128)
+- Going to add and validate [Ollama](https://ollama.com/) support soon for local LLM Agent.
+- Will be developing this more in its own library (for use in both Anomstack and any other projects) over at [anomaly-agent](https://github.com/andrewm4894/anomaly-agent) dig in there for more details.
 
 <details>
 <summary>Click to see some LLM Alert screenshots</summary>
