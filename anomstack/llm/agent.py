@@ -3,7 +3,7 @@ import pandas as pd
 from anomaly_agent import AnomalyAgent
 
 
-def detect_anomalies_agent(df: pd.DataFrame) -> pd.DataFrame:
+def detect_anomalies(df: pd.DataFrame) -> pd.DataFrame:
     """
     Detect anomalies using the AnomalyAgent.
 
