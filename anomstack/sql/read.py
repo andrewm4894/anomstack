@@ -12,6 +12,10 @@ from anomstack.external.duckdb.duckdb import read_sql_duckdb, run_sql_duckdb
 from anomstack.external.gcp.bigquery import read_sql_bigquery
 from anomstack.external.snowflake.snowflake import read_sql_snowflake
 from anomstack.external.sqlite.sqlite import read_sql_sqlite, run_sql_sqlite
+from anomstack.external.clickhouse.clickhouse import (
+    read_sql_clickhouse,
+    run_sql_clickhouse,
+)
 from anomstack.sql.translate import db_translate
 
 pd.options.display.max_columns = 10
@@ -61,6 +65,12 @@ def read_sql(sql: str, db: str, returns_df: bool = True) -> pd.DataFrame:
             df = read_sql_sqlite(sql)
         elif not returns_df:
             run_sql_sqlite(sql)
+            df = pd.DataFrame()
+    elif db == "clickhouse":
+        if returns_df:
+            df = read_sql_clickhouse(sql)
+        elif not returns_df:
+            run_sql_clickhouse(sql)
             df = pd.DataFrame()
     else:
         raise ValueError(f"Unknown db: {db}")

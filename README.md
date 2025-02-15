@@ -47,6 +47,7 @@ Supported sources and databases for your metrics to live in and be queried from:
             <th align="center"><a href="./anomstack/fn/run.py" target="_blank">Python</a></th>
             <th align="center"><a href="./anomstack/external/gcp/bigquery.py" target="_blank">BigQuery</a></th>
             <th align="center"><a href="./anomstack/external/snowflake/snowflake.py" target="_blank">Snowflake</a></th>
+            <th align="center"><a href="./anomstack/external/clickhouse/clickhouse.py" target="_blank">ClickHouse</a></th>
             <th align="center"><a href="./anomstack/external/duckdb/duckdb.py" target="_blank">DuckDB</a></th>
             <th align="center"><a href="./anomstack/external/sqlite/sqlite.py" target="_blank">SQLite</a></th>
             <th align="center"><a href="./anomstack/external/duckdb/duckdb.py" target="_blank">MotherDuck</a></th>
@@ -56,6 +57,7 @@ Supported sources and databases for your metrics to live in and be queried from:
     </thead>
     <tbody>
         <tr>
+            <td align="center">✅</td>
             <td align="center">✅</td>
             <td align="center">✅</td>
             <td align="center">✅</td>
