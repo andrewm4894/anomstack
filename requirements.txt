@@ -1,5 +1,6 @@
 anomaly-agent
 boto3
+clickhouse-connect
 dagit
 dagster
 dagster-docker
