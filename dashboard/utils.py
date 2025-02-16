@@ -90,14 +90,16 @@ def plot_time_series(df, metric_name) -> go.Figure:
     return fig
 
 
-def get_enabled_dagster_jobs() -> list:
+def get_enabled_dagster_jobs(host: str = "localhost", port: str = "3000") -> list:
     """
     Fetches all enabled jobs (with active schedules) from a Dagster instance
     using the GraphQL API.
 
     Args:
-        api_url (str): The URL of the Dagster GraphQL API
-            (e.g., http://localhost:3000/graphql).
+        host (str): The host of the Dagster instance
+            (e.g., http://localhost).
+        port (str): The port of the Dagster instance
+            (e.g., 3000).
 
     Returns:
         list: A list of enabled job names.
@@ -111,10 +113,7 @@ def get_enabled_dagster_jobs() -> list:
     os.environ["DAGSTER_HOME"] = dagster_home_absolute
 
     # Infer Dagster GraphQL API URL from environment variable or default to localhost
-    dagster_host = os.getenv("DAGSTER_HOST", "http://localhost")
-    dagster_port = os.getenv("DAGSTER_PORT", "3000")
-    dagster_graphql_url = f"{dagster_host}:{dagster_port}/graphql"
-
+    dagster_graphql_url = f"{host}:{port}/graphql"
 
     query = """
     query {
