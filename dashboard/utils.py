@@ -23,19 +23,11 @@ def plot_time_series(df, metric_name) -> go.Figure:
     # Create a figure with secondary y-axis
     fig = make_subplots(specs=[[{"secondary_y": True}]])
     
-    # Create custom hover template with voting buttons
+    # Create hover template without buttons
     hovertemplate = (
         "<b>%{x}</b><br>"
         "Value: %{y}<br>"
         "Score: %{customdata[0]:.1%}<br>"
-        "<button onclick=\"submitVote('" + metric_name + "', '%{x}', 'up')\" "
-        "style='color: green; border: none; background: none; cursor: pointer;'>"
-        "👍"
-        "</button>"
-        "<button onclick=\"submitVote('" + metric_name + "', '%{x}', 'down')\" "
-        "style='color: red; border: none; background: none; cursor: pointer;'>"
-        "👎"
-        "</button>"
         "<extra></extra>"
     )
 
@@ -123,7 +115,7 @@ def plot_time_series(df, metric_name) -> go.Figure:
     fig.update_yaxes(title_text="Metric Value", secondary_y=False)
     fig.update_yaxes(title_text="Metric Score", secondary_y=True)
 
-    # Update layout to ensure hover works well
+    # Update layout with click event handling
     fig.update_layout(
         plot_bgcolor="white",
         paper_bgcolor="white",
@@ -140,20 +132,58 @@ def plot_time_series(df, metric_name) -> go.Figure:
             borderwidth=1,
             font=dict(size=10, color="#64748b")
         ),
-        # Add JavaScript for vote handling
+        # Add JavaScript for click handling and voting UI
         annotations=[dict(
-            text="""
+            text=f"""
                 <script>
-                function submitVote(metricName, timestamp, vote) {
-                    const url = `/batch/${window.location.pathname.split('/')[2]}/vote/${metricName}`;
-                    fetch(url, {
+                document.addEventListener('plotly_click', function(e) {{
+                    if (!e.points || !e.points[0]) return;
+                    
+                    const point = e.points[0];
+                    const chartId = e.target.closest('[id^="chart-"]').id;
+                    const chartIndex = chartId.split('-')[1];
+                    const dialogId = `vote-dialog-${{chartIndex}}`;
+                    const dialog = document.getElementById(dialogId);
+                    
+                    if (dialog) {{
+                        dialog.innerHTML = `
+                            <div style="margin-bottom: 8px;">Vote on this point:</div>
+                            <div>
+                                <button class="vote-button" onclick="submitVote('{metric_name}', '${{point.x}}', 'up')">👍</button>
+                                <button class="vote-button" onclick="submitVote('{metric_name}', '${{point.x}}', 'down')">👎</button>
+                            </div>
+                        `;
+                        
+                        const plotRect = e.target.getBoundingClientRect();
+                        dialog.style.left = (plotRect.left + point.xaxis.l2p(point.x)) + 'px';
+                        dialog.style.top = (plotRect.top + point.yaxis.l2p(point.y) - 60) + 'px';
+                        dialog.style.display = 'block';
+                    }}
+                }});
+
+                // Hide dialog when clicking outside
+                document.addEventListener('click', function(e) {{
+                    const dialogs = document.querySelectorAll('.vote-dialog');
+                    dialogs.forEach(dialog => {{
+                        if (!dialog.contains(e.target) && !e.target.closest('.js-plotly-plot')) {{
+                            dialog.style.display = 'none';
+                        }}
+                    }});
+                }});
+
+                function submitVote(metricName, timestamp, vote) {{
+                    const url = `/batch/${{window.location.pathname.split('/')[2]}}/vote/${{metricName}}`;
+                    fetch(url, {{
                         method: 'POST',
-                        headers: {
+                        headers: {{
                             'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: `timestamp=${timestamp}&vote=${vote}`
-                    });
-                }
+                        }},
+                        body: `timestamp=${{timestamp}}&vote=${{vote}}`
+                    }}).then(() => {{
+                        const dialogs = document.querySelectorAll('.vote-dialog');
+                        dialogs.forEach(dialog => dialog.style.display = 'none');
+                    }});
+                }}
                 </script>
             """,
             showarrow=False,
@@ -165,6 +195,7 @@ def plot_time_series(df, metric_name) -> go.Figure:
             yanchor='bottom',
             font=dict(size=1),
         )],
+        clickmode='event'
     )
 
     return fig

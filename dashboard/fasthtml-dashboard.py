@@ -287,13 +287,38 @@ def get(batch_name: str, chart_index: int):
                 "showEditInChartStudio": False,
                 "hovercompare": False,
                 "hoverdistance": 100,
-                "hoverHtml": True
+                "clickmode": "event"  # Enable click events
             }
         )
         app.state.chart_cache[batch_name][chart_index] = fig
 
-    # Wrap the figure in a styled card
+    # Add CSS for vote dialog to the card
     return Card(
+        Style("""
+            .vote-dialog {
+                display: none;
+                position: fixed;
+                background: white;
+                border: 1px solid rgba(0,0,0,0.1);
+                border-radius: 8px;
+                padding: 12px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                z-index: 1000;
+            }
+            .vote-button {
+                padding: 4px 12px;
+                margin: 0 4px;
+                border: 1px solid rgba(0,0,0,0.1);
+                border-radius: 4px;
+                background: white;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+            .vote-button:hover {
+                background: #f8fafc;
+            }
+        """),
+        Div(id=f"vote-dialog-{chart_index}", cls="vote-dialog"),  # Add vote dialog container
         Safe(app.state.chart_cache[batch_name][chart_index]),
         header=Div(
             H4(metric_name),
