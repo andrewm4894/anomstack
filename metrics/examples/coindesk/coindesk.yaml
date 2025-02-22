@@ -1,0 +1,13 @@
+metric_batch: "coindesk"
+ingest_cron_schedule: "*/5 * * * *"
+train_cron_schedule: "*/180 * * * *"
+score_cron_schedule: "*/10 * * * *"
+alert_cron_schedule: "*/15 * * * *"
+change_cron_schedule: "*/15 * * * *"
+llmalert_cron_schedule: "*/60 * * * *"
+plot_cron_schedule: "*/30 * * * *"
+alert_always: False
+disable_llmalert: False
+alert_methods: "email,slack"
+ingest_fn: >
+  {% include "./examples/coindesk/coindesk.py" %}

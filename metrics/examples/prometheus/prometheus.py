@@ -80,11 +80,10 @@ def ingest() -> pd.DataFrame:
 
     # Create a DataFrame from the collected rows.
     df = pd.DataFrame(all_rows)
-    logger.debug(f"DataFrame before dropping duplicates:\n{df}")
 
     # Drop duplicates based on the timestamp (to the second) and metric name.
     df = df.drop_duplicates(subset=["metric_timestamp", "metric_name"])
-    logger.debug(f"DataFrame after dropping duplicates:\n{df}")
+    logger.debug(f"df:\n{df}")
 
     # Ensure the DataFrame has the expected column order.
     df = df[["metric_timestamp", "metric_name", "metric_value"]]
