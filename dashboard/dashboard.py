@@ -213,13 +213,16 @@ def get_batch_view(batch_name: str, session, initial_load: int = DEFAULT_INITIAL
                 stat['metric_name'], i, batch_name
             ) for i, stat in enumerate(metric_stats[:initial_load])],
             # Add Load All button if there are more metrics
-            Button(
-                "Load All",
-                hx_get=f"/batch/{batch_name}/load-more/{initial_load}",
-                hx_target="#charts-container",
-                hx_swap="beforeend",
-                cls=ButtonT.secondary,
-                style="width: 100%; margin-top: 1rem;"
+            Div(
+                Button(
+                    "Load All",
+                    hx_get=f"/batch/{batch_name}/load-more/{initial_load}",
+                    hx_target="#load-all-container",
+                    hx_swap="outerHTML",
+                    cls=ButtonT.secondary,
+                    style="width: 100%; margin-top: 1rem;"
+                ),
+                id="load-all-container"
             ) if total_metrics > initial_load else None,
             id="charts-container"
         ),
@@ -322,14 +325,13 @@ def get(batch_name: str, session):
 @rt("/batch/{batch_name}/load-more/{start_index}")
 def get(batch_name: str, start_index: int):
     metric_stats = app.state.stats_cache[batch_name]
-    # Load all remaining metrics
     remaining_metrics = metric_stats[start_index:]
     
-    # Return the chart placeholders in a Div, with no Load All button
     return Div(
         *[ChartManager.create_chart_placeholder(
             stat['metric_name'], i, batch_name
-        ) for i, stat in enumerate(remaining_metrics, start=start_index)]
+        ) for i, stat in enumerate(remaining_metrics, start=start_index)],
+        id="load-all-container"  # Same ID as container above
     )
 
 
