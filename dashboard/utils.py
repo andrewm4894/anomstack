@@ -13,7 +13,7 @@ from anomstack.sql.read import read_sql
 log = logging.getLogger("fasthtml")
 
 
-def plot_time_series(df, metric_name, small_charts=False, dark_mode=False) -> go.Figure:
+def plot_time_series(df, metric_name, small_charts=False, dark_mode=False, show_markers=True, line_width=2, show_legend=False) -> go.Figure:
     """
     Plot a time series with metric value and metric score.
     
@@ -22,6 +22,9 @@ def plot_time_series(df, metric_name, small_charts=False, dark_mode=False) -> go
         metric_name: Name of the metric
         small_charts: Whether to use small chart size
         dark_mode: Whether to use dark mode styling
+        show_markers: Whether to show line markers
+        line_width: Width of the lines (1-10)
+        show_legend: Whether to show the legend
     """
     # Define height based on size toggle
     height = 250 if small_charts else 400
@@ -58,10 +61,10 @@ def plot_time_series(df, metric_name, small_charts=False, dark_mode=False) -> go
             x=df["metric_timestamp"],
             y=df["metric_value"],
             name="Metric Value",
-            mode="lines+markers",
-            line=dict(color=colors['primary'], width=2),
-            marker=dict(size=6, color=colors['primary'], symbol="circle"),
-            showlegend=False,
+            mode="lines" + ("+markers" if show_markers else ""),
+            line=dict(color=colors['primary'], width=line_width),
+            marker=dict(size=6, color=colors['primary'], symbol="circle") if show_markers else None,
+            showlegend=show_legend,
         ),
         secondary_y=False,
     )
@@ -72,8 +75,8 @@ def plot_time_series(df, metric_name, small_charts=False, dark_mode=False) -> go
             x=df["metric_timestamp"],
             y=df["metric_score"],
             name="Metric Score",
-            line=dict(color=colors['secondary'], width=2, dash="dot"),
-            showlegend=False,
+            line=dict(color=colors['secondary'], width=line_width, dash="dot"),
+            showlegend=show_legend,
         ),
         secondary_y=True,
     )
@@ -92,7 +95,7 @@ def plot_time_series(df, metric_name, small_charts=False, dark_mode=False) -> go
                     mode="markers",
                     name=props["name"],
                     marker=dict(color=props["color"], size=8, symbol="circle"),
-                    showlegend=False,
+                    showlegend=show_legend,
                 ),
                 secondary_y=True,
             )
@@ -115,8 +118,17 @@ def plot_time_series(df, metric_name, small_charts=False, dark_mode=False) -> go
         paper_bgcolor=colors['background'],
         hovermode="x unified",
         hoverdistance=100,
-        showlegend=False,
-        margin=dict(t=10, b=10, l=10, r=10),
+        showlegend=show_legend,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="left",
+            x=0,
+            bgcolor=colors['background'],
+            font=dict(color=colors['text']),
+        ) if show_legend else None,
+        margin=dict(t=30, b=10, l=10, r=10),
         height=height,
     )
 

@@ -169,6 +169,51 @@ app, rt = fast_app(
             body.dark-mode .uk-button-primary:hover {
                 background-color: #1a3f80;  /* Slightly lighter on hover */
             }
+            
+            /* Switch styles */
+            .uk-toggle-switch {
+                appearance: none;
+                position: relative;
+                width: 32px;  /* Reduced from 40px */
+                height: 18px; /* Reduced from 24px */
+                border-radius: 9px;  /* Reduced from 12px */
+                background-color: #e5e7eb;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .uk-toggle-switch:checked {
+                background-color: #1e40af;
+            }
+
+            .uk-toggle-switch::before {
+                content: '';
+                position: absolute;
+                left: 2px;
+                top: 2px;
+                width: 14px;  /* Reduced from 20px */
+                height: 14px; /* Reduced from 20px */
+                border-radius: 50%;
+                background-color: white;
+                transition: transform 0.3s ease;
+            }
+
+            .uk-toggle-switch:checked::before {
+                transform: translateX(14px); /* Reduced from 16px */
+            }
+
+            /* Dark mode switch styles */
+            body.dark-mode .uk-toggle-switch {
+                background-color: #4b5563;
+            }
+
+            body.dark-mode .uk-toggle-switch:checked {
+                background-color: #60a5fa;
+            }
+
+            body.dark-mode .uk-toggle-switch::before {
+                background-color: #e5e7eb;
+            }
         """),
     ),
     debug=True, 
@@ -196,7 +241,10 @@ class DashboardState:
         self.small_charts = True
         self.dark_mode = False
         self.two_columns = True
+        self.show_markers = True
         self.alert_max_n = {}
+        self.line_width = 2
+        self.show_legend = False
     
     def clear_batch_cache(self, batch_name):
         self.df_cache.pop(batch_name, None)
@@ -223,7 +271,10 @@ class ChartManager:
             df_metric, 
             metric_name,
             small_charts=app.state.small_charts,
-            dark_mode=app.state.dark_mode
+            dark_mode=app.state.dark_mode,
+            show_markers=app.state.show_markers,
+            line_width=app.state.line_width,
+            show_legend=app.state.show_legend
         ).to_html(
             div_id=f"plotly-chart-{chart_index}",
             include_plotlyjs=False,
@@ -446,34 +497,93 @@ def get_batch_view(batch_name: str, session, initial_load: int = DEFAULT_LOAD_N_
 def _create_controls(batch_name):
     settings_dropdown = DropDownNavContainer(
         NavHeaderLi("Chart Settings"),
-        Li(A(
+        Li(
             DivLAligned(
-                "Small Charts",
-                P(),
-                P("On" if app.state.small_charts else "Off", cls=TextPresets.muted_sm)
-            ),
-            hx_post=f"/batch/{batch_name}/toggle-size",
-            hx_target="#main-content"
-        )),
-        Li(A(
+                P("Small Charts", cls="text-sm font-medium"),
+                Button(
+                    UkIcon("check" if app.state.small_charts else "x"),
+                    hx_post=f"/batch/{batch_name}/toggle-size",
+                    hx_target="#main-content",
+                    cls=ButtonT.ghost,
+                    uk_tooltip="Toggle between compact and full-size chart views"
+                ),
+                cls="flex items-center justify-between w-full px-4 py-2"
+            )
+        ),
+        Li(
             DivLAligned(
-                "Two Columns",
-                P(),
-                P("On" if app.state.two_columns else "Off", cls=TextPresets.muted_sm)
-            ),
-            hx_post=f"/batch/{batch_name}/toggle-columns",
-            hx_target="#main-content"
-        )),
+                P("Two Columns", cls="text-sm font-medium"),
+                Button(
+                    UkIcon("check" if app.state.two_columns else "x"),
+                    hx_post=f"/batch/{batch_name}/toggle-columns",
+                    hx_target="#main-content",
+                    cls=ButtonT.ghost,
+                    uk_tooltip="Display charts in one or two columns"
+                ),
+                cls="flex items-center justify-between w-full px-4 py-2"
+            )
+        ),
+        Li(
+            DivLAligned(
+                P("Show Markers", cls="text-sm font-medium"),
+                Button(
+                    UkIcon("check" if app.state.show_markers else "x"),
+                    hx_post=f"/batch/{batch_name}/toggle-markers",
+                    hx_target="#main-content",
+                    cls=ButtonT.ghost,
+                    uk_tooltip="Show/hide data point markers on the charts"
+                ),
+                cls="flex items-center justify-between w-full px-4 py-2"
+            )
+        ),
+        Li(
+            DivLAligned(
+                P("Show Legend", cls="text-sm font-medium"),
+                Button(
+                    UkIcon("check" if app.state.show_legend else "x"),
+                    hx_post=f"/batch/{batch_name}/toggle-legend",
+                    hx_target="#main-content",
+                    cls=ButtonT.ghost,
+                    uk_tooltip="Display chart legends with metric details"
+                ),
+                cls="flex items-center justify-between w-full px-4 py-2"
+            )
+        ),
         NavDividerLi(),
-        Li(A(
+        Li(
             DivLAligned(
-                "Dark Mode",
-                P(),
-                P("On" if app.state.dark_mode else "Off", cls=TextPresets.muted_sm)
-            ),
-            hx_post=f"/batch/{batch_name}/toggle-theme",
-            hx_target="#main-content"
-        )),
+                P("Dark Mode", cls="text-sm font-medium"),
+                Button(
+                    UkIcon("check" if app.state.dark_mode else "x"),
+                    hx_post=f"/batch/{batch_name}/toggle-theme",
+                    hx_target="#main-content",
+                    cls=ButtonT.ghost,
+                    uk_tooltip="Switch between light and dark color themes"
+                ),
+                cls="flex items-center justify-between w-full px-4 py-2"
+            )
+        ),
+        Li(
+            DivLAligned(
+                P("Line Width", cls="text-sm font-medium"),
+                Input(
+                    type="number",
+                    name="line_width",
+                    value=app.state.line_width,
+                    min=1,
+                    max=10,
+                    step=1,
+                    cls="uk-input uk-form-small",
+                    style="width: 60px;",
+                    hx_post=f"/batch/{batch_name}/update-line-width",
+                    hx_target="#charts-container",
+                    hx_trigger="change",
+                    hx_swap="innerHTML",
+                    uk_tooltip="Adjust the thickness of chart lines (1-10)"
+                ),
+                cls="flex items-center justify-between w-full px-4 py-2"
+            )
+        ),
     )
 
     batches_dropdown = DropDownNavContainer(
@@ -496,14 +606,15 @@ def _create_controls(batch_name):
                     hx_get="/",
                     hx_push_url="/",
                     hx_target="#main-content",
-                    cls=ButtonT.secondary
+                    cls=ButtonT.secondary,
+                    uk_tooltip="Return to homepage"
                 ),
                 Button(
                     DivLAligned(UkIcon("refresh-ccw")),
                     hx_get=f"/batch/{batch_name}/refresh", 
                     hx_target="#main-content",
                     cls=ButtonT.secondary,
-                    uk_tooltip="Refresh metrics data"
+                    uk_tooltip="Refresh metrics data from source"
                 ),
                 _create_search_form(batch_name),
                 _create_alert_n_form(batch_name),
@@ -513,14 +624,14 @@ def _create_controls(batch_name):
                 Button(
                     DivLAligned(UkIcon("menu")),
                     cls=ButtonT.secondary,
-                    uk_tooltip="Select metric batch"
+                    uk_tooltip="Select metric batch to display"
                 ),
                 batches_dropdown,
                 Div(
                     Button(
                         DivLAligned(UkIcon("settings")),
                         cls=ButtonT.secondary,
-                        uk_tooltip="Chart settings"
+                        uk_tooltip="Customize chart display settings"
                     ),
                     settings_dropdown,
                 ),
@@ -529,7 +640,7 @@ def _create_controls(batch_name):
                     href="https://github.com/andrewm4894/anomstack",
                     target="_blank",
                     cls="uk-button uk-button-secondary",
-                    uk_tooltip="View on GitHub"
+                    uk_tooltip="View project on GitHub"
                 ),
                 style="display: flex; align-items: center; gap: 0.5rem;"
             )
@@ -565,8 +676,8 @@ def _create_alert_n_form(batch_name):
         ),
         id=f"alert-max-n-form-{batch_name}",
         hx_post=f"/batch/{batch_name}/update-n",
-        hx_target="#charts-container",
-        hx_trigger="change"
+        hx_target="#main-content",
+        hx_push_url=f"/batch/{batch_name}"
     )
 
 @rt("/batch/{batch_name}/chart/{chart_index}")
@@ -676,16 +787,8 @@ def post(batch_name: str, alert_max_n: int = DEFAULT_ALERT_MAX_N, session=None):
     )
     app.state.calculate_metric_stats(batch_name)
     
-    script = Script(f"""
-        document.getElementById('alert-max-n-{batch_name}').value = {alert_max_n};
-    """)
-    
-    return Div(
-        script,
-        *[ChartManager.create_chart_placeholder(
-            stat['metric_name'], i, batch_name
-        ) for i, stat in enumerate(app.state.stats_cache[batch_name][:DEFAULT_LOAD_N_CHARTS])]
-    )
+    # Return the full page content with proper URL update
+    return get_batch_view(batch_name, session=session, initial_load=DEFAULT_LOAD_N_CHARTS)
 
 
 @rt("/batch/{batch_name}/toggle-size")
@@ -716,6 +819,38 @@ def post(batch_name: str, session=None):
 def post(batch_name: str, session=None):
     app.state.two_columns = not app.state.two_columns
     return get_batch_view(batch_name, session=session, initial_load=DEFAULT_LOAD_N_CHARTS)
+
+
+@rt("/batch/{batch_name}/toggle-markers")
+def post(batch_name: str, session=None):
+    app.state.show_markers = not app.state.show_markers
+    app.state.chart_cache.clear()  # Clear cache to regenerate charts
+    return get_batch_view(batch_name, session=session, initial_load=DEFAULT_LOAD_N_CHARTS)
+
+
+@rt("/batch/{batch_name}/toggle-legend")
+def post(batch_name: str, session=None):
+    app.state.show_legend = not app.state.show_legend
+    app.state.chart_cache.clear()  # Clear cache to regenerate charts
+    return get_batch_view(batch_name, session=session, initial_load=DEFAULT_LOAD_N_CHARTS)
+
+
+@rt("/batch/{batch_name}/update-line-width")
+def post(batch_name: str, line_width: int = 2):
+    try:
+        # Ensure line width is within valid range
+        app.state.line_width = max(1, min(10, int(line_width)))
+        app.state.chart_cache.clear()  # Clear cache to regenerate charts
+        
+        # Only regenerate the charts, maintaining the id and grid layout
+        metric_stats = app.state.stats_cache[batch_name]
+        return [
+            *[ChartManager.create_chart_placeholder(
+                stat['metric_name'], i, batch_name
+            ) for i, stat in enumerate(metric_stats)]
+        ]
+    except ValueError:
+        return "Invalid line width value"
 
 
 serve(host="localhost", port=5003)
