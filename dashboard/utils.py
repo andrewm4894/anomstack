@@ -98,7 +98,7 @@ def plot_time_series(df, metric_name, small_charts=False, dark_mode=False) -> go
             )
 
     # Update axes
-    fig.update_xaxes(title_text="Timestamp", **common_grid)
+    fig.update_xaxes(**common_grid)
     fig.update_yaxes(title_text="Metric Value", secondary_y=False, **common_grid)
     fig.update_yaxes(
         title_text="Metric Score",
