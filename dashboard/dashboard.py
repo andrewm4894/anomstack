@@ -325,10 +325,12 @@ def get(batch_name: str, start_index: int):
     # Load all remaining metrics
     remaining_metrics = metric_stats[start_index:]
     
-    # Only return the chart placeholders, no Load All button
-    return [ChartManager.create_chart_placeholder(
-        stat['metric_name'], i, batch_name
-    ) for i, stat in enumerate(remaining_metrics, start=start_index)]
+    # Return the chart placeholders in a Div, with no Load All button
+    return Div(
+        *[ChartManager.create_chart_placeholder(
+            stat['metric_name'], i, batch_name
+        ) for i, stat in enumerate(remaining_metrics, start=start_index)]
+    )
 
 
 @rt("/batch/{batch_name}/search")
