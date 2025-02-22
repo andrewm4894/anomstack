@@ -144,6 +144,31 @@ app, rt = fast_app(
             body.dark-mode .uk-text-muted {
                 color: #9ca3af;
             }
+            
+            /* Update dark mode button styles */
+            body.dark-mode .uk-button-default,
+            body.dark-mode .uk-button-secondary {
+                background-color: #1f1f1f;  /* Darker background */
+                color: #e5e7eb;
+                border-color: #2d2d2d;  /* Slightly lighter border */
+            }
+            
+            body.dark-mode .uk-button-default:hover,
+            body.dark-mode .uk-button-secondary:hover {
+                background-color: #2d2d2d;  /* Darker hover state */
+                color: #ffffff;
+                border-color: #404040;
+            }
+            
+            body.dark-mode .uk-button-primary {
+                background-color: #0f2d66;  /* Darker blue */
+                color: #ffffff;
+                border: none;
+            }
+            
+            body.dark-mode .uk-button-primary:hover {
+                background-color: #1a3f80;  /* Slightly lighter on hover */
+            }
         """),
     ),
     debug=True, 
@@ -664,14 +689,14 @@ def post(batch_name: str, alert_max_n: int = DEFAULT_ALERT_MAX_N, session=None):
 
 
 @rt("/batch/{batch_name}/toggle-size")
-def post(batch_name: str):
+def post(batch_name: str, session=None):
     app.state.small_charts = not app.state.small_charts
     app.state.chart_cache.clear()  # Clear cache to regenerate charts
-    return get_batch_view(batch_name, session=None)
+    return get_batch_view(batch_name, session=session, initial_load=DEFAULT_LOAD_N_CHARTS)
 
 
 @rt("/batch/{batch_name}/toggle-theme")
-def post(batch_name: str):
+def post(batch_name: str, session=None):
     app.state.dark_mode = not app.state.dark_mode
     app.state.chart_cache.clear()  # Clear cache to regenerate charts
     
@@ -680,16 +705,17 @@ def post(batch_name: str):
         document.body.classList.toggle('dark-mode');
     """)
     
+    response = get_batch_view(batch_name, session=session, initial_load=DEFAULT_LOAD_N_CHARTS)
     return Div(
         script,
-        get_batch_view(batch_name, session=None)
+        response
     )
 
 
 @rt("/batch/{batch_name}/toggle-columns")
-def post(batch_name: str):
+def post(batch_name: str, session=None):
     app.state.two_columns = not app.state.two_columns
-    return get_batch_view(batch_name, session=None)
+    return get_batch_view(batch_name, session=session, initial_load=DEFAULT_LOAD_N_CHARTS)
 
 
 serve(host="localhost", port=5003)
