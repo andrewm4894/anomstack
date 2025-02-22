@@ -17,105 +17,76 @@ def plot_time_series(df, metric_name) -> go.Figure:
     """
     Plot a time series with metric value and metric score.
     """
-    anomaly_rate = df["metric_alert"].mean() if df["metric_alert"].sum() > 0 else 0
-    avg_score = df["metric_score"].mean() if df["metric_score"].sum() > 0 else 0
-
-    # Create a figure with secondary y-axis
-    fig = make_subplots(specs=[[{"secondary_y": True}]])
-    
-    # Create hover template without buttons
-    hovertemplate = (
-        "<b>%{x}</b><br>"
-        "Value: %{y}<br>"
-        "Score: %{customdata[0]:.1%}<br>"
-        "<extra></extra>"
+    # Common styling configurations
+    common_font = dict(size=10, color="#64748b")
+    common_title_font = dict(size=12, color="#64748b")
+    common_grid = dict(
+        showgrid=True,
+        gridwidth=1,
+        gridcolor="rgba(0,0,0,0.1)",
+        zeroline=False,
+        tickfont=common_font,
+        title_font=common_title_font,
     )
 
-    # Add traces with custom hover template
+    # Create figure with secondary y-axis
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+
+    # Add main metric value trace
     fig.add_trace(
         go.Scatter(
-            x=df["metric_timestamp"], 
+            x=df["metric_timestamp"],
             y=df["metric_value"],
-            customdata=df[["metric_score"]],
             name="Metric Value",
+            mode="lines+markers",
             line=dict(color="#2563eb", width=2),
-            hovertemplate=hovertemplate
+            marker=dict(size=6, color="#2563eb", symbol="circle"),
         ),
         secondary_y=False,
     )
 
+    # Add metric score trace
     fig.add_trace(
         go.Scatter(
             x=df["metric_timestamp"],
             y=df["metric_score"],
             name="Metric Score",
-            line=dict(color="#64748b", width=2, dash="dot"),  # Muted color for score
+            line=dict(color="#64748b", width=2, dash="dot"),
         ),
         secondary_y=True,
     )
 
-    alert_df = df[df["metric_alert"] == 1]
-    if not alert_df.empty:
-        fig.add_trace(
-            go.Scatter(
-                x=alert_df["metric_timestamp"],
-                y=alert_df["metric_alert"],
-                mode="markers",
-                name="Metric Alert",
-                marker=dict(color="#dc2626", size=8, symbol="circle"),  # Red alert markers
-            ),
-            secondary_y=True,
-        )
+    # Add alert and change markers if they exist
+    for condition, props in {
+        "metric_alert": dict(name="Metric Alert", color="#dc2626"),
+        "metric_change": dict(name="Metric Change", color="#f97316"),
+    }.items():
+        condition_df = df[df[condition] == 1]
+        if not condition_df.empty:
+            fig.add_trace(
+                go.Scatter(
+                    x=condition_df["metric_timestamp"],
+                    y=condition_df[condition],
+                    mode="markers",
+                    name=props["name"],
+                    marker=dict(color=props["color"], size=8, symbol="circle"),
+                ),
+                secondary_y=True,
+            )
 
-    change_df = df[df["metric_change"] == 1]
-    if not change_df.empty:
-        fig.add_trace(
-            go.Scatter(
-                x=change_df["metric_timestamp"],
-                y=change_df["metric_change"],
-                mode="markers",
-                name="Metric Change",
-                marker=dict(color="#f97316", size=8, symbol="circle"),  # Orange change markers
-            ),
-            secondary_y=True,
-        )
-
-    # Update axes styling
-    fig.update_xaxes(
-        showgrid=True,
-        gridwidth=1,
-        gridcolor="rgba(0,0,0,0.1)",
-        zeroline=False,
-        tickfont=dict(size=10, color="#64748b"),
-        title_font=dict(size=12, color="#64748b")
-    )
-    
+    # Update axes
+    fig.update_xaxes(title_text="Timestamp", **common_grid)
+    fig.update_yaxes(title_text="Metric Value", secondary_y=False, **common_grid)
     fig.update_yaxes(
-        showgrid=True,
-        gridwidth=1,
-        gridcolor="rgba(0,0,0,0.1)",
-        zeroline=False,
-        tickfont=dict(size=10, color="#64748b"),
-        title_font=dict(size=12, color="#64748b"),
-        secondary_y=False
-    )
-    
-    fig.update_yaxes(
+        title_text="Metric Score",
+        secondary_y=True,
         showgrid=False,
-        zeroline=False,
         range=[0, 1.1],
         tickformat=".0%",
-        tickfont=dict(size=10, color="#64748b"),
-        title_font=dict(size=12, color="#64748b"),
-        secondary_y=True,
+        **{k: v for k, v in common_grid.items() if k != "showgrid"}
     )
 
-    # Set axis titles
-    fig.update_xaxes(title_text="Timestamp")
-    fig.update_yaxes(title_text="Metric Value", secondary_y=False)
-    fig.update_yaxes(title_text="Metric Score", secondary_y=True)
-
-    # Update layout with click event handling
+    # Update layout
     fig.update_layout(
         plot_bgcolor="white",
         paper_bgcolor="white",
@@ -130,72 +101,8 @@ def plot_time_series(df, metric_name) -> go.Figure:
             bgcolor="rgba(255,255,255,0.8)",
             bordercolor="rgba(0,0,0,0.1)",
             borderwidth=1,
-            font=dict(size=10, color="#64748b")
-        ),
-        # Add JavaScript for click handling and voting UI
-        annotations=[dict(
-            text=f"""
-                <script>
-                document.addEventListener('plotly_click', function(e) {{
-                    if (!e.points || !e.points[0]) return;
-                    
-                    const point = e.points[0];
-                    const chartId = e.target.closest('[id^="chart-"]').id;
-                    const chartIndex = chartId.split('-')[1];
-                    const dialogId = `vote-dialog-${{chartIndex}}`;
-                    const dialog = document.getElementById(dialogId);
-                    
-                    if (dialog) {{
-                        dialog.innerHTML = `
-                            <div style="margin-bottom: 8px;">Vote on this point:</div>
-                            <div>
-                                <button class="vote-button" onclick="submitVote('{metric_name}', '${{point.x}}', 'up')">👍</button>
-                                <button class="vote-button" onclick="submitVote('{metric_name}', '${{point.x}}', 'down')">👎</button>
-                            </div>
-                        `;
-                        
-                        const plotRect = e.target.getBoundingClientRect();
-                        dialog.style.left = (plotRect.left + point.xaxis.l2p(point.x)) + 'px';
-                        dialog.style.top = (plotRect.top + point.yaxis.l2p(point.y) - 60) + 'px';
-                        dialog.style.display = 'block';
-                    }}
-                }});
-
-                // Hide dialog when clicking outside
-                document.addEventListener('click', function(e) {{
-                    const dialogs = document.querySelectorAll('.vote-dialog');
-                    dialogs.forEach(dialog => {{
-                        if (!dialog.contains(e.target) && !e.target.closest('.js-plotly-plot')) {{
-                            dialog.style.display = 'none';
-                        }}
-                    }});
-                }});
-
-                function submitVote(metricName, timestamp, vote) {{
-                    const url = `/batch/${{window.location.pathname.split('/')[2]}}/vote/${{metricName}}`;
-                    fetch(url, {{
-                        method: 'POST',
-                        headers: {{
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        }},
-                        body: `timestamp=${{timestamp}}&vote=${{vote}}`
-                    }}).then(() => {{
-                        const dialogs = document.querySelectorAll('.vote-dialog');
-                        dialogs.forEach(dialog => dialog.style.display = 'none');
-                    }});
-                }}
-                </script>
-            """,
-            showarrow=False,
-            x=0,
-            y=0,
-            xref='paper',
-            yref='paper',
-            xanchor='left',
-            yanchor='bottom',
-            font=dict(size=1),
-        )],
-        clickmode='event'
+            font=common_font
+        )
     )
 
     return fig

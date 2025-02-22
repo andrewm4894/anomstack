@@ -12,8 +12,8 @@ SHELL=/bin/bash
 .PHONY: kill-locald
 .PHONY: kill-streamlitd
 .PHONY: ps-locald
-.PHONY: fasthtml
-.PHONY: fasthtmld
+.PHONY: dashboard
+.PHONY: dashboardd
 
 # start streamlit dashboard
 streamlit:
@@ -65,8 +65,8 @@ docs:
 requirements:
 	pip-compile requirements.compile
 
-fasthtml:
-	python dashboard/fasthtml-dashboard.py
+dashboard:
+	python dashboard/dashboard.py
 
-fasthtmld:
-	nohup python dashboard/fasthtml-dashboard.py > /dev/null 2>&1 &
+dashboardd:
+	nohup python dashboard/dashboard.py > /dev/null 2>&1 &
