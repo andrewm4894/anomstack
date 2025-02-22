@@ -1,5 +1,5 @@
 metric_batch: "netdata_httpcheck"
-ingest_cron_schedule: "*/30 * * * *"
+ingest_cron_schedule: "*/10 * * * *"
 train_cron_schedule: "*/180 * * * *"
 score_cron_schedule: "*/40 * * * *"
 alert_cron_schedule: "*/45 * * * *"
