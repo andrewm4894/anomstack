@@ -166,6 +166,7 @@ class DashboardState:
         self.stats_cache = {}
         self.small_charts = True  # Changed to True to default to small charts
         self.dark_mode = False
+        self.alert_max_n = {}  # Add this to track max_n per batch
     
     def clear_batch_cache(self, batch_name):
         self.df_cache.pop(batch_name, None)
@@ -228,6 +229,9 @@ app.state = DashboardState()
 
 @rt
 def index(request: Request):
+    # Check if this is an HTMX request
+    is_htmx = request.headers.get("HX-Request") == "true"
+    
     # Add dark mode class to body if enabled
     script = Script(f"""
         if ({'true' if app.state.dark_mode else 'false'}) {{
@@ -238,6 +242,20 @@ def index(request: Request):
     current_path = request.url.path
     current_batch = current_path.split("/batch/")[-1] if "/batch/" in current_path else None
 
+    main_content = Card(
+        DivLAligned(
+            P("Please select a metric batch above to view metrics.", cls=TextPresets.muted_lg),
+            cls="p-8 text-center"
+        ),
+        id="main-content", 
+        cls="col-span-4"
+    )
+
+    # For HTMX requests, return only the main content
+    if is_htmx:
+        return main_content
+
+    # For full page loads, return the complete layout
     top_nav = TabContainer(
         *map(
             lambda x: Li(
@@ -257,19 +275,6 @@ def index(request: Request):
         cls="top-nav uk-margin-bottom"
     )
 
-    main_content = Card(
-        _create_controls(current_batch) if current_batch else None,
-        Div(
-            DivLAligned(
-                P("Please select a metric batch above to view metrics.", cls=TextPresets.muted_lg),
-                cls="p-8 text-center"
-            ) if not current_batch else None,
-            id="charts-container"
-        ),
-        id="main-content", 
-        cls="col-span-4"
-    ) if not current_batch else None
-
     return (
         Title("Anomstack"),
         script,
@@ -280,7 +285,7 @@ def index(request: Request):
         ),
         Card(
             top_nav,
-            Grid(main_content) if main_content else None,
+            Grid(main_content),
             cls="uk-margin-top"
         )
     )
@@ -356,23 +361,35 @@ def _create_controls(batch_name):
     )
 
     return Card(
-        Div(
-            Button(
-                DivLAligned(UkIcon("refresh"), "Refresh"),
-                hx_get=f"/batch/{batch_name}/refresh", 
-                hx_target="#main-content",
-                cls=ButtonT.secondary,
-                uk_tooltip="Refresh metrics data"
+        DivFullySpaced(
+            Div(
+                Button(
+                    DivLAligned(UkIcon("home")),
+                    hx_get="/",
+                    hx_push_url="/",
+                    hx_target="#main-content",
+                    cls=ButtonT.secondary
+                ),
+                Button(
+                    DivLAligned(UkIcon("refresh"), "Refresh"),
+                    hx_get=f"/batch/{batch_name}/refresh", 
+                    hx_target="#main-content",
+                    cls=ButtonT.secondary,
+                    uk_tooltip="Refresh metrics data"
+                ),
+                _create_search_form(batch_name),
+                _create_alert_n_form(batch_name),
+                style="display: flex; align-items: center; gap: 0.5rem;"
             ),
-            _create_search_form(batch_name),
-            _create_alert_n_form(batch_name),
-            Button(
-                DivLAligned(UkIcon("settings"), "Settings"),
-                cls=ButtonT.secondary,
-                uk_tooltip="Chart settings"
-            ),
-            settings_dropdown,
-            style="display: flex; align-items: center; gap: 0.5rem;"
+            Div(
+                Button(
+                    DivLAligned(UkIcon("settings"), "Settings"),
+                    cls=ButtonT.secondary,
+                    uk_tooltip="Chart settings"
+                ),
+                settings_dropdown,
+                style="display: flex; align-items: center; gap: 0.5rem;"
+            )
         ),
         cls="mb-8 uk-padding-small"
     )
@@ -397,13 +414,15 @@ def _create_alert_n_form(batch_name):
         Input(
             type="number",
             name="alert_max_n",
-            value=DEFAULT_ALERT_MAX_N,
+            value=app.state.alert_max_n.get(batch_name, DEFAULT_ALERT_MAX_N),
             cls="uk-input uk-form-small",
             style="width: 100px;",
-            uk_tooltip="Maximum number of observations"
+            uk_tooltip="Maximum number of observations",
+            id=f"alert-max-n-{batch_name}"
         ),
+        id=f"alert-max-n-form-{batch_name}",
         hx_post=f"/batch/{batch_name}/update-n",
-        hx_target="#main-content",
+        hx_target="#charts-container",
         hx_trigger="change"
     )
 
@@ -490,6 +509,7 @@ def post(batch_name: str, search: str = ""):
 
 @rt("/batch/{batch_name}/update-n")
 def post(batch_name: str, alert_max_n: int = DEFAULT_ALERT_MAX_N, session=None):
+    app.state.alert_max_n[batch_name] = alert_max_n
     app.state.clear_batch_cache(batch_name)
     
     app.state.df_cache[batch_name] = get_data(
@@ -497,7 +517,17 @@ def post(batch_name: str, alert_max_n: int = DEFAULT_ALERT_MAX_N, session=None):
         alert_max_n=alert_max_n
     )
     app.state.calculate_metric_stats(batch_name)
-    return get_batch_view(batch_name, session, initial_load=DEFAULT_INITIAL_LOAD)
+    
+    script = Script(f"""
+        document.getElementById('alert-max-n-{batch_name}').value = {alert_max_n};
+    """)
+    
+    return Div(
+        script,
+        *[ChartManager.create_chart_placeholder(
+            stat['metric_name'], i, batch_name
+        ) for i, stat in enumerate(app.state.stats_cache[batch_name][:DEFAULT_INITIAL_LOAD])]
+    )
 
 
 @rt("/batch/{batch_name}/toggle-size")
