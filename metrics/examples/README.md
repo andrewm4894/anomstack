@@ -3,6 +3,7 @@
 Some example metric batch sub folders. For example you might have one per source or subject, or whatever makes most sense to you really.
 
 - [bigquery](bigquery/): Example of a BigQuery metric batch.
+- [coindesk](coindesk/): Example of a CoinDesk metric batch.
 - [eirgrid](eirgrid/): Example of a metric batch that uses a custom python `ingest_fn` parameter to just use python to create an `ingest()` function that returns a pandas df.
 - [example_jinja](example_jinja/): Example of a metric batch that uses Jinja templating.
 - [example_simple](example_simple/): Example of a simple metric batch.
@@ -13,6 +14,7 @@ Some example metric batch sub folders. For example you might have one per source
 - [hackernews](hackernews/): Example of a metric batch that uses the Hacker News API.
 - [netdata](netdata/): Example of a metric batch that uses the Netdata API.
 - [netdata_httpcheck](netdata_httpcheck/): Example of a metric batch that uses the Netdata API to check the status of a website.
+- [prometheus](prometheus/): Example of a metric batch that uses Prometheus.
 - [python](python/): Example of a metric batch that uses a custom python `ingest_fn` parameter to just use python to create an `ingest()` function that returns a pandas df.
 - [s3](s3/): Example of a metric batch that uses S3.
 - [sales](sales/): Example of a metric batch that uses a SQL file.

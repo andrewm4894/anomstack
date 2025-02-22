@@ -19,6 +19,7 @@ app, rt = fast_app(
     hdrs=(
         Theme.blue.headers(),
         Script(src="https://cdn.plot.ly/plotly-2.32.0.min.js"),
+        Link(rel="icon", type="image/svg+xml", href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNoYXJ0LWxpbmUiPjxwYXRoIGQ9Ik0zIDN2MTZhMiAyIDAgMCAwIDIgMmgxNiIvPjxwYXRoIGQ9Im0xOSA5LTUgNS00LTQtMyAzIi8+PC9zdmc+"),
         Style("""
             /* Light mode defaults */
             body {
@@ -160,13 +161,16 @@ class DashboardState:
     def __init__(self):
         self.specs = specs
         self.metric_batches = get_metric_batches()
+        if not self.metric_batches:
+            log.warning("No metric batches found from Dagster. Is Dagster running?")
+            self.metric_batches = []
         self.specs_enabled = {batch: specs[batch] for batch in self.metric_batches}
         self.df_cache = {}
         self.chart_cache = {}
         self.stats_cache = {}
-        self.small_charts = True  # Changed to True to default to small charts
+        self.small_charts = True
         self.dark_mode = False
-        self.alert_max_n = {}  # Add this to track max_n per batch
+        self.alert_max_n = {}
     
     def clear_batch_cache(self, batch_name):
         self.df_cache.pop(batch_name, None)
@@ -239,16 +243,51 @@ def index(request: Request):
         }}
     """)
     
-    current_path = request.url.path
-    current_batch = current_path.split("/batch/")[-1] if "/batch/" in current_path else None
-
-    main_content = Card(
-        DivLAligned(
-            P("Please select a metric batch above to view metrics.", cls=TextPresets.muted_lg),
-            cls="p-8 text-center"
+    main_content = Div(
+        Card(
+            DivLAligned(
+                H2("Anomstack - Metric Batches", cls="mb-2"),
+                A(
+                    DivLAligned(UkIcon("github")),
+                    href="https://github.com/andrewm4894/anomstack",
+                    target="_blank",
+                    cls="uk-button uk-button-secondary",
+                    uk_tooltip="View on GitHub"
+                ),
+                style="justify-content: space-between;",
+                cls="mb-6"
+            ),
+            # Show warning if no metric batches
+            Div(
+                DivLAligned(
+                    UkIcon("alert-triangle"),
+                    P("No metric batches found. Is Dagster running?", cls=TextPresets.muted_sm),
+                    cls="space-x-2 p-4 bg-yellow-50 text-yellow-700 rounded-md"
+                ),
+                cls="mb-6"
+            ) if not app.state.metric_batches else None,
+            Grid(
+                *[Card(
+                    DivLAligned(
+                        H4(batch_name, cls="mb-1"),
+                        Button(
+                            "View Metrics",
+                            hx_get=f"/batch/{batch_name}",
+                            hx_push_url=f"/batch/{batch_name}",
+                            hx_target="#main-content",
+                            hx_indicator="#loading",
+                            cls=ButtonT.primary
+                        ),
+                        style="justify-content: space-between;"
+                    ),
+                    cls="p-4 hover:border-primary transition-colors duration-200"
+                ) for batch_name in app.state.metric_batches],
+                cols=3,
+                gap=4
+            ) if app.state.metric_batches else None,
+            cls="p-6"
         ),
-        id="main-content", 
-        cls="col-span-4"
+        id="main-content"
     )
 
     # For HTMX requests, return only the main content
@@ -256,25 +295,6 @@ def index(request: Request):
         return main_content
 
     # For full page loads, return the complete layout
-    top_nav = TabContainer(
-        *map(
-            lambda x: Li(
-                A(x, 
-                  hx_get=f"/batch/{x}", 
-                  hx_push_url=f"/batch/{x}",
-                  hx_target="#main-content",
-                  hx_indicator="#loading",
-                  hx_swap="innerHTML",
-                  cls="uk-padding-small"
-                ),
-                cls="uk-active" if x == current_batch else ""
-            ),
-            app.state.metric_batches,
-        ),
-        alt=True,
-        cls="top-nav uk-margin-bottom"
-    )
-
     return (
         Title("Anomstack"),
         script,
@@ -283,21 +303,20 @@ def index(request: Request):
             id="loading", 
             cls="loading-indicator"
         ),
-        Card(
-            top_nav,
-            Grid(main_content),
-            cls="uk-margin-top"
-        )
+        main_content
     )
 
 
 @rt("/batch/{batch_name}")
 def get_batch_view(batch_name: str, session, initial_load: int = DEFAULT_INITIAL_LOAD):
+    # First, ensure we have the data and stats calculated
     if batch_name not in app.state.df_cache:
         app.state.df_cache[batch_name] = get_data(
             app.state.specs_enabled[batch_name], 
             alert_max_n=DEFAULT_ALERT_MAX_N
         )
+        app.state.calculate_metric_stats(batch_name)
+    elif batch_name not in app.state.stats_cache:  # Add this check
         app.state.calculate_metric_stats(batch_name)
 
     metric_stats = app.state.stats_cache[batch_name]
@@ -360,6 +379,18 @@ def _create_controls(batch_name):
         )),
     )
 
+    batches_dropdown = DropDownNavContainer(
+        NavHeaderLi("Metric Batches"),
+        *[Li(A(
+            batch_name,
+            hx_get=f"/batch/{batch_name}",
+            hx_push_url=f"/batch/{batch_name}",
+            hx_target="#main-content",
+            hx_indicator="#loading",
+            cls=f"{'uk-active' if batch_name == batch_name else ''}"
+        )) for batch_name in app.state.metric_batches],
+    )
+
     return Card(
         DivFullySpaced(
             Div(
@@ -383,11 +414,26 @@ def _create_controls(batch_name):
             ),
             Div(
                 Button(
-                    DivLAligned(UkIcon("settings")),
+                    DivLAligned(UkIcon("menu")),
                     cls=ButtonT.secondary,
-                    uk_tooltip="Chart settings"
+                    uk_tooltip="Select metric batch"
                 ),
-                settings_dropdown,
+                batches_dropdown,
+                Div(
+                    Button(
+                        DivLAligned(UkIcon("settings")),
+                        cls=ButtonT.secondary,
+                        uk_tooltip="Chart settings"
+                    ),
+                    settings_dropdown,
+                ),
+                A(
+                    DivLAligned(UkIcon("github")),
+                    href="https://github.com/andrewm4894/anomstack",
+                    target="_blank",
+                    cls="uk-button uk-button-secondary",
+                    uk_tooltip="View on GitHub"
+                ),
                 style="display: flex; align-items: center; gap: 0.5rem;"
             )
         ),
