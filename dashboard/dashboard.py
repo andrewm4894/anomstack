@@ -20,6 +20,13 @@ app, rt = fast_app(
         Theme.blue.headers(),
         Script(src="https://cdn.plot.ly/plotly-2.32.0.min.js"),
         Style("""
+            /* Light mode defaults */
+            body {
+                background-color: #ffffff;
+                color: #1a1a1a;
+                transition: all 0.3s ease;
+            }
+            
             .loading-indicator {
                 display: none;
                 position: fixed;
@@ -56,6 +63,86 @@ app, rt = fast_app(
                 color: #1e40af;
                 border-bottom: 2px solid #1e40af;
             }
+            
+            /* Dark mode styles */
+            body.dark-mode {
+                background-color: #1a1a1a;
+                color: #e5e7eb;
+            }
+            
+            body.dark-mode .uk-card {
+                background-color: #262626;
+                border-color: #404040;
+                color: #e5e7eb;
+            }
+            
+            body.dark-mode .uk-card-header {
+                border-color: #404040;
+            }
+            
+            body.dark-mode .top-nav {
+                background: #262626;
+                border-color: #404040;
+            }
+            
+            body.dark-mode .top-nav li a {
+                color: #e5e7eb;
+            }
+            
+            body.dark-mode .top-nav li a:hover {
+                color: #60a5fa;
+                background: #333333;
+            }
+            
+            body.dark-mode .top-nav li.uk-active a {
+                color: #60a5fa;
+                border-color: #60a5fa;
+            }
+            
+            body.dark-mode .uk-input,
+            body.dark-mode .uk-select,
+            body.dark-mode .uk-textarea,
+            body.dark-mode .uk-button-secondary {
+                background-color: #333333;
+                border-color: #404040;
+                color: #e5e7eb;
+            }
+            
+            body.dark-mode .uk-dropdown {
+                background-color: #262626;
+                border-color: #404040;
+                color: #e5e7eb;
+            }
+            
+            body.dark-mode .uk-dropdown li a {
+                color: #e5e7eb;
+            }
+            
+            body.dark-mode .uk-dropdown li a:hover {
+                background-color: #333333;
+            }
+            
+            body.dark-mode .loading-indicator .htmx-indicator {
+                background: #262626;
+                color: #e5e7eb;
+                box-shadow: 0 2px 4px rgba(255,255,255,0.1);
+            }
+            
+            /* Ensure text colors are readable in dark mode */
+            body.dark-mode h1,
+            body.dark-mode h2,
+            body.dark-mode h3,
+            body.dark-mode h4,
+            body.dark-mode h5,
+            body.dark-mode h6,
+            body.dark-mode p {
+                color: #e5e7eb;
+            }
+            
+            body.dark-mode .text-muted-foreground,
+            body.dark-mode .uk-text-muted {
+                color: #9ca3af;
+            }
         """),
     ),
     debug=True, 
@@ -77,6 +164,8 @@ class DashboardState:
         self.df_cache = {}
         self.chart_cache = {}
         self.stats_cache = {}
+        self.small_charts = True  # Changed to True to default to small charts
+        self.dark_mode = False
     
     def clear_batch_cache(self, batch_name):
         self.df_cache.pop(batch_name, None)
@@ -99,7 +188,12 @@ class DashboardState:
 class ChartManager:
     @staticmethod
     def create_chart(df_metric, metric_name, chart_index):
-        return plot_time_series(df_metric, metric_name).to_html(
+        return plot_time_series(
+            df_metric, 
+            metric_name,
+            small_charts=app.state.small_charts,
+            dark_mode=app.state.dark_mode
+        ).to_html(
             div_id=f"plotly-chart-{chart_index}",
             include_plotlyjs=False,
             full_html=False,
@@ -134,6 +228,13 @@ app.state = DashboardState()
 
 @rt
 def index(request: Request):
+    # Add dark mode class to body if enabled
+    script = Script(f"""
+        if ({'true' if app.state.dark_mode else 'false'}) {{
+            document.body.classList.add('dark-mode');
+        }}
+    """)
+    
     current_path = request.url.path
     current_batch = current_path.split("/batch/")[-1] if "/batch/" in current_path else None
 
@@ -171,6 +272,7 @@ def index(request: Request):
 
     return (
         Title("Anomstack"),
+        script,
         Div(
             Safe('<span class="htmx-indicator">Loading...</span>'),
             id="loading", 
@@ -230,6 +332,29 @@ def get_batch_view(batch_name: str, session, initial_load: int = DEFAULT_INITIAL
     )
 
 def _create_controls(batch_name):
+    settings_dropdown = DropDownNavContainer(
+        NavHeaderLi("Chart Settings"),
+        Li(A(
+            DivLAligned(
+                "Small Charts",
+                P(),
+                P("On" if app.state.small_charts else "Off", cls=TextPresets.muted_sm)
+            ),
+            hx_post=f"/batch/{batch_name}/toggle-size",
+            hx_target="#main-content"
+        )),
+        NavDividerLi(),
+        Li(A(
+            DivLAligned(
+                "Dark Mode",
+                P(),
+                P("On" if app.state.dark_mode else "Off", cls=TextPresets.muted_sm)
+            ),
+            hx_post=f"/batch/{batch_name}/toggle-theme",
+            hx_target="#main-content"
+        )),
+    )
+
     return Card(
         Div(
             Button(
@@ -241,6 +366,12 @@ def _create_controls(batch_name):
             ),
             _create_search_form(batch_name),
             _create_alert_n_form(batch_name),
+            Button(
+                DivLAligned(UkIcon("settings"), "Settings"),
+                cls=ButtonT.secondary,
+                uk_tooltip="Chart settings"
+            ),
+            settings_dropdown,
             style="display: flex; align-items: center; gap: 0.5rem;"
         ),
         cls="mb-8 uk-padding-small"
@@ -367,6 +498,29 @@ def post(batch_name: str, alert_max_n: int = DEFAULT_ALERT_MAX_N, session=None):
     )
     app.state.calculate_metric_stats(batch_name)
     return get_batch_view(batch_name, session, initial_load=DEFAULT_INITIAL_LOAD)
+
+
+@rt("/batch/{batch_name}/toggle-size")
+def post(batch_name: str):
+    app.state.small_charts = not app.state.small_charts
+    app.state.chart_cache.clear()  # Clear cache to regenerate charts
+    return get_batch_view(batch_name, session=None)
+
+
+@rt("/batch/{batch_name}/toggle-theme")
+def post(batch_name: str):
+    app.state.dark_mode = not app.state.dark_mode
+    app.state.chart_cache.clear()  # Clear cache to regenerate charts
+    
+    # Add script to toggle dark mode class on body
+    script = Script("""
+        document.body.classList.toggle('dark-mode');
+    """)
+    
+    return Div(
+        script,
+        get_batch_view(batch_name, session=None)
+    )
 
 
 serve(host="localhost", port=5003)

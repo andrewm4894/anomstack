@@ -1,5 +1,5 @@
 metric_batch: "prometheus"
-ingest_cron_schedule: "*/10 * * * *"
+ingest_cron_schedule: "*/5 * * * *"
 train_cron_schedule: "*/180 * * * *"
 score_cron_schedule: "*/10 * * * *"
 alert_cron_schedule: "*/15 * * * *"

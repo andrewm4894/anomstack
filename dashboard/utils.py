@@ -13,17 +13,37 @@ from anomstack.sql.read import read_sql
 log = logging.getLogger("fasthtml")
 
 
-def plot_time_series(df, metric_name) -> go.Figure:
+def plot_time_series(df, metric_name, small_charts=False, dark_mode=False) -> go.Figure:
     """
     Plot a time series with metric value and metric score.
+    
+    Args:
+        df: DataFrame with metric data
+        metric_name: Name of the metric
+        small_charts: Whether to use small chart size
+        dark_mode: Whether to use dark mode styling
     """
+    # Define height based on size toggle
+    height = 250 if small_charts else 400
+
+    # Theme-based colors
+    colors = {
+        'background': '#1a1a1a' if dark_mode else 'white',
+        'text': '#e5e7eb' if dark_mode else '#64748b',
+        'grid': 'rgba(255,255,255,0.1)' if dark_mode else 'rgba(0,0,0,0.1)',
+        'primary': '#3b82f6' if dark_mode else '#2563eb',
+        'secondary': '#9ca3af' if dark_mode else '#64748b',
+        'alert': '#ef4444' if dark_mode else '#dc2626',
+        'change': '#fb923c' if dark_mode else '#f97316',
+    }
+
     # Common styling configurations
-    common_font = dict(size=10, color="#64748b")
-    common_title_font = dict(size=12, color="#64748b")
+    common_font = dict(size=10, color=colors['text'])
+    common_title_font = dict(size=12, color=colors['text'])
     common_grid = dict(
         showgrid=True,
         gridwidth=1,
-        gridcolor="rgba(0,0,0,0.1)",
+        gridcolor=colors['grid'],
         zeroline=False,
         tickfont=common_font,
         title_font=common_title_font,
@@ -39,8 +59,9 @@ def plot_time_series(df, metric_name) -> go.Figure:
             y=df["metric_value"],
             name="Metric Value",
             mode="lines+markers",
-            line=dict(color="#2563eb", width=2),
-            marker=dict(size=6, color="#2563eb", symbol="circle"),
+            line=dict(color=colors['primary'], width=2),
+            marker=dict(size=6, color=colors['primary'], symbol="circle"),
+            showlegend=False,
         ),
         secondary_y=False,
     )
@@ -51,15 +72,16 @@ def plot_time_series(df, metric_name) -> go.Figure:
             x=df["metric_timestamp"],
             y=df["metric_score"],
             name="Metric Score",
-            line=dict(color="#64748b", width=2, dash="dot"),
+            line=dict(color=colors['secondary'], width=2, dash="dot"),
+            showlegend=False,
         ),
         secondary_y=True,
     )
 
     # Add alert and change markers if they exist
     for condition, props in {
-        "metric_alert": dict(name="Metric Alert", color="#dc2626"),
-        "metric_change": dict(name="Metric Change", color="#f97316"),
+        "metric_alert": dict(name="Metric Alert", color=colors['alert']),
+        "metric_change": dict(name="Metric Change", color=colors['change']),
     }.items():
         condition_df = df[df[condition] == 1]
         if not condition_df.empty:
@@ -70,6 +92,7 @@ def plot_time_series(df, metric_name) -> go.Figure:
                     mode="markers",
                     name=props["name"],
                     marker=dict(color=props["color"], size=8, symbol="circle"),
+                    showlegend=False,
                 ),
                 secondary_y=True,
             )
@@ -88,21 +111,13 @@ def plot_time_series(df, metric_name) -> go.Figure:
 
     # Update layout
     fig.update_layout(
-        plot_bgcolor="white",
-        paper_bgcolor="white",
+        plot_bgcolor=colors['background'],
+        paper_bgcolor=colors['background'],
         hovermode="x unified",
         hoverdistance=100,
-        legend=dict(
-            orientation="h",
-            yanchor="top",
-            y=1.02,
-            xanchor="center",
-            x=0.5,
-            bgcolor="rgba(255,255,255,0.8)",
-            bordercolor="rgba(0,0,0,0.1)",
-            borderwidth=1,
-            font=common_font
-        )
+        showlegend=False,
+        margin=dict(t=10, b=10, l=10, r=10),
+        height=height,
     )
 
     return fig

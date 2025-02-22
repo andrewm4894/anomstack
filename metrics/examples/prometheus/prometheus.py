@@ -4,21 +4,27 @@ import pandas as pd
 def ingest() -> pd.DataFrame:
     """
     Ingest data from the Prometheus demo API using the requests library.
-    Retrieves several interesting metrics and returns a DataFrame with columns:
+    Retrieves 10 interesting metrics and returns a DataFrame with columns:
     metric_timestamp, metric_name, metric_value.
+    The metric_timestamp is aggregated to the second level and duplicates are removed.
     """
     import requests
     from dagster import get_dagster_logger
 
     logger = get_dagster_logger()
 
-    # Define queries with a friendly label and corresponding PromQL query.
+    # Define 10 queries with a friendly label and corresponding PromQL query.
     queries = [
         ("demo_api_http_requests_in_progress", "demo_api_http_requests_in_progress"),
         ("avg_api_request_duration", "rate(demo_api_request_duration_seconds_sum[5m]) / rate(demo_api_request_duration_seconds_count[5m])"),
         ("cpu_usage_rate", "rate(demo_cpu_usage_seconds_total[5m])"),
         ("demo_memory_usage_bytes", "demo_memory_usage_bytes"),
         ("demo_batch_last_run_duration_seconds", "demo_batch_last_run_duration_seconds"),
+        ("demo_disk_usage_bytes", "demo_disk_usage_bytes"),
+        ("demo_disk_total_bytes", "demo_disk_total_bytes"),
+        ("items_shipped_rate", "rate(demo_items_shipped_total[5m])"),
+        ("demo_intermittent_metric", "demo_intermittent_metric"),
+        ("demo_is_holiday", "demo_is_holiday"),
     ]
 
     base_url = "https://demo.promlabs.com/api/v1/query"
@@ -40,11 +46,20 @@ def ingest() -> pd.DataFrame:
 
         # Process each time series returned in the result.
         for item in result.get("data", {}).get("result", []):
-            # Each item contains a "value": [timestamp, value]
+            # Each item should contain a "value": [timestamp, value]
             value_arr = item.get("value", [])
             if len(value_arr) != 2:
                 continue
+
             timestamp_str, value_str = value_arr
+            try:
+                # Convert the Prometheus timestamp (seconds since epoch) to a datetime,
+                # and floor it to the nearest second.
+                ts = pd.to_datetime(float(timestamp_str), unit='s').floor('S')
+            except Exception as ex:
+                logger.error(f"Error converting timestamp {timestamp_str}: {ex}")
+                ts = pd.Timestamp.utcnow().floor('S')
+
             try:
                 metric_value = float(value_str)
             except (TypeError, ValueError):
@@ -58,14 +73,19 @@ def ingest() -> pd.DataFrame:
                 metric_name = f"{label}.{instance.replace(':', '_')}"
 
             all_rows.append({
-                "metric_timestamp": pd.Timestamp.utcnow(),
+                "metric_timestamp": ts,
                 "metric_name": metric_name,
                 "metric_value": metric_value
             })
 
-    # Create the DataFrame with the expected column order.
+    # Create a DataFrame from the collected rows.
     df = pd.DataFrame(all_rows)
-    logger.debug(f"DataFrame:\n{df}")
+    logger.debug(f"DataFrame before dropping duplicates:\n{df}")
 
+    # Drop duplicates based on the timestamp (to the second) and metric name.
+    df = df.drop_duplicates(subset=["metric_timestamp", "metric_name"])
+    logger.debug(f"DataFrame after dropping duplicates:\n{df}")
+
+    # Ensure the DataFrame has the expected column order.
     df = df[["metric_timestamp", "metric_name", "metric_value"]]
     return df
