@@ -33,7 +33,7 @@ Painless open source anomaly detection for your metrics! 📈📉🚀
   - [Docker](#docker)
   - [Local Python env](#local-python-env)
 - [Adding your metrics](#adding-your-metrics)
-- [Visualization](#visualization)
+- [Dashboard](#dashboard)
 - [Concepts](#concepts)
 - [Alerts](#alerts)
 - [LLM Agent Alerts](#llm-agent-alerts)
@@ -178,7 +178,7 @@ Here is a list of features of Anomstack (emoji alert warning!)
 9. 🕒 - Ability to ingest at whatever frequency you want and then agg to a different level for training/scoring, see [`freq`](/metrics/examples/freq/README.md) example.
 10. 📊 - Plot jobs so you can just eyeball your metrics in Dagster job logs, see [#dagster-ui-plots](#dagster-ui-plots).
 11. 🏗️ - Minimal infrastructure requirements, Anomstack just reads from and writes to whatever database you use.
-12. 📈 - A nice little local [Streamlit](https://streamlit.io/) dashboard to visualize your metrics and anomaly scores, see [#streamlit](#streamlit).
+12. 📈 - A nice fancy local [FastHTML](https://fastht.ml/) + [MonsterUI](https://github.com/AnswerDotAI/MonsterUI) (❤️) dashboard to visualize your metrics and anomaly scores, see [#dashboard](#dashboard).
 13. 📦 - Dockerized for easy deployment.
 14. 🔔 - Scores & Alerts saved to database so you can query them and do whatever you want with them.
 15. 🏷️ - Add custom metric tags for more complex alert routing e.g. priority or subject area based.
@@ -493,13 +493,27 @@ You can customize the default params for your metrics in the [`metrics/defaults`
 
 Environment variables for your metrics can be set in the `.env` file (see [`.example.env`](.example.env) for examples and comments) or in the `docker-compose.yml` file.
 
-## Visualization
+## Dashboard
 
 [back to top](#anomstack)
 
-Visualization of the metrics and anomaly scores is a bit outside the scope of this project, but we do provide a couple of ways to visualize your metrics and anomaly scores.
+You can run Anomstack in a sort of "headless mode" with no UI (if for example you want to use your existing analytics tools etc.).
 
-🚧 WIP: [FastHTML](https://fastht.ml/) based dashboard - initial minimal starter code in [`./dashboard/fasthtml-dashboard.py`](./dashboard/fasthtml-dashboard.py). Idea being a bot more of a full fledged app than possible using Streamlit but its early days. Help would be very much appreciated here, especially if you know how to make things look fancy :)
+That said, there is also a fancy [FastHTML](https://fastht.ml/) + [MonsterUI](https://github.com/AnswerDotAI/MonsterUI) (❤️) based dashboard that you can use to visualize your metrics and anomaly scores too.
+
+Dashboard code lives in [`./dashboard/dashboard.py`](./dashboard/dashboard.py)), use `make dashboard` or `make dashboardd` (to run as a daemon) to start it.
+
+### Homepage
+
+Simple homepage with some quick summary metrics for each metric batch.
+
+![homepage](./docs/img/dashboard-home.png)
+
+### Metric Batch View
+
+View all metrics in a batch with various UI settings, searchable and sorted by anomaly rate from highest to lowest. An "anomstack" if you will ;)
+
+![metric_batch_view](./docs/img/dashboard-metric-batch-view.png)
 
 ### Dagster UI Plots
 
@@ -511,26 +525,6 @@ Within Dagster there is the [`plot.py`](./anomstack/jobs/plot.py) job to generat
 ![plot1](./docs/img/plot1.png)
 
 ![plot2](./docs/img/plot2.png)
-
-</details>
-
-### Streamlit
-
-You can also use the little streamlit app in [`./dashboard/streamlit-dashboard.py`](./dashboard/streamlit-dashboard.py) to visualize your metrics and anomaly scores.
-
-```bash
-# run streamlit app
-streamlit run ./dashboard/streamlit-dashboard.py --server.port 8501
-```
-
-...Or you can run it via `make streamlit` or `make streamlitd` (to run as a daemon).
-
-<details>
-<summary>Click to see some screenshots</summary>
-
-![streamlit1](./docs/img/streamlit1.png)
-
-![streamlit2](./docs/img/streamlit2.png)
 
 </details>
 
