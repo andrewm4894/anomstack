@@ -193,7 +193,9 @@ def get_batch_view(batch_name: str, session, initial_load: int = DEFAULT_INITIAL
         )
         app.state.calculate_metric_stats(batch_name)
 
-    # Update the active state immediately with JavaScript
+    metric_stats = app.state.stats_cache[batch_name]
+    total_metrics = len(metric_stats)
+    
     script = Script(f"""
         document.querySelectorAll('.top-nav li').forEach(li => {{
             li.classList.remove('uk-active');
@@ -201,7 +203,6 @@ def get_batch_view(batch_name: str, session, initial_load: int = DEFAULT_INITIAL
                 li.classList.add('uk-active');
             }}
         }});
-        // Add smooth scrolling to top
         window.scrollTo({{ top: 0, behavior: 'smooth' }});
     """)
 
@@ -210,7 +211,16 @@ def get_batch_view(batch_name: str, session, initial_load: int = DEFAULT_INITIAL
         Div(
             *[ChartManager.create_chart_placeholder(
                 stat['metric_name'], i, batch_name
-            ) for i, stat in enumerate(app.state.stats_cache[batch_name][:initial_load])],
+            ) for i, stat in enumerate(metric_stats[:initial_load])],
+            # Add Load All button if there are more metrics
+            Button(
+                "Load All",
+                hx_get=f"/batch/{batch_name}/load-more/{initial_load}",
+                hx_target="#charts-container",
+                hx_swap="beforeend",
+                cls=ButtonT.secondary,
+                style="width: 100%; margin-top: 1rem;"
+            ) if total_metrics > initial_load else None,
             id="charts-container"
         ),
         script
@@ -312,14 +322,14 @@ def get(batch_name: str, session):
 @rt("/batch/{batch_name}/load-more/{start_index}")
 def get(batch_name: str, start_index: int):
     metric_stats = app.state.stats_cache[batch_name]
-    placeholders = []
-    for i, stat in enumerate(metric_stats[start_index:], start=start_index):
-        placeholders.append(
-            ChartManager.create_chart_placeholder(
-                stat['metric_name'], i, batch_name
-            )
-        )
-    return Div(*placeholders, id="load-more-container")
+    # Load all remaining metrics
+    remaining_metrics = metric_stats[start_index:]
+    
+    return Div(
+        *[ChartManager.create_chart_placeholder(
+            stat['metric_name'], i, batch_name
+        ) for i, stat in enumerate(remaining_metrics, start=start_index)]
+    )
 
 
 @rt("/batch/{batch_name}/search")
