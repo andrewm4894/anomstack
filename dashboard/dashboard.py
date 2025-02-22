@@ -154,7 +154,7 @@ app, rt = fast_app(
 setup_toasts(app, duration=3)
 
 # Constants
-DEFAULT_INITIAL_LOAD = 5
+DEFAULT_LOAD_N_CHARTS = 10
 DEFAULT_ALERT_MAX_N = 30
 
 class DashboardState:
@@ -170,6 +170,7 @@ class DashboardState:
         self.stats_cache = {}
         self.small_charts = True
         self.dark_mode = False
+        self.two_columns = True
         self.alert_max_n = {}
     
     def clear_batch_cache(self, batch_name):
@@ -243,10 +244,48 @@ def index(request: Request):
         }}
     """)
     
+    # Get batch stats
+    batch_stats = {}
+    for batch_name in app.state.metric_batches:
+        if batch_name not in app.state.df_cache:
+            df = get_data(app.state.specs_enabled[batch_name], alert_max_n=DEFAULT_ALERT_MAX_N)
+            app.state.df_cache[batch_name] = df
+        else:
+            df = app.state.df_cache[batch_name]
+        
+        latest_timestamp = df['metric_timestamp'].max() if not df.empty else 'No data'
+        if latest_timestamp != 'No data':
+            from datetime import datetime
+            # Parse the ISO format timestamp and format it to show date and time
+            dt = datetime.fromisoformat(latest_timestamp.replace('Z', '+00:00'))
+            latest_timestamp_str = dt.strftime('%Y-%m-%d %H:%M:%S')
+            
+            # Calculate time difference
+            now = datetime.now(dt.tzinfo)
+            diff_seconds = (now - dt).total_seconds()
+            
+            # Choose appropriate time unit
+            if diff_seconds < 3600:  # Less than 1 hour
+                minutes_ago = round(diff_seconds / 60, 1)
+                time_ago_str = f"({minutes_ago:.1f} minute{'s' if minutes_ago != 1 else ''} ago)"
+            elif diff_seconds < 86400:  # Less than 24 hours
+                hours_ago = round(diff_seconds / 3600, 1)
+                time_ago_str = f"({hours_ago:.1f} hour{'s' if hours_ago != 1 else ''} ago)"
+            else:  # Days or more
+                days_ago = round(diff_seconds / 86400, 1)
+                time_ago_str = f"({days_ago:.1f} day{'s' if days_ago != 1 else ''} ago)"
+            
+            latest_timestamp = f"{latest_timestamp_str} {time_ago_str}"
+        
+        batch_stats[batch_name] = {
+            'unique_metrics': len(df['metric_name'].unique()),
+            'latest_timestamp': latest_timestamp
+        }
+    
     main_content = Div(
         Card(
             DivLAligned(
-                H2("Anomstack - Metric Batches", cls="mb-2"),
+                H2("Anomstack",P("Painless open source anomaly detection for your metrics 📈📉🚀", cls=TextPresets.muted_sm), cls="mb-2"),
                 A(
                     DivLAligned(UkIcon("github")),
                     href="https://github.com/andrewm4894/anomstack",
@@ -269,7 +308,24 @@ def index(request: Request):
             Grid(
                 *[Card(
                     DivLAligned(
-                        H4(batch_name, cls="mb-1"),
+                        Div(
+                            H4(batch_name, cls="mb-2"),
+                            DivLAligned(
+                                Div(
+                                    DivLAligned(
+                                        UkIcon("activity", cls="text-blue-500"),
+                                        P(f"{batch_stats[batch_name]['unique_metrics']} metrics", cls=TextPresets.muted_sm),
+                                        cls="space-x-2"
+                                    ),
+                                    DivLAligned(
+                                        UkIcon("clock", cls="text-green-500"),
+                                        P(f"{batch_stats[batch_name]['latest_timestamp']}", cls=TextPresets.muted_sm),
+                                        cls="space-x-2"
+                                    ),
+                                    cls="space-y-2"
+                                )
+                            )
+                        ),
                         Button(
                             "View Metrics",
                             hx_get=f"/batch/{batch_name}",
@@ -278,9 +334,10 @@ def index(request: Request):
                             hx_indicator="#loading",
                             cls=ButtonT.primary
                         ),
-                        style="justify-content: space-between;"
+                        style="justify-content: space-between;",
+                        cls="flex-row items-center"
                     ),
-                    cls="p-4 hover:border-primary transition-colors duration-200"
+                    cls="p-6 hover:border-primary transition-colors duration-200"
                 ) for batch_name in app.state.metric_batches],
                 cols=3,
                 gap=4
@@ -308,7 +365,7 @@ def index(request: Request):
 
 
 @rt("/batch/{batch_name}")
-def get_batch_view(batch_name: str, session, initial_load: int = DEFAULT_INITIAL_LOAD):
+def get_batch_view(batch_name: str, session, initial_load: int = DEFAULT_LOAD_N_CHARTS):
     # First, ensure we have the data and stats calculated
     if batch_name not in app.state.df_cache:
         app.state.df_cache[batch_name] = get_data(
@@ -333,25 +390,30 @@ def get_batch_view(batch_name: str, session, initial_load: int = DEFAULT_INITIAL
         window.scrollTo({{ top: 0, behavior: 'smooth' }});
     """)
 
+    # Update the load more button text
+    load_next = min(DEFAULT_LOAD_N_CHARTS, remaining_metrics)
     return Div(
         _create_controls(batch_name),
         Div(
             *[ChartManager.create_chart_placeholder(
                 stat['metric_name'], i, batch_name
             ) for i, stat in enumerate(metric_stats[:initial_load])],
-            # Add Load All button if there are more metrics
-            Div(
-                Button(
-                    f"Load {remaining_metrics} more",
-                    hx_get=f"/batch/{batch_name}/load-more/{initial_load}",
-                    hx_target="#load-all-container",
-                    hx_swap="outerHTML",
-                    cls=ButtonT.secondary,
-                    style="width: 100%; margin-top: 1rem;"
-                ),
-                id="load-all-container"
-            ) if remaining_metrics > 0 else None,
-            id="charts-container"
+            id="charts-container",
+            cls=f"grid grid-cols-{2 if app.state.two_columns else 1} gap-4"
+        ),
+        # Load More button with updated text
+        Div(
+            Button(
+                f"Load next {load_next} of {remaining_metrics}",
+                hx_get=f"/batch/{batch_name}/load-more/{initial_load}",
+                hx_target="#charts-container",
+                hx_swap="beforeend",
+                hx_indicator="#loading",
+                cls=ButtonT.secondary,
+                style="width: 100%; margin-top: 1rem;",
+                disabled=remaining_metrics <= 0
+            ),
+            id="load-more-container"
         ),
         script
     )
@@ -366,6 +428,15 @@ def _create_controls(batch_name):
                 P("On" if app.state.small_charts else "Off", cls=TextPresets.muted_sm)
             ),
             hx_post=f"/batch/{batch_name}/toggle-size",
+            hx_target="#main-content"
+        )),
+        Li(A(
+            DivLAligned(
+                "Two Columns",
+                P(),
+                P("On" if app.state.two_columns else "Off", cls=TextPresets.muted_sm)
+            ),
+            hx_post=f"/batch/{batch_name}/toggle-columns",
             hx_target="#main-content"
         )),
         NavDividerLi(),
@@ -516,20 +587,35 @@ def get(batch_name: str, chart_index: int):
 def get(batch_name: str, session):
     app.state.clear_batch_cache(batch_name)
     
-    return get_batch_view(batch_name, session, initial_load=DEFAULT_INITIAL_LOAD)
+    return get_batch_view(batch_name, session, initial_load=DEFAULT_LOAD_N_CHARTS)
 
 
 @rt("/batch/{batch_name}/load-more/{start_index}")
 def get(batch_name: str, start_index: int):
     metric_stats = app.state.stats_cache[batch_name]
-    remaining_metrics = metric_stats[start_index:]
+    remaining_metrics = len(metric_stats) - (start_index + DEFAULT_LOAD_N_CHARTS)
+    load_next = min(DEFAULT_LOAD_N_CHARTS, remaining_metrics)
     
-    return Div(
+    return [
         *[ChartManager.create_chart_placeholder(
             stat['metric_name'], i, batch_name
-        ) for i, stat in enumerate(remaining_metrics, start=start_index)],
-        id="load-all-container"  # Same ID as container above
-    )
+        ) for i, stat in enumerate(metric_stats[start_index:start_index + DEFAULT_LOAD_N_CHARTS], start=start_index)],
+        # Update the load more button with new count and disabled state
+        Div(
+            Button(
+                f"Load next {load_next} of {remaining_metrics}" if remaining_metrics > 0 else "No more metrics",
+                hx_get=f"/batch/{batch_name}/load-more/{start_index + DEFAULT_LOAD_N_CHARTS}",
+                hx_target="#charts-container",
+                hx_swap="beforeend",
+                hx_indicator="#loading",
+                cls=ButtonT.secondary,
+                style="width: 100%; margin-top: 1rem;",
+                disabled=remaining_metrics <= 0
+            ),
+            id="load-more-container",
+            hx_swap_oob="true"
+        )
+    ]
 
 
 @rt("/batch/{batch_name}/search")
@@ -573,7 +659,7 @@ def post(batch_name: str, alert_max_n: int = DEFAULT_ALERT_MAX_N, session=None):
         script,
         *[ChartManager.create_chart_placeholder(
             stat['metric_name'], i, batch_name
-        ) for i, stat in enumerate(app.state.stats_cache[batch_name][:DEFAULT_INITIAL_LOAD])]
+        ) for i, stat in enumerate(app.state.stats_cache[batch_name][:DEFAULT_LOAD_N_CHARTS])]
     )
 
 
@@ -598,6 +684,12 @@ def post(batch_name: str):
         script,
         get_batch_view(batch_name, session=None)
     )
+
+
+@rt("/batch/{batch_name}/toggle-columns")
+def post(batch_name: str):
+    app.state.two_columns = not app.state.two_columns
+    return get_batch_view(batch_name, session=None)
 
 
 serve(host="localhost", port=5003)
