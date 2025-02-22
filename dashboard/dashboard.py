@@ -316,11 +316,12 @@ def get_batch_view(batch_name: str, session, initial_load: int = DEFAULT_INITIAL
             alert_max_n=DEFAULT_ALERT_MAX_N
         )
         app.state.calculate_metric_stats(batch_name)
-    elif batch_name not in app.state.stats_cache:  # Add this check
+    elif batch_name not in app.state.stats_cache:
         app.state.calculate_metric_stats(batch_name)
 
     metric_stats = app.state.stats_cache[batch_name]
     total_metrics = len(metric_stats)
+    remaining_metrics = total_metrics - initial_load
     
     script = Script(f"""
         document.querySelectorAll('.top-nav li').forEach(li => {{
@@ -341,7 +342,7 @@ def get_batch_view(batch_name: str, session, initial_load: int = DEFAULT_INITIAL
             # Add Load All button if there are more metrics
             Div(
                 Button(
-                    "Load All",
+                    f"Load {remaining_metrics} more",
                     hx_get=f"/batch/{batch_name}/load-more/{initial_load}",
                     hx_target="#load-all-container",
                     hx_swap="outerHTML",
@@ -349,7 +350,7 @@ def get_batch_view(batch_name: str, session, initial_load: int = DEFAULT_INITIAL
                     style="width: 100%; margin-top: 1rem;"
                 ),
                 id="load-all-container"
-            ) if total_metrics > initial_load else None,
+            ) if remaining_metrics > 0 else None,
             id="charts-container"
         ),
         script
