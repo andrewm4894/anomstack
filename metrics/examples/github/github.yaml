@@ -1,0 +1,13 @@
+metric_batch: "github"
+ingest_cron_schedule: "*/15 * * * *"
+train_cron_schedule: "*/180 * * * *"
+score_cron_schedule: "*/30 * * * *"
+alert_cron_schedule: "*/30 * * * *"
+change_cron_schedule: "*/30 * * * *"
+llmalert_cron_schedule: "*/60 * * * *"
+plot_cron_schedule: "*/30 * * * *"
+alert_always: False
+disable_llmalert: False
+alert_methods: "email,slack"
+ingest_fn: >
+  {% include "./examples/github/github.py" %}

@@ -1,103 +1,150 @@
-
 import logging
 import os
+import pandas as pd
 
 import plotly.graph_objects as go
 import requests
 from dotenv import load_dotenv
 from plotly.subplots import make_subplots
+from anomstack.jinja.render import render
+from anomstack.sql.read import read_sql
+
 
 log = logging.getLogger("fasthtml")
 
 
-def plot_time_series(df, metric_name) -> go.Figure:
+def plot_time_series(df, metric_name, small_charts=False, dark_mode=False, show_markers=True, line_width=2, show_legend=False) -> go.Figure:
     """
     Plot a time series with metric value and metric score.
+    
+    Args:
+        df: DataFrame with metric data
+        metric_name: Name of the metric
+        small_charts: Whether to use small chart size
+        dark_mode: Whether to use dark mode styling
+        show_markers: Whether to show line markers
+        line_width: Width of the lines (1-10)
+        show_legend: Whether to show the legend
     """
+    # Define height based on size toggle
+    height = 250 if small_charts else 400
 
-    # Create a figure with secondary y-axis
+    # Theme-based colors
+    colors = {
+        'background': '#1a1a1a' if dark_mode else 'white',
+        'text': '#e5e7eb' if dark_mode else '#64748b',
+        'grid': 'rgba(255,255,255,0.1)' if dark_mode else 'rgba(0,0,0,0.1)',
+        'primary': '#3b82f6' if dark_mode else '#2563eb',
+        'secondary': '#9ca3af' if dark_mode else '#64748b',
+        'alert': '#ef4444' if dark_mode else '#dc2626',
+        'change': '#fb923c' if dark_mode else '#f97316',
+    }
+
+    # Common styling configurations
+    common_font = dict(size=10, color=colors['text'])
+    common_title_font = dict(size=12, color=colors['text'])
+    common_grid = dict(
+        showgrid=True,
+        gridwidth=1,
+        gridcolor=colors['grid'],
+        zeroline=False,
+        tickfont=common_font,
+        title_font=common_title_font,
+    )
+
+    # Create figure with secondary y-axis
     fig = make_subplots(specs=[[{"secondary_y": True}]])
 
-    # Add traces/lines for metric_value, metric_score, and metric_alert
+    # Add main metric value trace
     fig.add_trace(
-        go.Scatter(x=df["metric_timestamp"], y=df["metric_value"], name="Metric Value"),
+        go.Scatter(
+            x=df["metric_timestamp"],
+            y=df["metric_value"],
+            name="Metric Value",
+            mode="lines" + ("+markers" if show_markers else ""),
+            line=dict(color=colors['primary'], width=line_width),
+            marker=dict(size=6, color=colors['primary'], symbol="circle") if show_markers else None,
+            showlegend=show_legend,
+        ),
         secondary_y=False,
     )
 
+    # Add metric score trace
     fig.add_trace(
         go.Scatter(
             x=df["metric_timestamp"],
             y=df["metric_score"],
             name="Metric Score",
-            line=dict(dash="dot"),
+            line=dict(color=colors['secondary'], width=line_width, dash="dot"),
+            showlegend=show_legend,
         ),
         secondary_y=True,
     )
 
-    alert_df = df[df["metric_alert"] == 1]
-    if not alert_df.empty:
-        fig.add_trace(
-            go.Scatter(
-                x=alert_df["metric_timestamp"],
-                y=alert_df["metric_alert"],
-                mode="markers",
-                name="Metric Alert",
-                marker=dict(color="red", size=5),
-            ),
-            secondary_y=True,
-        )
+    # Add alert and change markers if they exist
+    for condition, props in {
+        "metric_alert": dict(name="Metric Alert", color=colors['alert']),
+        "metric_change": dict(name="Metric Change", color=colors['change']),
+    }.items():
+        condition_df = df[df[condition] == 1]
+        if not condition_df.empty:
+            fig.add_trace(
+                go.Scatter(
+                    x=condition_df["metric_timestamp"],
+                    y=condition_df[condition],
+                    mode="markers",
+                    name=props["name"],
+                    marker=dict(color=props["color"], size=8, symbol="circle"),
+                    showlegend=show_legend,
+                ),
+                secondary_y=True,
+            )
 
-    change_df = df[df["metric_change"] == 1]
-    if not change_df.empty:
-        fig.add_trace(
-            go.Scatter(
-                x=change_df["metric_timestamp"],
-                y=change_df["metric_change"],
-                mode="markers",
-                name="Metric Change",
-                marker=dict(color="orange", size=5),
-            ),
-            secondary_y=True,
-        )
-
-    # Update x-axis and y-axes to remove gridlines, set the y-axis range
-    # for metric score, and format as percentage
-    fig.update_xaxes(showgrid=False, zeroline=False)
-    fig.update_yaxes(showgrid=False, zeroline=False, secondary_y=False)
+    # Update axes
+    fig.update_xaxes(**common_grid)
+    fig.update_yaxes(title_text="Metric Value", secondary_y=False, **common_grid)
     fig.update_yaxes(
+        title_text="Metric Score",
+        secondary_y=True,
         showgrid=False,
-        zeroline=False,
         range=[0, 1.1],
         tickformat=".0%",
-        secondary_y=True,
+        **{k: v for k, v in common_grid.items() if k != "showgrid"}
     )
 
-    # Set x-axis title
-    fig.update_xaxes(title_text="Timestamp")
-
-    # Set y-axes titles
-    fig.update_yaxes(title_text="Metric Value", secondary_y=False)
-    fig.update_yaxes(title_text="Metric Score", secondary_y=True)
-
-    # Move legend to the top of the plot
+    # Update layout
     fig.update_layout(
-        title_text=f"{metric_name} (n={len(df)})",
-        hovermode="x",
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-        autosize=True,
+        plot_bgcolor=colors['background'],
+        paper_bgcolor=colors['background'],
+        hovermode="x unified",
+        hoverdistance=100,
+        showlegend=show_legend,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="left",
+            x=0,
+            bgcolor=colors['background'],
+            font=dict(color=colors['text']),
+        ) if show_legend else None,
+        margin=dict(t=30, b=10, l=10, r=10),
+        height=height,
     )
 
     return fig
 
 
-def get_enabled_dagster_jobs() -> list:
+def get_enabled_dagster_jobs(host: str = "localhost", port: str = "3000") -> list:
     """
     Fetches all enabled jobs (with active schedules) from a Dagster instance
     using the GraphQL API.
 
     Args:
-        api_url (str): The URL of the Dagster GraphQL API
-            (e.g., http://localhost:3000/graphql).
+        host (str): The host of the Dagster instance
+            (e.g., http://localhost).
+        port (str): The port of the Dagster instance
+            (e.g., 3000).
 
     Returns:
         list: A list of enabled job names.
@@ -111,10 +158,7 @@ def get_enabled_dagster_jobs() -> list:
     os.environ["DAGSTER_HOME"] = dagster_home_absolute
 
     # Infer Dagster GraphQL API URL from environment variable or default to localhost
-    dagster_host = os.getenv("DAGSTER_HOST", "http://localhost")
-    dagster_port = os.getenv("DAGSTER_PORT", "3000")
-    dagster_graphql_url = f"{dagster_host}:{dagster_port}/graphql"
-
+    dagster_graphql_url = f"{host}:{port}/graphql"
 
     query = """
     query {
@@ -170,3 +214,21 @@ def get_enabled_dagster_jobs() -> list:
     except requests.exceptions.RequestException as e:
         log.info(f"Error connecting to Dagster GraphQL API: {e}")
         return []
+
+
+def get_data(spec: dict, alert_max_n: int = 30) -> pd.DataFrame:
+    sql = render(
+        "dashboard_sql",
+        spec,
+        params={"alert_max_n": alert_max_n},
+    )
+    db = spec["db"]
+    df = read_sql(sql, db=db)
+    return df
+
+
+def get_metric_batches():
+    enabled_jobs = get_enabled_dagster_jobs(host="http://localhost", port="3000")
+    ingest_jobs = [job for job in enabled_jobs if job.endswith("_ingest")]
+    metric_batches = [job[:-7] for job in ingest_jobs if job.endswith("_ingest")]
+    return metric_batches

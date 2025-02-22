@@ -1,4 +1,3 @@
-db: "clickhouse"
 metric_batch: "python_ingest_simple"
 alert_methods: "email,slack"
 ingest_cron_schedule: "*/2 * * * *"
