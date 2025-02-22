@@ -371,7 +371,7 @@ def _create_controls(batch_name):
                     cls=ButtonT.secondary
                 ),
                 Button(
-                    DivLAligned(UkIcon("refresh"), "Refresh"),
+                    DivLAligned(UkIcon("refresh-ccw")),
                     hx_get=f"/batch/{batch_name}/refresh", 
                     hx_target="#main-content",
                     cls=ButtonT.secondary,
@@ -383,7 +383,7 @@ def _create_controls(batch_name):
             ),
             Div(
                 Button(
-                    DivLAligned(UkIcon("settings"), "Settings"),
+                    DivLAligned(UkIcon("settings")),
                     cls=ButtonT.secondary,
                     uk_tooltip="Chart settings"
                 ),
