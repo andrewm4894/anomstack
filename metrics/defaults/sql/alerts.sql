@@ -20,7 +20,7 @@ where
   and
   metric_type = 'metric'
   and
-  date(metric_timestamp) >= date('now', '-{{ alert_metric_timestamp_max_days_ago }} day')
+  metric_timestamp >= date('now', '-{{ alert_metric_timestamp_max_days_ago }} day')
   {% if alert_exclude_metrics is defined %}
   and
   -- Exclude the specified metrics
@@ -43,7 +43,7 @@ where
   and
   metric_type = 'score'
   and
-  date(metric_timestamp) >= date('now', '-{{ alert_metric_timestamp_max_days_ago }} day')
+  metric_timestamp >= date('now', '-{{ alert_metric_timestamp_max_days_ago }} day')
 group by metric_timestamp, metric_batch, metric_name
 ),
 
@@ -61,7 +61,7 @@ where
   and
   metric_type = 'alert'
   and
-  date(metric_timestamp) >= date('now', '-{{ alert_metric_timestamp_max_days_ago }} day')
+  metric_timestamp >= date('now', '-{{ alert_metric_timestamp_max_days_ago }} day')
 group by metric_timestamp, metric_batch, metric_name
 ),
 

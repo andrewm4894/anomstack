@@ -8,7 +8,7 @@ SELECT
 FROM {{ table_key }}
 WHERE
   -- Limit to the last {{ summary_metric_timestamp_max_days_ago }} days
-  DATE(metric_timestamp) >= DATE('now', '-{{ summary_metric_timestamp_max_days_ago }} day')
+  metric_timestamp >= DATE('now', '-{{ summary_metric_timestamp_max_days_ago }} day')
 GROUP BY metric_batch, metric_name
 ORDER BY n_alert DESC
 ;
