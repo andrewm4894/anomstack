@@ -63,7 +63,7 @@ class ChartManager:
                     P(f"Loading {metric_name}...", cls=TextPresets.muted_sm),
                     cls="space-x-2",
                 ),
-                cls="p-4",
+                cls="px-2 py-2",
             ),
             id=f"chart-{index}",
             hx_get=f"/batch/{batch_name}/chart/{index}",
@@ -201,7 +201,7 @@ def plot_time_series(
             if show_legend
             else None
         ),
-        margin=dict(t=30, b=10, l=10, r=10),
+        margin=dict(t=5, b=5, l=5, r=5),
         height=height,
     )
 

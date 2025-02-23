@@ -262,7 +262,7 @@ def get(batch_name: str, chart_index: int):
 
     if chart_index not in app.state.chart_cache[batch_name]:
         df_metric = df[df["metric_name"] == metric_name]
-        fig = ChartManager.create_chart(df_metric, metric_name, chart_index)
+        fig = ChartManager.create_chart(df_metric, chart_index)
         app.state.chart_cache[batch_name][chart_index] = fig
 
     return Card(
