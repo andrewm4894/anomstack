@@ -18,7 +18,7 @@ where
   and
   metric_type = 'metric'
   and
-  date(metric_timestamp) >= date('now', '-{{ llmalert_metric_timestamp_max_days_ago }} day')
+  metric_timestamp >= date('now', '-{{ llmalert_metric_timestamp_max_days_ago }} day')
 group by metric_timestamp, metric_batch, metric_name
 ),
 
@@ -36,7 +36,7 @@ where
   and
   metric_type = 'score'
   and
-  date(metric_timestamp) >= date('now', '-{{ llmalert_metric_timestamp_max_days_ago }} day')
+  metric_timestamp >= date('now', '-{{ llmalert_metric_timestamp_max_days_ago }} day')
 group by metric_timestamp, metric_batch, metric_name
 ),
 
@@ -54,7 +54,7 @@ where
   and
   metric_type = 'alert'
   and
-  date(metric_timestamp) >= date('now', '-{{ llmalert_metric_timestamp_max_days_ago }} day')
+  metric_timestamp >= date('now', '-{{ llmalert_metric_timestamp_max_days_ago }} day')
 group by metric_timestamp, metric_batch, metric_name
 ),
 
