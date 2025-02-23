@@ -458,25 +458,14 @@ def post(batch_name: str, session=None):
     )
 
 
-@rt("/batch/{batch_name}/update-line-width")
-def post(batch_name: str, line_width: int = 2):
+@rt("/batch/{batch_name}/toggle-line-width")
+def post(batch_name: str, session=None):
     """
-    Update the line width for a given batch name.
+    Toggle between narrow (1px) and normal (2px) line width.
     """
-    try:
-        # Ensure line width is within valid range
-        app.state.line_width = max(1, min(10, int(line_width)))
-        app.state.chart_cache.clear()  # Clear cache to regenerate charts
-
-        # Only regenerate the charts, maintaining the id and grid layout
-        metric_stats = app.state.stats_cache[batch_name]
-        return [
-            *[
-                ChartManager.create_chart_placeholder(
-                    stat["metric_name"], i, batch_name
-                )
-                for i, stat in enumerate(metric_stats)
-            ]
-        ]
-    except ValueError:
-        return "Invalid line width value"
+    app.state.narrow_lines = not getattr(app.state, 'narrow_lines', False)
+    app.state.line_width = 1 if app.state.narrow_lines else 2
+    app.state.chart_cache.clear()  # Clear cache to regenerate charts
+    return get_batch_view(
+        batch_name, session=session, initial_load=DEFAULT_LOAD_N_CHARTS
+    )

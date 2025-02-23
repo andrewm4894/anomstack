@@ -16,92 +16,78 @@ def _create_controls(batch_name):
     """
     state = get_state()
     settings_dropdown = DropDownNavContainer(
-        NavHeaderLi("Chart Settings"),
+        NavHeaderLi("Settings"),
         Li(
             DivLAligned(
-                P("Small Charts", cls="text-sm font-medium"),
                 Button(
-                    UkIcon("check" if state.small_charts else "x"),
+                    P("Small Charts", cls="text-sm font-medium"),
                     hx_post=f"/batch/{batch_name}/toggle-size",
                     hx_target="#main-content",
                     cls=ButtonT.ghost,
                     uk_tooltip="Toggle between compact and full-size chart views",
                 ),
-                cls="flex items-center justify-between w-full px-4 py-2",
+                cls="flex items-center justify-between w-full px-2 py-2",
             )
         ),
         Li(
             DivLAligned(
-                P("Two Columns", cls="text-sm font-medium"),
                 Button(
-                    UkIcon("check" if state.two_columns else "x"),
+                    P("Two Columns", cls="text-sm font-medium"),
                     hx_post=f"/batch/{batch_name}/toggle-columns",
                     hx_target="#main-content",
                     cls=ButtonT.ghost,
                     uk_tooltip="Display charts in one or two columns",
                 ),
-                cls="flex items-center justify-between w-full px-4 py-2",
+                cls="flex items-center justify-between w-full px-2 py-2",
             )
         ),
         Li(
             DivLAligned(
-                P("Show Markers", cls="text-sm font-medium"),
                 Button(
-                    UkIcon("check" if state.show_markers else "x"),
+                    P("Show Markers", cls="text-sm font-medium"),
                     hx_post=f"/batch/{batch_name}/toggle-markers",
                     hx_target="#main-content",
                     cls=ButtonT.ghost,
                     uk_tooltip="Show/hide data point markers on the charts",
                 ),
-                cls="flex items-center justify-between w-full px-4 py-2",
+                cls="flex items-center justify-between w-full px-2 py-2",
             )
         ),
         Li(
             DivLAligned(
-                P("Show Legend", cls="text-sm font-medium"),
                 Button(
-                    UkIcon("check" if state.show_legend else "x"),
+                    P("Show Legend", cls="text-sm font-medium"),
                     hx_post=f"/batch/{batch_name}/toggle-legend",
                     hx_target="#main-content",
                     cls=ButtonT.ghost,
-                    uk_tooltip="Display chart legends with metric details",
+                    uk_tooltip="Display chart legends",
                 ),
-                cls="flex items-center justify-between w-full px-4 py-2",
+                cls="flex items-center justify-between w-full px-2 py-2",
+            )
+        ),
+        Li(
+            DivLAligned(
+                Button(
+                    P("Narrow Lines", cls="text-sm font-medium"),
+                    hx_post=f"/batch/{batch_name}/toggle-line-width",
+                    hx_target="#main-content",
+                    cls=ButtonT.ghost,
+                    uk_tooltip="Toggle between narrow and normal line thickness",
+                ),
+                cls="flex items-center justify-between w-full px-2 py-2",
             )
         ),
         NavDividerLi(),
         Li(
             DivLAligned(
-                P("Dark Mode", cls="text-sm font-medium"),
                 Button(
-                    UkIcon("check" if state.dark_mode else "x"),
+                    P("Dark Mode", cls="text-sm font-medium"),
                     hx_post=f"/batch/{batch_name}/toggle-theme",
                     hx_target="#main-content",
                     cls=ButtonT.ghost,
                     uk_tooltip="Switch between light and dark color themes",
                 ),
-                cls="flex items-center justify-between w-full px-4 py-2",
-            )
-        ),
-        Li(
-            DivLAligned(
-                P("Line Width", cls="text-sm font-medium"),
-                Input(
-                    type="number",
-                    name="line_width",
-                    value=state.line_width,
-                    min=1,
-                    max=10,
-                    step=1,
-                    cls="uk-input uk-form-small",
-                    style="width: 60px;",
-                    hx_post=f"/batch/{batch_name}/update-line-width",
-                    hx_target="#charts-container",
-                    hx_trigger="change",
-                    hx_swap="innerHTML",
-                    uk_tooltip="Adjust the thickness of chart lines (1-10)",
-                ),
-                cls="flex items-center justify-between w-full px-4 py-2",
+                cls="flex items-center justify-between w-full px-2 py-2",
             )
         ),
     )
