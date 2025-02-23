@@ -1,4 +1,5 @@
 metric_batch: "python_ingest_simple"
+table_key: "metrics_python_ingest_simple"
 alert_methods: "email,slack"
 ingest_cron_schedule: "*/2 * * * *"
 train_cron_schedule: "*/4 * * * *"

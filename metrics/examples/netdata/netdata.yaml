@@ -1,4 +1,5 @@
 metric_batch: "netdata"
+table_key: "metrics_netdata"
 ingest_cron_schedule: "*/10 * * * *"
 train_cron_schedule: "*/180 * * * *"
 score_cron_schedule: "*/40 * * * *"

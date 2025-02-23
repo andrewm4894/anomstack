@@ -1,4 +1,5 @@
 metric_batch: "prometheus"
+table_key: "metrics_prometheus"
 ingest_cron_schedule: "*/5 * * * *"
 train_cron_schedule: "*/180 * * * *"
 score_cron_schedule: "*/10 * * * *"

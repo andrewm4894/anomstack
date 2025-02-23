@@ -1,4 +1,5 @@
 metric_batch: "github"
+table_key: "metrics_github"
 ingest_cron_schedule: "*/15 * * * *"
 train_cron_schedule: "*/180 * * * *"
 score_cron_schedule: "*/30 * * * *"

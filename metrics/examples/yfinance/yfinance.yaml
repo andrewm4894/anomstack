@@ -1,4 +1,5 @@
 metric_batch: "yfinance"
+table_key: "metrics_yfinance"
 ingest_cron_schedule: "45 18 * * *"
 train_cron_schedule: "15 20 * * *"
 score_cron_schedule: "15 19 * * *"
