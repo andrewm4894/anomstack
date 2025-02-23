@@ -56,7 +56,7 @@ requirements:
 	pip-compile requirements.compile
 
 dashboard:
-	python dashboard/dashboard.py
+	python dashboard/app.py
 
 dashboardd:
-	nohup python dashboard/dashboard.py > /dev/null 2>&1 &
+	nohup python dashboard/app.py > /dev/null 2>&1 &
