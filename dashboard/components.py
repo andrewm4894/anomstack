@@ -1,3 +1,7 @@
+"""
+Components for the dashboard.
+"""
+
 from fasthtml.common import *
 from monsterui.all import *
 from fasthtml.svg import *
@@ -7,6 +11,9 @@ from constants import *
 
 
 def _create_controls(batch_name):
+    """
+    Create the controls for the dashboard.
+    """
     state = get_state()
     settings_dropdown = DropDownNavContainer(
         NavHeaderLi("Chart Settings"),
@@ -168,6 +175,9 @@ def _create_controls(batch_name):
 
 
 def _create_search_form(batch_name):
+    """
+    Create the search form for the dashboard.
+    """
     return Form(
         Input(
             type="text",
@@ -184,6 +194,9 @@ def _create_search_form(batch_name):
 
 
 def _create_alert_n_form(batch_name):
+    """
+    Create the alert number form for the dashboard.
+    """
     state = get_state()  # Get state instance first
     return Form(
         DivLAligned(

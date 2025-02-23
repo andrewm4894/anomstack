@@ -1,3 +1,7 @@
+"""
+Data manager for the dashboard.
+"""
+
 import pandas as pd
 from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql

@@ -1,3 +1,7 @@
+"""
+Chart manager for the dashboard.
+"""
+
 from fasthtml.common import *
 from monsterui.all import *
 from fasthtml.svg import *
@@ -8,8 +12,15 @@ from app import app
 
 
 class ChartManager:
+    """
+    Chart manager for the dashboard.
+    """
+
     @staticmethod
-    def create_chart(df_metric, metric_name, chart_index):
+    def create_chart(df_metric, chart_index):
+        """
+        Create a chart for a given metric.
+        """
         return plot_time_series(
             df_metric,
             small_charts=app.state.small_charts,
@@ -42,6 +53,9 @@ class ChartManager:
 
     @staticmethod
     def create_chart_placeholder(metric_name, index, batch_name):
+        """
+        Create a placeholder for a chart.
+        """
         return Card(
             Div(
                 DivLAligned(

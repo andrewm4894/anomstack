@@ -1,3 +1,7 @@
+"""
+Routes for the dashboard.
+"""
+
 from fasthtml.common import *
 from monsterui.all import *
 from fasthtml.svg import *
@@ -11,6 +15,9 @@ from charts import ChartManager
 
 @rt
 def index(request: Request):
+    """
+    Index route for the dashboard.
+    """
     # Check if this is an HTMX request
     is_htmx = request.headers.get("HX-Request") == "true"
 
@@ -179,6 +186,9 @@ def index(request: Request):
 
 @rt("/batch/{batch_name}")
 def get_batch_view(batch_name: str, session, initial_load: int = DEFAULT_LOAD_N_CHARTS):
+    """
+    Get the batch view for a given batch name.
+    """
     # First, ensure we have the data and stats calculated
     if batch_name not in app.state.df_cache:
         app.state.df_cache[batch_name] = get_data(
@@ -238,6 +248,9 @@ def get_batch_view(batch_name: str, session, initial_load: int = DEFAULT_LOAD_N_
 
 @rt("/batch/{batch_name}/chart/{chart_index}")
 def get(batch_name: str, chart_index: int):
+    """
+    Get the chart for a given batch name and chart index.
+    """
     df = app.state.df_cache[batch_name]
     metric_stats = app.state.stats_cache[batch_name]
     metric_name = metric_stats[chart_index]["metric_name"]
@@ -282,6 +295,9 @@ def get(batch_name: str, chart_index: int):
 
 @rt("/batch/{batch_name}/refresh")
 def get(batch_name: str, session):
+    """
+    Refresh the batch view for a given batch name.
+    """
     app.state.clear_batch_cache(batch_name)
 
     return get_batch_view(batch_name, session, initial_load=DEFAULT_LOAD_N_CHARTS)
@@ -289,6 +305,9 @@ def get(batch_name: str, session):
 
 @rt("/batch/{batch_name}/load-more/{start_index}")
 def get(batch_name: str, start_index: int):
+    """
+    Load more charts for a given batch name and start index.
+    """
     metric_stats = app.state.stats_cache[batch_name]
     remaining_metrics = len(metric_stats) - (start_index + DEFAULT_LOAD_N_CHARTS)
     load_next = min(DEFAULT_LOAD_N_CHARTS, remaining_metrics)
@@ -325,6 +344,9 @@ def get(batch_name: str, start_index: int):
 
 @rt("/batch/{batch_name}/search")
 def post(batch_name: str, search: str = ""):
+    """
+    Search for a given batch name and search string.
+    """
     import re
 
     metric_stats = app.state.stats_cache[batch_name]
@@ -351,6 +373,9 @@ def post(batch_name: str, search: str = ""):
 
 @rt("/batch/{batch_name}/update-n")
 def post(batch_name: str, alert_max_n: int = DEFAULT_ALERT_MAX_N, session=None):
+    """
+    Update the number of alerts for a given batch name.
+    """
     app.state.alert_max_n[batch_name] = alert_max_n
     app.state.clear_batch_cache(batch_name)
 
@@ -367,6 +392,9 @@ def post(batch_name: str, alert_max_n: int = DEFAULT_ALERT_MAX_N, session=None):
 
 @rt("/batch/{batch_name}/toggle-size")
 def post(batch_name: str, session=None):
+    """
+    Toggle the size of the charts for a given batch name.
+    """
     app.state.small_charts = not app.state.small_charts
     app.state.chart_cache.clear()  # Clear cache to regenerate charts
     return get_batch_view(
@@ -376,6 +404,9 @@ def post(batch_name: str, session=None):
 
 @rt("/batch/{batch_name}/toggle-theme")
 def post(batch_name: str, session=None):
+    """
+    Toggle the theme of the dashboard for a given batch name.
+    """
     app.state.dark_mode = not app.state.dark_mode
     app.state.chart_cache.clear()  # Clear cache to regenerate charts
 
@@ -394,6 +425,9 @@ def post(batch_name: str, session=None):
 
 @rt("/batch/{batch_name}/toggle-columns")
 def post(batch_name: str, session=None):
+    """
+    Toggle the number of columns for a given batch name.
+    """
     app.state.two_columns = not app.state.two_columns
     return get_batch_view(
         batch_name, session=session, initial_load=DEFAULT_LOAD_N_CHARTS
@@ -402,6 +436,9 @@ def post(batch_name: str, session=None):
 
 @rt("/batch/{batch_name}/toggle-markers")
 def post(batch_name: str, session=None):
+    """
+    Toggle the markers for a given batch name.
+    """
     app.state.show_markers = not app.state.show_markers
     app.state.chart_cache.clear()  # Clear cache to regenerate charts
     return get_batch_view(
@@ -411,6 +448,9 @@ def post(batch_name: str, session=None):
 
 @rt("/batch/{batch_name}/toggle-legend")
 def post(batch_name: str, session=None):
+    """
+    Toggle the legend for a given batch name.
+    """
     app.state.show_legend = not app.state.show_legend
     app.state.chart_cache.clear()  # Clear cache to regenerate charts
     return get_batch_view(
@@ -420,6 +460,9 @@ def post(batch_name: str, session=None):
 
 @rt("/batch/{batch_name}/update-line-width")
 def post(batch_name: str, line_width: int = 2):
+    """
+    Update the line width for a given batch name.
+    """
     try:
         # Ensure line width is within valid range
         app.state.line_width = max(1, min(10, int(line_width)))

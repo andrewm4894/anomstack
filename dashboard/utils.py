@@ -1,3 +1,7 @@
+"""
+Utils for the dashboard.
+"""
+
 import logging
 import os
 import requests
@@ -89,7 +93,11 @@ def get_enabled_dagster_jobs(host: str = "localhost", port: str = "3000") -> lis
 
 
 def get_metric_batches():
+    """
+    Get the metric batches from the enabled Dagster jobs.
+    """
     enabled_jobs = get_enabled_dagster_jobs(host="http://localhost", port="3000")
     ingest_jobs = [job for job in enabled_jobs if job.endswith("_ingest")]
     metric_batches = [job[:-7] for job in ingest_jobs if job.endswith("_ingest")]
+    
     return metric_batches

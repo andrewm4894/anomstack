@@ -1,3 +1,7 @@
+"""
+State manager for the dashboard.
+"""
+
 import logging
 
 from anomstack.config import specs
@@ -8,7 +12,14 @@ log = logging.getLogger("anomstack")
 
 
 class AppState:
+    """
+    State manager for the dashboard.
+    """
+
     def __init__(self):
+        """
+        Initialize the app state.
+        """
         self.specs = specs
         self.metric_batches = get_metric_batches()
         if not self.metric_batches:
@@ -27,11 +38,17 @@ class AppState:
         self.show_legend = False
 
     def clear_batch_cache(self, batch_name):
+        """
+        Clear the cache for a given batch name.
+        """
         self.df_cache.pop(batch_name, None)
         self.chart_cache.pop(batch_name, None)
         self.stats_cache.pop(batch_name, None)
 
     def calculate_metric_stats(self, batch_name):
+        """
+        Calculate the metric stats for a given batch name.
+        """
         df = self.df_cache[batch_name]
         metric_stats = []
         for metric_name in df["metric_name"].unique():
@@ -59,6 +76,9 @@ _state = None
 
 
 def get_state():
+    """
+    Get the app state.
+    """
     global _state
     if _state is None:
         _state = AppState()
