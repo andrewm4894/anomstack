@@ -18,6 +18,8 @@ where
   metric_batch = '{{ metric_batch }}'
   and
   metric_type in ('metric', 'score')
+  and
+  metric_timestamp >= date('now', '-{{ score_metric_timestamp_max_days_ago }} day')
   {% if score_exclude_metrics is defined %}
   and
   -- Exclude the specified metrics
