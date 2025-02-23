@@ -27,7 +27,7 @@ kill-locald:
 
 # kill any running dashboard process
 kill-dashboardd:
-	kill -9 $(shell ps aux | grep dashboard/app.py | grep -v grep | awk '{print $$2}')
+	kill $(shell ps aux | grep dashboard/app.py | grep -v grep | awk '{print $$2}') $(shell lsof -ti :5003)
 
 # list any running dagster process
 ps-locald:
