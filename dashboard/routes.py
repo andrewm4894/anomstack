@@ -41,6 +41,9 @@ def index(request: Request):
         else:
             df = app.state.df_cache[batch_name]
 
+        # Calculate average score for the batch
+        avg_batch_score = df["metric_score"].mean() if not df.empty else 0
+
         latest_timestamp = df["metric_timestamp"].max() if not df.empty else "No data"
         if latest_timestamp != "No data":
             from datetime import datetime
@@ -57,22 +60,23 @@ def index(request: Request):
             if diff_seconds < 3600:  # Less than 1 hour
                 minutes_ago = round(diff_seconds / 60, 1)
                 time_ago_str = (
-                    f"({minutes_ago:.1f} minute{'s' if minutes_ago != 1 else ''} ago)"
+                    f"{minutes_ago:.1f} minute{'s' if minutes_ago != 1 else ''} ago"
                 )
             elif diff_seconds < 86400:  # Less than 24 hours
                 hours_ago = round(diff_seconds / 3600, 1)
                 time_ago_str = (
-                    f"({hours_ago:.1f} hour{'s' if hours_ago != 1 else ''} ago)"
+                    f"{hours_ago:.1f} hour{'s' if hours_ago != 1 else ''} ago"
                 )
             else:  # Days or more
                 days_ago = round(diff_seconds / 86400, 1)
-                time_ago_str = f"({days_ago:.1f} day{'s' if days_ago != 1 else ''} ago)"
+                time_ago_str = f"{days_ago:.1f} day{'s' if days_ago != 1 else ''} ago"
 
-            latest_timestamp = f"{latest_timestamp_str} {time_ago_str}"
+            latest_timestamp = f"{time_ago_str}"
 
         batch_stats[batch_name] = {
             "unique_metrics": len(df["metric_name"].unique()),
             "latest_timestamp": latest_timestamp,
+            "avg_score": avg_batch_score,
         }
 
     main_content = Div(
@@ -133,6 +137,14 @@ def index(request: Request):
                                                 UkIcon("clock", cls="text-green-500"),
                                                 P(
                                                     f"{batch_stats[batch_name]['latest_timestamp']}",
+                                                    cls=TextPresets.muted_sm,
+                                                ),
+                                                cls="space-x-2",
+                                            ),
+                                            DivLAligned(
+                                                UkIcon("bar-chart", cls="text-purple-500"),
+                                                P(
+                                                    f"Avg Score: {batch_stats[batch_name]['avg_score']:.1%}",
                                                     cls=TextPresets.muted_sm,
                                                 ),
                                                 cls="space-x-2",
