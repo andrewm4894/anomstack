@@ -16,6 +16,8 @@ where
   metric_batch = '{{ metric_batch }}'
   and
   metric_type = 'metric'
+  and
+  metric_timestamp >= date('now', '-{{ train_metric_timestamp_max_days_ago }} day')
   {% if train_exclude_metrics is defined %}
   and
   -- Exclude the specified metrics
