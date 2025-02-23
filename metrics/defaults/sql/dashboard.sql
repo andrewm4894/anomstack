@@ -13,7 +13,7 @@ metric_value_data AS (
   FROM {{ table_key }}
   WHERE metric_batch = '{{ metric_batch }}'
     AND metric_type = 'metric'
-    AND DATE(metric_timestamp) >= DATE('now', '-{{ alert_metric_timestamp_max_days_ago }} day')
+    AND metric_timestamp >= DATE('now', '-{{ alert_metric_timestamp_max_days_ago }} day')
   GROUP BY metric_timestamp, metric_batch, metric_name
 ),
 
@@ -26,7 +26,7 @@ metric_score_data AS (
   FROM {{ table_key }}
   WHERE metric_batch = '{{ metric_batch }}'
     AND metric_type = 'score'
-    AND DATE(metric_timestamp) >= DATE('now', '-{{ alert_metric_timestamp_max_days_ago }} day')
+    AND metric_timestamp >= DATE('now', '-{{ alert_metric_timestamp_max_days_ago }} day')
   GROUP BY metric_timestamp, metric_batch, metric_name
 ),
 
@@ -39,7 +39,7 @@ metric_alert_data AS (
   FROM {{ table_key }}
   WHERE metric_batch = '{{ metric_batch }}'
     AND metric_type = 'alert'
-    AND DATE(metric_timestamp) >= DATE('now', '-{{ alert_metric_timestamp_max_days_ago }} day')
+    AND metric_timestamp >= DATE('now', '-{{ alert_metric_timestamp_max_days_ago }} day')
   GROUP BY metric_timestamp, metric_batch, metric_name
 ),
 
@@ -52,7 +52,7 @@ metric_change_data AS (
   FROM {{ table_key }}
   WHERE metric_batch = '{{ metric_batch }}'
     AND metric_type = 'change'
-    AND DATE(metric_timestamp) >= DATE('now', '-{{ change_metric_timestamp_max_days_ago }} day')
+    AND metric_timestamp >= DATE('now', '-{{ change_metric_timestamp_max_days_ago }} day')
   GROUP BY metric_timestamp, metric_batch, metric_name
 ),
 
