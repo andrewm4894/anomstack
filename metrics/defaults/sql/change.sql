@@ -21,7 +21,7 @@ where
   metric_type = 'metric'
   and
   -- Filter to the last {{ change_metric_timestamp_max_days_ago }} days
-  date(metric_timestamp) >= date('now', '-{{ change_metric_timestamp_max_days_ago }} day')
+  metric_timestamp >= date('now', '-{{ change_metric_timestamp_max_days_ago }} day')
   {% if change_include_metrics is defined %}
   and
   -- Include only the specified metrics
@@ -51,7 +51,7 @@ where
   metric_type = 'change'
   and
   -- Filter to the last {{ change_metric_timestamp_max_days_ago }} days
-  date(metric_timestamp) >= date('now', '-{{ change_metric_timestamp_max_days_ago }} day')
+  metric_timestamp >= date('now', '-{{ change_metric_timestamp_max_days_ago }} day')
   {% if change_include_metrics is defined %}
   and
   -- Include only the specified metrics
