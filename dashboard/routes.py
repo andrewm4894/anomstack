@@ -56,7 +56,6 @@ def index(request: Request):
 
             # Parse the ISO format timestamp and format it to show date and time
             dt = datetime.fromisoformat(latest_timestamp.replace("Z", "+00:00"))
-            latest_timestamp_str = dt.strftime("%Y-%m-%d %H:%M:%S")
 
             # Calculate time difference
             now = datetime.now(dt.tzinfo)
@@ -66,18 +65,18 @@ def index(request: Request):
             if diff_seconds < 3600:  # Less than 1 hour
                 minutes_ago = round(diff_seconds / 60, 1)
                 time_ago_str = (
-                    f"({minutes_ago:.1f} minute{'s' if minutes_ago != 1 else ''} ago)"
+                    f"{minutes_ago:.1f} minute{'s' if minutes_ago != 1 else ''} ago"
                 )
             elif diff_seconds < 86400:  # Less than 24 hours
                 hours_ago = round(diff_seconds / 3600, 1)
                 time_ago_str = (
-                    f"({hours_ago:.1f} hour{'s' if hours_ago != 1 else ''} ago)"
+                    f"{hours_ago:.1f} hour{'s' if hours_ago != 1 else ''} ago"
                 )
             else:  # Days or more
                 days_ago = round(diff_seconds / 86400, 1)
-                time_ago_str = f"({days_ago:.1f} day{'s' if days_ago != 1 else ''} ago)"
+                time_ago_str = f"{days_ago:.1f} day{'s' if days_ago != 1 else ''} ago"
 
-            latest_timestamp = f"{latest_timestamp_str} {time_ago_str}"
+            latest_timestamp = f"{time_ago_str}"
 
         batch_stats[batch_name] = {
             "unique_metrics": len(df["metric_name"].unique()),
