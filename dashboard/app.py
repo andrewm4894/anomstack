@@ -8,7 +8,7 @@ It is built with FastHTML and MonsterUI.
 """
 
 import logging
-
+from dotenv import load_dotenv
 from fasthtml.common import *
 from monsterui.all import *
 from fasthtml.svg import *
@@ -17,6 +17,10 @@ from routes import *
 from components import *
 from constants import *
 from state import AppState
+
+
+# load the environment variables
+load_dotenv(override=True)
 
 
 log = logging.getLogger("anomstack")
