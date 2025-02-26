@@ -2,6 +2,8 @@
 Routes for the dashboard.
 """
 
+import logging
+import pandas as pd
 from fasthtml.common import *
 from monsterui.all import *
 from fasthtml.svg import *
@@ -11,6 +13,9 @@ from constants import *
 from data import get_data
 from components import _create_controls
 from charts import ChartManager
+
+
+log = logging.getLogger("anomstack")
 
 
 @rt
@@ -34,9 +39,13 @@ def index(request: Request):
     batch_stats = {}
     for batch_name in app.state.metric_batches:
         if batch_name not in app.state.df_cache:
-            df = get_data(
-                app.state.specs_enabled[batch_name], max_n=DEFAULT_ALERT_MAX_N
-            )
+            try:
+                df = get_data(
+                    app.state.specs_enabled[batch_name], max_n=DEFAULT_ALERT_MAX_N
+                )
+            except Exception as e:
+                log.error(f"Error getting data for batch {batch_name}: {e}")
+                df = pd.DataFrame()
             app.state.df_cache[batch_name] = df
         else:
             df = app.state.df_cache[batch_name]
