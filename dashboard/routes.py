@@ -50,7 +50,7 @@ def index(request: Request):
         else:
             df = app.state.df_cache[batch_name]
 
-        # Calculate average score and alert count for the batch, handling NaN values
+        # Calculate stats (same as before)
         avg_score = (
             df["metric_score"].fillna(0).mean() 
             if not df.empty and "metric_score" in df.columns 
@@ -65,45 +65,31 @@ def index(request: Request):
         latest_timestamp = df["metric_timestamp"].max() if not df.empty else "No data"
         if latest_timestamp != "No data":
             from datetime import datetime
-
-            # Parse the ISO format timestamp and format it to show date and time
             dt = datetime.fromisoformat(latest_timestamp.replace("Z", "+00:00"))
-
-            # Calculate time difference
             now = datetime.now(dt.tzinfo)
             diff_seconds = (now - dt).total_seconds()
-
-            # Choose appropriate time unit
-            if diff_seconds < 3600:  # Less than 1 hour
+            if diff_seconds < 3600:
                 minutes_ago = round(diff_seconds / 60, 1)
-                time_ago_str = (
-                    f"{minutes_ago:.1f} minute{'s' if minutes_ago != 1 else ''} ago"
-                )
-            elif diff_seconds < 86400:  # Less than 24 hours
+                time_ago_str = f"{minutes_ago:.1f} minute{'s' if minutes_ago != 1 else ''} ago"
+            elif diff_seconds < 86400:
                 hours_ago = round(diff_seconds / 3600, 1)
-                time_ago_str = (
-                    f"{hours_ago:.1f} hour{'s' if hours_ago != 1 else ''} ago"
-                )
-            else:  # Days or more
+                time_ago_str = f"{hours_ago:.1f} hour{'s' if hours_ago != 1 else ''} ago"
+            else:
                 days_ago = round(diff_seconds / 86400, 1)
                 time_ago_str = f"{days_ago:.1f} day{'s' if days_ago != 1 else ''} ago"
-
-            latest_timestamp = f"{time_ago_str}"
+            latest_timestamp = time_ago_str
 
         batch_stats[batch_name] = {
             "unique_metrics": len(df["metric_name"].unique()),
             "latest_timestamp": latest_timestamp,
             "avg_score": avg_score,
-            "alert_count": alert_count  # Add alert count to stats
+            "alert_count": alert_count
         }
 
-    # Sort the metric batches by alert count (primary) and avg score (secondary)
+    # Sort batches by alert count and avg score
     sorted_batch_names = sorted(
         app.state.metric_batches,
-        key=lambda x: (
-            -batch_stats[x]["alert_count"],  # Negative for descending order
-            -batch_stats[x]["avg_score"]     # Negative for descending order
-        )
+        key=lambda x: (-batch_stats[x]["alert_count"], -batch_stats[x]["avg_score"])
     )
 
     main_content = Div(
@@ -143,73 +129,62 @@ def index(request: Request):
                 if not app.state.metric_batches
                 else None
             ),
-            (
-                Grid(
+            # Replace Table with headerless version
+            Table(
+                Tbody(
                     *[
-                        Card(
-                            DivLAligned(
-                                Div(
-                                    H4(batch_name, cls="mb-2"),
-                                    DivLAligned(
-                                        Div(
-                                            DivLAligned(
-                                                UkIcon("activity", cls="text-blue-500"),
-                                                P(
-                                                    f"{batch_stats[batch_name]['unique_metrics']} metrics",
-                                                    cls=TextPresets.muted_sm,
-                                                ),
-                                                cls="space-x-2",
-                                            ),
-                                            DivLAligned(
-                                                UkIcon("clock", cls="text-green-500"),
-                                                P(
-                                                    f"{batch_stats[batch_name]['latest_timestamp']}",
-                                                    cls=TextPresets.muted_sm,
-                                                ),
-                                                cls="space-x-2",
-                                            ),
-                                            DivLAligned(
-                                                UkIcon("bar-chart", cls="text-purple-500"),
-                                                P(
-                                                    f"Avg Score: {batch_stats[batch_name]['avg_score']:.1%}",
-                                                    cls=TextPresets.muted_sm,
-                                                ),
-                                                cls="space-x-2",
-                                            ),
-                                            DivLAligned(
-                                                UkIcon("alert-circle", cls="text-red-500"),
-                                                P(
-                                                    f"{batch_stats[batch_name]['alert_count']} alerts",
-                                                    cls=TextPresets.muted_sm,
-                                                ),
-                                                cls="space-x-2",
-                                            ),
-                                            cls="space-y-2",
-                                        )
-                                    ),
-                                ),
+                        Tr(
+                            Td(
                                 Button(
                                     batch_name,
                                     hx_get=f"/batch/{batch_name}",
                                     hx_push_url=f"/batch/{batch_name}",
                                     hx_target="#main-content",
                                     hx_indicator="#loading",
-                                    cls=ButtonT.primary,
+                                    cls=(ButtonT.primary, "w-full whitespace-nowrap"),
+                                    style="min-width: max-content;",
                                 ),
-                                style="justify-content: space-between;",
-                                cls="flex-row items-center",
+                                cls="w-[200px]",
                             ),
-                            cls="p-6 hover:border-primary transition-colors duration-200",
+                            Td(
+                                DivLAligned(
+                                    UkIcon("activity", cls="text-blue-500"),
+                                    P(f"{batch_stats[batch_name]['unique_metrics']}", cls="p-2"),
+                                    cls="justify-center"
+                                ),
+                                cls="text-center"
+                            ),
+                            Td(
+                                DivLAligned(
+                                    UkIcon("clock", cls="text-green-500"),
+                                    P(f"{batch_stats[batch_name]['latest_timestamp']}", cls="p-2"),
+                                    cls="justify-center"
+                                ),
+                                cls="text-center"
+                            ),
+                            Td(
+                                DivLAligned(
+                                    UkIcon("bar-chart", cls="text-purple-500"),
+                                    P(f"{batch_stats[batch_name]['avg_score']:.1%}", cls="p-2"),
+                                    cls="justify-center"
+                                ),
+                                cls="text-center"
+                            ),
+                            Td(
+                                DivLAligned(
+                                    UkIcon("alert-circle", cls="text-red-500"),
+                                    P(f"{batch_stats[batch_name]['alert_count']:.0f}", cls="p-2"),
+                                    cls="justify-center"
+                                ),
+                                cls="text-center"
+                            ),
                         )
-                        for batch_name in sorted_batch_names  # Use sorted list instead of app.state.metric_batches
-                    ],
-                    cols=3,
-                    gap=4,
-                )
-                if app.state.metric_batches
-                else None
+                        for batch_name in sorted_batch_names
+                    ]
+                ),
+                cls="w-full",
             ),
-            cls="p-6",
+            cls="p-2",
         ),
         id="main-content",
     )
