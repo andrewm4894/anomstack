@@ -21,10 +21,9 @@ class AppState:
         Initialize the app state.
         """
         self.specs = specs
-        self.metric_batches = get_metric_batches()
+        self.metric_batches = get_metric_batches(source="all")
         if not self.metric_batches:
-            log.warning("No metric batches found from Dagster. Is Dagster running?")
-            self.metric_batches = []
+            log.warning("No metric batches found.")
         self.specs_enabled = {batch: specs[batch] for batch in self.metric_batches}
         self.df_cache = {}
         self.chart_cache = {}

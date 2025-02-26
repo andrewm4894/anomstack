@@ -7,6 +7,8 @@ import os
 import requests
 from dotenv import load_dotenv
 
+from anomstack.config import specs
+
 
 log = logging.getLogger("fasthtml")
 
@@ -92,12 +94,29 @@ def get_enabled_dagster_jobs(host: str = "localhost", port: str = "3000") -> lis
         return []
 
 
-def get_metric_batches():
+def get_metric_batches(source: str = "all"):
     """
-    Get the metric batches from the enabled Dagster jobs.
+    Get the metric batches from the enabled Dagster jobs or from the config.
+
+    Args:
+        source (str): The source of the metric batches.
+            (e.g., "dagster" or "config" or "all").
+
+    Returns:
+        list: A list of metric batches.
     """
-    enabled_jobs = get_enabled_dagster_jobs(host="http://localhost", port="3000")
-    ingest_jobs = [job for job in enabled_jobs if job.endswith("_ingest")]
-    metric_batches = [job[:-7] for job in ingest_jobs if job.endswith("_ingest")]
+    metric_batches = []
+    dagster_enabled_jobs = get_enabled_dagster_jobs(host="http://localhost", port="3000")
+    dagster_ingest_jobs = [job for job in dagster_enabled_jobs if job.endswith("_ingest")]
+    dagster_metric_batches = [job[:-7] for job in dagster_ingest_jobs if job.endswith("_ingest")]
+    config_metric_batches = list(specs.keys())
+    if source == "dagster":
+        metric_batches = dagster_metric_batches
+    elif source == "config":
+        metric_batches = config_metric_batches
+    elif source == "all":
+        metric_batches = dagster_metric_batches + config_metric_batches
+    else:
+        raise ValueError(f"Invalid source: {source}")
     
     return metric_batches
