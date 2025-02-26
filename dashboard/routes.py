@@ -50,6 +50,18 @@ def index(request: Request):
         else:
             df = app.state.df_cache[batch_name]
 
+        # Calculate average score and alert count for the batch, handling NaN values
+        avg_score = (
+            df["metric_score"].fillna(0).mean() 
+            if not df.empty and "metric_score" in df.columns 
+            else 0
+        )
+        alert_count = (
+            df["metric_alert"].fillna(0).sum() 
+            if not df.empty and "metric_alert" in df.columns 
+            else 0
+        )
+
         latest_timestamp = df["metric_timestamp"].max() if not df.empty else "No data"
         if latest_timestamp != "No data":
             from datetime import datetime
@@ -81,7 +93,18 @@ def index(request: Request):
         batch_stats[batch_name] = {
             "unique_metrics": len(df["metric_name"].unique()),
             "latest_timestamp": latest_timestamp,
+            "avg_score": avg_score,
+            "alert_count": alert_count  # Add alert count to stats
         }
+
+    # Sort the metric batches by alert count (primary) and avg score (secondary)
+    sorted_batch_names = sorted(
+        app.state.metric_batches,
+        key=lambda x: (
+            -batch_stats[x]["alert_count"],  # Negative for descending order
+            -batch_stats[x]["avg_score"]     # Negative for descending order
+        )
+    )
 
     main_content = Div(
         Card(
@@ -145,12 +168,28 @@ def index(request: Request):
                                                 ),
                                                 cls="space-x-2",
                                             ),
+                                            DivLAligned(
+                                                UkIcon("bar-chart", cls="text-purple-500"),
+                                                P(
+                                                    f"Avg Score: {batch_stats[batch_name]['avg_score']:.1%}",
+                                                    cls=TextPresets.muted_sm,
+                                                ),
+                                                cls="space-x-2",
+                                            ),
+                                            DivLAligned(
+                                                UkIcon("alert-circle", cls="text-red-500"),
+                                                P(
+                                                    f"{batch_stats[batch_name]['alert_count']} alerts",
+                                                    cls=TextPresets.muted_sm,
+                                                ),
+                                                cls="space-x-2",
+                                            ),
                                             cls="space-y-2",
                                         )
                                     ),
                                 ),
                                 Button(
-                                    "View Metrics",
+                                    batch_name,
                                     hx_get=f"/batch/{batch_name}",
                                     hx_push_url=f"/batch/{batch_name}",
                                     hx_target="#main-content",
@@ -162,7 +201,7 @@ def index(request: Request):
                             ),
                             cls="p-6 hover:border-primary transition-colors duration-200",
                         )
-                        for batch_name in app.state.metric_batches
+                        for batch_name in sorted_batch_names  # Use sorted list instead of app.state.metric_batches
                     ],
                     cols=3,
                     gap=4,
