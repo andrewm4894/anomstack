@@ -45,7 +45,7 @@ def index(request: Request):
                 )
             except Exception as e:
                 log.error(f"Error getting data for batch {batch_name}: {e}")
-                df = pd.DataFrame()
+                df = pd.DataFrame(data=[],columns=['metric_name', 'metric_timestamp', 'metric_value'])
             app.state.df_cache[batch_name] = df
         else:
             df = app.state.df_cache[batch_name]
