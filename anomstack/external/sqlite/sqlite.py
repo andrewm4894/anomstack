@@ -188,12 +188,13 @@ def save_df_sqlite(df: pd.DataFrame, table_key: str) -> pd.DataFrame:
     return with_sqlite_retry(_action, logger=logger)
 
 
-def run_sql_sqlite(sql: str) -> None:
+def run_sql_sqlite(sql: str, return_df: bool = False):
     """
     Execute a non-returning SQL statement (e.g. CREATE, INSERT, UPDATE, DELETE) with retry logic.
 
     Args:
         sql (str): The SQL statement to execute.
+        return_df (bool, optional): Whether to return the result as a DataFrame. Defaults to False.
 
     Returns:
         None
@@ -201,9 +202,13 @@ def run_sql_sqlite(sql: str) -> None:
     logger = get_dagster_logger()
     logger.info(f"Executing SQL against DB path: {get_sqlite_path()}")
 
-    def _action():
+    def _action(return_df=return_df):
         with sqlite_connection() as conn:
-            conn.execute(sql)
+            cursor = conn.execute(sql)
             conn.commit()
+            rows = cursor.fetchall()
+            columns = [desc[0] for desc in cursor.description] if cursor.description else get_columns_from_sql(sql)
+            df = pd.DataFrame(rows, columns=columns)
+            return df if return_df else None
 
-    with_sqlite_retry(_action, logger=logger)
+    return with_sqlite_retry(_action, logger=logger)

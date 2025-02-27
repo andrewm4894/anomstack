@@ -4,10 +4,11 @@ from dotenv import load_dotenv
 load_dotenv(override=True)
 
 
-def list_tables():
-    query = "SELECT name, tbl_name FROM sqlite_master WHERE type='table' ORDER BY name;"
+def list_indexes():
+    query = "SELECT name, tbl_name FROM sqlite_master WHERE type='index' ORDER BY name;"
     df = run_sql_sqlite(query, return_df=True)
     print(df)
 
 if __name__ == "__main__":
-    list_tables()
+    df = list_indexes()
+
