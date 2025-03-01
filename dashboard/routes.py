@@ -11,8 +11,9 @@ from fasthtml.svg import *
 from app import app, rt
 from constants import *
 from data import get_data
-from components import _create_controls
+from components import _create_controls, create_batch_card, create_header
 from charts import ChartManager
+from batch_stats import calculate_batch_stats
 
 
 log = logging.getLogger("anomstack")
@@ -35,7 +36,7 @@ def index(request: Request):
     """
     )
 
-    # Get batch stats
+    # Calculate batch stats
     batch_stats = {}
     for batch_name in app.state.metric_batches:
         if batch_name not in app.state.df_cache:
@@ -50,52 +51,7 @@ def index(request: Request):
         else:
             df = app.state.df_cache[batch_name]
 
-        # Calculate average score and alert count for the batch, handling NaN values
-        avg_score = (
-            df["metric_score"].fillna(0).mean() 
-            if not df.empty and "metric_score" in df.columns 
-            else 0
-        )
-        alert_count = (
-            df["metric_alert"].fillna(0).sum() 
-            if not df.empty and "metric_alert" in df.columns 
-            else 0
-        )
-
-        latest_timestamp = df["metric_timestamp"].max() if not df.empty else "No data"
-        if latest_timestamp != "No data":
-            from datetime import datetime
-
-            # Parse the ISO format timestamp and format it to show date and time
-            dt = datetime.fromisoformat(latest_timestamp.replace("Z", "+00:00"))
-
-            # Calculate time difference
-            now = datetime.now(dt.tzinfo)
-            diff_seconds = (now - dt).total_seconds()
-
-            # Choose appropriate time unit
-            if diff_seconds < 3600:  # Less than 1 hour
-                minutes_ago = round(diff_seconds / 60, 1)
-                time_ago_str = (
-                    f"{minutes_ago:.1f} minute{'s' if minutes_ago != 1 else ''} ago"
-                )
-            elif diff_seconds < 86400:  # Less than 24 hours
-                hours_ago = round(diff_seconds / 3600, 1)
-                time_ago_str = (
-                    f"{hours_ago:.1f} hour{'s' if hours_ago != 1 else ''} ago"
-                )
-            else:  # Days or more
-                days_ago = round(diff_seconds / 86400, 1)
-                time_ago_str = f"{days_ago:.1f} day{'s' if days_ago != 1 else ''} ago"
-
-            latest_timestamp = f"{time_ago_str}"
-
-        batch_stats[batch_name] = {
-            "unique_metrics": len(df["metric_name"].unique()),
-            "latest_timestamp": latest_timestamp,
-            "avg_score": avg_score,
-            "alert_count": alert_count  # Add alert count to stats
-        }
+        batch_stats[batch_name] = calculate_batch_stats(df, batch_name)
 
     # Sort the metric batches by alert count (primary) and avg score (secondary)
     sorted_batch_names = sorted(
@@ -108,25 +64,7 @@ def index(request: Request):
 
     main_content = Div(
         Card(
-            DivLAligned(
-                H2(
-                    "Anomstack",
-                    P(
-                        "Painless open source anomaly detection for your metrics 📈📉🚀",
-                        cls=TextPresets.muted_sm,
-                    ),
-                    cls="mb-2",
-                ),
-                A(
-                    DivLAligned(UkIcon("github")),
-                    href="https://github.com/andrewm4894/anomstack",
-                    target="_blank",
-                    cls="uk-button uk-button-secondary",
-                    uk_tooltip="View on GitHub",
-                ),
-                style="justify-content: space-between;",
-                cls="mb-6",
-            ),
+            create_header(),
             # Show warning if no metric batches
             (
                 Div(
@@ -141,73 +79,11 @@ def index(request: Request):
                     cls="mb-6",
                 )
                 if not app.state.metric_batches
-                else None
-            ),
-            (
-                Grid(
-                    *[
-                        Card(
-                            DivLAligned(
-                                Div(
-                                    H4(batch_name, cls="mb-2"),
-                                    DivLAligned(
-                                        Div(
-                                            DivLAligned(
-                                                UkIcon("activity", cls="text-blue-500"),
-                                                P(
-                                                    f"{batch_stats[batch_name]['unique_metrics']} metrics",
-                                                    cls=TextPresets.muted_sm,
-                                                ),
-                                                cls="space-x-2",
-                                            ),
-                                            DivLAligned(
-                                                UkIcon("clock", cls="text-green-500"),
-                                                P(
-                                                    f"{batch_stats[batch_name]['latest_timestamp']}",
-                                                    cls=TextPresets.muted_sm,
-                                                ),
-                                                cls="space-x-2",
-                                            ),
-                                            DivLAligned(
-                                                UkIcon("bar-chart", cls="text-purple-500"),
-                                                P(
-                                                    f"Avg Score: {batch_stats[batch_name]['avg_score']:.1%}",
-                                                    cls=TextPresets.muted_sm,
-                                                ),
-                                                cls="space-x-2",
-                                            ),
-                                            DivLAligned(
-                                                UkIcon("alert-circle", cls="text-red-500"),
-                                                P(
-                                                    f"{batch_stats[batch_name]['alert_count']} alerts",
-                                                    cls=TextPresets.muted_sm,
-                                                ),
-                                                cls="space-x-2",
-                                            ),
-                                            cls="space-y-2",
-                                        )
-                                    ),
-                                ),
-                                Button(
-                                    batch_name,
-                                    hx_get=f"/batch/{batch_name}",
-                                    hx_push_url=f"/batch/{batch_name}",
-                                    hx_target="#main-content",
-                                    hx_indicator="#loading",
-                                    cls=ButtonT.primary,
-                                ),
-                                style="justify-content: space-between;",
-                                cls="flex-row items-center",
-                            ),
-                            cls="p-6 hover:border-primary transition-colors duration-200",
-                        )
-                        for batch_name in sorted_batch_names  # Use sorted list instead of app.state.metric_batches
-                    ],
+                else Grid(
+                    *[create_batch_card(name, batch_stats[name]) for name in sorted_batch_names],
                     cols=3,
                     gap=4,
                 )
-                if app.state.metric_batches
-                else None
             ),
             cls="p-6",
         ),

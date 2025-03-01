@@ -200,3 +200,73 @@ def _create_alert_n_form(batch_name):
         hx_post=f"/batch/{batch_name}/update-n",
         hx_target="#main-content",
     )
+
+
+def create_batch_card(batch_name: str, stats: dict) -> Card:
+    """Create a card displaying batch information."""
+    return Card(
+        DivLAligned(
+            Div(
+                H4(batch_name, cls="mb-2"),
+                DivLAligned(
+                    Div(
+                        DivLAligned(
+                            UkIcon("activity", cls="text-blue-500"),
+                            P(f"{stats['unique_metrics']} metrics", cls=TextPresets.muted_sm),
+                            cls="space-x-2",
+                        ),
+                        DivLAligned(
+                            UkIcon("clock", cls="text-green-500"),
+                            P(f"{stats['latest_timestamp']}", cls=TextPresets.muted_sm),
+                            cls="space-x-2",
+                        ),
+                        DivLAligned(
+                            UkIcon("bar-chart", cls="text-purple-500"),
+                            P(f"Avg Score: {stats['avg_score']:.1%}", cls=TextPresets.muted_sm),
+                            cls="space-x-2",
+                        ),
+                        DivLAligned(
+                            UkIcon("alert-circle", cls="text-red-500"),
+                            P(f"{stats['alert_count']} alerts", cls=TextPresets.muted_sm),
+                            cls="space-x-2",
+                        ),
+                        cls="space-y-2",
+                    )
+                ),
+            ),
+            Button(
+                batch_name,
+                hx_get=f"/batch/{batch_name}",
+                hx_push_url=f"/batch/{batch_name}",
+                hx_target="#main-content",
+                hx_indicator="#loading",
+                cls=ButtonT.primary,
+            ),
+            style="justify-content: space-between;",
+            cls="flex-row items-center",
+        ),
+        cls="p-6 hover:border-primary transition-colors duration-200",
+    )
+
+
+def create_header() -> Div:
+    """Create the dashboard header."""
+    return DivLAligned(
+        H2(
+            "Anomstack",
+            P(
+                "Painless open source anomaly detection for your metrics 📈📉🚀",
+                cls=TextPresets.muted_sm,
+            ),
+            cls="mb-2",
+        ),
+        A(
+            DivLAligned(UkIcon("github")),
+            href="https://github.com/andrewm4894/anomstack",
+            target="_blank",
+            cls="uk-button uk-button-secondary",
+            uk_tooltip="View on GitHub",
+        ),
+        style="justify-content: space-between;",
+        cls="mb-6",
+    )
