@@ -6,7 +6,7 @@ with
 
 metric_value_data as
 (
-select distinct
+select
   metric_timestamp,
   metric_batch,
   metric_name,
@@ -24,7 +24,7 @@ group by metric_timestamp, metric_batch, metric_name
 
 metric_score_data as
 (
-select distinct
+select
   metric_timestamp,
   metric_batch,
   metric_name,
@@ -42,7 +42,7 @@ group by metric_timestamp, metric_batch, metric_name
 
 metric_alert_data as
 (
-select distinct
+select
   metric_timestamp,
   metric_batch,
   metric_name,

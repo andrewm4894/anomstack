@@ -8,7 +8,7 @@ with
 
 metric_value_data as
 (
-select distinct
+select
   metric_timestamp,
   metric_batch,
   metric_name,
@@ -38,7 +38,7 @@ group by
 
 metric_change_alert_data as
 (
-select distinct
+select
   metric_timestamp,
   metric_batch,
   metric_name,
@@ -68,7 +68,7 @@ group by
 
 metric_value_recency_ranked as
 (
-select distinct
+select
   metric_value_data.metric_timestamp,
   metric_value_data.metric_batch,
   metric_value_data.metric_name,
@@ -91,7 +91,7 @@ on
 -- Snooze any metrics with change alerts in the last {{ change_snooze_n }} values
 snoozed_metric_names as
 (
-select distinct
+select
   metric_name
 from
   metric_value_recency_ranked

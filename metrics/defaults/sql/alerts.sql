@@ -8,7 +8,7 @@ with
 
 -- Filter the data to the relevant metric batch for metrics
 metric_value_data as (
-select distinct
+select
   metric_timestamp,
   metric_batch,
   metric_name,
@@ -31,7 +31,7 @@ group by metric_timestamp, metric_batch, metric_name
 
 -- Filter the data to the relevant metric batch for scores
 metric_score_data as (
-select distinct
+select
   metric_timestamp,
   metric_batch,
   metric_name,
@@ -49,7 +49,7 @@ group by metric_timestamp, metric_batch, metric_name
 
 -- Filter the data to the relevant metric batch for alerts
 metric_alert_data as (
-select distinct
+select
   metric_timestamp,
   metric_batch,
   metric_name,
@@ -67,7 +67,7 @@ group by metric_timestamp, metric_batch, metric_name
 
 -- Rank the score data by recency
 metric_score_recency_ranked as (
-select distinct
+select
   metric_timestamp,
   metric_batch,
   metric_name,
@@ -79,7 +79,7 @@ from
 
 -- Rank the value data by recency
 metric_value_recency_ranked as (
-select distinct
+select
   metric_timestamp,
   metric_batch,
   metric_name,

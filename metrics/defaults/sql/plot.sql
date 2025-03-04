@@ -5,7 +5,7 @@ Template for generating the input data for the plot job.
 WITH
 
 metric_value_data AS (
-  SELECT DISTINCT
+  SELECT
     metric_timestamp,
     metric_batch,
     metric_name,
@@ -18,7 +18,7 @@ metric_value_data AS (
 ),
 
 metric_score_data AS (
-  SELECT DISTINCT
+  SELECT
     metric_timestamp,
     metric_batch,
     metric_name,
@@ -31,7 +31,7 @@ metric_score_data AS (
 ),
 
 metric_alert_data AS (
-  SELECT DISTINCT
+  SELECT
     metric_timestamp,
     metric_batch,
     metric_name,
@@ -44,7 +44,7 @@ metric_alert_data AS (
 ),
 
 metric_change_data AS (
-  SELECT DISTINCT
+  SELECT
     metric_timestamp,
     metric_batch,
     metric_name,
