@@ -135,13 +135,13 @@ def index(request: Request):
                         hx_post="/refresh-all",
                         hx_target="#main-content",
                         hx_indicator="#loading",
-                        uk_tooltip="Refresh all."
+                        uk_tooltip="Refresh all"
                     ),
                     A(
                         UkIcon("github"),
                         href="https://github.com/andrewm4894/anomstack",
                         cls=ButtonT.ghost,
-                        uk_tooltip="View the source code on GitHub."
+                        uk_tooltip="View the source code on GitHub"
                     ),
                     cls="space-x-2"
                 ),
