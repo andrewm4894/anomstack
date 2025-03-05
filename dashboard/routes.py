@@ -53,12 +53,19 @@ def index(request: Request):
 
         batch_stats[batch_name] = calculate_batch_stats(df, batch_name)
 
-    # Sort the metric batches by alert count (primary) and avg score (secondary)
+    # Filter out metric batches where latest_timestamp is "No Data"
+    filtered_batches = {
+        name: stats
+        for name, stats in batch_stats.items()
+        if stats["latest_timestamp"] != "No Data"
+    }
+
+    # Sort the filtered metric batches by alert count (primary) and avg score (secondary)
     sorted_batch_names = sorted(
-        app.state.metric_batches,
+        filtered_batches.keys(),
         key=lambda x: (
-            -batch_stats[x]["alert_count"],  # Negative for descending order
-            -batch_stats[x]["avg_score"]     # Negative for descending order
+            -filtered_batches[x]["alert_count"],  # Negative for descending order
+            -filtered_batches[x]["avg_score"]     # Negative for descending order
         )
     )
 
