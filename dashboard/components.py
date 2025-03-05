@@ -213,7 +213,7 @@ def create_batch_card(batch_name: str, stats: dict) -> Card:
                     hx_push_url=f"/batch/{batch_name}",
                     hx_target="#main-content",
                     hx_indicator="#loading",
-                    cls=(ButtonT.primary, "w-full", "space-x-2"),
+                    cls=(ButtonT.primary, "w-full"),
                 ),
                 DividerLine(),
                 DivLAligned(
@@ -250,9 +250,9 @@ def create_batch_card(batch_name: str, stats: dict) -> Card:
                         cls="space-y-1",
                     )
                 ),
+                cls="w-full",
             ),
-            style="justify-content: space-between;",
-            cls="flex-row items-center",
+            cls="w-full",
         ),
         cls="px-2 py-0.5 hover:border-primary transition-colors duration-200",
     )
