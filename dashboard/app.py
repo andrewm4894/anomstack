@@ -237,7 +237,6 @@ app, rt = fast_app(
     log=log,
 )
 
-
 setup_toasts(app, duration=3)
 
 app.state = AppState()

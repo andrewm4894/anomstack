@@ -19,6 +19,34 @@ from batch_stats import calculate_batch_stats
 log = logging.getLogger("anomstack")
 
 
+@rt("/refresh-all")
+def post(request: Request):
+    """
+    Refresh all batch data.
+    """
+    # Add loading toast
+    loading_toast = add_toast("Refreshing all batch data...", "info")
+    
+    try:
+        # Clear all batch caches
+        app.state.df_cache.clear()
+        app.state.stats_cache.clear()
+        app.state.chart_cache.clear()
+        
+        # Get the updated content
+        response = index(request)
+        
+        # Add success toast
+        success_toast = add_toast("Successfully refreshed all batch data", "success")
+        
+        return [loading_toast, response, success_toast]
+        
+    except Exception as e:
+        # Add error toast
+        error_toast = add_toast(f"Error refreshing batch data: {str(e)}", "error")
+        return [loading_toast, error_toast]
+
+
 @rt
 def index(request: Request):
     """
@@ -36,17 +64,41 @@ def index(request: Request):
     """
     )
 
+    # Add toast container for notifications
+    toast_container = Div(id="toast-container", cls=(ToastHT.end, ToastVT.top))
+
     # Calculate batch stats
     batch_stats = {}
     for batch_name in app.state.metric_batches:
         if batch_name not in app.state.df_cache:
             try:
+                # Add loading toast
+                loading_toast = Toast(
+                    f"Loading data for batch {batch_name}...", 
+                    alert_cls=AlertT.info,
+                    cls=(ToastHT.end, ToastVT.top)
+                )
+                
                 df = get_data(
                     app.state.specs_enabled[batch_name], max_n=DEFAULT_ALERT_MAX_N
                 )
+                
+                # Add success toast
+                success_toast = Toast(
+                    f"Successfully loaded data for {batch_name}", 
+                    alert_cls=AlertT.success,
+                    cls=(ToastHT.end, ToastVT.top)
+                )
+                
             except Exception as e:
                 log.error(f"Error getting data for batch {batch_name}: {e}")
-                df = pd.DataFrame(data=[],columns=['metric_name', 'metric_timestamp', 'metric_value'])
+                # Add error toast
+                error_toast = Toast(
+                    f"Error loading data for {batch_name}: {str(e)}", 
+                    alert_cls=AlertT.error,
+                    cls=(ToastHT.end, ToastVT.top)
+                )
+                df = pd.DataFrame(data=[], columns=['metric_name', 'metric_timestamp', 'metric_value'])
             app.state.df_cache[batch_name] = df
         else:
             df = app.state.df_cache[batch_name]
@@ -71,7 +123,30 @@ def index(request: Request):
 
     main_content = Div(
         Card(
-            create_header(),
+            DivLAligned(
+                H2("Anomstack", cls="text-2xl font-bold pl-2"),
+                DivLAligned(
+                    Button(
+                        DivLAligned(
+                            UkIcon("refresh-ccw"),
+                            cls="space-x-2"
+                        ),
+                        cls=ButtonT.ghost,  # Using ghost style to match header aesthetics
+                        hx_post="/refresh-all",
+                        hx_target="#main-content",
+                        hx_indicator="#loading",
+                        uk_tooltip="Refresh all."
+                    ),
+                    A(
+                        UkIcon("github"),
+                        href="https://github.com/andrewm4894/anomstack",
+                        cls=ButtonT.ghost,
+                        uk_tooltip="View the source code on GitHub."
+                    ),
+                    cls="space-x-2"
+                ),
+                cls="flex justify-between items-center mb-6"
+            ),
             # Show warning if no metric batches
             (
                 Div(
@@ -101,10 +176,11 @@ def index(request: Request):
     if is_htmx:
         return main_content
 
-    # For full page loads, return the complete layout
+    # For full page loads, return the complete layout with toast container
     return (
         Title("Anomstack"),
         script,
+        toast_container,  # Add toast container
         Div(
             Safe('<span class="htmx-indicator">Loading...</span>'),
             id="loading",
@@ -228,9 +304,23 @@ def get(batch_name: str, session):
     """
     Refresh the batch view for a given batch name.
     """
-    app.state.clear_batch_cache(batch_name)
-
-    return get_batch_view(batch_name, session, initial_load=DEFAULT_LOAD_N_CHARTS)
+    # Add loading toast
+    loading_toast = add_toast(f"Refreshing data for {batch_name}...", "info")
+    
+    try:
+        app.state.clear_batch_cache(batch_name)
+        response = get_batch_view(batch_name, session, initial_load=DEFAULT_LOAD_N_CHARTS)
+        
+        # Add success toast
+        success_toast = add_toast(f"Successfully refreshed {batch_name}", "success")
+        
+        # Return both the response and the toasts
+        return [loading_toast, response, success_toast]
+        
+    except Exception as e:
+        # Add error toast
+        error_toast = add_toast(f"Error refreshing {batch_name}: {str(e)}", "error")
+        return [loading_toast, error_toast]
 
 
 @rt("/batch/{batch_name}/load-more/{start_index}")
@@ -399,3 +489,33 @@ def post(batch_name: str, session=None):
     return get_batch_view(
         batch_name, session=session, initial_load=DEFAULT_LOAD_N_CHARTS
     )
+
+
+# Add helper function to create toast messages for other routes
+def add_toast(message: str, type: str = "info") -> Toast:
+    """Create a toast notification"""
+    alert_types = {
+        "info": AlertT.info,
+        "success": AlertT.success,
+        "warning": AlertT.warning,
+        "error": AlertT.error
+    }
+    return Toast(
+        message,
+        alert_cls=alert_types.get(type, AlertT.info),
+        cls=(ToastHT.end, ToastVT.top),
+        hx_swap_oob="beforeend",
+        hx_target="#toast-container"
+    )
+
+
+# Add new test toast route
+@rt("/test-toast")
+def post(request: Request):
+    """Test route to trigger different types of toasts."""
+    return [
+        add_toast("This is an info toast", "info"),
+        add_toast("This is a success toast", "success"),
+        add_toast("This is a warning toast", "warning"),
+        add_toast("This is an error toast", "error")
+    ]
