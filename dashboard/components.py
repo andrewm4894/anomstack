@@ -207,12 +207,22 @@ def create_batch_card(batch_name: str, stats: dict) -> Card:
     return Card(
         DivLAligned(
             Div(
-                H4(batch_name, cls="mb-2"),
+                Button(
+                    batch_name,
+                    hx_get=f"/batch/{batch_name}",
+                    hx_push_url=f"/batch/{batch_name}",
+                    hx_target="#main-content",
+                    hx_indicator="#loading",
+                    cls=ButtonT.primary,
+                ),
                 DivLAligned(
                     Div(
                         DivLAligned(
                             UkIcon("activity", cls="text-blue-500"),
-                            P(f"{stats['unique_metrics']} metrics", cls=TextPresets.muted_sm),
+                            P(
+                                f"{stats['unique_metrics']} metrics",
+                                cls=TextPresets.muted_sm,
+                            ),
                             cls="space-x-2",
                         ),
                         DivLAligned(
@@ -222,30 +232,28 @@ def create_batch_card(batch_name: str, stats: dict) -> Card:
                         ),
                         DivLAligned(
                             UkIcon("bar-chart", cls="text-purple-500"),
-                            P(f"Avg Score: {stats['avg_score']:.1%}", cls=TextPresets.muted_sm),
+                            P(
+                                f"Avg Score: {stats['avg_score']:.1%}",
+                                cls=TextPresets.muted_sm,
+                            ),
                             cls="space-x-2",
                         ),
                         DivLAligned(
                             UkIcon("alert-circle", cls="text-red-500"),
-                            P(f"{stats['alert_count']} alerts", cls=TextPresets.muted_sm),
+                            P(
+                                f"{stats['alert_count']} alerts",
+                                cls=TextPresets.muted_sm,
+                            ),
                             cls="space-x-2",
                         ),
-                        cls="space-y-2",
+                        cls="space-y-1",
                     )
                 ),
-            ),
-            Button(
-                "View Metrics",
-                hx_get=f"/batch/{batch_name}",
-                hx_push_url=f"/batch/{batch_name}",
-                hx_target="#main-content",
-                hx_indicator="#loading",
-                cls=ButtonT.primary,
             ),
             style="justify-content: space-between;",
             cls="flex-row items-center",
         ),
-        cls="p-6 hover:border-primary transition-colors duration-200",
+        cls="p-2 hover:border-primary transition-colors duration-200",
     )
 
 
