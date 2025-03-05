@@ -22,6 +22,8 @@ Painless open source anomaly detection for your metrics! 📈📉🚀
 
 ![homepage](./docs/img/dashboard-home.png)
 
+![batch view](./docs/img/dashboard-metric-batch-view.png)
+
 - [What is Anomstack?](#what-is-anomstack)
   - [How it works](#how-it-works)
   - [Why?](#why)
