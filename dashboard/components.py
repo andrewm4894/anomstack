@@ -156,7 +156,7 @@ def _create_controls(batch_name):
                 style="display: flex; align-items: center; gap: 0.5rem;",
             ),
         ),
-        cls="mb-8 uk-padding-small",
+        cls="mb-2 uk-padding-small py-1",
     )
 
 
@@ -254,7 +254,7 @@ def create_batch_card(batch_name: str, stats: dict) -> Card:
             style="justify-content: space-between;",
             cls="flex-row items-center",
         ),
-        cls="p-2 hover:border-primary transition-colors duration-200",
+        cls="px-2 py-0.5 hover:border-primary transition-colors duration-200",
     )
 
 
