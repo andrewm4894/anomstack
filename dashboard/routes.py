@@ -98,7 +98,14 @@ def index(request: Request):
     main_content = Div(
         Card(
             DivLAligned(
-                H2("Anomstack", cls="text-2xl font-bold pl-2"),
+                Div(
+                    H2("Anomstack", cls="text-2xl font-bold pl-2"),
+                    P(
+                        "Painless open source anomaly detection for your metrics 📈📉🚀",
+                        cls="text-muted-foreground pl-2",
+                    ),
+                    cls="flex flex-col",
+                ),
                 DivLAligned(
                     Button(
                         DivLAligned(UkIcon("refresh-ccw"), cls="space-x-2"),
