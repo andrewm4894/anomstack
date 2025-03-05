@@ -11,6 +11,7 @@ alert_cron_schedule: "*/20 * * * *" # alert every 20 minutes
 change_cron_schedule: "*/20 * * * *" # change detection every 20 minutes
 llmalert_cron_schedule: "*/20 * * * *" # alert every 20 minutes
 disable_llmalert: True
+disable_dashboard: True
 plot_cron_schedule: "*/25 * * * *" # plot every 25 minutes
 alert_always: False
 alert_methods: "email"

@@ -2,6 +2,7 @@
 db: "snowflake"
 table_key: "ANDREWM4894.METRICS.METRICS"
 disable_batch: False
+disable_dashboard: True
 metric_batch: "snowflake_example_simple"
 model_path: "gs://andrewm4894-tmp/models"
 ingest_cron_schedule: "*/60 * * * *" # ingest every 60 minutes

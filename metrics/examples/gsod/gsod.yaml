@@ -2,6 +2,7 @@
 db: "bigquery"
 table_key: "andrewm4894.metrics.metrics"
 disable_batch: False
+disable_dashboard: True
 metric_batch: "gsod"
 model_path: "gs://andrewm4894-tmp/models"
 ingest_cron_schedule: "30 10 * * *"

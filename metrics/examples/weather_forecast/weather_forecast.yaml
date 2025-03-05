@@ -1,5 +1,6 @@
 metric_batch: "weather_forecast"
 db: "snowflake"
+disable_dashboard: True
 table_key: "ANDREWM4894.METRICS.METRICS"
 model_path: "gs://andrewm4894-tmp/models"
 ingest_cron_schedule: "45 3 * * *"

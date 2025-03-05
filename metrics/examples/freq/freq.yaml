@@ -2,6 +2,7 @@
 db: "bigquery"
 table_key: "andrewm4894.metrics.metrics"
 disable_batch: False
+disable_dashboard: True
 metric_batch: "freq_example"
 model_path: "gs://andrewm4894-tmp/models"
 # we will resample to 10 minute intervals and take the mean

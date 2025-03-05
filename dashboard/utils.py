@@ -110,6 +110,8 @@ def get_metric_batches(source: str = "all"):
     dagster_ingest_jobs = [job for job in dagster_enabled_jobs if job.endswith("_ingest")]
     dagster_metric_batches = [job[:-7] for job in dagster_ingest_jobs if job.endswith("_ingest")]
     config_metric_batches = list(specs.keys())
+    config_metric_batches = [batch for batch in config_metric_batches if not specs[batch]["disable_dashboard"]]
+    config_metric_batches = [batch for batch in config_metric_batches if not specs[batch]["disable_batch"]]
     if source == "dagster":
         metric_batches = dagster_metric_batches
     elif source == "config":

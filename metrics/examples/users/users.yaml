@@ -1,4 +1,5 @@
 metric_batch: "users"
+disable_dashboard: True
 ingest_cron_schedule: "*/2 * * * *"
 train_cron_schedule: "*/5 * * * *"
 score_cron_schedule: "*/4 * * * *"

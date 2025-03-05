@@ -56,7 +56,7 @@ class AppState:
                 {
                     "metric_name": metric_name,
                     "anomaly_rate": (
-                        df_metric["metric_alert"].mean()
+                        df_metric["metric_alert"].fillna(0).mean()
                         if df_metric["metric_alert"].sum() > 0
                         else 0
                     ),

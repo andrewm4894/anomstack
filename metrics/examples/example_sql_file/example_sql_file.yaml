@@ -1,5 +1,6 @@
 # this shows a jinja based template example using a templated sql file
 disable_batch: True
+disable_dashboard: True
 metric_batch: "example_sql_file"
 ingest_sql: >
   {% include "./examples/example_sql_file/example_sql_file.sql" %}

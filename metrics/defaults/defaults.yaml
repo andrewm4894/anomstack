@@ -3,6 +3,11 @@ db: "sqlite" # database type to use.
 table_key: "metrics" # table to store metrics in.
 
 ############################################
+# dashboard params
+############################################
+disable_dashboard: False # if you want to disable the dashboard for some reason.
+
+############################################
 # model params
 ############################################
 model_path: "local://./models" # path to where models are to be stored.

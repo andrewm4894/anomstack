@@ -235,7 +235,7 @@ def create_batch_card(batch_name: str, stats: dict) -> Card:
                 ),
             ),
             Button(
-                batch_name,
+                "View Metrics",
                 hx_get=f"/batch/{batch_name}",
                 hx_push_url=f"/batch/{batch_name}",
                 hx_target="#main-content",
