@@ -120,6 +120,7 @@ def index(request: Request):
                         href="https://github.com/andrewm4894/anomstack",
                         cls=ButtonT.ghost,
                         uk_tooltip="View the source code on GitHub",
+                        target="_blank",
                     ),
                     cls="space-x-2",
                 ),
