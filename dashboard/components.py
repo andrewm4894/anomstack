@@ -213,8 +213,9 @@ def create_batch_card(batch_name: str, stats: dict) -> Card:
                     hx_push_url=f"/batch/{batch_name}",
                     hx_target="#main-content",
                     hx_indicator="#loading",
-                    cls=ButtonT.primary,
+                    cls=(ButtonT.primary, "w-full", "space-x-2"),
                 ),
+                DividerLine(),
                 DivLAligned(
                     Div(
                         DivLAligned(
