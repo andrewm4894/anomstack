@@ -206,7 +206,7 @@ flowchart LR;
     change[[change]]
     llmalert[[llmalert]]
     plot[[plot]]
-    dashboardpy["dashboard.py"]
+    dashboardpy["dashboard/app.py"]
 
     subgraph metric_batch
     metric_batch_config
