@@ -505,7 +505,7 @@ You can run Anomstack in a sort of "headless mode" with no UI (if for example yo
 
 That said, there is also a fancy [FastHTML](https://fastht.ml/) + [MonsterUI](https://github.com/AnswerDotAI/MonsterUI) (❤️) based dashboard that you can use to visualize your metrics and anomaly scores too.
 
-Dashboard code lives in [`./dashboard/dashboard.py`](./dashboard/dashboard.py)), use `make dashboard` or `make dashboardd` (to run as a daemon) to start it.
+Dashboard code lives in [`./dashboard/app.py`](./dashboard/app.py)), use `make dashboard` or `make dashboardd` (to run as a daemon) to start it.
 
 ### Homepage
 
