@@ -103,20 +103,17 @@ services:
       - anomstack_postgresql
       - anomstack_code
 
-  # This service runs the Streamlit dashboard
+  # This service runs the dashboard
   anomstack_dashboard:
     build:
         context: .
         dockerfile: ./docker/Dockerfile.anomstack_dashboard
     container_name: anomstack_dashboard
     ports:
-      - "8501:8501"
+      - "5003:5003"
     env_file:
       - .env
-    volumes:
-      - ./tmp:/opt/dagster/app/tmp
-      - ./tmpdata:/opt/dagster/app/tmpdata
-    command: streamlit run /opt/dagster/app/dashboard.py --server.port 8501
+    command: python /opt/dagster/app/dashboard/app.py
     networks:
       - anomstack_network
     profiles:

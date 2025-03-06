@@ -17,12 +17,14 @@ RUN pip install -r requirements.txt
 
 COPY anomstack /opt/dagster/app/anomstack
 
+COPY dashboard /opt/dagster/app/dashboard
+
 COPY metrics /opt/dagster/app/metrics
 
-COPY dashboard.py /opt/dagster/app/dashboard.py
+COPY setup.py /opt/dagster/app/setup.py
 
-COPY .streamlit /opt/dagster/app/.streamlit
+RUN pip install -e /opt/dagster/app/.
 
-EXPOSE 8501
+EXPOSE 5003
 
-ENTRYPOINT ["streamlit", "run", "/opt/dagster/app/dashboard.py", "--server.port=8501", "--server.address=0.0.0.0"]
+ENTRYPOINT ["python", "/opt/dagster/app/dashboard/app.py"]
