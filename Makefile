@@ -13,7 +13,7 @@ SHELL=/bin/bash
 .PHONY: dashboard
 .PHONY: dashboardd
 .PHONY: requirements-install
-.PHONY: netlify-dashboard
+.PHONY: netlify-dashboard-docker
 
 # start dagster locally
 local:
@@ -66,6 +66,6 @@ dashboardd:
 requirements-install:
 	pip install -r requirements.txt
 
-netlify-dashboard:
-	pip install -r requirements.txt
-	python dashboard/app.py
+netlify-dashboard-docker:
+	docker build -t anomstack-dashboard -f docker/Dockerfile.anomstack_dashboard .
+	docker run -p 5003:5003 anomstack-dashboard
