@@ -13,6 +13,8 @@ RUN apt-get update && apt-get install -y \
 
 RUN curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly -y
 
+RUN rustup default stable
+
 COPY ../requirements.txt /opt/dagster/app/requirements.txt
 
 RUN pip install -r requirements.txt
