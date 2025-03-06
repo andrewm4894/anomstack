@@ -2,8 +2,6 @@ FROM python:3.11-slim
 
 RUN apt-get update && apt-get install -y git
 
-RUN curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly -y
-
 WORKDIR /opt/dagster/app
 
 RUN apt-get update && apt-get install -y \
@@ -12,6 +10,8 @@ RUN apt-get update && apt-get install -y \
     software-properties-common \
     git \
     && rm -rf /var/lib/apt/lists/*
+
+RUN curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly -y
 
 COPY ../requirements.txt /opt/dagster/app/requirements.txt
 
