@@ -8,6 +8,7 @@ change_cron_schedule: "*/45 * * * *"
 llmalert_cron_schedule: "*/45 * * * *"
 plot_cron_schedule: "*/40 * * * *"
 alert_always: False
+alert_metric_timestamp_max_days_ago: 3
 disable_llmalert: False
 alert_methods: "email,slack"
 ingest_fn: >
