@@ -65,7 +65,9 @@ def index(request: Request):
             try:
 
                 df = get_data(
-                    app.state.specs_enabled[batch_name], max_n=DEFAULT_ALERT_MAX_N
+                    app.state.specs_enabled[batch_name], 
+                    max_n=DEFAULT_ALERT_MAX_N, 
+                    ensure_timestamp=True
                 )
 
             except Exception as e:
@@ -179,7 +181,9 @@ def get_batch_view(batch_name: str, session, initial_load: int = DEFAULT_LOAD_N_
     # First, ensure we have the data and stats calculated
     if batch_name not in app.state.df_cache:
         app.state.df_cache[batch_name] = get_data(
-            app.state.specs_enabled[batch_name], max_n=DEFAULT_ALERT_MAX_N
+            app.state.specs_enabled[batch_name], 
+            max_n=DEFAULT_ALERT_MAX_N,
+            ensure_timestamp=True
         )
         app.state.calculate_metric_stats(batch_name)
     elif batch_name not in app.state.stats_cache:
@@ -376,7 +380,9 @@ def post(batch_name: str, alert_max_n: int = DEFAULT_ALERT_MAX_N, session=None):
     app.state.clear_batch_cache(batch_name)
 
     app.state.df_cache[batch_name] = get_data(
-        app.state.specs_enabled[batch_name], max_n=alert_max_n
+        app.state.specs_enabled[batch_name], 
+        max_n=alert_max_n,
+        ensure_timestamp=True
     )
     app.state.calculate_metric_stats(batch_name)
 
