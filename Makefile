@@ -12,6 +12,8 @@ SHELL=/bin/bash
 .PHONY: ps-locald
 .PHONY: dashboard
 .PHONY: dashboardd
+.PHONY: requirements-install
+.PHONY: netlify-dashboard
 
 # start dagster locally
 local:
@@ -60,3 +62,10 @@ dashboard:
 
 dashboardd:
 	nohup python dashboard/app.py > /dev/null 2>&1 &
+
+requirements-install:
+	pip install -r requirements.txt
+
+netlify-dashboard:
+	pip install -r requirements.txt
+	python dashboard/app.py
