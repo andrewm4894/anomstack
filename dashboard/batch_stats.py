@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import pandas as pd
 from typing import Dict, Any
 
@@ -33,21 +33,23 @@ def calculate_batch_stats(df: pd.DataFrame, batch_name: str) -> Dict[str, Any]:
     }
 
 
-def _format_time_ago(timestamp: str) -> str:
+def _format_time_ago(timestamp):
     """Format a timestamp into a human readable time ago string."""
-    if timestamp == "No data":
-        return timestamp
 
-    dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
-    now = datetime.now(dt.tzinfo)
-    diff_seconds = (now - dt).total_seconds()
+    timestamp = str(timestamp)
+    timestamp = timestamp.replace("Z", "+00:00")
 
-    if diff_seconds < 3600:  # Less than 1 hour
-        minutes_ago = round(diff_seconds / 60, 1)
-        return f"{minutes_ago:.1f} minute{'s' if minutes_ago != 1 else ''} ago"
-    elif diff_seconds < 86400:  # Less than 24 hours
-        hours_ago = round(diff_seconds / 3600, 1)
-        return f"{hours_ago:.1f} hour{'s' if hours_ago != 1 else ''} ago"
-    else:  # Days or more
-        days_ago = round(diff_seconds / 86400, 1)
-        return f"{days_ago:.1f} day{'s' if days_ago != 1 else ''} ago"
+    dt = datetime.fromisoformat(timestamp)
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    now = datetime.now(timezone.utc)
+    delta = now - dt
+
+    if delta.days > 0:
+        return f"{delta.days} days ago"
+    elif delta.seconds > 3600:
+        return f"{delta.seconds // 3600} hours ago"
+    elif delta.seconds > 60:
+        return f"{delta.seconds // 60} minutes ago"
+    else:
+        return "just now"
