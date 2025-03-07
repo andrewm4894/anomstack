@@ -64,6 +64,9 @@ def ingest() -> pd.DataFrame:
 
     df = pd.DataFrame(all_rows)
 
+    # Filter out metrics that are not current hour.
+    df = df[df["metric_name"].str.contains("CURRENT_HOUR")]
+
     # Remove duplicates based on the second-level timestamp and metric name.
     df = df.drop_duplicates(subset=["metric_timestamp", "metric_name"])
     logger.debug(f"df:\n{df}")
