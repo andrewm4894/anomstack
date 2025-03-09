@@ -3,6 +3,7 @@ Some helper functions for duckdb.
 """
 
 import os
+from typing import Union
 
 import pandas as pd
 from dagster import get_dagster_logger
@@ -73,33 +74,43 @@ def save_df_duckdb(df: pd.DataFrame, table_key: str) -> pd.DataFrame:
     return df
 
 
-def run_sql_duckdb(sql: str) -> None:
+def run_sql_duckdb(sql: str, return_df: bool = False) -> Union[pd.DataFrame, None]:
     """
     Execute a non-returning SQL statement in DuckDB.
 
     Args:
         sql (str): The SQL statement to execute.
+        return_df (bool, optional): Whether to return results as a DataFrame. Defaults to False.
 
     Returns:
-        None
+        pd.DataFrame or None: If return_df is True, returns the query results as a DataFrame.
+            Otherwise returns None.
     """
     logger = get_dagster_logger()
 
     duckdb_path = os.environ.get("ANOMSTACK_DUCKDB_PATH", "tmpdata/anomstack-duckdb.db")
     logger.info(f"duckdb_path: {duckdb_path}")
 
-    os.makedirs(os.path.dirname(duckdb_path), exist_ok=True)
-
     if duckdb_path.startswith("md:"):
         motherduck_token = os.environ.get("ANOMSTACK_MOTHERDUCK_TOKEN", None)
         duckdb_path = duckdb_path + f"?motherduck_token={motherduck_token}"
+    else:
+        os.makedirs(os.path.dirname(duckdb_path), exist_ok=True)
 
     conn = connect(duckdb_path)
 
     try:
-        query(connection=conn, query=sql)
+        if return_df:
+            df = query(connection=conn, query=sql).df()
+            
+            return df
+        
+        else:
+            query(connection=conn, query=sql)
+    
     except Exception as e:
         logger.error(f"Error executing SQL statement in DuckDB: {e}")
         raise
+    
     finally:
         conn.close()
