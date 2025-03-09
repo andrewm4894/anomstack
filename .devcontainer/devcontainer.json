@@ -1,6 +1,6 @@
 {
     "name": "anomstack",
-    "forwardPorts": [3000],
+    "forwardPorts": [3000, 5003],
     "remoteUser": "root",
     "postCreateCommand": "bash .devcontainer/post_create_command.sh",
     "customizations": {
