@@ -128,7 +128,7 @@ def _create_controls(batch_name):
                     uk_tooltip="Refresh metrics data from source",
                 ),
                 _create_search_form(batch_name),
-                _create_alert_n_form(batch_name),
+                _create_last_n_form(batch_name),
                 style="display: flex; align-items: center; gap: 0.5rem;",
             ),
             Div(
@@ -188,21 +188,22 @@ def _create_search_form(batch_name):
     )
 
 
-def _create_alert_n_form(batch_name):
+def _create_last_n_form(batch_name):
     """
-    Create the alert number form for the dashboard.
+    Create the last n number form for the dashboard.
     """
     state = get_state()  # Get state instance first
     return Form(
         DivLAligned(
             Input(
                 type="number",
-                name="alert_max_n",
-                value=state.alert_max_n.get(batch_name, DEFAULT_ALERT_MAX_N),
+                name="last_n",
+                value=state.last_n.get(batch_name, DEFAULT_LAST_N),
                 min=1,
                 max=1000,
                 step=1,
                 cls="uk-input uk-form-small uk-form-width-small",
+                uk_tooltip="Filter for last N observations",
             ),
             cls="space-x-2",
         ),

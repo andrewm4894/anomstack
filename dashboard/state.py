@@ -32,7 +32,7 @@ class AppState:
         self.dark_mode = False
         self.two_columns = True
         self.show_markers = True
-        self.alert_max_n = {}
+        self.last_n = {}
         self.line_width = 2
         self.show_legend = False
         self.search_term = {}

@@ -66,7 +66,7 @@ def index(request: Request):
 
                 df = get_data(
                     app.state.specs_enabled[batch_name], 
-                    max_n=DEFAULT_ALERT_MAX_N, 
+                    last_n=DEFAULT_LAST_N, 
                     ensure_timestamp=True
                 )
 
@@ -182,7 +182,7 @@ def get_batch_view(batch_name: str, session, initial_load: int = DEFAULT_LOAD_N_
     if batch_name not in app.state.df_cache:
         app.state.df_cache[batch_name] = get_data(
             app.state.specs_enabled[batch_name], 
-            max_n=DEFAULT_ALERT_MAX_N,
+            last_n=DEFAULT_LAST_N,
             ensure_timestamp=True
         )
         app.state.calculate_metric_stats(batch_name)
@@ -395,16 +395,16 @@ def get(batch_name: str, search: str = ""):
 
 
 @rt("/batch/{batch_name}/update-n")
-def post(batch_name: str, alert_max_n: int = DEFAULT_ALERT_MAX_N, session=None):
+def post(batch_name: str, last_n: int = DEFAULT_LAST_N, session=None):
     """
-    Update the number of alerts for a given batch name.
+    Update the number of observations for a given batch name.
     """
-    app.state.alert_max_n[batch_name] = alert_max_n
+    app.state.last_n[batch_name] = last_n
     app.state.clear_batch_cache(batch_name)
 
     app.state.df_cache[batch_name] = get_data(
         app.state.specs_enabled[batch_name], 
-        max_n=alert_max_n,
+        last_n=last_n,
         ensure_timestamp=True
     )
     app.state.calculate_metric_stats(batch_name)

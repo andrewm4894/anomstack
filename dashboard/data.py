@@ -7,13 +7,13 @@ from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
 
 
-def get_data(spec: dict, max_n: int = 30, ensure_timestamp: bool = False) -> pd.DataFrame:
+def get_data(spec: dict, last_n: int = 30, ensure_timestamp: bool = False) -> pd.DataFrame:
     """
-    Get data from the database for a given spec and max_n.
+    Get data from the database for a given spec and last_n.
     
     Args:
         spec: The spec to get data for.
-        max_n: The maximum number of alerts to return.
+        last_n: The maximum number of observations to return.
         
     Returns:
         A pandas DataFrame containing the data.
@@ -21,7 +21,7 @@ def get_data(spec: dict, max_n: int = 30, ensure_timestamp: bool = False) -> pd.
     sql = render(
         "dashboard_sql",
         spec,
-        params={"alert_max_n": max_n},
+        params={"last_n": last_n},
     )
     db = spec["db"]
     df = read_sql(sql, db=db)
