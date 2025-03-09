@@ -35,6 +35,7 @@ class AppState:
         self.alert_max_n = {}
         self.line_width = 2
         self.show_legend = False
+        self.search_term = {}
 
     def clear_batch_cache(self, batch_name):
         """

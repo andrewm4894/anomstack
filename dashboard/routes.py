@@ -343,32 +343,55 @@ def get(batch_name: str, start_index: int):
 
 
 @rt("/batch/{batch_name}/search")
-def post(batch_name: str, search: str = ""):
+def get(batch_name: str, search: str = ""):
     """
     Search for a given batch name and search string.
     """
     import re
 
+    # Store the search term in state
+    app.state.search_term[batch_name] = search
+
+    # Ensure we have stats for this batch
+    if batch_name not in app.state.stats_cache:
+        app.state.calculate_metric_stats(batch_name)
+    
     metric_stats = app.state.stats_cache[batch_name]
     try:
         pattern = re.compile(search, re.IGNORECASE) if search else None
-        filtered_stats = [
-            stat
-            for stat in metric_stats
+        
+        # Keep track of original indices while filtering
+        filtered_stats_with_indices = [
+            (i, stat)  # Keep original index with the stat
+            for i, stat in enumerate(metric_stats)
             if not pattern or pattern.search(stat["metric_name"])
         ]
-        placeholders = []
-        for i, stat in enumerate(filtered_stats):
-            placeholders.append(
-                ChartManager.create_chart_placeholder(
-                    stat["metric_name"], i, batch_name
-                )
+        
+        # Return empty state if no results
+        if not filtered_stats_with_indices:
+            return Div(
+                P("No matching metrics found", cls="text-muted-foreground p-4 text-center"),
+                id="charts-grid",
             )
-        return (
-            Div(*placeholders) if placeholders else Div(P("No matching metrics found"))
+        
+        # Create chart placeholders using original indices
+        return Div(
+            *[
+                ChartManager.create_chart_placeholder(
+                    stat["metric_name"], 
+                    original_index,  # Use the original index instead of enumeration
+                    batch_name
+                )
+                for original_index, stat in filtered_stats_with_indices
+            ],
+            id="charts-grid",
+            cls=f"grid grid-cols-{2 if app.state.two_columns else 1} gap-4"
         )
     except re.error:
-        return Div(P("Invalid search pattern"))
+        return Div(
+            P("Invalid search pattern", cls="text-red-500 p-4 text-center"),
+            id="charts-grid",
+        )
 
 
 @rt("/batch/{batch_name}/update-n")

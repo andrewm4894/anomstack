@@ -164,18 +164,27 @@ def _create_search_form(batch_name):
     """
     Create the search form for the dashboard.
     """
+    state = get_state()
+    current_search = state.search_term.get(batch_name, "")
+    
     return Form(
         Input(
-            type="text",
+            type="search",
             name="search",
             placeholder="Search metrics...",
+            value=current_search,
             cls="uk-input uk-form-small",
             style="width: 200px;",
             uk_tooltip="Filter metrics by name",
+            autocomplete="off",
+            aria_label="Search metrics",
         ),
-        hx_post=f"/batch/{batch_name}/search",
+        hx_get=f"/batch/{batch_name}/search",
         hx_target="#charts-container",
-        hx_trigger="keyup changed delay:500ms, search",
+        hx_trigger="input changed delay:300ms, search",
+        hx_indicator="#loading",
+        hx_swap="outerHTML",
+        onsubmit="return false;",
     )
 
 
