@@ -45,3 +45,6 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "python -m dagster dev -h 0.0.0.0 -p 3000 -f anomstack/main.py"
+
+[deployment]
+deploymentTarget = "cloudrun"
