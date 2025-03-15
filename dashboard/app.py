@@ -241,4 +241,4 @@ setup_toasts(app, duration=3)
 
 app.state = AppState()
 
-serve(host="localhost", port=5000)
+serve(host="0.0.0.0", port=5000)

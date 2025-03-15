@@ -17,12 +17,25 @@ externalPort = 5000
 exposeLocalhost = true
 
 [workflows]
-runButton = "Run"
+runButton = "Full Stack"
 
 [[workflows.workflow]]
 name = "Run"
 author = 26773340
 mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python anomstack/main.py"
+
+[[workflows.workflow]]
+name = "Full Stack"
+author = 26773340
+mode = "parallel"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python dashboard/app.py"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
