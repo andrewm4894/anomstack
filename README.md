@@ -7,7 +7,7 @@
 <a href="https://github.com/andrewm4894/anomstack/stargazers">![GitHub Repo stars](https://img.shields.io/github/stars/andrewm4894/anomstack?style=social)</a>
 <a href="https://github.com/andrewm4894/anomstack/releases">![GitHub release (latest by date)](https://img.shields.io/github/v/release/andrewm4894/anomstack?label=Release)</a>
 <a href="https://andrewm4894.github.io/anomstack/">![Docs](https://img.shields.io/badge/docs-andrewm4894.github.io%2Fanomstack%2F-blue)</a>
-<a href="https://anomstack-demo.replit.app/">![Dashboard Demo](https://anomstack-demo.replit.app/)</a>
+<a href="https://anomstack-demo.replit.app/">![Dashboard Demo](https://img.shields.io/badge/docs-anomstack-demo.replit.app-blue)</a>
 <a href="https://github.com/andrewm4894/anomstack/blob/main/LICENSE">![License](https://img.shields.io/badge/License-MIT-yellow.svg)</a>
 <a href="https://github.com/andrewm4894/anomstack/actions/workflows/pytest.yaml">![GitHub PyTest Workflow Status](https://img.shields.io/github/actions/workflow/status/andrewm4894/anomstack/pytest.yaml?label=Tests)</a>
 <a href="https://github.com/andrewm4894/anomstack/actions/workflows/deploy.yml">![GitHub Deployment Workflow Status](https://img.shields.io/github/actions/workflow/status/andrewm4894/anomstack/deploy.yml?label=Dagster%20Cloud%20Deployment)</a>
