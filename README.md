@@ -37,6 +37,7 @@ Painless open source anomaly detection for your metrics! 📈📉🚀
   - [GitHub Codespaces](#github-codespaces)
   - [Dagster Cloud](#dagster-cloud)
   - [Docker](#docker)
+  - [Replit](#replit)
   - [Local Python env](#local-python-env)
 - [Adding your metrics](#adding-your-metrics)
 - [Dashboard](#dashboard)
