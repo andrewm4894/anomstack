@@ -13,7 +13,6 @@ SHELL=/bin/bash
 .PHONY: dashboard
 .PHONY: dashboardd
 .PHONY: requirements-install
-.PHONY: netlify-dashboard-docker
 
 # start dagster locally
 local:
@@ -29,7 +28,7 @@ kill-locald:
 
 # kill any running dashboard process
 kill-dashboardd:
-	kill $(shell ps aux | grep dashboard/app.py | grep -v grep | awk '{print $$2}') $(shell lsof -ti :5003)
+	kill $(shell ps aux | grep dashboard/app.py | grep -v grep | awk '{print $$2}') $(shell lsof -ti :5000)
 
 # list any running dagster process
 ps-locald:
@@ -65,7 +64,3 @@ dashboardd:
 
 requirements-install:
 	pip install -r requirements.txt
-
-netlify-dashboard-docker:
-	docker build -t anomstack-dashboard -f docker/Dockerfile.anomstack_dashboard .
-	docker run -p 5003:5003 anomstack-dashboard

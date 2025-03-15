@@ -1,0 +1,20 @@
+modules = ["python-3.12", "bash"]
+compile = "make"
+run = "docker compose up"
+
+[nix]
+channel = "stable-24_05"
+
+[deployment]
+build = ["sh", "-c", "make"]
+run = ["sh", "-c", "docker compose up"]
+
+[[ports]]
+localPort = 3000
+externalPort = 3000
+exposeLocalhost = true
+
+[[ports]]
+localPort = 5000
+externalPort = 5000
+exposeLocalhost = true
