@@ -7,7 +7,6 @@ channel = "stable-24_05"
 [[ports]]
 localPort = 3000
 externalPort = 3000
-exposeLocalhost = true
 
 [[ports]]
 localPort = 5000
@@ -45,4 +44,4 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python anomstack/main.py"
+args = "python -m dagster dev -h 0.0.0.0 -p 3000 -f anomstack/main.py"
