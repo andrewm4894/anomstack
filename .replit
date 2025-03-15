@@ -1,6 +1,4 @@
-
 modules = ["python-3.12:v25-20230920-d4ad2e4", "bash"]
-run = "python anomstack/main.py"
 hidden = [".config", ".pytest_cache"]
 
 [nix]
@@ -17,15 +15,6 @@ externalPort = 5000
 
 [workflows]
 runButton = "Full Stack"
-
-[[workflows.workflow]]
-name = "Run"
-author = 26773340
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python anomstack/main.py"
 
 [[workflows.workflow]]
 name = "Full Stack"
