@@ -25,6 +25,8 @@ COPY setup.py /opt/dagster/app/setup.py
 
 RUN pip install -e /opt/dagster/app/.
 
+COPY .example.env .env
+
 EXPOSE 5000
 
 ENTRYPOINT ["python", "/opt/dagster/app/dashboard/app.py"]

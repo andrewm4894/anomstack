@@ -22,4 +22,6 @@ COPY dagster_docker.yaml $DAGSTER_HOME/dagster.yaml
 
 COPY workspace.yaml $DAGSTER_HOME
 
+COPY .example.env .env
+
 WORKDIR $DAGSTER_HOME
