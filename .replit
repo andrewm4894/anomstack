@@ -9,8 +9,8 @@ localPort = 3000
 externalPort = 3000
 
 [[ports]]
-localPort = 5000
-externalPort = 5000
+localPort = 5001
+externalPort = 80
 
 [workflows]
 runButton = "Full Stack"

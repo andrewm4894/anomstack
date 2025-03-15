@@ -18,13 +18,10 @@ from components import *
 from constants import *
 from state import AppState
 
-
 # load the environment variables
 load_dotenv(override=True)
 
-
 log = logging.getLogger("anomstack")
-
 
 app, rt = fast_app(
     hdrs=(
@@ -33,10 +30,10 @@ app, rt = fast_app(
         Link(
             rel="icon",
             type="image/svg+xml",
-            href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNoYXJ0LWxpbmUiPjxwYXRoIGQ9Ik0zIDN2MTZhMiAyIDAgMCAwIDIgMmgxNiIvPjxwYXRoIGQ9Im0xOSA5LTUgNS00LTQtMyAzIi8+PC9zdmc+",
+            href=
+            "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNoYXJ0LWxpbmUiPjxwYXRoIGQ9Ik0zIDN2MTZhMiAyIDAgMCAwIDIgMmgxNiIvPjxwYXRoIGQ9Im0xOSA5LTUgNS00LTQtMyAzIi8+PC9zdmc+",
         ),
-        Style(
-            """
+        Style("""
             /* Light mode defaults */
             body {
                 background-color: #ffffff;
@@ -230,15 +227,12 @@ app, rt = fast_app(
             body.dark-mode .uk-toggle-switch::before {
                 background-color: #e5e7eb;
             }
-        """
-        ),
+        """),
     ),
     debug=True,
     log=log,
 )
 
-setup_toasts(app, duration=3)
-
 app.state = AppState()
 
-serve(host="0.0.0.0", port=5000)
+serve()

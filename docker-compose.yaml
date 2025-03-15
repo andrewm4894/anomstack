@@ -110,7 +110,7 @@ services:
         dockerfile: ./docker/Dockerfile.anomstack_dashboard
     container_name: anomstack_dashboard
     ports:
-      - "5000:5000"
+      - "5001:5001"
     env_file:
       - .env
     command: python /opt/dagster/app/dashboard/app.py
