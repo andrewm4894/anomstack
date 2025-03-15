@@ -1,6 +1,7 @@
 # Anomstack
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/andrewm4894/anomstack)
+[![Run on Repl.it](https://replit.com/badge/github/andrewm4894/anomstack)](https://replit.com/new/github/andrewm4894/anomstack)
 
 <div align="left">
 
@@ -122,10 +123,12 @@ Supported ways to run this project:
             <th align="center"><a href="#docker">Docker</a></th>
             <th align="center"><a href="#dagster-cloud">Dagster Cloud</a></th>
             <th align="center"><a href="#github-codespaces">GitHub Codespaces</a></th>
+            <th align="center"><a href="#replit">Replit</a></th>
         </tr>
     </thead>
     <tbody>
         <tr>
+            <td align="center">✅</td>
             <td align="center">✅</td>
             <td align="center">✅</td>
             <td align="center">✅</td>
