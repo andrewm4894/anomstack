@@ -27,7 +27,7 @@ args = "python dashboard/app.py"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python anomstack/main.py"
+args = "python -m dagster dev -h 0.0.0.0 -p 3000 -f anomstack/main.py"
 
 [[workflows.workflow]]
 name = "Dashboard Only"
