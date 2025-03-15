@@ -504,7 +504,7 @@ Environment variables for your metrics can be set in the `.env` file (see [`.exa
 
 You can run Anomstack in a sort of "headless mode" with no UI (if for example you want to use your existing analytics tools etc.).
 
-That said, there is also a fancy [FastHTML](https://fastht.ml/) + [MonsterUI](https://github.com/AnswerDotAI/MonsterUI) (❤️) based dashboard that you can use to visualize your metrics and anomaly scores too.
+That said, there is also a fancy [FastHTML](https://fastht.ml/) + [MonsterUI](https://github.com/AnswerDotAI/MonsterUI) (❤️) based dashboard that you can use to visualize your metrics and anomaly scores too (See the demo at https://anomstack-demo.replit.app/).
 
 Dashboard code lives in [`./dashboard/app.py`](./dashboard/app.py)), use `make dashboard` or `make dashboardd` (to run as a daemon) to start it.
 
