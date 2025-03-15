@@ -462,6 +462,17 @@ docker compose build
 docker compose up -d
 ```
 
+### Replit
+
+You can run Anomstack directly on Replit:
+
+1. Click the "Open in Replit" button at the top of this README
+2. Once the repl is created, let it finish installing dependencies
+3. Click the "Run" button to start both the dashboard and backend services
+4. The dashboard will be available at port 80 and Dagster UI at port 3000
+
+The project is configured to run both the dashboard and Dagster backend in parallel through the "Full Stack" workflow defined in `.replit`. You can also run just the dashboard or backend separately using the other available workflows.
+
 ### Local Python env
 
 You can also run Anomstack locally via a python virtual env.
