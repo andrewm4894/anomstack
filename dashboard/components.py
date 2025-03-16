@@ -131,6 +131,25 @@ def _create_controls(batch_name):
                                     cls=ButtonT.secondary,
                                     uk_tooltip="Refresh metrics data from source",
                                 ),
+                                Button(
+                                    DivLAligned(UkIcon("menu")),
+                                    cls=ButtonT.secondary,
+                                    uk_tooltip="Select metric batch to display",
+                                ),
+                                batches_dropdown,
+                                Button(
+                                    DivLAligned(UkIcon("settings")),
+                                    cls=ButtonT.secondary,
+                                    uk_tooltip="Customize chart display settings",
+                                ),
+                                settings_dropdown,
+                                A(
+                                    DivLAligned(UkIcon("github")),
+                                    href="https://github.com/andrewm4894/anomstack",
+                                    target="_blank",
+                                    cls="uk-button uk-button-secondary",
+                                    uk_tooltip="View project on GitHub",
+                                ),
                                 cls="flex flex-row items-center space-x-2 flex-wrap",
                             ),
                             Div(
@@ -142,31 +161,6 @@ def _create_controls(batch_name):
                         ),
                     ),
                     cls="w-full",
-                ),
-                Div(
-                    Div(
-                        Button(
-                            DivLAligned(UkIcon("menu")),
-                            cls=ButtonT.secondary,
-                            uk_tooltip="Select metric batch to display",
-                        ),
-                        batches_dropdown,
-                        Button(
-                            DivLAligned(UkIcon("settings")),
-                            cls=ButtonT.secondary,
-                            uk_tooltip="Customize chart display settings",
-                        ),
-                        settings_dropdown,
-                        cls="flex items-center space-x-2 mb-2 md:mb-0",
-                    ),
-                    A(
-                        DivLAligned(UkIcon("github")),
-                        href="https://github.com/andrewm4894/anomstack",
-                        target="_blank",
-                        cls="uk-button uk-button-secondary w-full md:w-auto",
-                        uk_tooltip="View project on GitHub",
-                    ),
-                    cls="flex flex-col md:flex-row md:items-center md:justify-between w-full",
                 ),
                 cls="w-full",
             ),
