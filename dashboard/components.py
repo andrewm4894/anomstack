@@ -116,6 +116,21 @@ def _create_controls(batch_name):
                     Div(
                         Div(
                             Div(
+                                Button(
+                                    DivLAligned(UkIcon("home")),
+                                    hx_get="/",
+                                    hx_push_url="/",
+                                    hx_target="#main-content",
+                                    cls=ButtonT.secondary,
+                                    uk_tooltip="Return to homepage",
+                                ),
+                                Button(
+                                    DivLAligned(UkIcon("refresh-ccw")),
+                                    hx_get=f"/batch/{batch_name}/refresh",
+                                    hx_target="#main-content",
+                                    cls=ButtonT.secondary,
+                                    uk_tooltip="Refresh metrics data from source",
+                                ),
                                 cls="flex flex-row items-center space-x-2 flex-wrap",
                             ),
                             Div(
