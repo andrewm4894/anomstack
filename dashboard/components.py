@@ -113,29 +113,32 @@ def _create_controls(batch_name):
         DivFullySpaced(
             Div(
                 Div(
-                    Button(
-                        DivLAligned(UkIcon("home")),
-                        hx_get="/",
-                        hx_push_url="/",
-                        hx_target="#main-content",
-                        cls=ButtonT.secondary,
-                        uk_tooltip="Return to homepage",
+                    Div(
+                        Button(
+                            DivLAligned(UkIcon("home")),
+                            hx_get="/",
+                            hx_push_url="/",
+                            hx_target="#main-content",
+                            cls=ButtonT.secondary,
+                            uk_tooltip="Return to homepage",
+                        ),
+                        Button(
+                            DivLAligned(UkIcon("refresh-ccw")),
+                            hx_get=f"/batch/{batch_name}/refresh",
+                            hx_target="#main-content",
+                            cls=ButtonT.secondary,
+                            uk_tooltip="Refresh metrics data from source",
+                        ),
+                        cls="flex items-center space-x-2",
                     ),
-                    Button(
-                        DivLAligned(UkIcon("refresh-ccw")),
-                        hx_get=f"/batch/{batch_name}/refresh",
-                        hx_target="#main-content",
-                        cls=ButtonT.secondary,
-                        uk_tooltip="Refresh metrics data from source",
+                    Div(
+                        _create_search_form(batch_name),
+                        _create_last_n_form(batch_name),
+                        cls="flex items-center space-x-2 md:space-x-4",
                     ),
-                    cls="flex items-center space-x-2",
+                    cls="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4 w-full",
                 ),
-                Div(
-                    _create_search_form(batch_name),
-                    _create_last_n_form(batch_name),
-                    cls="flex items-center space-x-4",
-                ),
-                cls="flex items-center justify-between mb-2 flex-wrap gap-2",
+                cls="w-full mb-2",
             ),
             Div(
                 Div(
@@ -181,7 +184,8 @@ def _create_search_form(batch_name):
             placeholder="Search metrics...",
             value=current_search,
             cls="uk-input uk-form-small rounded-md border-gray-200",
-            style="width: 220px;",
+            style="width: 160px;",
+            cls="uk-input uk-form-small rounded-md border-gray-200 md:w-[220px]",
             uk_tooltip="Filter metrics by name",
             autocomplete="off",
             aria_label="Search metrics",
