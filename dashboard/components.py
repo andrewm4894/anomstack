@@ -131,17 +131,34 @@ def _create_controls(batch_name):
                                     cls=ButtonT.secondary,
                                     uk_tooltip="Refresh metrics data from source",
                                 ),
-                                cls="flex flex-row items-center space-x-2 mb-4 md:mb-0",
+                                Button(
+                                    DivLAligned(UkIcon("menu")),
+                                    cls=ButtonT.secondary,
+                                    uk_tooltip="Select metric batch to display",
+                                ),
+                                Button(
+                                    DivLAligned(UkIcon("settings")),
+                                    cls=ButtonT.secondary,
+                                    uk_tooltip="Customize chart display settings",
+                                ),
+                                A(
+                                    DivLAligned(UkIcon("github")),
+                                    href="https://github.com/andrewm4894/anomstack",
+                                    target="_blank",
+                                    cls=ButtonT.secondary,
+                                    uk_tooltip="View project on GitHub",
+                                ),
+                                cls="flex flex-row items-center space-x-2 flex-wrap",
                             ),
                             Div(
                                 _create_search_form(batch_name),
                                 _create_last_n_form(batch_name),
-                                cls="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4",
+                                cls="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4 mt-4",
                             ),
                             cls="flex flex-col w-full",
                         ),
                     ),
-                    cls="w-full mb-4",
+                    cls="w-full",
                 ),
                 Div(
                     Div(
