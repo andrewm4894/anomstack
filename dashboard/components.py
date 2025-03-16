@@ -142,28 +142,31 @@ def _create_controls(batch_name):
             ),
             Div(
                 Div(
-                    Button(
-                        DivLAligned(UkIcon("menu")),
-                        cls=ButtonT.secondary,
-                        uk_tooltip="Select metric batch to display",
+                    Div(
+                        Button(
+                            DivLAligned(UkIcon("menu")),
+                            cls=ButtonT.secondary,
+                            uk_tooltip="Select metric batch to display",
+                        ),
+                        batches_dropdown,
+                        Button(
+                            DivLAligned(UkIcon("settings")),
+                            cls=ButtonT.secondary,
+                            uk_tooltip="Customize chart display settings",
+                        ),
+                        settings_dropdown,
+                        cls="flex items-center space-x-2 mb-2 md:mb-0",
                     ),
-                    batches_dropdown,
-                    Button(
-                        DivLAligned(UkIcon("settings")),
-                        cls=ButtonT.secondary,
-                        uk_tooltip="Customize chart display settings",
+                    A(
+                        DivLAligned(UkIcon("github")),
+                        href="https://github.com/andrewm4894/anomstack",
+                        target="_blank",
+                        cls="uk-button uk-button-secondary w-full md:w-auto",
+                        uk_tooltip="View project on GitHub",
                     ),
-                    settings_dropdown,
-                    cls="flex items-center space-x-2",
+                    cls="flex flex-col md:flex-row md:items-center md:justify-between w-full",
                 ),
-                A(
-                    DivLAligned(UkIcon("github")),
-                    href="https://github.com/andrewm4894/anomstack",
-                    target="_blank",
-                    cls="uk-button uk-button-secondary",
-                    uk_tooltip="View project on GitHub",
-                ),
-                cls="flex items-center justify-between",
+                cls="w-full",
             ),
         ),
         cls="mb-4 uk-padding-small py-2 shadow-sm",
