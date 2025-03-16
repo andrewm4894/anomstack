@@ -34,11 +34,65 @@ app, rt = fast_app(
             "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNoYXJ0LWxpbmUiPjxwYXRoIGQ9Ik0zIDN2MTZhMiAyIDAgMCAwIDIgMmgxNiIvPjxwYXRoIGQ9Im0xOSA5LTUgNS00LTQtMyAzIi8+PC9zdmc+",
         ),
         Style("""
+            /* Mobile-first approach */
+            * {
+                box-sizing: border-box;
+            }
+            
             /* Light mode defaults */
             body {
                 background-color: #ffffff;
                 color: #1a1a1a;
                 transition: all 0.3s ease;
+                margin: 0;
+                padding: 0;
+                -webkit-text-size-adjust: 100%;
+            }
+
+            /* Responsive container */
+            .uk-container {
+                padding: 0.5rem;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            /* Responsive grid */
+            @media (max-width: 768px) {
+                .grid {
+                    grid-template-columns: 1fr !important;
+                }
+                
+                .uk-card {
+                    margin-bottom: 0.5rem;
+                }
+
+                .uk-button {
+                    padding: 0.25rem 0.5rem;
+                    font-size: 0.875rem;
+                }
+
+                input[type="search"],
+                input[type="number"] {
+                    width: 100% !important;
+                    margin-bottom: 0.5rem;
+                }
+            }
+
+            /* Responsive controls */
+            @media (max-width: 640px) {
+                .controls-container {
+                    flex-direction: column;
+                }
+
+                .controls-container > div {
+                    width: 100%;
+                    margin-bottom: 0.5rem;
+                }
+
+                .uk-dropdown {
+                    width: 100%;
+                    max-width: none;
+                }
             }
             
             .loading-indicator {

@@ -129,7 +129,7 @@ def _create_controls(batch_name):
                 ),
                 _create_search_form(batch_name),
                 _create_last_n_form(batch_name),
-                style="display: flex; align-items: center; gap: 0.5rem;",
+                cls="controls-container flex flex-wrap items-center gap-2 w-full",
             ),
             Div(
                 Button(
@@ -153,7 +153,7 @@ def _create_controls(batch_name):
                     cls="uk-button uk-button-secondary",
                     uk_tooltip="View project on GitHub",
                 ),
-                style="display: flex; align-items: center; gap: 0.5rem;",
+                cls="controls-container flex flex-wrap items-center gap-2 w-full",
             ),
         ),
         cls="mb-2 uk-padding-small py-1",
@@ -166,7 +166,7 @@ def _create_search_form(batch_name):
     """
     state = get_state()
     current_search = state.search_term.get(batch_name, "")
-    
+
     return Form(
         Input(
             type="search",
