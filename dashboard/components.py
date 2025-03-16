@@ -116,38 +116,6 @@ def _create_controls(batch_name):
                     Div(
                         Div(
                             Div(
-                                Button(
-                                    DivLAligned(UkIcon("home")),
-                                    hx_get="/",
-                                    hx_push_url="/",
-                                    hx_target="#main-content",
-                                    cls=ButtonT.secondary,
-                                    uk_tooltip="Return to homepage",
-                                ),
-                                Button(
-                                    DivLAligned(UkIcon("refresh-ccw")),
-                                    hx_get=f"/batch/{batch_name}/refresh",
-                                    hx_target="#main-content",
-                                    cls=ButtonT.secondary,
-                                    uk_tooltip="Refresh metrics data from source",
-                                ),
-                                Button(
-                                    DivLAligned(UkIcon("menu")),
-                                    cls=ButtonT.secondary,
-                                    uk_tooltip="Select metric batch to display",
-                                ),
-                                Button(
-                                    DivLAligned(UkIcon("settings")),
-                                    cls=ButtonT.secondary,
-                                    uk_tooltip="Customize chart display settings",
-                                ),
-                                A(
-                                    DivLAligned(UkIcon("github")),
-                                    href="https://github.com/andrewm4894/anomstack",
-                                    target="_blank",
-                                    cls=ButtonT.secondary,
-                                    uk_tooltip="View project on GitHub",
-                                ),
                                 cls="flex flex-row items-center space-x-2 flex-wrap",
                             ),
                             Div(
