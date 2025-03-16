@@ -116,41 +116,47 @@ def _create_controls(batch_name):
                     Div(
                         Div(
                             Div(
-                                Button(
-                                    DivLAligned(UkIcon("home")),
-                                    hx_get="/",
-                                    hx_push_url="/",
-                                    hx_target="#main-content",
-                                    cls=ButtonT.secondary,
-                                    uk_tooltip="Return to homepage",
+                                Div(
+                                    Button(
+                                        DivLAligned(UkIcon("home")),
+                                        hx_get="/",
+                                        hx_push_url="/",
+                                        hx_target="#main-content",
+                                        cls=ButtonT.secondary,
+                                        uk_tooltip="Return to homepage",
+                                    ),
+                                    Button(
+                                        DivLAligned(UkIcon("refresh-ccw")),
+                                        hx_get=f"/batch/{batch_name}/refresh",
+                                        hx_target="#main-content",
+                                        cls=ButtonT.secondary,
+                                        uk_tooltip="Refresh metrics data from source",
+                                    ),
+                                    cls="flex items-center space-x-2",
                                 ),
-                                Button(
-                                    DivLAligned(UkIcon("refresh-ccw")),
-                                    hx_get=f"/batch/{batch_name}/refresh",
-                                    hx_target="#main-content",
-                                    cls=ButtonT.secondary,
-                                    uk_tooltip="Refresh metrics data from source",
+                                Div(
+                                    Button(
+                                        DivLAligned(UkIcon("menu")),
+                                        cls=ButtonT.secondary,
+                                        uk_tooltip="Select metric batch to display",
+                                    ),
+                                    batches_dropdown,
+                                    Button(
+                                        DivLAligned(UkIcon("settings")),
+                                        cls=ButtonT.secondary,
+                                        uk_tooltip="Customize chart display settings",
+                                    ),
+                                    settings_dropdown,
+                                    A(
+                                        DivLAligned(UkIcon("github")),
+                                        href="https://github.com/andrewm4894/anomstack",
+                                        target="_blank",
+                                        cls="uk-button uk-button-secondary",
+                                        uk_tooltip="View project on GitHub",
+                                    ),
+                                    cls="flex items-center space-x-2",
                                 ),
-                                Button(
-                                    DivLAligned(UkIcon("menu")),
-                                    cls=ButtonT.secondary,
-                                    uk_tooltip="Select metric batch to display",
-                                ),
-                                batches_dropdown,
-                                Button(
-                                    DivLAligned(UkIcon("settings")),
-                                    cls=ButtonT.secondary,
-                                    uk_tooltip="Customize chart display settings",
-                                ),
-                                settings_dropdown,
-                                A(
-                                    DivLAligned(UkIcon("github")),
-                                    href="https://github.com/andrewm4894/anomstack",
-                                    target="_blank",
-                                    cls="uk-button uk-button-secondary",
-                                    uk_tooltip="View project on GitHub",
-                                ),
-                                cls="flex flex-row items-center space-x-2 flex-wrap justify-end",
+                                cls="flex flex-row items-center space-x-2 flex-wrap justify-between",
                             ),
                             Div(
                                 _create_search_form(batch_name),
