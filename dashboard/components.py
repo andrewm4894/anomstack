@@ -115,29 +115,31 @@ def _create_controls(batch_name):
                 Div(
                     Div(
                         Div(
-                            Button(
-                                DivLAligned(UkIcon("home")),
-                                hx_get="/",
-                                hx_push_url="/",
-                                hx_target="#main-content",
-                                cls=ButtonT.secondary,
-                                uk_tooltip="Return to homepage",
+                            Div(
+                                Button(
+                                    DivLAligned(UkIcon("home")),
+                                    hx_get="/",
+                                    hx_push_url="/",
+                                    hx_target="#main-content",
+                                    cls=ButtonT.secondary,
+                                    uk_tooltip="Return to homepage",
+                                ),
+                                Button(
+                                    DivLAligned(UkIcon("refresh-ccw")),
+                                    hx_get=f"/batch/{batch_name}/refresh",
+                                    hx_target="#main-content",
+                                    cls=ButtonT.secondary,
+                                    uk_tooltip="Refresh metrics data from source",
+                                ),
+                                cls="flex flex-row items-center space-x-2 mb-4 md:mb-0",
                             ),
-                            Button(
-                                DivLAligned(UkIcon("refresh-ccw")),
-                                hx_get=f"/batch/{batch_name}/refresh",
-                                hx_target="#main-content",
-                                cls=ButtonT.secondary,
-                                uk_tooltip="Refresh metrics data from source",
+                            Div(
+                                _create_search_form(batch_name),
+                                _create_last_n_form(batch_name),
+                                cls="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4",
                             ),
-                            cls="flex flex-row items-center space-x-2",
+                            cls="flex flex-col w-full",
                         ),
-                        Div(
-                            _create_search_form(batch_name),
-                            _create_last_n_form(batch_name),
-                            cls="flex flex-col md:flex-row items-stretch md:items-center space-y-2 md:space-y-0 md:space-x-4",
-                        ),
-                        cls="flex flex-col space-y-4 w-full",
                     ),
                     cls="w-full mb-4",
                 ),
