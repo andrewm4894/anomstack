@@ -140,8 +140,7 @@ def _create_controls(batch_name):
                         cls="flex flex-col space-y-4 w-full",
                     ),
                     cls="w-full mb-4",
-            ),
-            Div(
+                ),
                 Div(
                     Div(
                         Button(
