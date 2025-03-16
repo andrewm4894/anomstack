@@ -112,39 +112,46 @@ def _create_controls(batch_name):
     return Card(
         DivFullySpaced(
             Div(
-                Button(
-                    DivLAligned(UkIcon("home")),
-                    hx_get="/",
-                    hx_push_url="/",
-                    hx_target="#main-content",
-                    cls=ButtonT.secondary,
-                    uk_tooltip="Return to homepage",
+                Div(
+                    Button(
+                        DivLAligned(UkIcon("home")),
+                        hx_get="/",
+                        hx_push_url="/",
+                        hx_target="#main-content",
+                        cls=ButtonT.secondary,
+                        uk_tooltip="Return to homepage",
+                    ),
+                    Button(
+                        DivLAligned(UkIcon("refresh-ccw")),
+                        hx_get=f"/batch/{batch_name}/refresh",
+                        hx_target="#main-content",
+                        cls=ButtonT.secondary,
+                        uk_tooltip="Refresh metrics data from source",
+                    ),
+                    cls="flex items-center space-x-2",
                 ),
-                Button(
-                    DivLAligned(UkIcon("refresh-ccw")),
-                    hx_get=f"/batch/{batch_name}/refresh",
-                    hx_target="#main-content",
-                    cls=ButtonT.secondary,
-                    uk_tooltip="Refresh metrics data from source",
+                Div(
+                    _create_search_form(batch_name),
+                    _create_last_n_form(batch_name),
+                    cls="flex items-center space-x-4",
                 ),
-                _create_search_form(batch_name),
-                _create_last_n_form(batch_name),
-                cls="controls-container flex flex-wrap items-center gap-2 w-full",
+                cls="flex items-center justify-between mb-2 flex-wrap gap-2",
             ),
             Div(
-                Button(
-                    DivLAligned(UkIcon("menu")),
-                    cls=ButtonT.secondary,
-                    uk_tooltip="Select metric batch to display",
-                ),
-                batches_dropdown,
                 Div(
+                    Button(
+                        DivLAligned(UkIcon("menu")),
+                        cls=ButtonT.secondary,
+                        uk_tooltip="Select metric batch to display",
+                    ),
+                    batches_dropdown,
                     Button(
                         DivLAligned(UkIcon("settings")),
                         cls=ButtonT.secondary,
                         uk_tooltip="Customize chart display settings",
                     ),
                     settings_dropdown,
+                    cls="flex items-center space-x-2",
                 ),
                 A(
                     DivLAligned(UkIcon("github")),
@@ -153,10 +160,10 @@ def _create_controls(batch_name):
                     cls="uk-button uk-button-secondary",
                     uk_tooltip="View project on GitHub",
                 ),
-                cls="controls-container flex flex-wrap items-center gap-2 w-full",
+                cls="flex items-center justify-between",
             ),
         ),
-        cls="mb-2 uk-padding-small py-1",
+        cls="mb-4 uk-padding-small py-2 shadow-sm",
     )
 
 
@@ -173,8 +180,8 @@ def _create_search_form(batch_name):
             name="search",
             placeholder="Search metrics...",
             value=current_search,
-            cls="uk-input uk-form-small",
-            style="width: 200px;",
+            cls="uk-input uk-form-small rounded-md border-gray-200",
+            style="width: 220px;",
             uk_tooltip="Filter metrics by name",
             autocomplete="off",
             aria_label="Search metrics",
