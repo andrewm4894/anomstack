@@ -28,7 +28,7 @@ def _create_controls(batch_name):
                 ),
                 cls="flex items-center justify-between w-full px-2 py-2",
             )
-        ))
+        ),
         Li(
             DivLAligned(
                 Button(
