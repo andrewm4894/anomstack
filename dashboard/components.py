@@ -107,7 +107,7 @@ def _create_controls(batch_name):
             )
             for batch_name in state.metric_batches
         ],
-        uk_dropdown="pos: bottom-right"
+        uk_dropdown="pos: bottom-right; boundary: window; shift: true; flip: true;"
     )
 
     return Card(
