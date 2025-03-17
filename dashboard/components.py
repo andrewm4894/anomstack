@@ -221,10 +221,10 @@ def _create_last_n_form(batch_name):
                 hx_post=f"/batch/{batch_name}/update-n",
                 hx_target="#main-content",
                 hx_include="this",
+                onkeydown="if(event.key === 'Enter') { event.preventDefault(); this.value = this.value; htmx.trigger(this, 'post'); }",
             ),
             cls="space-x-2",
         ),
-        onsubmit="return false;",
     )
 
 
