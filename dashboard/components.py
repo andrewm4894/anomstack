@@ -218,15 +218,13 @@ def _create_last_n_form(batch_name):
                 title="Use format: 30n (observations), 24h (hours), 45m (minutes), 7d (days)",
                 cls="uk-input uk-form-small uk-form-width-small",
                 uk_tooltip="Filter by last N observations or time period (e.g., 30n, 24h, 45m, 7d)",
-                _="on keyup[key=='Enter'] call htmx.trigger(me, 'last_n_changed')",
-                hx_post=f"/batch/{batch_name}/update-n",
-                hx_trigger="last_n_changed",
-                hx_target="#main-content",
-                hx_include="this",
-                hx_preserve="true",
             ),
             cls="space-x-2",
         ),
+        hx_post=f"/batch/{batch_name}/update-n",
+        hx_target="#main-content",
+        hx_trigger="submit",
+        _="on submit prevent default then htmx.trigger(closest 'form', 'htmx:trigger')",
     )
 
 
