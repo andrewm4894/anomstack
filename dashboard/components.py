@@ -208,12 +208,13 @@ def _create_last_n_form(batch_name):
     Create the last n number form for the dashboard.
     """
     state = get_state()
+    current_value = state.last_n.get(batch_name, "30n")
     return Form(
         DivLAligned(
             Input(
                 type="text",
                 name="last_n",
-                value=state.last_n.get(batch_name, "30n"),
+                value=current_value,
                 pattern=r"\d+[nNhmd]$",
                 title="Use format: 30n (observations), 24h (hours), 45m (minutes), 7d (days)",
                 cls="uk-input uk-form-small uk-form-width-small",
@@ -223,8 +224,7 @@ def _create_last_n_form(batch_name):
         ),
         hx_post=f"/batch/{batch_name}/update-n",
         hx_target="#main-content",
-        hx_trigger="submit",
-        _="on submit prevent default then htmx.trigger(closest 'form', 'htmx:trigger')",
+        _="on submit me.querySelector('input').value = '{current_value}'",
     )
 
 
