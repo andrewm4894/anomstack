@@ -218,6 +218,8 @@ def _create_last_n_form(batch_name):
                 title="Use format: 30n (observations), 24h (hours), 45m (minutes), 7d (days)",
                 cls="uk-input uk-form-small uk-form-width-small",
                 uk_tooltip="Filter by last N observations or time period (e.g., 30n, 24h, 45m, 7d)",
+                hx_trigger="keydown[key=='Enter'] from:body",
+                hx_preserve="true",
             ),
             cls="space-x-2",
         ),
