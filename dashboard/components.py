@@ -226,6 +226,7 @@ def _create_last_n_form(batch_name):
             ),
             cls="space-x-2",
         )
+    )
 
 
 def create_batch_card(batch_name: str, stats: dict) -> Card:
