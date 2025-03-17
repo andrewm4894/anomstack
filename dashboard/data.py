@@ -94,7 +94,15 @@ def get_data(spec: dict, last_n: str = "30n", ensure_timestamp: bool = False) ->
         )
     
     db = spec["db"]
-    df = read_sql(sql, db=db)
+    try:
+        df = read_sql(sql, db=db)
+        # Filter out rows with NULL timestamps or values
+        df = df.dropna(subset=['metric_timestamp', 'metric_value'])
+        if df.empty:
+            return pd.DataFrame(columns=['metric_timestamp', 'metric_batch', 'metric_name', 'metric_value'])
+    except Exception as e:
+        logging.error(f"Error reading data: {e}")
+        return pd.DataFrame(columns=['metric_timestamp', 'metric_batch', 'metric_name', 'metric_value'])
 
     if ensure_timestamp:
         df["metric_timestamp"] = pd.to_datetime(df["metric_timestamp"], errors="coerce")
