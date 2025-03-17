@@ -1,3 +1,4 @@
+
 import pandas as pd
 
 
@@ -8,19 +9,27 @@ def ingest() -> pd.DataFrame:
 
     import requests
 
-    data = {
-        city: requests.get(
-            url=f"://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lng}&current=temperature_2m",
+    # Define cities and their coordinates
+    cities = [
+        ("dublin", 53.3441, -6.2675),
+        ("athens", 37.9792, 23.7166),
+        ("london", 51.5002, -0.1262),
+        ("berlin", 52.5235, 13.4115),
+        ("paris", 48.8567, 2.3510),
+    ]
+
+    # Define metrics to fetch
+    metrics = ["temperature_2m", "precipitation"]
+
+    data = {}
+    for city, lat, lng in cities:
+        response = requests.get(
+            url=f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lng}&current={','.join(metrics)}",
             timeout=10,
-        ).json()["current"]["temperature_2m"]
-        for (city, lat, lng) in [
-            ("dublin", 53.3441, -6.2675),
-            ("athens", 37.9792, 23.7166),
-            ("london", 51.5002, -0.1262),
-            ("berlin", 52.5235, 13.4115),
-            ("paris", 48.8567, 2.3510),
-        ]
-    }
+        ).json()["current"]
+        
+        for metric in metrics:
+            data[f"{city}_{metric}"] = response[metric]
 
     df = pd.DataFrame.from_dict(data, columns=["metric_value"], orient="index")
     df["metric_timestamp"] = pd.Timestamp.utcnow()
