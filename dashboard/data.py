@@ -72,37 +72,23 @@ def get_data(spec: dict, last_n: str = "30n", ensure_timestamp: bool = False) ->
     time_spec = parse_time_spec(last_n)
     
     if time_spec['type'] == 'time':
-        # For time-based queries
+        # For time-based queries, we'll need to modify the SQL
         cutoff_time = datetime.now() - time_spec['value']
         sql = render(
             "dashboard_sql",
             spec,
-            params={
-                "last_n": None,
-                "cutoff_time": cutoff_time.isoformat()
-            }
+            params={"cutoff_time": cutoff_time.isoformat()}
         )
     else:
-        # For N-based queries
+        # For N-based queries, use existing logic
         sql = render(
             "dashboard_sql",
             spec,
-            params={
-                "last_n": time_spec['value'],
-                "cutoff_time": None
-            }
+            params={"last_n": time_spec['value']},
         )
     
     db = spec["db"]
-    try:
-        df = read_sql(sql, db=db)
-        # Filter out rows with NULL timestamps or values
-        df = df.dropna(subset=['metric_timestamp', 'metric_value'])
-        if df.empty:
-            return pd.DataFrame(columns=['metric_timestamp', 'metric_batch', 'metric_name', 'metric_value'])
-    except Exception as e:
-        logging.error(f"Error reading data: {e}")
-        return pd.DataFrame(columns=['metric_timestamp', 'metric_batch', 'metric_name', 'metric_value'])
+    df = read_sql(sql, db=db)
 
     if ensure_timestamp:
         df["metric_timestamp"] = pd.to_datetime(df["metric_timestamp"], errors="coerce")
