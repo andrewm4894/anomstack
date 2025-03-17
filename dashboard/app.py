@@ -289,4 +289,4 @@ app, rt = fast_app(
 
 app.state = AppState()
 
-serve(port="5003")
+serve()
