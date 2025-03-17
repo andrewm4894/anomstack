@@ -72,19 +72,25 @@ def get_data(spec: dict, last_n: str = "30n", ensure_timestamp: bool = False) ->
     time_spec = parse_time_spec(last_n)
     
     if time_spec['type'] == 'time':
-        # For time-based queries, we'll need to modify the SQL
+        # For time-based queries
         cutoff_time = datetime.now() - time_spec['value']
         sql = render(
             "dashboard_sql",
             spec,
-            params={"cutoff_time": cutoff_time.isoformat()}
+            params={
+                "last_n": None,
+                "cutoff_time": cutoff_time.isoformat()
+            }
         )
     else:
-        # For N-based queries, use existing logic
+        # For N-based queries
         sql = render(
             "dashboard_sql",
             spec,
-            params={"last_n": time_spec['value']},
+            params={
+                "last_n": time_spec['value'],
+                "cutoff_time": None
+            }
         )
     
     db = spec["db"]
