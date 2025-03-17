@@ -395,24 +395,34 @@ def get(batch_name: str, search: str = ""):
 
 
 @rt("/batch/{batch_name}/update-n")
-def post(batch_name: str, last_n: int = DEFAULT_LAST_N, session=None):
+def post(batch_name: str, last_n: str = "30n", session=None):
     """
-    Update the number of observations for a given batch name.
+    Update the time window for a given batch name.
+    Supports formats like "30n" (observations), "24h" (hours), "45m" (minutes), "7d" (days)
     """
-    app.state.last_n[batch_name] = last_n
-    app.state.clear_batch_cache(batch_name)
+    try:
+        # Store the raw specification
+        app.state.last_n[batch_name] = last_n
+        app.state.clear_batch_cache(batch_name)
 
-    app.state.df_cache[batch_name] = get_data(
-        app.state.specs_enabled[batch_name], 
-        last_n=last_n,
-        ensure_timestamp=True
-    )
-    app.state.calculate_metric_stats(batch_name)
+        # Get new data with parsed specification
+        app.state.df_cache[batch_name] = get_data(
+            app.state.specs_enabled[batch_name], 
+            last_n=last_n,
+            ensure_timestamp=True
+        )
+        app.state.calculate_metric_stats(batch_name)
 
-    # Return the full page content with proper URL update
-    return get_batch_view(
-        batch_name, session=session, initial_load=DEFAULT_LOAD_N_CHARTS
-    )
+        # Return the full page content with proper URL update
+        return get_batch_view(
+            batch_name, session=session, initial_load=DEFAULT_LOAD_N_CHARTS
+        )
+    except ValueError as e:
+        # Return error message if invalid format
+        return Div(
+            P(str(e), cls="text-red-500 p-4 text-center"),
+            id="main-content",
+        )
 
 
 @rt("/batch/{batch_name}/toggle-size")

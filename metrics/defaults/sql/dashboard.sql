@@ -21,6 +21,9 @@ where
   metric_type = 'metric'
   and 
   metric_timestamp >= current_date - interval '{{ alert_metric_timestamp_max_days_ago }} day'
+  {% if cutoff_time is defined %}
+  and metric_timestamp >= '{{ cutoff_time }}'
+  {% endif %}
 group by metric_timestamp, metric_batch, metric_name
 ),
 
@@ -176,8 +179,12 @@ select
   metric_change
 from 
   data_smoothed
+{% if cutoff_time is defined %}
+/* When using time-based filtering, don't limit by recency rank */
+{% else %}
 where 
   metric_value_recency_rank <= {{ last_n }}
+{% endif %}
 )
 
 select
@@ -191,4 +198,6 @@ select
   metric_change
 from 
   data_final
+order by
+  metric_timestamp
 ;

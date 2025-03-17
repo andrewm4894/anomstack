@@ -207,18 +207,17 @@ def _create_last_n_form(batch_name):
     """
     Create the last n number form for the dashboard.
     """
-    state = get_state()  # Get state instance first
+    state = get_state()
     return Form(
         DivLAligned(
             Input(
-                type="number",
+                type="text",
                 name="last_n",
-                value=state.last_n.get(batch_name, DEFAULT_LAST_N),
-                min=1,
-                max=1000,
-                step=1,
+                value=state.last_n.get(batch_name, "30n"),
+                pattern="^\d+[nNhmd]$",
+                title="Use format: 30n (observations), 24h (hours), 45m (minutes), 7d (days)",
                 cls="uk-input uk-form-small uk-form-width-small",
-                uk_tooltip="Filter for last N observations",
+                uk_tooltip="Filter by last N observations or time period (e.g., 30n, 24h, 45m, 7d)",
             ),
             cls="space-x-2",
         ),
