@@ -77,8 +77,7 @@ def get_data(spec: dict, last_n: str = "30n", ensure_timestamp: bool = False) ->
         sql = render(
             "dashboard_sql",
             spec,
-            params={"cutoff_time": cutoff_time.isoformat()},
-            template_type="time_based"  # You'll need to add this template
+            params={"cutoff_time": cutoff_time.isoformat()}
         )
     else:
         # For N-based queries, use existing logic
