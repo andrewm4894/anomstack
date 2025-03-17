@@ -216,7 +216,7 @@ def _create_last_n_form(batch_name):
                 value=state.last_n.get(batch_name,"30n"),
                 pattern="^\d+[nNhmd]$",
                 title="Use format: 30n (observations), 24h (hours), 45m (minutes), 7d (days)",
-                cls="uk-input uk-form-small uk-form-width-small",
+                cls="uk-input uk-form-small rounded-md border-gray-200 w-full md:w-[110px]",
                 uk_tooltip="Filter by last N observations or time period (e.g., 30n, 24h, 45m, 7d)",
             ),
             cls="space-x-2",
