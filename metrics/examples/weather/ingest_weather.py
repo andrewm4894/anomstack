@@ -10,7 +10,7 @@ def ingest() -> pd.DataFrame:
 
     data = {
         city: requests.get(
-            url=f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lng}&current=temperature_2m",
+            url=f"://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lng}&current=temperature_2m",
             timeout=10,
         ).json()["current"]["temperature_2m"]
         for (city, lat, lng) in [
