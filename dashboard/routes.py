@@ -15,89 +15,52 @@ from components import create_controls, create_batch_card, create_header
 from charts import ChartManager
 from batch_stats import calculate_batch_stats
 
-
 log = logging.getLogger("anomstack")
 
+def _get_batch_data(batch_name: str) -> pd.DataFrame:
+    """Get batch data, either from cache or by fetching."""
+    if batch_name not in app.state.df_cache:
+        try:
+            df = get_data(
+                app.state.specs_enabled[batch_name],
+                last_n=DEFAULT_LAST_N,
+                ensure_timestamp=True
+            )
+        except Exception as e:
+            log.error(f"Error getting data for batch {batch_name}: {e}")
+            df = pd.DataFrame(
+                data=[], columns=["metric_name", "metric_timestamp", "metric_value"]
+            )
+        app.state.df_cache[batch_name] = df
+    return app.state.df_cache[batch_name]
 
-@rt("/refresh-all")
-def post(request: Request):
-    """
-    Refresh all batch data.
-    """
-
-    try:
-        # Clear all batch caches
-        app.state.df_cache.clear()
-        app.state.stats_cache.clear()
-        app.state.chart_cache.clear()
-
-        # Get the updated content
-        response = index(request)
-
-        return [response]
-
-    except Exception as e:
-        log.error(f"Error refreshing all batch data: {e}")
-        return []
-
-
-@rt
-def index(request: Request):
-    """
-    Index route for the dashboard.
-    """
-    # Check if this is an HTMX request
-    is_htmx = request.headers.get("HX-Request") == "true"
-
-    # Add dark mode class to body if enabled
-    script = Script(
-        f"""
-        if ({'true' if app.state.dark_mode else 'false'}) {{
-            document.body.classList.add('dark-mode');
-        }}
-    """
-    )
-
-    # Calculate batch stats
+def _get_sorted_batch_stats() -> tuple:
+    """Calculate and sort batch statistics."""
     batch_stats = {}
     for batch_name in app.state.metric_batches:
-        if batch_name not in app.state.df_cache:
-            try:
-
-                df = get_data(
-                    app.state.specs_enabled[batch_name], 
-                    last_n=DEFAULT_LAST_N, 
-                    ensure_timestamp=True
-                )
-
-            except Exception as e:
-                log.error(f"Error getting data for batch {batch_name}: {e}")
-                df = pd.DataFrame(
-                    data=[], columns=["metric_name", "metric_timestamp", "metric_value"]
-                )
-            app.state.df_cache[batch_name] = df
-        else:
-            df = app.state.df_cache[batch_name]
-
+        df = _get_batch_data(batch_name)
         batch_stats[batch_name] = calculate_batch_stats(df, batch_name)
 
-    # Filter out metric batches where latest_timestamp is "No Data"
+    # Filter and sort batches
     filtered_batches = {
         name: stats
         for name, stats in batch_stats.items()
         if stats["latest_timestamp"] != "No Data"
     }
 
-    # Sort the filtered metric batches by alert count (primary) and avg score (secondary)
     sorted_batch_names = sorted(
         filtered_batches.keys(),
         key=lambda x: (
-            -filtered_batches[x]["alert_count"],  # Negative for descending order
-            -filtered_batches[x]["avg_score"],  # Negative for descending order
+            -filtered_batches[x]["alert_count"],
+            -filtered_batches[x]["avg_score"],
         ),
     )
 
-    main_content = Div(
+    return batch_stats, sorted_batch_names
+
+def _create_main_content(batch_stats: dict, sorted_batch_names: list) -> Div:
+    """Create the main dashboard content."""
+    return Div(
         Card(
             DivLAligned(
                 Div(
@@ -111,7 +74,7 @@ def index(request: Request):
                 DivLAligned(
                     Button(
                         DivLAligned(UkIcon("refresh-ccw"), cls="space-x-2"),
-                        cls=ButtonT.ghost,  # Using ghost style to match header aesthetics
+                        cls=ButtonT.ghost,
                         hx_post="/refresh-all",
                         hx_target="#main-content",
                         hx_indicator="#loading",
@@ -128,7 +91,6 @@ def index(request: Request):
                 ),
                 cls="flex justify-between items-center mb-6",
             ),
-            # Show warning if no metric batches
             (
                 Div(
                     DivLAligned(
@@ -156,11 +118,39 @@ def index(request: Request):
         id="main-content",
     )
 
-    # For HTMX requests, return only the main content
+# Main Routes
+@rt("/refresh-all")
+def post(request: Request):
+    """Refresh all batch data."""
+    try:
+        app.state.df_cache.clear()
+        app.state.stats_cache.clear()
+        app.state.chart_cache.clear()
+        return [index(request)]
+    except Exception as e:
+        log.error(f"Error refreshing all batch data: {e}")
+        return []
+
+@rt
+def index(request: Request):
+    """Index route for the dashboard."""
+    is_htmx = request.headers.get("HX-Request") == "true"
+
+    # Dark mode script
+    script = Script(
+        f"""
+        if ({'true' if app.state.dark_mode else 'false'}) {{
+            document.body.classList.add('dark-mode');
+        }}
+    """
+    )
+
+    batch_stats, sorted_batch_names = _get_sorted_batch_stats()
+    main_content = _create_main_content(batch_stats, sorted_batch_names)
+
     if is_htmx:
         return main_content
 
-    # For full page loads, return the complete layout
     return (
         Title("Anomstack"),
         script,
@@ -172,26 +162,16 @@ def index(request: Request):
         main_content,
     )
 
-
+# Batch View Routes
 @rt("/batch/{batch_name}")
 def get_batch_view(batch_name: str, session, initial_load: int = DEFAULT_LOAD_N_CHARTS):
-    """
-    Get the batch view for a given batch name.
-    """
-    # First, ensure we have the data and stats calculated
-    if batch_name not in app.state.df_cache:
-        app.state.df_cache[batch_name] = get_data(
-            app.state.specs_enabled[batch_name], 
-            last_n=DEFAULT_LAST_N,
-            ensure_timestamp=True
-        )
-        app.state.calculate_metric_stats(batch_name)
-    elif batch_name not in app.state.stats_cache:
+    """Get the batch view."""
+    if batch_name not in app.state.df_cache or batch_name not in app.state.stats_cache:
+        app.state.df_cache[batch_name] = _get_batch_data(batch_name)
         app.state.calculate_metric_stats(batch_name)
 
     metric_stats = app.state.stats_cache[batch_name]
-    total_metrics = len(metric_stats)
-    remaining_metrics = total_metrics - initial_load
+    remaining_metrics = len(metric_stats) - initial_load
 
     script = Script(
         f"""
@@ -205,7 +185,6 @@ def get_batch_view(batch_name: str, session, initial_load: int = DEFAULT_LOAD_N_
     """
     )
 
-    # Update the load more button text
     load_next = min(DEFAULT_LOAD_N_CHARTS, remaining_metrics)
     return Div(
         create_controls(batch_name),
@@ -219,7 +198,6 @@ def get_batch_view(batch_name: str, session, initial_load: int = DEFAULT_LOAD_N_
             id="charts-container",
             cls=f"grid grid-cols-{2 if app.state.two_columns else 1} gap-4",
         ),
-        # Load More button with updated text
         Div(
             Button(
                 f"Load next {load_next} of {remaining_metrics}",
@@ -236,12 +214,9 @@ def get_batch_view(batch_name: str, session, initial_load: int = DEFAULT_LOAD_N_
         script,
     )
 
-
 @rt("/batch/{batch_name}/chart/{chart_index}")
 def get(batch_name: str, chart_index: int):
-    """
-    Get the chart for a given batch name and chart index.
-    """
+    """Get chart for a batch and index."""
     df = app.state.df_cache[batch_name]
     metric_stats = app.state.stats_cache[batch_name]
     metric_name = metric_stats[chart_index]["metric_name"]
@@ -259,22 +234,15 @@ def get(batch_name: str, chart_index: int):
     return Card(
         Style(
             """
-            .uk-card-header {
-                padding: 1rem;  /* Consistent padding */
-            }
-            .uk-card-body {
-                padding: 1rem;  /* Consistent padding */
-            }
+            .uk-card-header { padding: 1rem; }
+            .uk-card-body { padding: 1rem; }
         """
         ),
         Safe(app.state.chart_cache[batch_name][chart_index]),
         header=Div(
             H4(metric_name, cls="mb-1"),
             DivLAligned(
-                P(
-                    f"Anomaly Rate: {anomaly_rate:.1%}",
-                    cls="text-sm text-muted-foreground",
-                ),
+                P(f"Anomaly Rate: {anomaly_rate:.1%}", cls="text-sm text-muted-foreground"),
                 P(f"Avg Score: {avg_score:.1%}", cls="text-sm text-muted-foreground"),
                 style="gap: 1rem;",
             ),
@@ -283,31 +251,95 @@ def get(batch_name: str, chart_index: int):
         cls="mb-1",
     )
 
+# Toggle Routes
+def _handle_toggle_route(batch_name: str, toggle_func, session=None):
+    """Generic handler for toggle routes."""
+    toggle_func()
+    app.state.chart_cache.clear()
+    return get_batch_view(batch_name, session, initial_load=DEFAULT_LOAD_N_CHARTS)
 
-@rt("/batch/{batch_name}/refresh")
-def get(batch_name: str, session):
-    """
-    Refresh the batch view for a given batch name.
-    """
+@rt("/batch/{batch_name}/toggle-size")
+def post(batch_name: str, session=None):
+    """Toggle chart size."""
+    return _handle_toggle_route(batch_name, lambda: setattr(app.state, 'small_charts', not app.state.small_charts), session)
+
+@rt("/batch/{batch_name}/toggle-columns")
+def post(batch_name: str, session=None):
+    """Toggle number of columns."""
+    return _handle_toggle_route(batch_name, lambda: setattr(app.state, 'two_columns', not app.state.two_columns), session)
+
+@rt("/batch/{batch_name}/toggle-markers")
+def post(batch_name: str, session=None):
+    """Toggle chart markers."""
+    return _handle_toggle_route(batch_name, lambda: setattr(app.state, 'show_markers', not app.state.show_markers), session)
+
+@rt("/batch/{batch_name}/toggle-legend")
+def post(batch_name: str, session=None):
+    """Toggle chart legend."""
+    return _handle_toggle_route(batch_name, lambda: setattr(app.state, 'show_legend', not app.state.show_legend), session)
+
+@rt("/batch/{batch_name}/toggle-line-width")
+def post(batch_name: str, session=None):
+    """Toggle line width."""
+    def toggle_line_width():
+        app.state.narrow_lines = not getattr(app.state, "narrow_lines", False)
+        app.state.line_width = 1 if app.state.narrow_lines else 2
+    return _handle_toggle_route(batch_name, toggle_line_width, session)
+
+@rt("/batch/{batch_name}/toggle-theme")
+def post(batch_name: str, session=None):
+    """Toggle theme."""
+    app.state.dark_mode = not app.state.dark_mode
+    app.state.chart_cache.clear()
+    script = Script("document.body.classList.toggle('dark-mode');")
+    response = get_batch_view(batch_name, session, initial_load=DEFAULT_LOAD_N_CHARTS)
+    return Div(script, response)
+
+# Search and Load More Routes
+@rt("/batch/{batch_name}/search")
+def get(batch_name: str, search: str = ""):
+    """Search metrics."""
+    import re
+    app.state.search_term[batch_name] = search
+
+    if batch_name not in app.state.stats_cache:
+        app.state.calculate_metric_stats(batch_name)
 
     try:
-        app.state.clear_batch_cache(batch_name)
-        response = get_batch_view(
-            batch_name, session, initial_load=DEFAULT_LOAD_N_CHARTS
+        pattern = re.compile(search, re.IGNORECASE) if search else None
+        filtered_stats_with_indices = [
+            (i, stat)
+            for i, stat in enumerate(app.state.stats_cache[batch_name])
+            if not pattern or pattern.search(stat["metric_name"])
+        ]
+
+        if not filtered_stats_with_indices:
+            return Div(
+                P("No matching metrics found", cls="text-muted-foreground p-4 text-center"),
+                id="charts-grid",
+            )
+
+        return Div(
+            *[
+                ChartManager.create_chart_placeholder(
+                    stat["metric_name"],
+                    original_index,
+                    batch_name
+                )
+                for original_index, stat in filtered_stats_with_indices
+            ],
+            id="charts-grid",
+            cls=f"grid grid-cols-{2 if app.state.two_columns else 1} gap-4"
         )
-
-        # Return the response
-        return [response]
-
-    except Exception as e:
-        return []
-
+    except re.error:
+        return Div(
+            P("Invalid search pattern", cls="text-red-500 p-4 text-center"),
+            id="charts-grid",
+        )
 
 @rt("/batch/{batch_name}/load-more/{start_index}")
 def get(batch_name: str, start_index: int):
-    """
-    Load more charts for a given batch name and start index.
-    """
+    """Load more charts."""
     metric_stats = app.state.stats_cache[batch_name]
     remaining_metrics = len(metric_stats) - (start_index + DEFAULT_LOAD_N_CHARTS)
     load_next = min(DEFAULT_LOAD_N_CHARTS, remaining_metrics)
@@ -320,7 +352,6 @@ def get(batch_name: str, start_index: int):
                 start=start_index,
             )
         ],
-        # Update the load more button with new count and disabled state
         Div(
             Button(
                 (
@@ -341,107 +372,40 @@ def get(batch_name: str, start_index: int):
         ),
     ]
 
-
-@rt("/batch/{batch_name}/search")
-def get(batch_name: str, search: str = ""):
-    """
-    Search for a given batch name and search string.
-    """
-    import re
-
-    # Store the search term in state
-    app.state.search_term[batch_name] = search
-
-    # Ensure we have stats for this batch
-    if batch_name not in app.state.stats_cache:
-        app.state.calculate_metric_stats(batch_name)
-    
-    metric_stats = app.state.stats_cache[batch_name]
-    try:
-        pattern = re.compile(search, re.IGNORECASE) if search else None
-        
-        # Keep track of original indices while filtering
-        filtered_stats_with_indices = [
-            (i, stat)  # Keep original index with the stat
-            for i, stat in enumerate(metric_stats)
-            if not pattern or pattern.search(stat["metric_name"])
-        ]
-        
-        # Return empty state if no results
-        if not filtered_stats_with_indices:
-            return Div(
-                P("No matching metrics found", cls="text-muted-foreground p-4 text-center"),
-                id="charts-grid",
-            )
-        
-        # Create chart placeholders using original indices
-        return Div(
-            *[
-                ChartManager.create_chart_placeholder(
-                    stat["metric_name"], 
-                    original_index,  # Use the original index instead of enumeration
-                    batch_name
-                )
-                for original_index, stat in filtered_stats_with_indices
-            ],
-            id="charts-grid",
-            cls=f"grid grid-cols-{2 if app.state.two_columns else 1} gap-4"
-        )
-    except re.error:
-        return Div(
-            P("Invalid search pattern", cls="text-red-500 p-4 text-center"),
-            id="charts-grid",
-        )
-
-
 @rt("/batch/{batch_name}/update-n")
 def post(batch_name: str, last_n: str = "30n", session=None):
-    """
-    Update the time window for a given batch name.
-    Supports formats like "30n" (observations), "24h" (hours), "45m" (minutes), "7d" (days)
-    """
+    """Update time window."""
     try:
-        # Store the raw specification
         app.state.last_n[batch_name] = last_n
         app.state.clear_batch_cache(batch_name)
-
-        # Get new data with parsed specification
         app.state.df_cache[batch_name] = get_data(
-            app.state.specs_enabled[batch_name], 
+            app.state.specs_enabled[batch_name],
             last_n=last_n,
             ensure_timestamp=True
         )
         app.state.calculate_metric_stats(batch_name)
-
-        # Return the full page content with proper URL update
-        return get_batch_view(
-            batch_name, session=session, initial_load=DEFAULT_LOAD_N_CHARTS
-        )
+        return get_batch_view(batch_name, session, initial_load=DEFAULT_LOAD_N_CHARTS)
     except ValueError as e:
-        # Return error message if invalid format
         return Div(
             P(str(e), cls="text-red-500 p-4 text-center"),
             id="main-content",
         )
 
-
-@rt("/batch/{batch_name}/toggle-size")
-def post(batch_name: str, session=None):
-    """
-    Toggle the size of the charts for a given batch name.
-    """
-    app.state.small_charts = not app.state.small_charts
-    app.state.chart_cache.clear()  # Clear cache to regenerate charts
-    return get_batch_view(
-        batch_name, session=session, initial_load=DEFAULT_LOAD_N_CHARTS
-    )
-
+@rt("/batch/{batch_name}/refresh")
+def get(batch_name: str, session):
+    """Refresh the batch view for a given batch name."""
+    try:
+        app.state.clear_batch_cache(batch_name)
+        response = get_batch_view(
+            batch_name, session, initial_load=DEFAULT_LOAD_N_CHARTS
+        )
+        return [response]
+    except Exception as e:
+        return []
 
 @rt("/batch/{batch_name}/toggle-theme")
 def post(batch_name: str, session=None):
-    """
-    Toggle the theme of the dashboard for a given batch name.
-    """
+    """Toggle the theme of the dashboard for a given batch name."""
     app.state.dark_mode = not app.state.dark_mode
     app.state.chart_cache.clear()  # Clear cache to regenerate charts
 
@@ -457,47 +421,35 @@ def post(batch_name: str, session=None):
     )
     return Div(script, response)
 
-
 @rt("/batch/{batch_name}/toggle-columns")
 def post(batch_name: str, session=None):
-    """
-    Toggle the number of columns for a given batch name.
-    """
+    """Toggle the number of columns for a given batch name."""
     app.state.two_columns = not app.state.two_columns
     return get_batch_view(
         batch_name, session=session, initial_load=DEFAULT_LOAD_N_CHARTS
     )
 
-
 @rt("/batch/{batch_name}/toggle-markers")
 def post(batch_name: str, session=None):
-    """
-    Toggle the markers for a given batch name.
-    """
+    """Toggle the markers for a given batch name."""
     app.state.show_markers = not app.state.show_markers
     app.state.chart_cache.clear()  # Clear cache to regenerate charts
     return get_batch_view(
         batch_name, session=session, initial_load=DEFAULT_LOAD_N_CHARTS
     )
 
-
 @rt("/batch/{batch_name}/toggle-legend")
 def post(batch_name: str, session=None):
-    """
-    Toggle the legend for a given batch name.
-    """
+    """Toggle the legend for a given batch name."""
     app.state.show_legend = not app.state.show_legend
     app.state.chart_cache.clear()  # Clear cache to regenerate charts
     return get_batch_view(
         batch_name, session=session, initial_load=DEFAULT_LOAD_N_CHARTS
     )
 
-
 @rt("/batch/{batch_name}/toggle-line-width")
 def post(batch_name: str, session=None):
-    """
-    Toggle between narrow (1px) and normal (2px) line width.
-    """
+    """Toggle between narrow (1px) and normal (2px) line width."""
     app.state.narrow_lines = not getattr(app.state, "narrow_lines", False)
     app.state.line_width = 1 if app.state.narrow_lines else 2
     app.state.chart_cache.clear()  # Clear cache to regenerate charts
