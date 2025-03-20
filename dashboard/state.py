@@ -36,6 +36,20 @@ class AppState:
         self.line_width = 2
         self.show_legend = False
         self.search_term = {}
+        
+        # Initialize all batch data and stats
+        for batch_name in self.metric_batches:
+            try:
+                from data import get_data
+                from constants import DEFAULT_LAST_N
+                self.df_cache[batch_name] = get_data(
+                    self.specs_enabled[batch_name],
+                    last_n=DEFAULT_LAST_N,
+                    ensure_timestamp=True
+                )
+                self.calculate_metric_stats(batch_name)
+            except Exception as e:
+                log.error(f"Error initializing batch {batch_name}: {e}")
 
     def clear_batch_cache(self, batch_name):
         """
