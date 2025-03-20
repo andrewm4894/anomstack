@@ -150,15 +150,11 @@ def _create_controls(batch_name):
                                         cls="uk-button uk-button-secondary",
                                         uk_tooltip="View project on GitHub",
                                     ),
+                                    _create_search_form(batch_name),
+                                    _create_last_n_form(batch_name),
                                     cls="flex items-center space-x-2 flex-wrap",
                                 ),
                                 cls="flex flex-row items-center space-x-2",
-                            ),
-                            Div(
-                                _create_search_form(batch_name),
-                                _create_last_n_form(batch_name),
-                                cls=
-                                "flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4 mt-4",
                             ),
                             cls="flex flex-col w-full",
                         ), ),
@@ -184,7 +180,7 @@ def _create_search_form(batch_name):
             placeholder="Search metrics...",
             value=current_search,
             cls=
-            "uk-input uk-form-small rounded-md border-gray-200 w-full md:w-[220px]",
+            "uk-input uk-form-small rounded-md border-gray-200 w-[180px]",
             uk_tooltip="Filter metrics by name",
             autocomplete="off",
             aria_label="Search metrics",
@@ -214,7 +210,7 @@ def _create_last_n_form(batch_name):
                 title=
                 "Use format: 30n (observations), 24h (hours), 45m (minutes), 7d (days)",
                 cls=
-                "uk-input uk-form-small rounded-md border-gray-200 w-full md:w-[110px]",
+                "uk-input uk-form-small rounded-md border-gray-200 w-[80px]",
                 uk_tooltip=
                 "Filter by last N observations or time period (e.g., 30n, 24h, 45m, 7d)",
             ),
