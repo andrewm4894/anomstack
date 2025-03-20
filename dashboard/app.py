@@ -191,16 +191,10 @@ app, rt = fast_app(
             }
             
             .uk-dropdown {
-                position: absolute;
-                margin-top: 5px;
-                padding: 0;
+                min-width: 200px;
+                max-width: fit-content;
                 width: auto;
-                min-width: 150px;
-            }
-            
-            .uk-dropdown li a {
-                display: block;
-                padding: 8px 12px;
+                margin-top: 5px;
             }
             
             body.dark-mode .loading-indicator .htmx-indicator {
