@@ -82,26 +82,23 @@ app, rt = fast_app(
                 .search-controls {
                     display: flex;
                     gap: 0.5rem;
-                }
-
-                @media (min-width: 769px) {
-                    .search-controls {
-                        width: auto;
-                    }
+                    width: auto;
                 }
 
                 @media (max-width: 768px) {
                     .search-controls {
                         width: 100%;
+                        flex-direction: row;
+                        justify-content: space-between;
                     }
-                    .flex.items-center.space-x-2.flex-wrap > form {
-                        width: 100%;
-                    }
-                    input[type="search"] {
-                        flex: 2;
-                    }
-                    input[type="text"] {
+                    
+                    .search-controls form {
                         flex: 1;
+                    }
+                    
+                    .search-controls form:first-child {
+                        flex: 2;
+                        margin-right: 0.5rem;
                     }
                 }
             }
