@@ -5,26 +5,17 @@ This file is kept for backwards compatibility.
 All components have been moved to the components/ directory.
 """
 
-from .components.toolbar import create_toolbar_buttons
-from .components.settings import create_settings_dropdown
-from .components.batch import create_batches_dropdown, create_batch_card
-from .components.forms import create_search_form, create_last_n_form
-from .components.common import create_settings_button
-
-__all__ = [
-    'create_toolbar_buttons',
-    'create_settings_dropdown',
-    'create_batches_dropdown',
-    'create_batch_card',
-    'create_search_form',
-    'create_last_n_form',
-    'create_settings_button',
-    'create_controls',
-    'create_header'
-]
+from fasthtml.common import *
+from monsterui.all import *
 
 def create_controls(batch_name: str) -> Card:
     """Create the main controls for the dashboard."""
+    from .components import (
+        create_toolbar_buttons,
+        create_search_form,
+        create_last_n_form
+    )
+    
     return Card(
         DivFullySpaced(
             Div(
