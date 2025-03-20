@@ -1,3 +1,4 @@
+
 """
 Anomstack Dashboard
 
@@ -12,15 +13,10 @@ from dotenv import load_dotenv
 from fasthtml.common import *
 from monsterui.all import *
 from fasthtml.svg import *
-
 from starlette.staticfiles import StaticFiles
-from routes import *
-from components import *
+
 from constants import *
 from state import AppState
-
-# Mount static files
-app.mount("/static", StaticFiles(directory="dashboard/static"), name="static")
 
 # load the environment variables
 load_dotenv(override=True)
@@ -43,6 +39,13 @@ app, rt = fast_app(
     log=log,
 )
 
+# Mount static files
+app.mount("/static", StaticFiles(directory="dashboard/static"), name="static")
+
 app.state = AppState()
 
-serve()
+# Import routes after app is defined
+from routes import *
+
+if __name__ == "__main__":
+    serve()
