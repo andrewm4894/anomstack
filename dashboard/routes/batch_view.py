@@ -6,7 +6,22 @@ from components import create_controls
 from charts import ChartManager
 from data import get_data
 from constants import DEFAULT_LOAD_N_CHARTS
-from .index import _get_batch_data
+from data import get_data
+from constants import DEFAULT_LAST_N, DEFAULT_LOAD_N_CHARTS
+
+def _get_batch_data(batch_name: str):
+    """Get batch data, either from cache or by fetching."""
+    try:
+        return get_data(
+            app.state.specs_enabled[batch_name],
+            last_n=app.state.last_n.get(batch_name, DEFAULT_LAST_N),
+            ensure_timestamp=True
+        )
+    except Exception as e:
+        log.error(f"Error getting data for batch {batch_name}: {e}")
+        return pd.DataFrame(
+            data=[], columns=["metric_name", "metric_timestamp", "metric_value"]
+        )
 
 @rt("/batch/{batch_name}")
 def get_batch_view(batch_name: str, session, initial_load: int = DEFAULT_LOAD_N_CHARTS):
