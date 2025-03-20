@@ -133,9 +133,6 @@ def _create_controls(batch_name):
                                         cls=ButtonT.secondary,
                                         uk_tooltip="Refresh metrics data from source",
                                     ),
-                                    cls="flex items-center space-x-2",
-                                ),
-                                Div(
                                     Button(
                                         DivLAligned(UkIcon("menu")),
                                         cls=ButtonT.secondary,
@@ -155,9 +152,9 @@ def _create_controls(batch_name):
                                         cls="uk-button uk-button-secondary",
                                         uk_tooltip="View project on GitHub",
                                     ),
-                                    cls="flex items-center space-x-2",
+                                    cls="flex items-center space-x-2 flex-wrap",
                                 ),
-                                cls="flex flex-row items-center space-x-2 flex-wrap justify-between",
+                                cls="flex flex-row items-center space-x-2",
                             ),
                             Div(
                                 _create_search_form(batch_name),
