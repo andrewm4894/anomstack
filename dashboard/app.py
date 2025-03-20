@@ -79,22 +79,30 @@ app, rt = fast_app(
                     margin: 0;
                 }
 
-                .flex.items-center.space-x-2.flex-wrap > form {
-                    width: 100%;
-                }
-
                 .search-controls {
                     display: flex;
-                    width: 100%;
                     gap: 0.5rem;
                 }
 
-                input[type="search"] {
-                    flex: 2;
+                @media (min-width: 769px) {
+                    .search-controls {
+                        width: auto;
+                    }
                 }
 
-                input[type="text"] {
-                    flex: 1;
+                @media (max-width: 768px) {
+                    .search-controls {
+                        width: 100%;
+                    }
+                    .flex.items-center.space-x-2.flex-wrap > form {
+                        width: 100%;
+                    }
+                    input[type="search"] {
+                        flex: 2;
+                    }
+                    input[type="text"] {
+                        flex: 1;
+                    }
                 }
             }
 
