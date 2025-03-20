@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 import pandas as pd
 from typing import Dict, Any
+from constants import DEFAULT_LAST_N
 
 
 def calculate_batch_stats(df: pd.DataFrame, batch_name: str) -> Dict[str, Any]:
