@@ -71,35 +71,10 @@ app, rt = fast_app(
                     font-size: 0.875rem;
                 }
 
-                .flex.items-center.space-x-2.flex-wrap {
-                    gap: 0.5rem;
-                }
-
-                .flex.items-center.space-x-2.flex-wrap > .uk-button {
-                    margin: 0;
-                }
-
-                .search-controls {
-                    display: flex;
-                    gap: 0.5rem;
-                    width: auto;
-                }
-
-                @media (max-width: 768px) {
-                    .search-controls {
-                        width: 100%;
-                        flex-direction: row;
-                        justify-content: space-between;
-                    }
-                    
-                    .search-controls form {
-                        flex: 1;
-                    }
-                    
-                    .search-controls form:first-child {
-                        flex: 2;
-                        margin-right: 0.5rem;
-                    }
+                input[type="search"],
+                input[type="number"] {
+                    width: 100% !important;
+                    margin-bottom: 0.5rem;
                 }
             }
 
