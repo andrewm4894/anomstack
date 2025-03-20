@@ -88,6 +88,7 @@ def _create_controls(batch_name):
             )),
     )
 
+
     batches_dropdown = DropDownNavContainer(
         NavHeaderLi("metric batches"),
         *[
