@@ -11,7 +11,7 @@ from fasthtml.svg import *
 from app import app, rt
 from constants import *
 from data import get_data
-from components import _create_controls, create_batch_card, create_header
+from components import create_controls, create_batch_card, create_header
 from charts import ChartManager
 from batch_stats import calculate_batch_stats
 
