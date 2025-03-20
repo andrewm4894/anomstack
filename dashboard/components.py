@@ -9,7 +9,9 @@ from fasthtml.svg import *
 from state import get_state
 from constants import *
 
-def create_settings_button(text: str, batch_name: str, action: str, tooltip: str) -> Li:
+
+def create_settings_button(text: str, batch_name: str, action: str,
+                           tooltip: str) -> Li:
     """Create a settings dropdown button."""
     return Li(
         DivLAligned(
@@ -21,33 +23,37 @@ def create_settings_button(text: str, batch_name: str, action: str, tooltip: str
                 uk_tooltip=tooltip,
             ),
             cls="flex items-center justify-between w-full py-2",
-        )
-    )
+        ))
+
 
 def create_settings_dropdown(batch_name: str) -> DropDownNavContainer:
     """Create the settings dropdown menu."""
     buttons = [
-        ("small charts", "toggle-size", "Toggle between compact and full-size chart views"),
-        ("two columns", "toggle-columns", "Display charts in one or two columns"),
-        ("show markers", "toggle-markers", "Show/hide data point markers on the charts"),
+        ("small charts", "toggle-size",
+         "Toggle between compact and full-size chart views"),
+        ("two columns", "toggle-columns",
+         "Display charts in one or two columns"),
+        ("show markers", "toggle-markers",
+         "Show/hide data point markers on the charts"),
         ("show legend", "toggle-legend", "Display chart legends"),
-        ("narrow lines", "toggle-line-width", "Toggle between narrow and normal line thickness"),
+        ("narrow lines", "toggle-line-width",
+         "Toggle between narrow and normal line thickness"),
     ]
 
-    menu_items = [create_settings_button(text, batch_name, action, tooltip) 
-                  for text, action, tooltip in buttons]
+    menu_items = [
+        create_settings_button(text, batch_name, action, tooltip)
+        for text, action, tooltip in buttons
+    ]
 
     # Add theme toggle after divider
     menu_items.extend([
         NavDividerLi(),
-        create_settings_button("dark mode", batch_name, "toggle-theme", 
-                             "Switch between light and dark color themes")
+        create_settings_button("dark mode", batch_name, "toggle-theme",
+                               "Switch between light and dark color themes")
     ])
 
-    return DropDownNavContainer(
-        NavHeaderLi("settings"),
-        *menu_items
-    )
+    return DropDownNavContainer(NavHeaderLi("settings"), *menu_items)
+
 
 def create_batches_dropdown(batch_name: str) -> DropDownNavContainer:
     """Create the metric batches dropdown menu."""
@@ -63,11 +69,11 @@ def create_batches_dropdown(batch_name: str) -> DropDownNavContainer:
                     hx_target="#main-content",
                     hx_indicator="#loading",
                     cls=f"{'uk-active' if name == batch_name else ''}",
-                )
-            ) for name in state.metric_batches
+                )) for name in state.metric_batches
         ],
-        uk_dropdown="pos: bottom-right; boundary: window; shift: true; flip: true;"
-    )
+        uk_dropdown=
+        "pos: bottom-right; boundary: window; shift: true; flip: true;")
+
 
 def create_toolbar_buttons(batch_name: str) -> Div:
     """Create the toolbar buttons."""
@@ -102,11 +108,13 @@ def create_toolbar_buttons(batch_name: str) -> Div:
         Button(
             DivLAligned(UkIcon("github")),
             cls=ButtonT.secondary,
-            onclick="window.open('https://github.com/andrewm4894/anomstack', '_blank')",
+            onclick=
+            "window.open('https://github.com/andrewm4894/anomstack', '_blank')",
             uk_tooltip="View project on GitHub",
         ),
         cls="flex items-center space-x-2 flex-wrap",
     )
+
 
 def create_search_form(batch_name: str) -> Form:
     """Create the search form."""
@@ -119,7 +127,8 @@ def create_search_form(batch_name: str) -> Form:
             name="search",
             placeholder="Search metrics...",
             value=current_search,
-            cls="uk-input uk-form-small rounded-md border-gray-200 w-full md:w-[220px]",
+            cls=
+            "uk-input uk-form-small rounded-md border-gray-200 w-full md:w-[220px]",
             uk_tooltip="Filter metrics by name",
             autocomplete="off",
             aria_label="Search metrics",
@@ -133,6 +142,7 @@ def create_search_form(batch_name: str) -> Form:
         cls="w-full md:w-auto",
     )
 
+
 def create_last_n_form(batch_name: str) -> Form:
     """Create the last n number form."""
     state = get_state()
@@ -143,15 +153,19 @@ def create_last_n_form(batch_name: str) -> Form:
                 name="last_n",
                 value=state.last_n.get(batch_name, "30n"),
                 pattern=r"^\d+[nNhmd]$",
-                title="Use format: 30n (observations), 24h (hours), 45m (minutes), 7d (days)",
-                cls="uk-input uk-form-small rounded-md border-gray-200 w-full md:w-[110px]",
-                uk_tooltip="Filter by last N observations or time period (e.g., 30n, 24h, 45m, 7d)",
+                title=
+                "Use format: 30n (observations), 24h (hours), 45m (minutes), 7d (days)",
+                cls=
+                "uk-input uk-form-small rounded-md border-gray-200 w-full md:w-[110px]",
+                uk_tooltip=
+                "Filter by last N observations or time period (e.g., 30n, 24h, 45m, 7d)",
             ),
             cls="space-x-2",
         ),
         hx_post=f"/batch/{batch_name}/update-n",
         hx_target="#main-content",
     )
+
 
 def create_controls(batch_name: str) -> Card:
     """Create the main controls for the dashboard."""
@@ -164,24 +178,28 @@ def create_controls(batch_name: str) -> Card:
                         Div(
                             create_search_form(batch_name),
                             create_last_n_form(batch_name),
-                            cls="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4 mt-4",
+                            cls=
+                            "flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4 mt-4",
                         ),
                         cls="flex flex-col w-full",
-                    ),
-                ),
+                    ), ),
                 cls="w-full",
-            ),
-        ),
+            ), ),
         cls="mb-4 uk-padding-small py-2 shadow-sm",
     )
+
 
 def create_batch_card(batch_name: str, stats: dict) -> Card:
     """Create a card displaying batch information."""
     metric_info = [
-        (UkIcon("activity", cls="text-blue-500"), f"{stats['unique_metrics']} metrics"),
-        (UkIcon("clock", cls="text-green-500"), f"{stats['latest_timestamp']}"),
-        (UkIcon("bar-chart", cls="text-purple-500"), f"Avg Score: {stats['avg_score']:.1%}"),
-        (UkIcon("alert-circle", cls="text-red-500"), f"{stats['alert_count']} alerts"),
+        (UkIcon("activity",
+                cls="text-blue-500"), f"{stats['unique_metrics']} metrics"),
+        (UkIcon("clock",
+                cls="text-green-500"), f"{stats['latest_timestamp']}"),
+        (UkIcon("bar-chart", cls="text-purple-500"),
+         f"Avg Score: {stats['avg_score']:.1%}"),
+        (UkIcon("alert-circle",
+                cls="text-red-500"), f"{stats['alert_count']} alerts"),
     ]
 
     metric_divs = [
@@ -195,24 +213,21 @@ def create_batch_card(batch_name: str, stats: dict) -> Card:
     return Card(
         DivLAligned(
             Div(
-                Button(
-                    batch_name,
-                    hx_get=f"/batch/{batch_name}",
-                    hx_push_url=f"/batch/{batch_name}",
-                    hx_target="#main-content",
-                    hx_indicator="#loading",
-                    cls=(ButtonT.primary, "w-full")
-                ),
+                Button(batch_name,
+                       hx_get=f"/batch/{batch_name}",
+                       hx_push_url=f"/batch/{batch_name}",
+                       hx_target="#main-content",
+                       hx_indicator="#loading",
+                       cls=(ButtonT.primary, "w-full")),
                 DividerLine(),
-                DivLAligned(
-                    Div(*metric_divs, cls="space-y-1"),
-                ),
+                DivLAligned(Div(*metric_divs, cls="space-y-1"), ),
                 cls="w-full",
             ),
             cls="w-full",
         ),
         cls="px-2 py-0.5 hover:border-primary transition-colors duration-200",
     )
+
 
 def create_header() -> Div:
     """Create the dashboard header."""
