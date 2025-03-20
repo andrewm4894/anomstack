@@ -38,10 +38,12 @@ def _get_sorted_batch_stats() -> tuple:
     """Calculate and sort batch statistics."""
     batch_stats = {}
     for batch_name in app.state.metric_batches:
-        df = _get_batch_data(batch_name)
-        batch_stats[batch_name] = calculate_batch_stats(df, batch_name)
+        if batch_name not in app.state.df_cache:
+            app.state.df_cache[batch_name] = _get_batch_data(batch_name)
+        if batch_name not in app.state.stats_cache:
+            app.state.calculate_metric_stats(batch_name)
+        batch_stats[batch_name] = calculate_batch_stats(app.state.df_cache[batch_name], batch_name)
 
-    # Filter and sort batches
     filtered_batches = {
         name: stats
         for name, stats in batch_stats.items()
