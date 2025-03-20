@@ -191,21 +191,8 @@ app, rt = fast_app(
             }
             
             .uk-dropdown {
-                text-align: right;
-                position: absolute;
-                right: 0;
-                left: auto !important;
                 min-width: 200px;
-                transform: translateX(0);
                 margin-top: 5px;
-            }
-            
-            .uk-dropdown li {
-                text-align: right;
-            }
-            
-            .uk-dropdown li a {
-                justify-content: flex-end;
             }
             
             body.dark-mode .loading-indicator .htmx-indicator {
