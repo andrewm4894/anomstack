@@ -71,10 +71,19 @@ app, rt = fast_app(
                     font-size: 0.875rem;
                 }
 
+                .flex.items-center.space-x-2.flex-wrap {
+                    flex-direction: column;
+                    align-items: stretch !important;
+                }
+
+                .flex.items-center.space-x-2.flex-wrap > form {
+                    width: 100%;
+                    margin: 0.5rem 0;
+                }
+
                 input[type="search"],
-                input[type="number"] {
+                input[type="text"] {
                     width: 100% !important;
-                    margin-bottom: 0.5rem;
                 }
             }
 
