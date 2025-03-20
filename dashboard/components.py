@@ -1,3 +1,4 @@
+
 """
 Components for the dashboard.
 This file is kept for backwards compatibility.
@@ -10,7 +11,6 @@ from .components.batch import create_batches_dropdown, create_batch_card
 from .components.forms import create_search_form, create_last_n_form
 from .components.common import create_settings_button
 
-
 __all__ = [
     'create_toolbar_buttons',
     'create_settings_dropdown',
@@ -19,6 +19,7 @@ __all__ = [
     'create_search_form',
     'create_last_n_form',
     'create_settings_button',
+    'create_controls',
     'create_header'
 ]
 
