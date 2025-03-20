@@ -208,7 +208,7 @@ def get_batch_view(batch_name: str, session, initial_load: int = DEFAULT_LOAD_N_
     # Update the load more button text
     load_next = min(DEFAULT_LOAD_N_CHARTS, remaining_metrics)
     return Div(
-        _create_controls(batch_name),
+        create_controls(batch_name),
         Div(
             *[
                 ChartManager.create_chart_placeholder(
