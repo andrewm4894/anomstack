@@ -192,6 +192,8 @@ app, rt = fast_app(
             
             .uk-dropdown {
                 min-width: 200px;
+                max-width: fit-content;
+                width: auto;
                 margin-top: 5px;
             }
             
