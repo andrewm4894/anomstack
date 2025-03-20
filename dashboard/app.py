@@ -192,6 +192,9 @@ app, rt = fast_app(
             
             .uk-dropdown {
                 text-align: right;
+                right: 0;
+                left: auto !important;
+                min-width: 200px;
             }
             
             .uk-dropdown li {
