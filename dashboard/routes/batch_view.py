@@ -6,6 +6,7 @@ from components import create_controls
 from charts import ChartManager
 from data import get_data
 from constants import DEFAULT_LOAD_N_CHARTS
+from .index import _get_batch_data
 
 @rt("/batch/{batch_name}")
 def get_batch_view(batch_name: str, session, initial_load: int = DEFAULT_LOAD_N_CHARTS):
