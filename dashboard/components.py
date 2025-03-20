@@ -121,6 +121,13 @@ def _create_controls(batch_name):
                                         uk_tooltip="Return to homepage",
                                     ),
                                     Button(
+                                        DivLAligned(UkIcon("menu")),
+                                        cls=ButtonT.secondary,
+                                        uk_tooltip=
+                                        "Select metric batch to display",
+                                    ),
+                                    batches_dropdown,
+                                    Button(
                                         DivLAligned(UkIcon("refresh-ccw")),
                                         hx_get=f"/batch/{batch_name}/refresh",
                                         hx_target="#main-content",
@@ -128,13 +135,6 @@ def _create_controls(batch_name):
                                         uk_tooltip=
                                         "Refresh metrics data from source",
                                     ),
-                                    Button(
-                                        DivLAligned(UkIcon("menu")),
-                                        cls=ButtonT.secondary,
-                                        uk_tooltip=
-                                        "Select metric batch to display",
-                                    ),
-                                    batches_dropdown,
                                     Button(
                                         DivLAligned(UkIcon("settings")),
                                         cls=ButtonT.secondary,
