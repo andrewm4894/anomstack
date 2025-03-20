@@ -72,18 +72,29 @@ app, rt = fast_app(
                 }
 
                 .flex.items-center.space-x-2.flex-wrap {
-                    flex-direction: column;
-                    align-items: stretch !important;
+                    gap: 0.5rem;
+                }
+
+                .flex.items-center.space-x-2.flex-wrap > .uk-button {
+                    margin: 0;
                 }
 
                 .flex.items-center.space-x-2.flex-wrap > form {
                     width: 100%;
-                    margin: 0.5rem 0;
                 }
 
-                input[type="search"],
+                .search-controls {
+                    display: flex;
+                    width: 100%;
+                    gap: 0.5rem;
+                }
+
+                input[type="search"] {
+                    flex: 2;
+                }
+
                 input[type="text"] {
-                    width: 100% !important;
+                    flex: 1;
                 }
             }
 

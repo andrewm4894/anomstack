@@ -150,8 +150,11 @@ def _create_controls(batch_name):
                                         cls="uk-button uk-button-secondary",
                                         uk_tooltip="View project on GitHub",
                                     ),
-                                    _create_search_form(batch_name),
-                                    _create_last_n_form(batch_name),
+                                    Div(
+                                        _create_search_form(batch_name),
+                                        _create_last_n_form(batch_name),
+                                        cls="search-controls"
+                                    ),
                                     cls="flex items-center space-x-2 flex-wrap",
                                 ),
                                 cls="flex flex-row items-center space-x-2",
