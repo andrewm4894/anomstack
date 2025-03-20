@@ -190,6 +190,18 @@ app, rt = fast_app(
                 background-color: #333333;
             }
             
+            .uk-dropdown {
+                text-align: right;
+            }
+            
+            .uk-dropdown li {
+                text-align: right;
+            }
+            
+            .uk-dropdown li a {
+                justify-content: flex-end;
+            }
+            
             body.dark-mode .loading-indicator .htmx-indicator {
                 background: #262626;
                 color: #e5e7eb;
