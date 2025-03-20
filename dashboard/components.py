@@ -16,84 +16,80 @@ def _create_controls(batch_name):
     """
     state = get_state()
     settings_dropdown = DropDownNavContainer(
-        NavHeaderLi("Settings"),
+        NavHeaderLi("settings"),
         Li(
             DivLAligned(
                 Button(
-                    P("Small Charts", cls="text-sm font-medium"),
+                    P("small charts", cls="text-sm font-medium"),
                     hx_post=f"/batch/{batch_name}/toggle-size",
                     hx_target="#main-content",
                     cls=ButtonT.ghost,
-                    uk_tooltip="Toggle between compact and full-size chart views",
+                    uk_tooltip=
+                    "Toggle between compact and full-size chart views",
                 ),
-                cls="flex items-center justify-between w-full px-2 py-2",
-            )
-        ),
+                cls="flex items-center justify-between w-full py-2",
+            )),
         Li(
             DivLAligned(
                 Button(
-                    P("Two Columns", cls="text-sm font-medium"),
+                    P("two columns", cls="text-sm font-medium"),
                     hx_post=f"/batch/{batch_name}/toggle-columns",
                     hx_target="#main-content",
                     cls=ButtonT.ghost,
                     uk_tooltip="Display charts in one or two columns",
                 ),
-                cls="flex items-center justify-between w-full px-2 py-2",
-            )
-        ),
+                cls="flex items-center justify-between w-full py-2",
+            )),
         Li(
             DivLAligned(
                 Button(
-                    P("Show Markers", cls="text-sm font-medium"),
+                    P("show markers", cls="text-sm font-medium"),
                     hx_post=f"/batch/{batch_name}/toggle-markers",
                     hx_target="#main-content",
                     cls=ButtonT.ghost,
                     uk_tooltip="Show/hide data point markers on the charts",
                 ),
-                cls="flex items-center justify-between w-full px-2 py-2",
-            )
-        ),
+                cls="flex items-center justify-between w-full py-2",
+            )),
         Li(
             DivLAligned(
                 Button(
-                    P("Show Legend", cls="text-sm font-medium"),
+                    P("show legend", cls="text-sm font-medium"),
                     hx_post=f"/batch/{batch_name}/toggle-legend",
                     hx_target="#main-content",
                     cls=ButtonT.ghost,
                     uk_tooltip="Display chart legends",
                 ),
-                cls="flex items-center justify-between w-full px-2 py-2",
-            )
-        ),
+                cls="flex items-center justify-between w-full py-2",
+            )),
         Li(
             DivLAligned(
                 Button(
-                    P("Narrow Lines", cls="text-sm font-medium"),
+                    P("narrow lines", cls="text-sm font-medium"),
                     hx_post=f"/batch/{batch_name}/toggle-line-width",
                     hx_target="#main-content",
                     cls=ButtonT.ghost,
-                    uk_tooltip="Toggle between narrow and normal line thickness",
+                    uk_tooltip=
+                    "Toggle between narrow and normal line thickness",
                 ),
-                cls="flex items-center justify-between w-full px-2 py-2",
-            )
-        ),
+                cls="flex items-center justify-between w-full py-2",
+            )),
         NavDividerLi(),
         Li(
             DivLAligned(
                 Button(
-                    P("Dark Mode", cls="text-sm font-medium"),
+                    P("dark mode", cls="text-sm font-medium"),
                     hx_post=f"/batch/{batch_name}/toggle-theme",
                     hx_target="#main-content",
                     cls=ButtonT.ghost,
                     uk_tooltip="Switch between light and dark color themes",
                 ),
-                cls="flex items-center justify-between w-full px-2 py-2",
-            )
-        ),
+                cls="flex items-center justify-between w-full py-2",
+            )),
     )
 
     batches_dropdown = DropDownNavContainer(
-        NavHeaderLi("Metric Batches"),
+        NavHeaderLi("metric batches"),
         *[
             Li(
                 A(
@@ -103,12 +99,10 @@ def _create_controls(batch_name):
                     hx_target="#main-content",
                     hx_indicator="#loading",
                     cls=f"{'uk-active' if batch_name == batch_name else ''}",
-                )
-            )
-            for batch_name in state.metric_batches
+                )) for batch_name in state.metric_batches
         ],
-        uk_dropdown="pos: bottom-right; boundary: window; shift: true; flip: true;"
-    )
+        uk_dropdown=
+        "pos: bottom-right; boundary: window; shift: true; flip: true;")
 
     return Card(
         DivFullySpaced(
@@ -131,23 +125,27 @@ def _create_controls(batch_name):
                                         hx_get=f"/batch/{batch_name}/refresh",
                                         hx_target="#main-content",
                                         cls=ButtonT.secondary,
-                                        uk_tooltip="Refresh metrics data from source",
+                                        uk_tooltip=
+                                        "Refresh metrics data from source",
                                     ),
                                     Button(
                                         DivLAligned(UkIcon("menu")),
                                         cls=ButtonT.secondary,
-                                        uk_tooltip="Select metric batch to display",
+                                        uk_tooltip=
+                                        "Select metric batch to display",
                                     ),
                                     batches_dropdown,
                                     Button(
                                         DivLAligned(UkIcon("settings")),
                                         cls=ButtonT.secondary,
-                                        uk_tooltip="Customize chart display settings",
+                                        uk_tooltip=
+                                        "Customize chart display settings",
                                     ),
                                     settings_dropdown,
                                     A(
                                         DivLAligned(UkIcon("github")),
-                                        href="https://github.com/andrewm4894/anomstack",
+                                        href=
+                                        "https://github.com/andrewm4894/anomstack",
                                         target="_blank",
                                         cls="uk-button uk-button-secondary",
                                         uk_tooltip="View project on GitHub",
@@ -159,16 +157,15 @@ def _create_controls(batch_name):
                             Div(
                                 _create_search_form(batch_name),
                                 _create_last_n_form(batch_name),
-                                cls="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4 mt-4",
+                                cls=
+                                "flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4 mt-4",
                             ),
                             cls="flex flex-col w-full",
-                        ),
-                    ),
+                        ), ),
                     cls="w-full",
                 ),
                 cls="w-full",
-            ),
-        ),
+            ), ),
         cls="mb-4 uk-padding-small py-2 shadow-sm",
     )
 
@@ -186,7 +183,8 @@ def _create_search_form(batch_name):
             name="search",
             placeholder="Search metrics...",
             value=current_search,
-            cls="uk-input uk-form-small rounded-md border-gray-200 w-full md:w-[220px]",
+            cls=
+            "uk-input uk-form-small rounded-md border-gray-200 w-full md:w-[220px]",
             uk_tooltip="Filter metrics by name",
             autocomplete="off",
             aria_label="Search metrics",
@@ -211,11 +209,14 @@ def _create_last_n_form(batch_name):
             Input(
                 type="text",
                 name="last_n",
-                value=state.last_n.get(batch_name,"30n"),
+                value=state.last_n.get(batch_name, "30n"),
                 pattern="^\d+[nNhmd]$",
-                title="Use format: 30n (observations), 24h (hours), 45m (minutes), 7d (days)",
-                cls="uk-input uk-form-small rounded-md border-gray-200 w-full md:w-[110px]",
-                uk_tooltip="Filter by last N observations or time period (e.g., 30n, 24h, 45m, 7d)",
+                title=
+                "Use format: 30n (observations), 24h (hours), 45m (minutes), 7d (days)",
+                cls=
+                "uk-input uk-form-small rounded-md border-gray-200 w-full md:w-[110px]",
+                uk_tooltip=
+                "Filter by last N observations or time period (e.g., 30n, 24h, 45m, 7d)",
             ),
             cls="space-x-2",
         ),
@@ -229,14 +230,12 @@ def create_batch_card(batch_name: str, stats: dict) -> Card:
     return Card(
         DivLAligned(
             Div(
-                Button(
-                    batch_name,
-                    hx_get=f"/batch/{batch_name}",
-                    hx_push_url=f"/batch/{batch_name}",
-                    hx_target="#main-content",
-                    hx_indicator="#loading",
-                    cls=(ButtonT.primary, "w-full")
-                ),
+                Button(batch_name,
+                       hx_get=f"/batch/{batch_name}",
+                       hx_push_url=f"/batch/{batch_name}",
+                       hx_target="#main-content",
+                       hx_indicator="#loading",
+                       cls=(ButtonT.primary, "w-full")),
                 DividerLine(),
                 DivLAligned(
                     Div(
@@ -250,7 +249,8 @@ def create_batch_card(batch_name: str, stats: dict) -> Card:
                         ),
                         DivLAligned(
                             UkIcon("clock", cls="text-green-500"),
-                            P(f"{stats['latest_timestamp']}", cls=TextPresets.muted_sm),
+                            P(f"{stats['latest_timestamp']}",
+                              cls=TextPresets.muted_sm),
                             cls="space-x-2",
                         ),
                         DivLAligned(
@@ -270,8 +270,7 @@ def create_batch_card(batch_name: str, stats: dict) -> Card:
                             cls="space-x-2",
                         ),
                         cls="space-y-1",
-                    )
-                ),
+                    )),
                 cls="w-full",
             ),
             cls="w-full",
