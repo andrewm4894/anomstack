@@ -142,12 +142,10 @@ def _create_controls(batch_name):
                                         "Customize chart display settings",
                                     ),
                                     settings_dropdown,
-                                    A(
+                                    Button(
                                         DivLAligned(UkIcon("github")),
-                                        href=
-                                        "https://github.com/andrewm4894/anomstack",
-                                        target="_blank",
-                                        cls="uk-button uk-button-secondary",
+                                        cls=ButtonT.secondary,
+                                        onclick="window.open('https://github.com/andrewm4894/anomstack', '_blank')",
                                         uk_tooltip="View project on GitHub",
                                     ),
                                     cls="flex items-center space-x-2 flex-wrap",
