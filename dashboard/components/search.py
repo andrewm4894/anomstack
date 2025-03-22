@@ -3,12 +3,11 @@ Search and filtering components.
 """
 from fasthtml.common import *
 from monsterui.all import *
-from dashboard.state import get_state
+from dashboard.app import app
 
 def create_search_form(batch_name: str) -> Form:
     """Create the search form."""
-    state = get_state()
-    current_search = state.search_term.get(batch_name, "")
+    current_search = app.state.search_term.get(batch_name, "")
 
     return Form(
         Input(
@@ -32,13 +31,12 @@ def create_search_form(batch_name: str) -> Form:
 
 def create_last_n_form(batch_name: str) -> Form:
     """Create the last n number form."""
-    state = get_state()
     return Form(
         DivLAligned(
             Input(
                 type="text",
                 name="last_n",
-                value=state.last_n.get(batch_name, "30n"),
+                value=app.state.last_n.get(batch_name, "30n"),
                 pattern=r"^\d+[nNhmd]$",
                 title="Use format: 30n (observations), 24h (hours), 45m (minutes), 7d (days)",
                 cls="uk-input uk-form-small rounded-md border-gray-200 w-full md:w-[110px]",
