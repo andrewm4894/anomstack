@@ -15,7 +15,7 @@ from monsterui.all import *
 from fasthtml.svg import *
 from starlette.staticfiles import StaticFiles
 
-from constants import *
+from dashboard.constants import *
 from state import AppState
 
 # load the environment variables
