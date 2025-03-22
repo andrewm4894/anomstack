@@ -5,7 +5,8 @@ from fasthtml.common import *
 from monsterui.all import *
 
 from dashboard.app import app, rt
-from .batch_view import ChartManager
+from .batch_view import ChartManager, get_batch_view, DEFAULT_LOAD_N_CHARTS
+from dashboard.data import get_data
 
 
 @rt("/batch/{batch_name}/search")
@@ -79,3 +80,22 @@ def get(batch_name: str, start_index: int):
             hx_swap_oob="true",
         ),
     ]
+
+@rt("/batch/{batch_name}/update-n")
+def post(batch_name: str, last_n: str = "30n", session=None):
+    """Update time window."""
+    try:
+        app.state.last_n[batch_name] = last_n
+        app.state.clear_batch_cache(batch_name)
+        app.state.df_cache[batch_name] = get_data(
+            app.state.specs_enabled[batch_name],
+            last_n=last_n,
+            ensure_timestamp=True
+        )
+        app.state.calculate_metric_stats(batch_name)
+        return get_batch_view(batch_name, initial_load=DEFAULT_LOAD_N_CHARTS)
+    except ValueError as e:
+        return Div(
+            P(str(e), cls="text-red-500 p-4 text-center"),
+            id="main-content",
+        )
