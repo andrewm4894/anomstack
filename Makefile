@@ -12,6 +12,8 @@ SHELL=/bin/bash
 .PHONY: ps-locald
 .PHONY: dashboard
 .PHONY: dashboardd
+.PHONY: dashboard-uvicorn
+.PHONY: dashboardd-uvicorn
 .PHONY: requirements-install
 
 # start dagster locally
@@ -59,8 +61,14 @@ requirements:
 dashboard:
 	python dashboard/app.py
 
+dashboard-uvicorn:
+	uvicorn dashboard.app:app --host 0.0.0.0 --port 5003 --reload
+
 dashboardd:
 	nohup python dashboard/app.py > /dev/null 2>&1 &
+
+dashboardd-uvicorn:
+	nohup uvicorn dashboard.app:app --host 0.0.0.0 --port 5003 --reload > /dev/null 2>&1 &
 
 requirements-install:
 	pip install -r requirements.txt

@@ -42,10 +42,11 @@ app, rt = fast_app(
 # Mount static files
 app.mount("/static", StaticFiles(directory="dashboard/static"), name="static")
 
+# Set the app state
 app.state = AppState()
 
 # Import routes after app is defined
 from routes import *
 
 if __name__ == "__main__":
-    serve()
+    serve(app, port=int(os.getenv("ANOMSTACK_DASHBOARD_PORT", 5001)))
