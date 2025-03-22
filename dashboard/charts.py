@@ -133,7 +133,7 @@ def plot_time_series(
             name="Metric Value",
             mode="lines" + ("+markers" if show_markers else ""),
             line=dict(color=colors["primary"], width=line_width),
-            marker=(dict(size=6, color=colors["primary"], symbol="circle")
+            marker=(dict(size=line_width+4, color=colors["primary"], symbol="circle")
                     if show_markers else None),
             showlegend=show_legend,
         ),
@@ -166,7 +166,7 @@ def plot_time_series(
                     y=condition_df[condition],
                     mode="markers",
                     name=props["name"],
-                    marker=dict(color=props["color"], size=8, symbol="circle"),
+                    marker=dict(color=props["color"], size=line_width+4, symbol="circle"),
                     showlegend=show_legend,
                 ),
                 secondary_y=True,
@@ -181,7 +181,7 @@ def plot_time_series(
         title_text="Metric Score",
         secondary_y=True,
         showgrid=False,
-        range=[0, 1.1],
+        range=[0, 1.05],
         tickformat=".0%",
         **{
             k: v
