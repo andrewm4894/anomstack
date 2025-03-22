@@ -9,7 +9,7 @@ localPort = 3000
 externalPort = 3000
 
 [[ports]]
-localPort = 5001
+localPort = 80
 externalPort = 80
 
 [workflows]
@@ -22,7 +22,7 @@ mode = "parallel"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "uvicorn dashboard.app:app --host 0.0.0.0 --port 5001 --reload"
+args = "python -m uvicorn dashboard.app:app --host 0.0.0.0 --port 80 --reload"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
@@ -35,7 +35,7 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "uvicorn dashboard.app:app --host 0.0.0.0 --port 5001 --reload"
+args = "python -m uvicorn dashboard.app:app --host 0.0.0.0 --port 80 --reload"
 
 [[workflows.workflow]]
 name = "Backend Only"
@@ -51,5 +51,5 @@ deploymentTarget = "cloudrun"
 run = [
   "sh",
   "-c",
-  "uvicorn dashboard.app:app --host 0.0.0.0 --port 5001 --reload",
+  "python -m uvicorn dashboard.app:app --host 0.0.0.0 --port 80",
 ]
