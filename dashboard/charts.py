@@ -8,7 +8,7 @@ from fasthtml.svg import *
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from app import app
+from dashboard.app import app
 
 
 class ChartManager:
@@ -33,8 +33,10 @@ class ChartManager:
             include_plotlyjs=False,
             full_html=False,
             config={
-                "displayModeBar": False,
-                "displaylogo": False,
+                "displayModeBar":
+                False,
+                "displaylogo":
+                False,
                 "modeBarButtonsToRemove": [
                     "zoom2d",
                     "pan2d",
@@ -45,9 +47,12 @@ class ChartManager:
                     "autoScale2d",
                     "resetScale2d",
                 ],
-                "responsive": True,
-                "scrollZoom": False,
-                "staticPlot": False,
+                "responsive":
+                True,
+                "scrollZoom":
+                False,
+                "staticPlot":
+                False,
             },
         )
 
@@ -128,11 +133,8 @@ def plot_time_series(
             name="Metric Value",
             mode="lines" + ("+markers" if show_markers else ""),
             line=dict(color=colors["primary"], width=line_width),
-            marker=(
-                dict(size=6, color=colors["primary"], symbol="circle")
-                if show_markers
-                else None
-            ),
+            marker=(dict(size=6, color=colors["primary"], symbol="circle")
+                    if show_markers else None),
             showlegend=show_legend,
         ),
         secondary_y=False,
@@ -152,8 +154,9 @@ def plot_time_series(
 
     # Add alert and change markers if they exist
     for condition, props in {
-        "metric_alert": dict(name="Metric Alert", color=colors["alert"]),
-        "metric_change": dict(name="Metric Change", color=colors["change"]),
+            "metric_alert": dict(name="Metric Alert", color=colors["alert"]),
+            "metric_change": dict(name="Metric Change",
+                                  color=colors["change"]),
     }.items():
         condition_df = df[df[condition] == 1]
         if not condition_df.empty:
@@ -171,14 +174,19 @@ def plot_time_series(
 
     # Update axes
     fig.update_xaxes(**common_grid)
-    fig.update_yaxes(title_text="Metric Value", secondary_y=False, **common_grid)
+    fig.update_yaxes(title_text="Metric Value",
+                     secondary_y=False,
+                     **common_grid)
     fig.update_yaxes(
         title_text="Metric Score",
         secondary_y=True,
         showgrid=False,
         range=[0, 1.1],
         tickformat=".0%",
-        **{k: v for k, v in common_grid.items() if k != "showgrid"},
+        **{
+            k: v
+            for k, v in common_grid.items() if k != "showgrid"
+        },
     )
 
     # Update layout
@@ -188,19 +196,15 @@ def plot_time_series(
         hovermode="x unified",
         hoverdistance=100,
         showlegend=show_legend,
-        legend=(
-            dict(
-                orientation="h",
-                yanchor="bottom",
-                y=1.02,
-                xanchor="left",
-                x=0,
-                bgcolor=colors["background"],
-                font=dict(color=colors["text"]),
-            )
-            if show_legend
-            else None
-        ),
+        legend=(dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="left",
+            x=0,
+            bgcolor=colors["background"],
+            font=dict(color=colors["text"]),
+        ) if show_legend else None),
         margin=dict(t=5, b=5, l=5, r=5),
         height=height,
     )

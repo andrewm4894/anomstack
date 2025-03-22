@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 import pandas as pd
 from typing import Dict, Any
-from constants import DEFAULT_LAST_N
 
 
 def calculate_batch_stats(df: pd.DataFrame, batch_name: str) -> Dict[str, Any]:
@@ -15,12 +14,10 @@ def calculate_batch_stats(df: pd.DataFrame, batch_name: str) -> Dict[str, Any]:
         }
 
     # Calculate core stats
-    avg_score = (
-        df["metric_score"].fillna(0).mean() if "metric_score" in df.columns else 0
-    )
-    alert_count = (
-        df["metric_alert"].fillna(0).sum() if "metric_alert" in df.columns else 0
-    )
+    avg_score = (df["metric_score"].fillna(0).mean()
+                 if "metric_score" in df.columns else 0)
+    alert_count = (df["metric_alert"].fillna(0).sum()
+                   if "metric_alert" in df.columns else 0)
 
     # Calculate time ago string
     latest_timestamp = df["metric_timestamp"].max()

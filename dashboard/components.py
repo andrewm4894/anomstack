@@ -6,8 +6,8 @@ from fasthtml.common import *
 from monsterui.all import *
 from fasthtml.svg import *
 
-from state import get_state
-from constants import *
+from dashboard.state import get_state
+from dashboard.constants import *
 
 
 def create_settings_button(text: str, batch_name: str, action: str,
