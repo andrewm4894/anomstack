@@ -1,4 +1,3 @@
-
 from fasthtml.common import *
 from monsterui.all import *
 from fasthtml.svg import *
@@ -97,13 +96,12 @@ def _create_main_content(batch_stats: dict, sorted_batch_names: list) -> Div:
                     cls="mb-6",
                 )
                 if not app.state.metric_batches
-                else Grid(
+                else Div(
                     *[
                         create_batch_card(name, batch_stats[name])
                         for name in sorted_batch_names
                     ],
-                    cols=4,
-                    gap=2,
+                    cls="homepage-grid",
                 )
             ),
             cls="p-2",
