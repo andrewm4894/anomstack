@@ -24,15 +24,31 @@ def create_settings_button(text: str, batch_name: str, action: str, tooltip: str
 def create_settings_dropdown(batch_name: str) -> DropDownNavContainer:
     """Create the settings dropdown menu."""
     buttons = [
-        ("small charts", "toggle-size", "Toggle between compact and full-size chart views"),
+        (
+            "large charts" if app.state.small_charts else "small charts",
+            "toggle-size",
+            "Toggle between compact and full-size chart views"
+        ),
         (
             "two columns" if not app.state.two_columns else "one column",
             "toggle-columns",
             "Display charts in one or two columns"
         ),
-        ("show markers", "toggle-markers", "Show/hide data point markers on the charts"),
-        ("show legend", "toggle-legend", "Display chart legends"),
-        ("narrow lines", "toggle-line-width", "Toggle between narrow and normal line thickness"),
+        (
+            "hide markers" if app.state.show_markers else "show markers",
+            "toggle-markers",
+            "Show/hide data point markers on the charts"
+        ),
+        (
+            "hide legend" if app.state.show_legend else "show legend",
+            "toggle-legend",
+            "Display chart legends"
+        ),
+        (
+            "normal lines" if not app.state.line_width == 2 else "narrow lines",
+            "toggle-line-width",
+            "Toggle between narrow and normal line thickness"
+        ),
     ]
 
     menu_items = [
@@ -42,8 +58,12 @@ def create_settings_dropdown(batch_name: str) -> DropDownNavContainer:
 
     menu_items.extend([
         NavDividerLi(),
-        create_settings_button("dark mode", batch_name, "toggle-theme",
-                               "Switch between light and dark color themes")
+        create_settings_button(
+            "dark mode" if not app.state.dark_mode else "light mode",
+            batch_name,
+            "toggle-theme",
+            "Switch between light and dark color themes"
+        )
     ])
 
     return DropDownNavContainer(NavHeaderLi("settings"), *menu_items)
