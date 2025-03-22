@@ -7,6 +7,7 @@ from monsterui.all import *
 from dashboard.app import app, rt
 from .batch_view import get_batch_view
 
+
 @rt("/batch/{batch_name}/toggle-size")
 def post(batch_name: str):
     """Toggle chart size."""
