@@ -1,6 +1,12 @@
 """
+dashboard/components/search.py
+
 Search and filtering components.
+
+This module contains the components for the search and filtering functionality.
+
 """
+
 from fasthtml.common import *
 from monsterui.all import *
 from dashboard.app import app

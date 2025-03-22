@@ -1,5 +1,10 @@
 """
+dashboard/state.py
+
 State manager for the dashboard.
+
+This module contains the AppState class, which is responsible for managing the state of the dashboard.
+
 """
 
 import logging

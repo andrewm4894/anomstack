@@ -1,3 +1,12 @@
+"""
+dashboard/routes/batch_view.py
+
+Batch View
+
+This module contains the route for the batch view.
+
+"""
+
 import pandas as pd
 from fasthtml.common import *
 from monsterui.all import *
@@ -8,7 +17,7 @@ from dashboard.data import get_data
 from dashboard.constants import DEFAULT_LAST_N, DEFAULT_LOAD_N_CHARTS
 
 
-def _get_batch_data(batch_name: str):
+def get_batch_data(batch_name: str):
     """Get batch data, either from cache or by fetching."""
     try:
         return get_data(app.state.specs_enabled[batch_name],
@@ -27,7 +36,7 @@ def get_batch_view(batch_name: str,
                    initial_load: int = DEFAULT_LOAD_N_CHARTS):
     """Get the batch view."""
     if batch_name not in app.state.df_cache or batch_name not in app.state.stats_cache:
-        app.state.df_cache[batch_name] = _get_batch_data(batch_name)
+        app.state.df_cache[batch_name] = get_batch_data(batch_name)
         app.state.calculate_metric_stats(batch_name)
 
     metric_stats = app.state.stats_cache[batch_name]

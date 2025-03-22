@@ -1,10 +1,17 @@
 """
+dashboard/components/common.py
+
 Common components shared across the dashboard.
+
+This module contains the common components for the dashboard.
+
 """
+
 from fasthtml.common import *
 from monsterui.all import *
 from .search import create_search_form, create_last_n_form
 from .toolbar import create_toolbar_buttons
+
 
 def create_controls(batch_name: str) -> Card:
     """Create the main controls for the dashboard."""

@@ -1,3 +1,12 @@
+"""
+dashboard/batch_stats.py
+
+Batch Stats
+
+This module contains functions for calculating statistics for a batch of metrics.
+
+"""
+
 from datetime import datetime, timezone
 import pandas as pd
 from typing import Dict, Any

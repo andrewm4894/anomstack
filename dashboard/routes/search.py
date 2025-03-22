@@ -1,6 +1,12 @@
 """
+dashboard/routes/search.py
+
 Routes for search and load more functionality.
+
+This module contains the routes for the search and load more functionality.
+
 """
+
 from fasthtml.common import *
 from monsterui.all import *
 

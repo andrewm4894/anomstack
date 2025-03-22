@@ -1,5 +1,10 @@
 """
+dashboard/charts.py
+
 Chart manager for the dashboard.
+
+This module contains the ChartManager class, which is responsible for creating charts for the dashboard.
+
 """
 
 from fasthtml.common import *

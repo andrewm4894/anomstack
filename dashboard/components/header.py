@@ -1,6 +1,12 @@
 """
+dashboard/components/header.py
+
 Header components.
+
+This module contains the components for the dashboard header.
+
 """
+
 from fasthtml.common import *
 from monsterui.all import *
 

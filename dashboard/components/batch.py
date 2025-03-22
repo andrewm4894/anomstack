@@ -1,6 +1,12 @@
 """
+dashboard/components/batch.py
+
 Batch-related components.
+
+This module contains the components for the batch view.
+
 """
+
 from fasthtml.common import *
 from monsterui.all import *
 from dashboard.state import get_state

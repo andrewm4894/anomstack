@@ -1,10 +1,17 @@
 """
+dashboard/components/toolbar.py
+
 Toolbar-related components.
+
+This module contains the components for the toolbar.
+
 """
+
 from fasthtml.common import *
 from monsterui.all import *
 from .batch import create_batches_dropdown
 from .settings import create_settings_dropdown
+
 
 def create_toolbar_buttons(batch_name: str) -> Div:
     """Create the toolbar buttons."""
@@ -43,4 +50,4 @@ def create_toolbar_buttons(batch_name: str) -> Div:
             uk_tooltip="View project on GitHub",
         ),
         cls="flex items-center space-x-2 flex-wrap",
-    ) 
+    )

@@ -1,6 +1,12 @@
 """
+dashboard/routes/toggles.py
+
 Routes for handling toggle functionality.
+
+This module contains the routes for handling toggle functionality.
+
 """
+
 from fasthtml.common import *
 from monsterui.all import *
 

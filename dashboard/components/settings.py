@@ -1,6 +1,12 @@
 """
+dashboard/components/settings.py
+
 Settings-related components.
+
+This module contains the components for the settings dropdown menu.
+
 """
+
 from fasthtml.common import *
 from monsterui.all import *
 from dashboard.state import get_state

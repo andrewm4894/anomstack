@@ -1,3 +1,12 @@
+"""
+dashboard/routes/index.py
+
+Index
+
+This module contains the route for the index page.
+
+"""
+
 from fasthtml.common import *
 from monsterui.all import *
 from fasthtml.svg import *
@@ -7,6 +16,8 @@ from dashboard.app import app, rt
 from dashboard.components import create_batch_card
 from dashboard.batch_stats import calculate_batch_stats
 from dashboard.data import get_data
+from dashboard.constants import DEFAULT_LAST_N
+
 
 log = logging.getLogger("anomstack")
 

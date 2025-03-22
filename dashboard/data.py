@@ -1,5 +1,10 @@
 """
+dashboard/data.py
+
 Data manager for the dashboard.
+
+This module contains functions for getting data from the database for the dashboard.
+
 """
 
 import pandas as pd

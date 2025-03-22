@@ -1,5 +1,10 @@
 """
+dashboard/utils.py
+
 Utils for the dashboard.
+
+This module contains utility functions for the dashboard.
+
 """
 
 import logging
