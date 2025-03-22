@@ -33,14 +33,11 @@ app, rt = fast_app(
             href=
             "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNoYXJ0LWxpbmUiPjxwYXRoIGQ9Ik0zIDN2MTZhMiAyIDAgMCAwIDIgMmgxNiIvPjxwYXRoIGQ9Im0xOSA5LTUgNS00LTQtMyAzIi8+PC9zdmc+",
         ),
-        Link(rel="stylesheet", href="/static/styles.css"),
+        Link(rel="stylesheet", href="dashboard/static/styles.css"),
     ),
     debug=True,
     log=log,
 )
-
-# Mount static files
-app.mount("/static", StaticFiles(directory="dashboard/static"), name="static")
 
 # Set the app state
 app.state = AppState()
