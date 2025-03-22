@@ -5,7 +5,7 @@ State manager for the dashboard.
 import logging
 
 from anomstack.config import specs
-from utils import get_metric_batches
+from dashboard.utils import get_metric_batches
 
 
 log = logging.getLogger("anomstack")
