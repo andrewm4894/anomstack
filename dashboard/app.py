@@ -16,7 +16,7 @@ from fasthtml.svg import *
 from starlette.staticfiles import StaticFiles
 
 from dashboard.constants import *
-from state import AppState
+from dashboard.state import AppState
 
 # load the environment variables
 load_dotenv(override=True)
