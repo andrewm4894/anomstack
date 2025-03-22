@@ -1,4 +1,4 @@
-modules = ["python-3.12:v25-20230920-d4ad2e4", "bash"]
+modules = ["python-3.11", "bash"]
 hidden = [".config", ".pytest_cache"]
 
 [nix]
