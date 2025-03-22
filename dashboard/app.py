@@ -10,9 +10,8 @@ It is built with FastHTML and MonsterUI.
 import logging
 import os
 from dotenv import load_dotenv
-from fasthtml.common import *
-from monsterui.all import *
-from fasthtml.svg import *
+from fasthtml import *
+from monsterui import *
 
 from dashboard.constants import *
 from dashboard.state import AppState
