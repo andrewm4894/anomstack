@@ -2,7 +2,7 @@ import pandas as pd
 from fasthtml.common import *
 from monsterui.all import *
 from dashboard.app import app, rt, log
-from dashboard.components import create_controls
+from dashboard.components import create_controls, create_settings_dropdown
 from dashboard.charts import ChartManager
 from dashboard.data import get_data
 from dashboard.constants import DEFAULT_LAST_N, DEFAULT_LOAD_N_CHARTS

@@ -3,6 +3,9 @@ Settings-related components.
 """
 from fasthtml.common import *
 from monsterui.all import *
+from dashboard.state import get_state
+from dashboard.app import app
+
 
 def create_settings_button(text: str, batch_name: str, action: str, tooltip: str) -> Li:
     """Create a settings dropdown button."""
@@ -22,7 +25,11 @@ def create_settings_dropdown(batch_name: str) -> DropDownNavContainer:
     """Create the settings dropdown menu."""
     buttons = [
         ("small charts", "toggle-size", "Toggle between compact and full-size chart views"),
-        ("two columns", "toggle-columns", "Display charts in one or two columns"),
+        (
+            "two columns" if not app.state.two_columns else "one column",
+            "toggle-columns",
+            "Display charts in one or two columns"
+        ),
         ("show markers", "toggle-markers", "Show/hide data point markers on the charts"),
         ("show legend", "toggle-legend", "Display chart legends"),
         ("narrow lines", "toggle-line-width", "Toggle between narrow and normal line thickness"),
@@ -39,4 +46,4 @@ def create_settings_dropdown(batch_name: str) -> DropDownNavContainer:
                                "Switch between light and dark color themes")
     ])
 
-    return DropDownNavContainer(NavHeaderLi("settings"), *menu_items) 
+    return DropDownNavContainer(NavHeaderLi("settings"), *menu_items)
