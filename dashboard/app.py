@@ -1,4 +1,3 @@
-
 """
 Anomstack Dashboard
 
@@ -9,11 +8,11 @@ It is built with FastHTML and MonsterUI.
 """
 
 import logging
+import os
 from dotenv import load_dotenv
 from fasthtml.common import *
 from monsterui.all import *
 from fasthtml.svg import *
-from starlette.staticfiles import StaticFiles
 
 from dashboard.constants import *
 from dashboard.state import AppState
@@ -43,7 +42,7 @@ app, rt = fast_app(
 app.state = AppState()
 
 # Import routes after app is defined
-from routes import *
+from dashboard.routes import *
 
 if __name__ == "__main__":
     serve(app, port=int(os.getenv("ANOMSTACK_DASHBOARD_PORT", 5001)))

@@ -1,11 +1,11 @@
-
 """
 Routes for handling toggle functionality.
 """
 from fasthtml.common import *
 from monsterui.all import *
 
-from app import app, rt
+from dashboard.app import app, rt
+
 
 @rt("/batch/{batch_name}/toggle-size")
 def post(batch_name: str, session=None):
@@ -15,12 +15,14 @@ def post(batch_name: str, session=None):
     from .batch_view import get_batch_view
     return get_batch_view(batch_name, session, initial_load=10)
 
+
 @rt("/batch/{batch_name}/toggle-columns")
 def post(batch_name: str, session=None):
     """Toggle number of columns."""
     app.state.two_columns = not app.state.two_columns
     from .batch_view import get_batch_view
     return get_batch_view(batch_name, session, initial_load=10)
+
 
 @rt("/batch/{batch_name}/toggle-markers")
 def post(batch_name: str, session=None):
@@ -30,6 +32,7 @@ def post(batch_name: str, session=None):
     from .batch_view import get_batch_view
     return get_batch_view(batch_name, session, initial_load=10)
 
+
 @rt("/batch/{batch_name}/toggle-legend")
 def post(batch_name: str, session=None):
     """Toggle chart legend."""
@@ -37,6 +40,7 @@ def post(batch_name: str, session=None):
     app.state.chart_cache.clear()
     from .batch_view import get_batch_view
     return get_batch_view(batch_name, session, initial_load=10)
+
 
 @rt("/batch/{batch_name}/toggle-line-width")
 def post(batch_name: str, session=None):
@@ -46,6 +50,7 @@ def post(batch_name: str, session=None):
     app.state.chart_cache.clear()
     from .batch_view import get_batch_view
     return get_batch_view(batch_name, session, initial_load=10)
+
 
 @rt("/batch/{batch_name}/toggle-theme")
 def post(batch_name: str, session=None):
