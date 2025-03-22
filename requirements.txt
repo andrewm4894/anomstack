@@ -22,6 +22,7 @@ pandas
 pandas-gbq
 plotly
 pyod
+python-dotenv
 python-fasthtml
 pyyaml
 seaborn
