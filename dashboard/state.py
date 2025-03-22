@@ -40,8 +40,8 @@ class AppState:
         # Initialize all batch data and stats
         for batch_name in self.metric_batches:
             try:
-                from data import get_data
-                from constants import DEFAULT_LAST_N
+                from dashboard.data import get_data
+                from dashboard.constants import DEFAULT_LAST_N
                 self.df_cache[batch_name] = get_data(
                     self.specs_enabled[batch_name],
                     last_n=DEFAULT_LAST_N,

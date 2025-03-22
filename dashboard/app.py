@@ -16,6 +16,7 @@ from fasthtml.svg import *
 
 from dashboard.constants import *
 from dashboard.state import AppState
+from dashboard.data import get_data
 
 # load the environment variables
 load_dotenv(override=True)
