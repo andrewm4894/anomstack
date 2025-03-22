@@ -276,7 +276,7 @@ body.dark-mode .uk-toggle-switch::before {
     background-color: #e5e7eb;
 }
 
-/* Homepage grid layout */
+/* Homepage and charts grid layout */
 .homepage-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -284,6 +284,16 @@ body.dark-mode .uk-toggle-switch::before {
     padding: 0.75rem;
     width: 100%;
     box-sizing: border-box;
+    margin: 0 auto;
+}
+
+/* Ensure consistent chart sizing */
+.homepage-grid .uk-card,
+#charts-container .uk-card {
+    width: 100%;
+    height: 100%;
+    margin-bottom: 0;
+    overflow: hidden;
 }
 
 /* Ensure cards have consistent width on homepage */

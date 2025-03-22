@@ -53,7 +53,7 @@ def get_batch_view(batch_name: str,
                 for i, stat in enumerate(metric_stats[:initial_load])
             ],
             id="charts-container",
-            cls=f"grid grid-cols-{2 if app.state.two_columns else 1} gap-4",
+            cls="homepage-grid",
         ),
         Div(
             Button(
