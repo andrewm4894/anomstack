@@ -1,6 +1,7 @@
+import pandas as pd
 from fasthtml.common import *
 from monsterui.all import *
-from dashboard.app import app, rt
+from dashboard.app import app, rt, log
 from dashboard.components import create_controls
 from dashboard.charts import ChartManager
 from dashboard.data import get_data
@@ -23,7 +24,6 @@ def _get_batch_data(batch_name: str):
 
 @rt("/batch/{batch_name}")
 def get_batch_view(batch_name: str,
-                   session,
                    initial_load: int = DEFAULT_LOAD_N_CHARTS):
     """Get the batch view."""
     if batch_name not in app.state.df_cache or batch_name not in app.state.stats_cache:
