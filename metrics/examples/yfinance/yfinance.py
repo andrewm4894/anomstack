@@ -34,7 +34,30 @@ def ingest() -> pd.DataFrame:
         quotes = response.json()["quoteResponse"]["result"]
         return quotes
 
-    symbols = ["GOOG", "TSLA", "AAPL", "MSFT"]
+    symbols = [
+        "GOOG",   # Alphabet Inc. (Class C)
+        "TSLA",   # Tesla, Inc.
+        "AAPL",   # Apple Inc.
+        "MSFT",   # Microsoft Corporation
+        "NVDA",   # NVIDIA Corporation
+        "AMZN",   # Amazon.com, Inc.
+        "TSM",    # Taiwan Semiconductor Manufacturing Co.
+        "META",   # Meta Platforms, Inc.
+        "NFLX",   # Netflix, Inc.
+        "WMT",    # Walmart Inc.
+        "DIS",    # The Walt Disney Company
+        "JNJ",    # Johnson & Johnson
+        "BRK-B",  # Berkshire Hathaway Inc. (Class B)
+        "V",      # Visa Inc.
+        "JPM",    # JPMorgan Chase & Co.
+        "UNH",    # UnitedHealth Group Inc.
+        "XOM",    # Exxon Mobil Corporation
+        "PEP",    # PepsiCo, Inc.
+        "COST",   # Costco Wholesale Corporation
+        "NKE",    # Nike, Inc.
+        "BAC",    # Bank of America Corporation
+        "AMD",    # Advanced Micro Devices, Inc.
+    ]
 
     credentials = getCredentials()
     quotes = quote(symbols, credentials)
