@@ -10,8 +10,13 @@ This module contains the components for the dashboard header.
 from fasthtml.common import *
 from monsterui.all import *
 
+
 def create_header() -> Div:
-    """Create the dashboard header."""
+    """Create the dashboard header.
+    
+    Returns:
+        Div: The dashboard header.
+    """
     return DivLAligned(
         H2(
             "Anomstack",
@@ -30,4 +35,4 @@ def create_header() -> Div:
         ),
         style="justify-content: space-between;",
         cls="mb-6",
-    ) 
+    )

@@ -14,7 +14,14 @@ from .settings import create_settings_dropdown
 
 
 def create_toolbar_buttons(batch_name: str) -> Div:
-    """Create the toolbar buttons."""
+    """Create the toolbar buttons.
+    
+    Args:
+        batch_name (str): The name of the batch to display.
+        
+    Returns:
+        Div: The toolbar buttons.
+    """
     return Div(
         Button(
             DivLAligned(UkIcon("home")),

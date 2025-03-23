@@ -11,10 +11,17 @@ from fasthtml.common import *
 from monsterui.all import *
 from dashboard.app import app
 
-def create_search_form(batch_name: str) -> Form:
-    """Create the search form."""
-    current_search = app.state.search_term.get(batch_name, "")
 
+def create_search_form(batch_name: str) -> Form:
+    """Create the search form.
+    
+    Args:
+        batch_name (str): The name of the batch to display.
+        
+    Returns:
+        Form: The search form.
+    """
+    current_search = app.state.search_term.get(batch_name, "")
     return Form(
         Input(
             type="search",
@@ -35,8 +42,16 @@ def create_search_form(batch_name: str) -> Form:
         cls="w-full md:w-auto",
     )
 
+
 def create_last_n_form(batch_name: str) -> Form:
-    """Create the last n number form."""
+    """Create the last n number form.
+    
+    Args:
+        batch_name (str): The name of the batch to display.
+        
+    Returns:
+        Form: The last n number form.
+    """
     return Form(
         DivLAligned(
             Input(
@@ -52,4 +67,4 @@ def create_last_n_form(batch_name: str) -> Form:
         ),
         hx_post=f"/batch/{batch_name}/update-n",
         hx_target="#main-content",
-    ) 
+    )
