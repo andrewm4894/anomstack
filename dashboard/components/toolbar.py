@@ -7,8 +7,8 @@ This module contains the components for the toolbar.
 
 """
 
-from fasthtml.common import Div, Button
-from monsterui.all import DivLAligned, UkIcon, ButtonT
+from fasthtml.common import Div
+from monsterui.all import DivLAligned, UkIcon, ButtonT, Button
 from .batch import create_batches_dropdown
 from .settings import create_settings_dropdown
 
