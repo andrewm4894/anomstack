@@ -159,7 +159,14 @@ def post(request: Request) -> list:
 
 @rt
 def index(request: Request):
-    """Index route for the dashboard."""
+    """Index route for the dashboard.
+
+    Args:
+        request (Request): The request object.
+
+    Returns:
+        The index route.
+    """
     is_htmx = request.headers.get("HX-Request") == "true"
 
     script = Script(f"""
