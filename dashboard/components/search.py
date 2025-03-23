@@ -7,12 +7,20 @@ This module contains the components for the search and filtering functionality.
 
 """
 
-from fasthtml.common import *
-from monsterui.all import *
+#from fasthtml.common import Input
+from monsterui.all import Form, DivLAligned, Input
 from dashboard.app import app
 
+
 def create_search_form(batch_name: str) -> Form:
-    """Create the search form."""
+    """Create the search form.
+
+    Args:
+        batch_name (str): The name of the batch.
+
+    Returns:
+        Form: The search form.
+    """
     current_search = app.state.search_term.get(batch_name, "")
 
     return Form(
@@ -35,8 +43,16 @@ def create_search_form(batch_name: str) -> Form:
         cls="w-full md:w-auto",
     )
 
+
 def create_last_n_form(batch_name: str) -> Form:
-    """Create the last n number form."""
+    """Create the last n number form.
+
+    Args:
+        batch_name (str): The name of the batch.
+
+    Returns:
+        Form: The last n number form.
+    """
     return Form(
         DivLAligned(
             Input(
@@ -52,4 +68,4 @@ def create_last_n_form(batch_name: str) -> Form:
         ),
         hx_post=f"/batch/{batch_name}/update-n",
         hx_target="#main-content",
-    ) 
+    )

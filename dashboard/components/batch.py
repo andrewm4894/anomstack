@@ -11,8 +11,16 @@ from fasthtml.common import *
 from monsterui.all import *
 from dashboard.app import app
 
+
 def create_batches_dropdown(batch_name: str) -> DropDownNavContainer:
-    """Create the metric batches dropdown menu."""
+    """Create the metric batches dropdown menu.
+
+    Args:
+        batch_name (str): The name of the batch to highlight.
+
+    Returns:
+        DropDownNavContainer: The dropdown menu.
+    """
     return DropDownNavContainer(
         NavHeaderLi("metric batches"),
         *[
@@ -28,8 +36,17 @@ def create_batches_dropdown(batch_name: str) -> DropDownNavContainer:
         ],
         uk_dropdown="pos: bottom-right; boundary: window; shift: true; flip: true;")
 
+
 def create_batch_card(batch_name: str, stats: dict) -> Card:
-    """Create a card displaying batch information."""
+    """Create a card displaying batch information.
+
+    Args:
+        batch_name (str): The name of the batch.
+        stats (dict): The statistics for the batch.
+
+    Returns:
+        Card: The card.
+    """
     metric_info = [
         (UkIcon("activity", cls="text-blue-500"), f"{stats['unique_metrics']} metrics"),
         (UkIcon("clock", cls="text-green-500"), f"{stats['latest_timestamp']}"),
@@ -61,4 +78,4 @@ def create_batch_card(batch_name: str, stats: dict) -> Card:
             cls="w-full",
         ),
         cls="px-2 py-0.5 hover:border-primary transition-colors duration-200",
-    ) 
+    )

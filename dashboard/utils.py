@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 from anomstack.config import specs
 
 
-log = logging.getLogger("fasthtml")
+log = logging.getLogger("anomstack_dashboard")
 
 
 def get_enabled_dagster_jobs(host: str = "localhost", port: str = "3000") -> list:

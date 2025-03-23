@@ -14,6 +14,7 @@ from .settings import create_settings_dropdown
 from .header import create_header
 from .common import create_controls
 
+
 __all__ = [
     'create_toolbar_buttons',
     'create_search_form',

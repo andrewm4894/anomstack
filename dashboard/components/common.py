@@ -7,14 +7,21 @@ This module contains the common components for the dashboard.
 
 """
 
-from fasthtml.common import *
-from monsterui.all import *
+from fasthtml.common import Div
+from monsterui.all import Card, DivFullySpaced
 from .search import create_search_form, create_last_n_form
 from .toolbar import create_toolbar_buttons
 
 
 def create_controls(batch_name: str) -> Card:
-    """Create the main controls for the dashboard."""
+    """Create the main controls for the dashboard.
+
+    Args:
+        batch_name (str): The name of the batch.
+
+    Returns:
+        Card: The card.
+    """
     return Card(
         DivFullySpaced(
             Div(
