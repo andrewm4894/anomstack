@@ -16,7 +16,7 @@ from dashboard.data import get_data
 
 
 @rt("/batch/{batch_name}/search")
-def get(batch_name: str, search: str = ""):
+def get(batch_name: str, search: str = "") -> Div:
     """Search metrics.
 
     Args:
@@ -65,7 +65,15 @@ def get(batch_name: str, search: str = ""):
 
 @rt("/batch/{batch_name}/load-more/{start_index}")
 def get(batch_name: str, start_index: int):
-    """Load more charts."""
+    """Load more charts.
+
+    Args:
+        batch_name (str): The name of the batch.
+        start_index (int): The index of the first chart to load.
+
+    Returns:
+        list: The list of charts.
+    """
     metric_stats = app.state.stats_cache[batch_name]
     remaining_metrics = len(metric_stats) - (start_index + 10)
     load_next = min(10, remaining_metrics)
@@ -96,7 +104,7 @@ def get(batch_name: str, start_index: int):
     ]
 
 @rt("/batch/{batch_name}/update-n")
-def post(batch_name: str, last_n: str = "30n", session=None):
+def post(batch_name: str, last_n: str = "30n"):
     """Update time window."""
     try:
         app.state.last_n[batch_name] = last_n

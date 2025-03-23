@@ -8,33 +8,49 @@ This module contains the route for the batch view.
 """
 
 import pandas as pd
-from fasthtml.common import *
-from monsterui.all import *
+from fasthtml.common import Div, Script, Safe, H4, P, Style
+from monsterui.all import Card, DivLAligned, Button, ButtonT
+
 from dashboard.app import app, rt, log
-from dashboard.components import create_controls, create_settings_dropdown
+from dashboard.components import create_controls
 from dashboard.charts import ChartManager
 from dashboard.data import get_data
 from dashboard.constants import DEFAULT_LAST_N, DEFAULT_LOAD_N_CHARTS
 
 
-def get_batch_data(batch_name: str):
-    """Get batch data, either from cache or by fetching."""
+def get_batch_data(batch_name: str) -> pd.DataFrame:
+    """Get batch data, either from cache or by fetching.
+
+    Args:
+        batch_name (str): The name of the batch.
+
+    Returns:
+        pd.DataFrame: The batch data.
+    """
     try:
-        return get_data(app.state.specs_enabled[batch_name],
-                        last_n=app.state.last_n.get(batch_name,
-                                                    DEFAULT_LAST_N),
-                        ensure_timestamp=True)
+        return get_data(
+            app.state.specs_enabled[batch_name],
+            last_n=app.state.last_n.get(batch_name, DEFAULT_LAST_N),
+            ensure_timestamp=True,
+        )
     except Exception as e:
         log.error(f"Error getting data for batch {batch_name}: {e}")
         return pd.DataFrame(
-            data=[],
-            columns=["metric_name", "metric_timestamp", "metric_value"])
+            data=[], columns=["metric_name", "metric_timestamp", "metric_value"]
+        )
 
 
 @rt("/batch/{batch_name}")
-def get_batch_view(batch_name: str,
-                   initial_load: int = DEFAULT_LOAD_N_CHARTS):
-    """Get the batch view."""
+def get_batch_view(batch_name: str, initial_load: int = DEFAULT_LOAD_N_CHARTS):
+    """Get the batch view.
+
+    Args:
+        batch_name (str): The name of the batch.
+        initial_load (int): The number of charts to load initially.
+
+    Returns:
+        Div: The batch view.
+    """
     if batch_name not in app.state.df_cache or batch_name not in app.state.stats_cache:
         app.state.df_cache[batch_name] = get_batch_data(batch_name)
         app.state.calculate_metric_stats(batch_name)
@@ -42,7 +58,8 @@ def get_batch_view(batch_name: str,
     metric_stats = app.state.stats_cache[batch_name]
     remaining_metrics = len(metric_stats) - initial_load
 
-    script = Script(f"""
+    script = Script(
+        f"""
         document.querySelectorAll('.top-nav li').forEach(li => {{
             li.classList.remove('uk-active');
             if (li.querySelector('a').textContent.trim() === '{batch_name}') {{
@@ -50,15 +67,17 @@ def get_batch_view(batch_name: str,
             }}
         }});
         window.scrollTo({{ top: 0, behavior: 'smooth' }});
-    """)
+    """
+    )
 
     load_next = min(DEFAULT_LOAD_N_CHARTS, remaining_metrics)
     return Div(
         create_controls(batch_name),
         Div(
             *[
-                ChartManager.create_chart_placeholder(stat["metric_name"], i,
-                                                      batch_name)
+                ChartManager.create_chart_placeholder(
+                    stat["metric_name"], i, batch_name
+                )
                 for i, stat in enumerate(metric_stats[:initial_load])
             ],
             id="charts-container",
@@ -83,7 +102,15 @@ def get_batch_view(batch_name: str,
 
 @rt("/batch/{batch_name}/chart/{chart_index}")
 def get(batch_name: str, chart_index: int):
-    """Get chart for a batch and index."""
+    """Get chart for a batch and index.
+
+    Args:
+        batch_name (str): The name of the batch.
+        chart_index (int): The index of the chart.
+
+    Returns:
+        Card: The chart.
+    """
     df = app.state.df_cache[batch_name]
     metric_stats = app.state.stats_cache[batch_name]
     metric_name = metric_stats[chart_index]["metric_name"]
@@ -99,18 +126,21 @@ def get(batch_name: str, chart_index: int):
         app.state.chart_cache[batch_name][chart_index] = fig
 
     return Card(
-        Style("""
+        Style(
+            """
             .uk-card-header { padding: 1rem; }
             .uk-card-body { padding: 1rem; }
-        """),
+        """
+        ),
         Safe(app.state.chart_cache[batch_name][chart_index]),
         header=Div(
             H4(metric_name, cls="mb-1"),
             DivLAligned(
-                P(f"Anomaly Rate: {anomaly_rate:.1%}",
-                  cls="text-sm text-muted-foreground"),
-                P(f"Avg Score: {avg_score:.1%}",
-                  cls="text-sm text-muted-foreground"),
+                P(
+                    f"Anomaly Rate: {anomaly_rate:.1%}",
+                    cls="text-sm text-muted-foreground",
+                ),
+                P(f"Avg Score: {avg_score:.1%}", cls="text-sm text-muted-foreground"),
                 style="gap: 1rem;",
             ),
         ),
