@@ -12,6 +12,11 @@ from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
 import re
 from datetime import datetime, timedelta
+import logging
+from dashboard.constants import DEFAULT_LAST_N
+
+
+log = logging.getLogger("anomstack_dashboard")
 
 
 def parse_time_spec(spec_str: str) -> dict:
@@ -61,6 +66,7 @@ def parse_time_spec(spec_str: str) -> dict:
             f"Invalid time specification: {spec_str}. "
             "Use format: 30n (observations), 24h (hours), 45m (minutes), 7d (days)"
         )
+
 
 def get_data(spec: dict, last_n: str = "30n", ensure_timestamp: bool = False) -> pd.DataFrame:
     """

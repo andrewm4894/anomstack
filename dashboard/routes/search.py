@@ -17,7 +17,15 @@ from dashboard.data import get_data
 
 @rt("/batch/{batch_name}/search")
 def get(batch_name: str, search: str = ""):
-    """Search metrics."""
+    """Search metrics.
+
+    Args:
+        batch_name (str): The name of the batch to search.
+        search (str): The search term.
+
+    Returns:
+        Div: The search results.
+    """
     import re
     app.state.search_term[batch_name] = search
 

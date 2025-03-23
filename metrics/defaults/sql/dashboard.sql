@@ -1,190 +1,37 @@
 /*
-Template for generating the input data for the plot job.
+Template for generating the input data for the dashboard charts.
 
 Written for DuckDB but will be translated to target dialect based on `db` param via sqlglot.
 */
 
-with
+with 
 
-metric_value_data as 
-(
-select
-  metric_timestamp,
-  metric_batch,
-  metric_name,
-  avg(metric_value) as metric_value
-from 
-  {{ table_key }}
-where 
-  metric_batch = '{{ metric_batch }}'
-  and 
-  metric_type = 'metric'
-  and 
-  metric_timestamp >= current_date - interval '{{ alert_metric_timestamp_max_days_ago }} day'
-  {% if cutoff_time is defined %}
-  and metric_timestamp >= '{{ cutoff_time }}'
-  {% endif %}
-group by metric_timestamp, metric_batch, metric_name
+aggregated as (
+  select
+    metric_timestamp,
+    metric_batch,
+    metric_name,
+    avg(case when metric_type = 'metric' then metric_value end) as metric_value,
+    avg(case when metric_type = 'score' then metric_value end) as metric_score,
+    max(case when metric_type = 'alert' then metric_value end) as metric_alert,
+    max(case when metric_type = 'llmalert' then metric_value end) as metric_llmalert,
+    max(case when metric_type = 'change' then metric_value end) as metric_change
+  from 
+    {{ table_key }}
+  where 
+    metric_batch = '{{ metric_batch }}'
+    {% if cutoff_time is defined %}
+    and metric_timestamp >= '{{ cutoff_time }}'
+    {% endif %}
+  group by 1,2,3
 ),
 
-metric_score_data as 
-(
-select
-  metric_timestamp,
-  metric_batch,
-  metric_name,
-  avg(metric_value) as metric_score
-from 
-  {{ table_key }}
-where 
-  metric_batch = '{{ metric_batch }}'
-  and 
-  metric_type = 'score'
-  and 
-  metric_timestamp >= current_date - interval '{{ alert_metric_timestamp_max_days_ago }} day'
-group by metric_timestamp, metric_batch, metric_name
-),
-
-metric_alert_data as 
-(
-select
-  metric_timestamp,
-  metric_batch,
-  metric_name,
-  max(metric_value) as metric_alert
-from 
-  {{ table_key }}
-where 
-  metric_batch = '{{ metric_batch }}'
-  and 
-  metric_type = 'alert'
-  and 
-  metric_timestamp >= current_date - interval '{{ alert_metric_timestamp_max_days_ago }} day'
-group by metric_timestamp, metric_batch, metric_name
-),
-
-metric_change_data as 
-(
-select
-  metric_timestamp,
-  metric_batch,
-  metric_name,
-  max(metric_value) as metric_change
-from 
-  {{ table_key }}
-where 
-  metric_batch = '{{ metric_batch }}'
-  and 
-  metric_type = 'change'
-  and 
-  metric_timestamp >= current_date - interval '{{ change_metric_timestamp_max_days_ago }} day'
-group by metric_timestamp, metric_batch, metric_name
-),
-
-metric_value_recency_ranked as 
-(
-select
-  metric_timestamp,
-  metric_batch,
-  metric_name,
-  metric_value,
-  row_number() over (partition by metric_name order by metric_timestamp desc) as metric_value_recency_rank
-from 
-  metric_value_data
-),
-
-metric_score_recency_ranked as 
-(
-select
-  metric_timestamp,
-  metric_batch,
-  metric_name,
-  metric_score,
-  row_number() over (partition by metric_name order by metric_timestamp desc) as metric_score_recency_rank
-from 
-  metric_score_data
-),
-
-data_ranked as 
-(
-select
-  m.metric_timestamp,
-  m.metric_batch,
-  m.metric_name,
-  m.metric_value,
-  s.metric_score,
-  a.metric_alert,
-  c.metric_change,
-  m.metric_value_recency_rank,
-  s.metric_score_recency_rank
-from 
-  metric_value_recency_ranked m
-left join 
-  metric_score_recency_ranked s
-on 
-  m.metric_batch = s.metric_batch
-  and 
-  m.metric_name = s.metric_name
-  and 
-  m.metric_timestamp = s.metric_timestamp
-left join 
-  metric_alert_data a
-on 
-  m.metric_batch = a.metric_batch
-  and 
-  m.metric_name = a.metric_name
-  and 
-  m.metric_timestamp = a.metric_timestamp
-left join 
-  metric_change_data c
-on 
-  m.metric_batch = c.metric_batch
-  and 
-  m.metric_name = c.metric_name
-  and 
-  m.metric_timestamp = c.metric_timestamp
-),
-
-data_smoothed as 
-(
-select
-  metric_timestamp,
-  metric_batch,
-  metric_name,
-  metric_value,
-  metric_score,
-  metric_alert,
-  metric_change,
-  metric_value_recency_rank,
-  metric_score_recency_rank,
-  avg(metric_score) over (
-    partition by metric_batch, metric_name
-    order by metric_score_recency_rank
-    rows between {{ alert_smooth_n }} preceding and current row
-  ) as metric_score_smooth
-from 
-  data_ranked
-),
-
-data_final as 
-(
-select
-  metric_timestamp,
-  metric_batch,
-  metric_name,
-  metric_value,
-  metric_score,
-  metric_score_smooth,
-  metric_alert,
-  metric_change
-from 
-  data_smoothed
-{% if cutoff_time is defined %}
-/* When using time-based filtering, don't limit by recency rank */
-{% else %}
-where 
-  metric_value_recency_rank <= {{ last_n }}
-{% endif %}
+ranked as (
+  select
+    *,
+    row_number() over (partition by metric_name order by metric_timestamp desc) as recency_rank
+  from 
+    aggregated
 )
 
 select
@@ -193,11 +40,12 @@ select
   metric_name,
   metric_value,
   metric_score,
-  metric_score_smooth,
   metric_alert,
+  metric_llmalert,
   metric_change
 from 
-  data_final
-order by
-  metric_timestamp
-;
+  ranked
+{% if cutoff_time is not defined %}
+where 
+  recency_rank <= {{ last_n }}
+{% endif %}
