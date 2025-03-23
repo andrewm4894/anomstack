@@ -16,16 +16,14 @@ from dashboard.app import app
 def create_settings_button(text: str, batch_name: str, action: str, tooltip: str) -> Li:
     """Create a settings dropdown button."""
     return Li(
-        DivLAligned(
-            Button(
-                P(text, cls="text-sm font-medium"),
-                hx_post=f"/batch/{batch_name}/{action}",
-                hx_target="#main-content",
-                cls=ButtonT.ghost,
-                uk_tooltip=tooltip,
-            ),
-            cls="flex items-center justify-between w-full py-2",
-        ))
+        A(
+            text,
+            hx_post=f"/batch/{batch_name}/{action}",
+            hx_target="#main-content",
+            cls="",  # Remove ghost button style to match batch dropdown
+            uk_tooltip=tooltip,
+        )
+    )
 
 def create_settings_dropdown(batch_name: str) -> DropDownNavContainer:
     """Create the settings dropdown menu."""
@@ -72,4 +70,7 @@ def create_settings_dropdown(batch_name: str) -> DropDownNavContainer:
         )
     ])
 
-    return DropDownNavContainer(NavHeaderLi("settings"), *menu_items)
+    return DropDownNavContainer(
+        NavHeaderLi("settings"), 
+        *menu_items,
+    )

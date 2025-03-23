@@ -31,4 +31,4 @@ def create_controls(batch_name: str) -> Card:
                 cls="w-full",
             ), ),
         cls="mb-4 uk-padding-small py-2 shadow-sm",
-    ) 
+    )

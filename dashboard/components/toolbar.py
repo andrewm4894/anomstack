@@ -31,18 +31,18 @@ def create_toolbar_buttons(batch_name: str) -> Div:
         ),
         create_batches_dropdown(batch_name),
         Button(
+            DivLAligned(UkIcon("settings")),
+            cls=ButtonT.secondary,
+            uk_tooltip="Customize chart display settings",
+        ),
+        create_settings_dropdown(batch_name),
+        Button(
             DivLAligned(UkIcon("refresh-ccw")),
             hx_get=f"/batch/{batch_name}/refresh",
             hx_target="#main-content",
             cls=ButtonT.secondary,
             uk_tooltip="Refresh metrics data from source",
         ),
-        Button(
-            DivLAligned(UkIcon("settings")),
-            cls=ButtonT.secondary,
-            uk_tooltip="Customize chart display settings",
-        ),
-        create_settings_dropdown(batch_name),
         Button(
             DivLAligned(UkIcon("github")),
             cls=ButtonT.secondary,

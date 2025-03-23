@@ -9,11 +9,10 @@ This module contains the components for the batch view.
 
 from fasthtml.common import *
 from monsterui.all import *
-from dashboard.state import get_state
+from dashboard.app import app
 
 def create_batches_dropdown(batch_name: str) -> DropDownNavContainer:
     """Create the metric batches dropdown menu."""
-    state = get_state()
     return DropDownNavContainer(
         NavHeaderLi("metric batches"),
         *[
@@ -25,7 +24,7 @@ def create_batches_dropdown(batch_name: str) -> DropDownNavContainer:
                     hx_target="#main-content",
                     hx_indicator="#loading",
                     cls=f"{'uk-active' if name == batch_name else ''}",
-                )) for name in state.metric_batches
+                )) for name in app.state.metric_batches
         ],
         uk_dropdown="pos: bottom-right; boundary: window; shift: true; flip: true;")
 
