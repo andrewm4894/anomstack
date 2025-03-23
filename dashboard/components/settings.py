@@ -9,12 +9,21 @@ This module contains the components for the settings dropdown menu.
 
 from fasthtml.common import *
 from monsterui.all import *
-from dashboard.state import get_state
 from dashboard.app import app
 
 
 def create_settings_button(text: str, batch_name: str, action: str, tooltip: str) -> Li:
-    """Create a settings dropdown button."""
+    """Create a settings dropdown button.
+    
+    Args:
+        text (str): The text to display on the button.
+        batch_name (str): The name of the batch to update.
+        action (str): The action to perform when the button is clicked.
+        tooltip (str): The tooltip to display when the button is hovered over.
+        
+    Returns:
+        Li: The settings dropdown button.
+    """
     return Li(
         A(
             text,
@@ -25,7 +34,14 @@ def create_settings_button(text: str, batch_name: str, action: str, tooltip: str
     )
 
 def create_settings_dropdown(batch_name: str) -> DropDownNavContainer:
-    """Create the settings dropdown menu."""
+    """Create the settings dropdown menu.
+    
+    Args:
+        batch_name (str): The name of the batch to update.
+        
+    Returns:
+        DropDownNavContainer: The settings dropdown menu.
+    """
     buttons = [
         (
             "large charts" if app.state.small_charts else "small charts",

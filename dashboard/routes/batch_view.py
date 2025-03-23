@@ -18,7 +18,14 @@ from dashboard.constants import DEFAULT_LAST_N, DEFAULT_LOAD_N_CHARTS
 
 
 def get_batch_data(batch_name: str):
-    """Get batch data, either from cache or by fetching."""
+    """Get batch data, either from cache or by fetching.
+    
+    Args:
+        batch_name (str): The name of the batch to display.
+        
+    Returns:
+        pd.DataFrame: The batch data.
+    """
     try:
         return get_data(app.state.specs_enabled[batch_name],
                         last_n=app.state.last_n.get(batch_name,
@@ -33,12 +40,19 @@ def get_batch_data(batch_name: str):
 
 @rt("/batch/{batch_name}")
 def get_batch_view(batch_name: str,
-                   initial_load: int = DEFAULT_LOAD_N_CHARTS):
-    """Get the batch view."""
+                   initial_load: int = DEFAULT_LOAD_N_CHARTS) -> Div:
+    """Get the batch view.
+    
+    Args:
+        batch_name (str): The name of the batch to display.
+        initial_load (int): The number of metrics to load initially.
+        
+    Returns:
+        Div: The batch view.
+    """
     if batch_name not in app.state.df_cache or batch_name not in app.state.stats_cache:
         app.state.df_cache[batch_name] = get_batch_data(batch_name)
         app.state.calculate_metric_stats(batch_name)
-
     metric_stats = app.state.stats_cache[batch_name]
     remaining_metrics = len(metric_stats) - initial_load
 
@@ -82,8 +96,16 @@ def get_batch_view(batch_name: str,
 
 
 @rt("/batch/{batch_name}/chart/{chart_index}")
-def get(batch_name: str, chart_index: int):
-    """Get chart for a batch and index."""
+def get(batch_name: str, chart_index: int) -> Card:
+    """Get chart for a batch and index.
+    
+    Args:
+        batch_name (str): The name of the batch to display.
+        chart_index (int): The index of the chart to display.
+        
+    Returns:
+        Card: The chart.
+    """
     df = app.state.df_cache[batch_name]
     metric_stats = app.state.stats_cache[batch_name]
     metric_name = metric_stats[chart_index]["metric_name"]

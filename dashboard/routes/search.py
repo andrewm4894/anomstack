@@ -17,10 +17,17 @@ from dashboard.data import get_data
 
 @rt("/batch/{batch_name}/search")
 def get(batch_name: str, search: str = ""):
-    """Search metrics."""
+    """Search metrics.
+    
+    Args:
+        batch_name (str): The name of the batch to display.
+        search (str): The search term.
+        
+    Returns:
+        list: A list of the main dashboard content.
+    """
     import re
     app.state.search_term[batch_name] = search
-
     if batch_name not in app.state.stats_cache:
         app.state.calculate_metric_stats(batch_name)
 
@@ -56,8 +63,16 @@ def get(batch_name: str, search: str = ""):
 
 
 @rt("/batch/{batch_name}/load-more/{start_index}")
-def get(batch_name: str, start_index: int):
-    """Load more charts."""
+def get(batch_name: str, start_index: int) -> list:
+    """Load more charts.
+    
+    Args:
+        batch_name (str): The name of the batch to display.
+        start_index (int): The index of the first chart to load.
+        
+    Returns:
+        list: A list of the main dashboard content.
+    """
     metric_stats = app.state.stats_cache[batch_name]
     remaining_metrics = len(metric_stats) - (start_index + 10)
     load_next = min(10, remaining_metrics)
@@ -87,9 +102,18 @@ def get(batch_name: str, start_index: int):
         ),
     ]
 
+
 @rt("/batch/{batch_name}/update-n")
 def post(batch_name: str, last_n: str = "30n", session=None):
-    """Update time window."""
+    """Update time window.
+    
+    Args:
+        batch_name (str): The name of the batch to display.
+        last_n (str): The last n number.
+        
+    Returns:
+        list: A list of the main dashboard content.
+    """
     try:
         app.state.last_n[batch_name] = last_n
         app.state.clear_batch_cache(batch_name)

@@ -14,7 +14,14 @@ from .toolbar import create_toolbar_buttons
 
 
 def create_controls(batch_name: str) -> Card:
-    """Create the main controls for the dashboard."""
+    """Create the main controls for the dashboard.
+    
+    Args:
+        batch_name (str): The name of the batch to display.
+        
+    Returns:
+        Card: The main controls for the dashboard.
+    """
     return Card(
         DivFullySpaced(
             Div(
