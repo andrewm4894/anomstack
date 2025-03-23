@@ -7,11 +7,11 @@ This module contains the route for the index page.
 
 """
 
-from fasthtml.common import *
-from monsterui.all import *
-from fasthtml.svg import *
+from fasthtml.common import Div, H2, P, A, Script, Title, Safe, Request
+from monsterui.all import UkIcon, ButtonT, TextPresets, Card, Button, DivLAligned
 import pandas as pd
 import logging
+
 from dashboard.app import app, rt
 from dashboard.components import create_batch_card
 from dashboard.batch_stats import calculate_batch_stats
@@ -19,11 +19,18 @@ from dashboard.data import get_data
 from dashboard.constants import DEFAULT_LAST_N
 
 
-log = logging.getLogger("anomstack")
+log = logging.getLogger("anomstack_dashboard")
 
 
-def _get_batch_data(batch_name: str) -> pd.DataFrame:
-    """Get batch data, either from cache or by fetching."""
+def get_batch_data(batch_name: str) -> pd.DataFrame:
+    """Get batch data, either from cache or by fetching.
+
+    Args:
+        batch_name (str): The name of the batch to get data for.
+
+    Returns:
+        pd.DataFrame: The batch data.
+    """
     if batch_name not in app.state.df_cache:
         try:
             df = get_data(app.state.specs_enabled[batch_name],
@@ -38,11 +45,15 @@ def _get_batch_data(batch_name: str) -> pd.DataFrame:
     return app.state.df_cache[batch_name]
 
 
-def _get_sorted_batch_stats() -> tuple:
-    """Calculate and sort batch statistics."""
+def get_sorted_batch_stats() -> tuple:
+    """Calculate and sort batch statistics.
+
+    Returns:
+        tuple: A tuple containing the batch statistics and the sorted batch names.
+    """
     batch_stats = {}
     for batch_name in app.state.metric_batches:
-        df = _get_batch_data(batch_name)
+        df = get_batch_data(batch_name)
         batch_stats[batch_name] = calculate_batch_stats(df, batch_name)
 
     filtered_batches = {
@@ -62,8 +73,16 @@ def _get_sorted_batch_stats() -> tuple:
     return batch_stats, sorted_batch_names
 
 
-def _create_main_content(batch_stats: dict, sorted_batch_names: list) -> Div:
-    """Create the main dashboard content."""
+def create_main_content(batch_stats: dict, sorted_batch_names: list) -> Div:
+    """Create the main dashboard content.
+
+    Args:
+        batch_stats (dict): The batch statistics.
+        sorted_batch_names (list): The sorted batch names.
+
+    Returns:
+        Div: The main dashboard content.
+    """
     return Div(
         Card(
             DivLAligned(
@@ -119,8 +138,15 @@ def _create_main_content(batch_stats: dict, sorted_batch_names: list) -> Div:
 
 
 @rt("/refresh-all")
-def post(request: Request):
-    """Refresh all batch data."""
+def post(request: Request) -> list:
+    """Refresh all batch data.
+
+    Args:
+        request (Request): The request object.
+
+    Returns:
+        list: The index route.
+    """
     try:
         app.state.df_cache.clear()
         app.state.stats_cache.clear()
@@ -142,8 +168,8 @@ def index(request: Request):
         }}
     """)
 
-    batch_stats, sorted_batch_names = _get_sorted_batch_stats()
-    main_content = _create_main_content(batch_stats, sorted_batch_names)
+    batch_stats, sorted_batch_names = get_sorted_batch_stats()
+    main_content = create_main_content(batch_stats, sorted_batch_names)
 
     if is_htmx:
         return main_content
