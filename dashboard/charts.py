@@ -112,6 +112,7 @@ def plot_time_series(
         "primary": "#3b82f6" if dark_mode else "#2563eb",
         "secondary": "#9ca3af" if dark_mode else "#64748b",
         "alert": "#ef4444" if dark_mode else "#dc2626",
+        "llmalert": "#f97316" if dark_mode else "#fb923c",
         "change": "#fb923c" if dark_mode else "#f97316",
     }
 
@@ -160,6 +161,7 @@ def plot_time_series(
     # Add alert and change markers if they exist
     for condition, props in {
             "metric_alert": dict(name="Metric Alert", color=colors["alert"]),
+            "metric_llmalert": dict(name="Metric LLM Alert", color=colors["llmalert"]),
             "metric_change": dict(name="Metric Change",
                                   color=colors["change"]),
     }.items():
