@@ -89,16 +89,3 @@ class AppState:
             )
         metric_stats.sort(key=lambda x: (-x["anomaly_rate"], -x["avg_score"]))
         self.stats_cache[batch_name] = metric_stats
-
-
-_state = None
-
-
-def get_state():
-    """
-    Get the app state.
-    """
-    global _state
-    if _state is None:
-        _state = AppState()
-    return _state
