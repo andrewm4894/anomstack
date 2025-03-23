@@ -13,7 +13,15 @@ from typing import Dict, Any
 
 
 def calculate_batch_stats(df: pd.DataFrame, batch_name: str) -> Dict[str, Any]:
-    """Calculate statistics for a batch of metrics."""
+    """Calculate statistics for a batch of metrics.
+
+    Args:
+        df (pd.DataFrame): The dataframe containing the metrics.
+        batch_name (str): The name of the batch to calculate stats for.
+
+    Returns:
+        Dict[str, Any]: A dictionary containing the statistics.
+    """
     if df.empty:
         return {
             "unique_metrics": 0,
@@ -27,10 +35,15 @@ def calculate_batch_stats(df: pd.DataFrame, batch_name: str) -> Dict[str, Any]:
                  if "metric_score" in df.columns else 0)
     alert_count = (df["metric_alert"].fillna(0).sum()
                    if "metric_alert" in df.columns else 0)
+    llmalert_count = (df["metric_llmalert"].fillna(0).sum()
+                      if "metric_llmalert" in df.columns else 0)
+    change_count = (df["metric_change"].fillna(0).sum()
+                    if "metric_change" in df.columns else 0)
+    alert_count = alert_count + llmalert_count + change_count
 
     # Calculate time ago string
     latest_timestamp = df["metric_timestamp"].max()
-    time_ago_str = _format_time_ago(latest_timestamp)
+    time_ago_str = format_time_ago(latest_timestamp)
 
     return {
         "unique_metrics": len(df["metric_name"].unique()),
@@ -40,9 +53,15 @@ def calculate_batch_stats(df: pd.DataFrame, batch_name: str) -> Dict[str, Any]:
     }
 
 
-def _format_time_ago(timestamp):
-    """Format a timestamp into a human readable time ago string."""
+def format_time_ago(timestamp: str) -> str:
+    """Format a timestamp into a human readable time ago string.
 
+    Args:
+        timestamp (str): The timestamp to format.
+
+    Returns:
+        str: The formatted time ago string.
+    """
     timestamp = str(timestamp)
     timestamp = timestamp.replace("Z", "+00:00")
 

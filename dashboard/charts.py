@@ -7,9 +7,8 @@ This module contains the ChartManager class, which is responsible for creating c
 
 """
 
-from fasthtml.common import *
-from monsterui.all import *
-from fasthtml.svg import *
+from fasthtml.common import Div, P
+from monsterui.all import Card, DivLAligned, Loading, LoadingT, TextPresets
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
@@ -62,9 +61,17 @@ class ChartManager:
         )
 
     @staticmethod
-    def create_chart_placeholder(metric_name, index, batch_name):
+    def create_chart_placeholder(metric_name, index, batch_name) -> Card:
         """
         Create a placeholder for a chart.
+
+        Args:
+            metric_name (str): The name of the metric.
+            index (int): The index of the chart.
+            batch_name (str): The name of the batch.
+
+        Returns:
+            Card: The placeholder for the chart.
         """
         return Card(
             Div(
@@ -100,6 +107,9 @@ def plot_time_series(
         show_markers: Whether to show line markers
         line_width: Width of the lines (1-10)
         show_legend: Whether to show the legend
+
+    Returns:
+        go.Figure: The plotly figure
     """
     # Define height based on size toggle
     height = 250 if small_charts else 400
@@ -136,7 +146,7 @@ def plot_time_series(
         go.Scatter(
             x=df["metric_timestamp"],
             y=df["metric_value"],
-            name="Metric Value",
+            name="Value",
             mode="lines" + ("+markers" if show_markers else ""),
             line=dict(color=colors["primary"], width=line_width),
             marker=(dict(size=line_width+4, color=colors["primary"], symbol="circle")
@@ -151,7 +161,7 @@ def plot_time_series(
         go.Scatter(
             x=df["metric_timestamp"],
             y=df["metric_score"],
-            name="Metric Score",
+            name="Score",
             line=dict(color=colors["secondary"], width=line_width, dash="dot"),
             showlegend=show_legend,
         ),
@@ -160,9 +170,9 @@ def plot_time_series(
 
     # Add alert and change markers if they exist
     for condition, props in {
-            "metric_alert": dict(name="Metric Alert", color=colors["alert"]),
-            "metric_llmalert": dict(name="Metric LLM Alert", color=colors["llmalert"]),
-            "metric_change": dict(name="Metric Change",
+            "metric_alert": dict(name="Alert", color=colors["alert"]),
+            "metric_llmalert": dict(name="LLM Alert", color=colors["llmalert"]),
+            "metric_change": dict(name="Change",
                                   color=colors["change"]),
     }.items():
         condition_df = df[df[condition] == 1]
@@ -181,11 +191,11 @@ def plot_time_series(
 
     # Update axes
     fig.update_xaxes(**common_grid)
-    fig.update_yaxes(title_text="Metric Value",
+    fig.update_yaxes(title_text="Value",
                      secondary_y=False,
                      **common_grid)
     fig.update_yaxes(
-        title_text="Metric Score",
+        title_text="Score",
         secondary_y=True,
         showgrid=False,
         range=[0, 1.05],
