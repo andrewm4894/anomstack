@@ -20,7 +20,6 @@ def create_settings_button(text: str, batch_name: str, action: str, tooltip: str
             text,
             hx_post=f"/batch/{batch_name}/{action}",
             hx_target="#main-content",
-            cls="",  # Remove ghost button style to match batch dropdown
             uk_tooltip=tooltip,
         )
     )
