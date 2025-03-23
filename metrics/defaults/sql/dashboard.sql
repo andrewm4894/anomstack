@@ -49,3 +49,4 @@ from
 where 
   recency_rank <= {{ last_n }}
 {% endif %}
+order by 1,2,3
