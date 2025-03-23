@@ -7,8 +7,7 @@ This module contains the routes for handling toggle functionality.
 
 """
 
-from fasthtml.common import *
-from monsterui.all import *
+from fasthtml.common import Div, Script
 
 from dashboard.app import app, rt
 from .batch_view import get_batch_view
@@ -55,7 +54,7 @@ def post(batch_name: str):
 
 
 @rt("/batch/{batch_name}/toggle-theme")
-def post(batch_name: str):
+def post(batch_name: str) -> Div:
     """Toggle theme."""
     app.state.dark_mode = not app.state.dark_mode
     app.state.chart_cache.clear()

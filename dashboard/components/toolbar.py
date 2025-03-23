@@ -7,14 +7,21 @@ This module contains the components for the toolbar.
 
 """
 
-from fasthtml.common import *
-from monsterui.all import *
+from fasthtml.common import Div, Button
+from monsterui.all import DivLAligned, UkIcon, ButtonT
 from .batch import create_batches_dropdown
 from .settings import create_settings_dropdown
 
 
 def create_toolbar_buttons(batch_name: str) -> Div:
-    """Create the toolbar buttons."""
+    """Create the toolbar buttons.
+
+    Args:
+        batch_name (str): The name of the batch.
+
+    Returns:
+        Div: The toolbar buttons.
+    """
     return Div(
         Button(
             DivLAligned(UkIcon("home")),
