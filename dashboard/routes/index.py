@@ -138,7 +138,7 @@ def create_main_content(batch_stats: dict, sorted_batch_names: list) -> Div:
 
 
 @rt("/refresh-all")
-def post(request: Request) -> list:
+def post(request: Request):
     """Refresh all batch data.
 
     Args:
