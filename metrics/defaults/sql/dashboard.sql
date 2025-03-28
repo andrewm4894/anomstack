@@ -15,7 +15,8 @@ aggregated as (
     avg(case when metric_type = 'score' then metric_value end) as metric_score,
     max(case when metric_type = 'alert' then metric_value end) as metric_alert,
     max(case when metric_type = 'llmalert' then metric_value end) as metric_llmalert,
-    max(case when metric_type = 'change' then metric_value end) as metric_change
+    max(case when metric_type = 'change' then metric_value end) as metric_change,
+    array_agg(distinct metadata) as metadata
   from 
     {{ table_key }}
   where 
@@ -42,7 +43,8 @@ select
   metric_score,
   metric_alert,
   metric_llmalert,
-  metric_change
+  metric_change,
+  metadata
 from 
   ranked
 {% if cutoff_time is not defined %}
