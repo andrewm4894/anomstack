@@ -3,6 +3,7 @@ Generate llmalert jobs and schedules.
 """
 
 import os
+import json
 
 import pandas as pd
 from dagster import (
@@ -228,16 +229,19 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
             if len(df_alerts) > 0:
                 df_alerts["metric_type"] = "llmalert"
                 df_alerts["metric_alert"] = df_alerts["metric_alert"].astype(float)
+                df_alerts["metadata"] = df_alerts["anomaly_explanation"].apply(
+                    lambda x: json.dumps({"anomaly_explanation": x}) if pd.notna(x) else None
+                )
                 df_alerts = df_alerts[
                     [
                         "metric_timestamp",
                         "metric_batch",
                         "metric_name",
                         "metric_type",
-                        "metric_alert",
+                        "metric_value",
+                        "metadata",
                     ]
                 ]
-                df_alerts = df_alerts.rename(columns={"metric_alert": "metric_value"})
                 df_alerts = wrangle_df(df_alerts)
                 df_alerts = validate_df(df_alerts)
                 logger.info(f"saving {len(df_alerts)} llmalerts to {db} {table_key}")

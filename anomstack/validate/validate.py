@@ -31,6 +31,7 @@ def validate_df(df: pd.DataFrame) -> pd.DataFrame:
     assert "metric_batch" in df.columns.str.lower(), "metric_batch column missing"
     assert "metric_name" in df.columns.str.lower(), "metric_name column missing"
     assert "metric_value" in df.columns.str.lower(), "metric_value column missing"
+    assert "metadata" in df.columns.str.lower(), "metadata column missing"
     assert (
         "metric_timestamp" in df.columns.str.lower()
     ), "metric_timestamp column missing"

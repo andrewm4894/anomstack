@@ -27,6 +27,10 @@ def wrangle_df(df: pd.DataFrame, rounding: int = 4) -> pd.DataFrame:
     # ensure metric_timestamp is timestamp
     df["metric_timestamp"] = pd.to_datetime(df["metric_timestamp"], errors="coerce")
 
+    # if metadata is not in df then add as empty string
+    if "metadata" not in df.columns:
+        df["metadata"] = ""
+
     # enforce column order
     df = df[
         [
@@ -35,6 +39,7 @@ def wrangle_df(df: pd.DataFrame, rounding: int = 4) -> pd.DataFrame:
             "metric_name",
             "metric_type",
             "metric_value",
+            "metadata"
         ]
     ]
 
