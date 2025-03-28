@@ -147,3 +147,25 @@ def get(batch_name: str, chart_index: int):
         id=f"chart-{chart_index}",
         cls="mb-1",
     )
+
+
+@rt("/batch/{batch_name}/refresh")
+def refresh_batch(batch_name: str):
+    """Refresh data for a specific batch.
+
+    Args:
+        batch_name (str): The name of the batch to refresh.
+
+    Returns:
+        Div: The refreshed batch view.
+    """
+    # Clear cached data for this batch
+    if batch_name in app.state.df_cache:
+        del app.state.df_cache[batch_name]
+    if batch_name in app.state.stats_cache:
+        del app.state.stats_cache[batch_name]
+    if batch_name in app.state.chart_cache:
+        del app.state.chart_cache[batch_name]
+    
+    # Return the batch view with fresh data
+    return get_batch_view(batch_name)
