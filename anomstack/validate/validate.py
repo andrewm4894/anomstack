@@ -35,7 +35,7 @@ def validate_df(df: pd.DataFrame) -> pd.DataFrame:
     assert (
         "metric_timestamp" in df.columns.str.lower()
     ), "metric_timestamp column missing"
-    assert len(df.columns) == 5, f"expected 5 columns, got {len(df.columns)}"
+    assert len(df.columns) == 6, f"expected 6 columns, got {len(df.columns)}"
     assert len(df) > 0, "no data returned"
 
     # metric_name is string
