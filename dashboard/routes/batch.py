@@ -1,5 +1,5 @@
 """
-dashboard/routes/batch_view.py
+dashboard/routes/batch.py
 
 Batch View
 

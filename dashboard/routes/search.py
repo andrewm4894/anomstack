@@ -11,7 +11,7 @@ from fasthtml.common import Div, P
 from monsterui.all import DivLAligned, Button, ButtonT
 
 from dashboard.app import app, rt
-from .batch_view import ChartManager, get_batch_view, DEFAULT_LOAD_N_CHARTS
+from .batch import ChartManager, get_batch_view, DEFAULT_LOAD_N_CHARTS
 from dashboard.data import get_data
 
 

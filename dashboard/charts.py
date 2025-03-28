@@ -152,6 +152,7 @@ def plot_time_series(
             marker=(dict(size=line_width+4, color=colors["primary"], symbol="circle")
                     if show_markers else None),
             showlegend=show_legend,
+            connectgaps=True,
         ),
         secondary_y=False,
     )
@@ -164,6 +165,7 @@ def plot_time_series(
             name="Score",
             line=dict(color=colors["secondary"], width=line_width, dash="dot"),
             showlegend=show_legend,
+            connectgaps=True,
         ),
         secondary_y=True,
     )

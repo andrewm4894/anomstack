@@ -10,7 +10,7 @@ This module contains the routes for handling toggle functionality.
 from fasthtml.common import Div, Script
 
 from dashboard.app import app, rt
-from .batch_view import get_batch_view
+from .batch import get_batch_view
 
 
 @rt("/batch/{batch_name}/toggle-size")

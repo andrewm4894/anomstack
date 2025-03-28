@@ -8,6 +8,6 @@ This module contains the routes for the dashboard.
 """
 
 from .index import *
-from .batch_view import *
+from .batch import *
 from .toggles import *
 from .search import *
