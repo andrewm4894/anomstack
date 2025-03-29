@@ -12,7 +12,7 @@ import os
 import requests
 from dotenv import load_dotenv
 
-from anomstack.config import specs
+from anomstack.config import get_specs
 
 
 log = logging.getLogger("anomstack_dashboard")
@@ -33,7 +33,7 @@ def get_enabled_dagster_jobs(host: str = "localhost", port: str = "3000") -> lis
         list: A list of enabled job names.
     """
 
-    load_dotenv('./.env')
+    load_dotenv("./.env")
 
     # Resolve DAGSTER_HOME to an absolute path
     dagster_home = os.getenv("DAGSTER_HOME", "./")
@@ -79,7 +79,10 @@ def get_enabled_dagster_jobs(host: str = "localhost", port: str = "3000") -> lis
             data = response.json()
             enabled_jobs = []
             for location in data["data"]["workspaceOrError"]["locationEntries"]:
-                if "locationOrLoadError" in location and "repositories" in location["locationOrLoadError"]:  # noqa: E501
+                if (
+                    "locationOrLoadError" in location
+                    and "repositories" in location["locationOrLoadError"]
+                ):  # noqa: E501
                     for repo in location["locationOrLoadError"]["repositories"]:
                         for job in repo["jobs"]:
                             # Check if the job has any active schedules
@@ -111,12 +114,25 @@ def get_metric_batches(source: str = "all"):
         list: A list of metric batches.
     """
     metric_batches = []
-    dagster_enabled_jobs = get_enabled_dagster_jobs(host="http://localhost", port="3000")
-    dagster_ingest_jobs = [job for job in dagster_enabled_jobs if job.endswith("_ingest")]
-    dagster_metric_batches = [job[:-7] for job in dagster_ingest_jobs if job.endswith("_ingest")]
+    dagster_enabled_jobs = get_enabled_dagster_jobs(
+        host="http://localhost", port="3000"
+    )
+    dagster_ingest_jobs = [
+        job for job in dagster_enabled_jobs if job.endswith("_ingest")
+    ]
+    dagster_metric_batches = [
+        job[:-7] for job in dagster_ingest_jobs if job.endswith("_ingest")
+    ]
+    specs = get_specs()
     config_metric_batches = list(specs.keys())
-    config_metric_batches = [batch for batch in config_metric_batches if not specs[batch]["disable_dashboard"]]
-    config_metric_batches = [batch for batch in config_metric_batches if not specs[batch]["disable_batch"]]
+    config_metric_batches = [
+        batch
+        for batch in config_metric_batches
+        if not specs[batch]["disable_dashboard"]
+    ]
+    config_metric_batches = [
+        batch for batch in config_metric_batches if not specs[batch]["disable_batch"]
+    ]
     if source == "dagster":
         metric_batches = dagster_metric_batches
     elif source == "config":
@@ -125,5 +141,5 @@ def get_metric_batches(source: str = "all"):
         metric_batches = dagster_metric_batches + config_metric_batches
     else:
         raise ValueError(f"Invalid source: {source}")
-    
+
     return metric_batches

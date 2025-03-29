@@ -37,10 +37,8 @@ class ChartManager:
             include_plotlyjs=False,
             full_html=False,
             config={
-                "displayModeBar":
-                False,
-                "displaylogo":
-                False,
+                "displayModeBar": False,
+                "displaylogo": False,
                 "modeBarButtonsToRemove": [
                     "zoom2d",
                     "pan2d",
@@ -51,12 +49,9 @@ class ChartManager:
                     "autoScale2d",
                     "resetScale2d",
                 ],
-                "responsive":
-                True,
-                "scrollZoom":
-                False,
-                "staticPlot":
-                False,
+                "responsive": True,
+                "scrollZoom": False,
+                "staticPlot": False,
             },
         )
 
@@ -111,6 +106,8 @@ def plot_time_series(
     Returns:
         go.Figure: The plotly figure
     """
+    df["metric_llmalert"] = df["metric_llmalert"].clip(upper=1)
+
     # Define height based on size toggle
     height = 250 if small_charts else 400
 
@@ -149,8 +146,11 @@ def plot_time_series(
             name="Value",
             mode="lines" + ("+markers" if show_markers else ""),
             line=dict(color=colors["primary"], width=line_width),
-            marker=(dict(size=line_width+4, color=colors["primary"], symbol="circle")
-                    if show_markers else None),
+            marker=(
+                dict(size=line_width + 4, color=colors["primary"], symbol="circle")
+                if show_markers
+                else None
+            ),
             showlegend=show_legend,
             connectgaps=True,
         ),
@@ -172,10 +172,9 @@ def plot_time_series(
 
     # Add alert and change markers if they exist
     for condition, props in {
-            "metric_alert": dict(name="Alert", color=colors["alert"]),
-            "metric_llmalert": dict(name="LLM Alert", color=colors["llmalert"]),
-            "metric_change": dict(name="Change",
-                                  color=colors["change"]),
+        "metric_alert": dict(name="Alert", color=colors["alert"]),
+        "metric_llmalert": dict(name="LLM Alert", color=colors["llmalert"]),
+        "metric_change": dict(name="Change", color=colors["change"]),
     }.items():
         condition_df = df[df[condition] == 1]
         if not condition_df.empty:
@@ -185,45 +184,50 @@ def plot_time_series(
                     y=condition_df[condition],
                     mode="markers",
                     name=props["name"],
-                    marker=dict(color=props["color"], size=line_width+4, symbol="circle"),
+                    marker=dict(
+                        color=props["color"], size=line_width + 4, symbol="circle"
+                    ),
                     showlegend=show_legend,
+                    customdata=condition_df["anomaly_explanation"],
+                    hovertemplate=(
+                        "Time: %{x}<br>LLM Alert: %{customdata}<extra></extra>"
+                    ),
                 ),
                 secondary_y=True,
             )
 
     # Update axes
     fig.update_xaxes(**common_grid)
-    fig.update_yaxes(title_text="Value",
-                     secondary_y=False,
-                     **common_grid)
+    fig.update_yaxes(title_text="Value", secondary_y=False, **common_grid)
     fig.update_yaxes(
         title_text="Score",
         secondary_y=True,
         showgrid=False,
         range=[0, 1.05],
         tickformat=".0%",
-        **{
-            k: v
-            for k, v in common_grid.items() if k != "showgrid"
-        },
+        **{k: v for k, v in common_grid.items() if k != "showgrid"},
     )
 
     # Update layout
     fig.update_layout(
         plot_bgcolor=colors["background"],
         paper_bgcolor=colors["background"],
-        hovermode="x unified",
+        hovermode="closest",
         hoverdistance=100,
         showlegend=show_legend,
-        legend=(dict(
-            orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="left",
-            x=0,
-            bgcolor=colors["background"],
-            font=dict(color=colors["text"]),
-        ) if show_legend else None),
+        legend=(
+            dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="left",
+                x=0,
+                bgcolor=colors["background"],
+                font=dict(color=colors["text"]),
+            )
+            if show_legend
+            else None
+        ),
         margin=dict(t=5, b=5, l=5, r=5),
         height=height,
     )

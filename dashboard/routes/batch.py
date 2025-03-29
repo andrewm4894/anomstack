@@ -16,6 +16,7 @@ from dashboard.components import create_controls
 from dashboard.charts import ChartManager
 from dashboard.data import get_data
 from dashboard.constants import DEFAULT_LAST_N, DEFAULT_LOAD_N_CHARTS
+from anomstack.df.wrangle import extract_metadata
 
 
 def get_batch_data(batch_name: str) -> pd.DataFrame:
@@ -122,6 +123,7 @@ def get(batch_name: str, chart_index: int):
 
     if chart_index not in app.state.chart_cache[batch_name]:
         df_metric = df[df["metric_name"] == metric_name]
+        df_metric = extract_metadata(df_metric, "anomaly_explanation")
         fig = ChartManager.create_chart(df_metric, chart_index)
         app.state.chart_cache[batch_name][chart_index] = fig
 

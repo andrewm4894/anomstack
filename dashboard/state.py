@@ -9,7 +9,7 @@ This module contains the AppState class, which is responsible for managing the s
 
 import logging
 
-from anomstack.config import specs
+from anomstack.config import get_specs
 from dashboard.utils import get_metric_batches
 
 
@@ -25,11 +25,11 @@ class AppState:
         """
         Initialize the app state.
         """
-        self.specs = specs
+        self.specs = get_specs()
         self.metric_batches = get_metric_batches(source="all")
         if not self.metric_batches:
             log.warning("No metric batches found.")
-        self.specs_enabled = {batch: specs[batch] for batch in self.metric_batches}
+        self.specs_enabled = {batch: self.specs[batch] for batch in self.metric_batches}
         self.df_cache = {}
         self.chart_cache = {}
         self.stats_cache = {}
