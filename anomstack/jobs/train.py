@@ -17,7 +17,7 @@ from dagster import (
 )
 from pyod.models.base import BaseDetector
 
-from anomstack.config import specs
+from anomstack.config import get_specs
 from anomstack.fn.run import define_fn
 from anomstack.io.save import save_models
 from anomstack.jinja.render import render
@@ -173,6 +173,7 @@ def build_train_job(spec: dict) -> JobDefinition:
 # Build train jobs and schedules.
 train_jobs = []
 train_schedules = []
+specs = get_specs()
 for spec_name, spec in specs.items():
     train_job = build_train_job(spec)
     train_jobs.append(train_job)

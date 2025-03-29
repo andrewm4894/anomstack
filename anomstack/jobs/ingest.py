@@ -16,7 +16,7 @@ from dagster import (
     op,
 )
 
-from anomstack.config import specs
+from anomstack.config import get_specs
 from anomstack.df.save import save_df
 from anomstack.df.wrangle import wrangle_df
 from anomstack.fn.run import run_df_fn
@@ -119,6 +119,7 @@ logger = get_dagster_logger()
 # Build ingest jobs and schedules.
 ingest_jobs = []
 ingest_schedules = []
+specs = get_specs()
 for spec_key, spec in specs.items():
     logger.debug(f"Building ingest job for {spec_key}")
     logger.debug(f"Specs: \n{spec}")

@@ -1,4 +1,5 @@
 pytest
 pre-commit
 pip-tools
+jupyter
 -e .

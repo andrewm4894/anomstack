@@ -16,7 +16,7 @@ from dagster import (
 )
 
 from anomstack.alerts.send import send_alert
-from anomstack.config import specs
+from anomstack.config import get_specs
 from anomstack.df.save import save_df
 from anomstack.df.wrangle import wrangle_df
 from anomstack.jinja.render import render
@@ -215,6 +215,7 @@ def build_change_job(spec: dict) -> JobDefinition:
 # Build alert jobs and schedules.
 change_jobs = []
 change_schedules = []
+specs = get_specs()
 for spec_name, spec in specs.items():
     change_job = build_change_job(spec)
     change_jobs.append(change_job)

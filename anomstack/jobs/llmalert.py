@@ -17,7 +17,7 @@ from dagster import (
 )
 
 from anomstack.alerts.send import send_alert
-from anomstack.config import specs
+from anomstack.config import get_specs
 from anomstack.df.save import save_df
 from anomstack.df.wrangle import wrangle_df
 from anomstack.fn.run import define_fn
@@ -66,7 +66,6 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
     llmalert_metric_rounding = spec.get("llmalert_metric_rounding", -1)
     llmalert_prompt_max_n = spec.get("llmalert_prompt_max_n", 1000)
 
-
     @job(
         name=f"{metric_batch}_llmalert_job",
         tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
@@ -101,10 +100,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                 None
             """
 
-            make_prompt = define_fn(
-                fn_name="make_prompt",
-                fn=render("prompt_fn", spec)
-            )
+            make_prompt = define_fn(fn_name="make_prompt", fn=render("prompt_fn", spec))
 
             df_alerts = pd.DataFrame()
 
@@ -127,9 +123,10 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                 # logger.debug(f"df_metric: \n{df_metric}")
 
                 df_prompt = (
-                    df_metric[["metric_timestamp", "metric_value"]]
-                    .dropna()
-                ).sort_values(by="metric_timestamp").tail(llmalert_prompt_max_n)
+                    (df_metric[["metric_timestamp", "metric_value"]].dropna())
+                    .sort_values(by="metric_timestamp")
+                    .tail(llmalert_prompt_max_n)
+                )
                 df_prompt["metric_timestamp"] = df_metric[
                     "metric_timestamp"
                 ].dt.strftime("%Y-%m-%d %H:%M:%S")
@@ -140,71 +137,93 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                 df_detected_anomalies = df_detected_anomalies.rename(
                     columns={
                         "metric_timestamp": "anomaly_timestamp",
-                        "anomaly_description": "anomaly_explanation"
-                        }
-                    )
+                        "anomaly_description": "anomaly_explanation",
+                    }
+                )
 
                 num_anomalies_total = len(df_detected_anomalies)
-                logger.debug(f"{num_anomalies_total} total anomalies detected in {metric_name}")
-
-                # ensure both columns are datetime64[ns] type before merging
-                df_metric["metric_timestamp"] = df_metric["metric_timestamp"].dt.strftime("%Y-%m-%d %H:%M:%S")
-                df_detected_anomalies["anomaly_timestamp"] = df_detected_anomalies["anomaly_timestamp"].dt.strftime("%Y-%m-%d %H:%M:%S")
-
-                # merge the two dataframes on the metric_timestamp column
-                df_metric = df_metric.merge(
-                    df_detected_anomalies,
-                    how="left",
-                    left_on="metric_timestamp",
-                    right_on="anomaly_timestamp",
+                logger.debug(
+                    f"{num_anomalies_total} total anomalies detected in {metric_name}"
                 )
-                df_metric["metric_timestamp"] = pd.to_datetime(df_metric["metric_timestamp"], format="%Y-%m-%d %H:%M:%S")
 
-                # if there are detected anomalies set metric_alert to 1
-                df_metric["metric_alert"] = df_metric["anomaly_timestamp"].notnull().astype(int)
+                if num_anomalies_total == 0:
+                    df_alerts = pd.DataFrame()
+                else:
 
-                num_anomalies_recent = df_metric["metric_alert"].tail(llmalert_recent_n).sum()
+                    # ensure both columns are datetime64[ns] type before merging
+                    df_metric["metric_timestamp"] = df_metric[
+                        "metric_timestamp"
+                    ].dt.strftime("%Y-%m-%d %H:%M:%S")
+                    df_detected_anomalies["anomaly_timestamp"] = df_detected_anomalies[
+                        "anomaly_timestamp"
+                    ].dt.strftime("%Y-%m-%d %H:%M:%S")
 
-                logger.debug(f"{num_anomalies_recent} anomalies detected in the last {llmalert_recent_n} rows of {metric_name}")
-
-                # if any anomalies were detected in llmaltert_recent_n rows of df_metric then send an alert
-                if num_anomalies_recent > 0:
-
-                    latest_anomaly_timestamp = df_metric[
-                        df_metric["anomaly_timestamp"].notnull()
-                    ]["anomaly_timestamp"].max()
-                    # prefix each explanation with the timestamp
-                    anomaly_explanations = df_metric[
-                        df_metric["anomaly_timestamp"].notnull()
-                    ][["anomaly_timestamp", "anomaly_explanation"]].apply(
-                        lambda x: f"- {x[0]}: {x[1]}", axis=1
-                    ).sort_values(ascending=False)
-                    anomaly_explanations = anomaly_explanations.head(llmalert_recent_n)
-                    anomaly_explanations = "\n".join(anomaly_explanations)
-                    metric_timestamp_max = df_metric["metric_timestamp"].max()
-                    alert_title = (
-                        f"🤖 LLM says [{metric_name}] looks anomalous "
-                        f"({latest_anomaly_timestamp}) 🤖"
+                    # merge the two dataframes on the metric_timestamp column
+                    df_metric = df_metric.merge(
+                        df_detected_anomalies,
+                        how="left",
+                        left_on="metric_timestamp",
+                        right_on="anomaly_timestamp",
                     )
-                    df_metric = send_alert(
-                        metric_name=metric_name,
-                        title=alert_title,
-                        df=df_metric,
-                        threshold=threshold,
-                        alert_methods=alert_methods,
-                        description=anomaly_explanations,
-                        tags={
-                            "metric_batch": metric_batch,
-                            "metric_name": metric_name,
-                            "anomaly_timestamp": latest_anomaly_timestamp,
-                            "metric_timestamp_max": metric_timestamp_max,
-                            "alert_type": "llm",
-                        },
-                        score_col="metric_score"
+                    df_metric["metric_timestamp"] = pd.to_datetime(
+                        df_metric["metric_timestamp"], format="%Y-%m-%d %H:%M:%S"
                     )
 
-                    # append the alerts to the df_alerts
-                    df_alerts = pd.concat([df_alerts, df_metric])
+                    # if there are detected anomalies set metric_alert to 1
+                    df_metric["metric_alert"] = (
+                        df_metric["anomaly_timestamp"].notnull().astype(int)
+                    )
+
+                    num_anomalies_recent = (
+                        df_metric["metric_alert"].tail(llmalert_recent_n).sum()
+                    )
+
+                    logger.debug(
+                        f"{num_anomalies_recent} anomalies detected in the last {llmalert_recent_n} rows of {metric_name}"
+                    )
+
+                    # if any anomalies were detected in llmaltert_recent_n rows of df_metric then send an alert
+                    if num_anomalies_recent > 0:
+
+                        latest_anomaly_timestamp = df_metric[
+                            df_metric["anomaly_timestamp"].notnull()
+                        ]["anomaly_timestamp"].max()
+                        # prefix each explanation with the timestamp
+                        anomaly_explanations = (
+                            df_metric[df_metric["anomaly_timestamp"].notnull()][
+                                ["anomaly_timestamp", "anomaly_explanation"]
+                            ]
+                            .apply(lambda x: f"- {x[0]}: {x[1]}", axis=1)
+                            .sort_values(ascending=False)
+                        )
+                        anomaly_explanations = anomaly_explanations.head(
+                            llmalert_recent_n
+                        )
+                        anomaly_explanations = "\n".join(anomaly_explanations)
+                        metric_timestamp_max = df_metric["metric_timestamp"].max()
+                        alert_title = (
+                            f"🤖 LLM says [{metric_name}] looks anomalous "
+                            f"({latest_anomaly_timestamp}) 🤖"
+                        )
+                        df_metric = send_alert(
+                            metric_name=metric_name,
+                            title=alert_title,
+                            df=df_metric,
+                            threshold=threshold,
+                            alert_methods=alert_methods,
+                            description=anomaly_explanations,
+                            tags={
+                                "metric_batch": metric_batch,
+                                "metric_name": metric_name,
+                                "anomaly_timestamp": latest_anomaly_timestamp,
+                                "metric_timestamp_max": metric_timestamp_max,
+                                "alert_type": "llm",
+                            },
+                            score_col="metric_score",
+                        )
+
+                        # append the alerts to the df_alerts
+                        df_alerts = pd.concat([df_alerts, df_metric])
 
             return df_alerts
 
@@ -230,7 +249,9 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                 df_alerts["metric_type"] = "llmalert"
                 df_alerts["metric_alert"] = df_alerts["metric_alert"].astype(float)
                 df_alerts["metadata"] = df_alerts["anomaly_explanation"].apply(
-                    lambda x: json.dumps({"anomaly_explanation": x}) if pd.notna(x) else None
+                    lambda x: (
+                        json.dumps({"anomaly_explanation": x}) if pd.notna(x) else None
+                    )
                 )
                 df_alerts = df_alerts[
                     [
@@ -257,6 +278,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
 # Build llmalert jobs and schedules.
 llmalert_jobs = []
 llmalert_schedules = []
+specs = get_specs()
 for spec_name, spec in specs.items():
     llmalert_job = build_llmalert_job(spec)
     llmalert_jobs.append(llmalert_job)

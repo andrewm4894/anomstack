@@ -14,7 +14,7 @@ from dagster import (
     op,
 )
 
-from anomstack.config import specs
+from anomstack.config import get_specs
 from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
 
@@ -87,6 +87,7 @@ def build_delete_job(spec: dict) -> JobDefinition:
 # Build delete jobs and schedules.
 delete_jobs = []
 delete_schedules = []
+specs = get_specs()
 for spec_name, spec in specs.items():
     delete_job = build_delete_job(spec)
     delete_jobs.append(delete_job)

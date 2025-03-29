@@ -16,7 +16,7 @@ from dagster import (
 )
 
 from anomstack.alerts.send import send_df
-from anomstack.config import specs
+from anomstack.config import get_specs
 from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
 
@@ -93,6 +93,7 @@ def build_summary_job(spec: dict) -> JobDefinition:
 
 
 # Build summary job and schedule.
+specs = get_specs()
 spec = specs[list(specs.keys())[0]]
 spec["name"] = "summary"
 summary_job = build_summary_job(spec)

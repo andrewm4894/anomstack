@@ -19,7 +19,7 @@ from dagster import (
     op,
 )
 
-from anomstack.config import specs
+from anomstack.config import get_specs
 from anomstack.df.resample import resample
 from anomstack.jinja.render import render
 from anomstack.plots.plot import make_batch_plot
@@ -121,6 +121,7 @@ def build_plot_job(spec: dict) -> JobDefinition:
 # Build plot jobs and schedules.
 plot_jobs = []
 plot_schedules = []
+specs = get_specs()
 for spec_name, spec in specs.items():
     plot_job = build_plot_job(spec)
     plot_jobs.append(plot_job)

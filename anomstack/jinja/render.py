@@ -6,7 +6,9 @@ import jinja2
 from jinja2 import FileSystemLoader
 
 
-def render(spec_key: str, spec: dict, params: dict = None) -> str:
+def render(
+    spec_key: str, spec: dict, params: dict = None
+) -> str:
     """
     Render from a templated spec key.
 
@@ -19,18 +21,17 @@ def render(spec_key: str, spec: dict, params: dict = None) -> str:
     Returns:
         str: The rendered template string.
     """
-
-    environment = jinja2.Environment(loader=FileSystemLoader("metrics/"))
-
+    loader_dir = spec.get("metrics_dir", "metrics/")
+    environment = jinja2.Environment(loader=FileSystemLoader(loader_dir))
     params = {} if params is None else params
 
-    spec["db"]
+    # Retrieve the template string from the spec
     template_str = spec[spec_key]
 
     template = environment.from_string(template_str)
 
-    # Prepare context by starting with spec, then update with params
-    # Any key that exists in both will have the value from params
+    # Prepare context by starting with spec, then updating with params.
+    # Any overlapping keys will have the value from params.
     context = {**spec, **params}
 
     # Render the template with the context
