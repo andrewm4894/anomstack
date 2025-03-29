@@ -146,7 +146,7 @@ def plot_time_series(
     """
     df["metric_llmalert"] = df["metric_llmalert"].clip(upper=1)
     colors = ChartStyle.get_colors(dark_mode)
-    common_font, common_title_font, common_grid = ChartStyle.get_common_styling(colors)
+    _, _, common_grid = ChartStyle.get_common_styling(colors)
 
     # Define height based on size toggle
     height = 250 if small_charts else 400

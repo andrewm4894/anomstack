@@ -105,4 +105,7 @@ def get_data(
         df["metric_timestamp"] = pd.to_datetime(df["metric_timestamp"], errors="coerce")
         df = df.sort_values("metric_timestamp")
 
+    if "metric_llmalert" in df.columns:
+        df["metric_llmalert"] = df["metric_llmalert"].clip(upper=1)
+
     return df
