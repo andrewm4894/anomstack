@@ -248,6 +248,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
             if len(df_alerts) > 0:
                 df_alerts["metric_type"] = "llmalert"
                 df_alerts["metric_alert"] = df_alerts["metric_alert"].astype(float)
+                df_alerts["metric_value"] = df_alerts["metric_alert"]
                 df_alerts["metadata"] = df_alerts["anomaly_explanation"].apply(
                     lambda x: (
                         json.dumps({"anomaly_explanation": x}) if pd.notna(x) else None
