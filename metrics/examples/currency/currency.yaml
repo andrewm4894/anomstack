@@ -1,0 +1,14 @@
+metric_batch: "currency"
+table_key: "metrics_currency"
+ingest_cron_schedule: "30 8 * * *"
+train_cron_schedule: "40 8 * * *"
+score_cron_schedule: "50 8 * * *"
+alert_cron_schedule: "55 8 * * *"
+change_cron_schedule: "35 8 * * *"
+llmalert_cron_schedule: "40 8 * * *"
+plot_cron_schedule: "0 9 * * *"
+alert_always: False
+disable_llmalert: False
+alert_methods: "email,slack"
+ingest_fn: >
+  {% include "./examples/currency/currency.py" %}
