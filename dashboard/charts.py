@@ -21,6 +21,27 @@ class ChartManager:
     """
 
     @staticmethod
+    def get_chart_config():
+        """Return the common chart configuration."""
+        return {
+            "displayModeBar": False,
+            "displaylogo": False,
+            "modeBarButtonsToRemove": [
+                "zoom2d",
+                "pan2d",
+                "select2d",
+                "lasso2d",
+                "zoomIn2d",
+                "zoomOut2d",
+                "autoScale2d",
+                "resetScale2d",
+            ],
+            "responsive": True,
+            "scrollZoom": False,
+            "staticPlot": False,
+        }
+
+    @staticmethod
     def create_chart(df_metric, chart_index):
         """
         Create a chart for a given metric.
@@ -36,23 +57,7 @@ class ChartManager:
             div_id=f"plotly-chart-{chart_index}",
             include_plotlyjs=False,
             full_html=False,
-            config={
-                "displayModeBar": False,
-                "displaylogo": False,
-                "modeBarButtonsToRemove": [
-                    "zoom2d",
-                    "pan2d",
-                    "select2d",
-                    "lasso2d",
-                    "zoomIn2d",
-                    "zoomOut2d",
-                    "autoScale2d",
-                    "resetScale2d",
-                ],
-                "responsive": True,
-                "scrollZoom": False,
-                "staticPlot": False,
-            },
+            config=ChartManager.get_chart_config(),
         )
 
     @staticmethod
@@ -84,6 +89,39 @@ class ChartManager:
         )
 
 
+class ChartStyle:
+    """Handle chart styling and theme-related configurations."""
+
+    @staticmethod
+    def get_colors(dark_mode: bool) -> dict:
+        """Return theme-based colors."""
+        return {
+            "background": "#1a1a1a" if dark_mode else "white",
+            "text": "#e5e7eb" if dark_mode else "#64748b",
+            "grid": "rgba(255,255,255,0.1)" if dark_mode else "rgba(0,0,0,0.1)",
+            "primary": "#3b82f6" if dark_mode else "#2563eb",
+            "secondary": "#9ca3af" if dark_mode else "#64748b",
+            "alert": "#ef4444" if dark_mode else "#dc2626",
+            "llmalert": "#f97316" if dark_mode else "#fb923c",
+            "change": "#fb923c" if dark_mode else "#f97316",
+        }
+
+    @staticmethod
+    def get_common_styling(colors: dict) -> tuple:
+        """Return common styling configurations."""
+        common_font = dict(size=10, color=colors["text"])
+        common_title_font = dict(size=12, color=colors["text"])
+        common_grid = dict(
+            showgrid=True,
+            gridwidth=1,
+            gridcolor=colors["grid"],
+            zeroline=False,
+            tickfont=common_font,
+            title_font=common_title_font,
+        )
+        return common_font, common_title_font, common_grid
+
+
 def plot_time_series(
     df,
     small_charts=False,
@@ -107,38 +145,32 @@ def plot_time_series(
         go.Figure: The plotly figure
     """
     df["metric_llmalert"] = df["metric_llmalert"].clip(upper=1)
+    colors = ChartStyle.get_colors(dark_mode)
+    common_font, common_title_font, common_grid = ChartStyle.get_common_styling(colors)
 
     # Define height based on size toggle
     height = 250 if small_charts else 400
-
-    # Theme-based colors
-    colors = {
-        "background": "#1a1a1a" if dark_mode else "white",
-        "text": "#e5e7eb" if dark_mode else "#64748b",
-        "grid": "rgba(255,255,255,0.1)" if dark_mode else "rgba(0,0,0,0.1)",
-        "primary": "#3b82f6" if dark_mode else "#2563eb",
-        "secondary": "#9ca3af" if dark_mode else "#64748b",
-        "alert": "#ef4444" if dark_mode else "#dc2626",
-        "llmalert": "#f97316" if dark_mode else "#fb923c",
-        "change": "#fb923c" if dark_mode else "#f97316",
-    }
-
-    # Common styling configurations
-    common_font = dict(size=10, color=colors["text"])
-    common_title_font = dict(size=12, color=colors["text"])
-    common_grid = dict(
-        showgrid=True,
-        gridwidth=1,
-        gridcolor=colors["grid"],
-        zeroline=False,
-        tickfont=common_font,
-        title_font=common_title_font,
-    )
 
     # Create figure with secondary y-axis
     fig = make_subplots(specs=[[{"secondary_y": True}]])
 
     # Add main metric value trace
+    _add_main_metric_trace(fig, df, colors, show_markers, line_width, show_legend)
+
+    # Add metric score trace
+    _add_score_trace(fig, df, colors, line_width, show_legend)
+
+    # Add alert and change markers if they exist
+    _add_condition_traces(fig, df, colors, line_width, show_legend)
+
+    # Update axes
+    _update_axes_and_layout(fig, common_grid, colors, show_legend, height)
+
+    return fig
+
+
+def _add_main_metric_trace(fig, df, colors, show_markers, line_width, show_legend):
+    """Add the main metric value trace to the figure."""
     fig.add_trace(
         go.Scatter(
             x=df["metric_timestamp"],
@@ -161,7 +193,9 @@ def plot_time_series(
         secondary_y=False,
     )
 
-    # Add metric score trace
+
+def _add_score_trace(fig, df, colors, line_width, show_legend):
+    """Add the metric score trace to the figure."""
     fig.add_trace(
         go.Scatter(
             x=df["metric_timestamp"],
@@ -178,7 +212,9 @@ def plot_time_series(
         secondary_y=True,
     )
 
-    # Add alert and change markers if they exist
+
+def _add_condition_traces(fig, df, colors, line_width, show_legend):
+    """Add alert and change markers to the figure."""
     for condition, props in {
         "metric_alert": dict(
             name="Alert",
@@ -230,6 +266,9 @@ def plot_time_series(
                 secondary_y=True,
             )
 
+
+def _update_axes_and_layout(fig, common_grid, colors, show_legend, height):
+    """Update axes and layout of the figure."""
     # Update axes
     fig.update_xaxes(**common_grid)
     fig.update_yaxes(title_text="Value", secondary_y=False, **common_grid)
@@ -270,5 +309,3 @@ def plot_time_series(
             font=dict(size=12),
         ),
     )
-
-    return fig
