@@ -153,6 +153,10 @@ def plot_time_series(
             ),
             showlegend=show_legend,
             connectgaps=True,
+            hovertemplate=(
+                f'<span style="color: {colors["primary"]}"><b>Value</b>: %{{y:.2f}}<br>'
+                f'Time: %{{x}}</span><extra></extra>'
+            ),
         ),
         secondary_y=False,
     )
@@ -166,6 +170,10 @@ def plot_time_series(
             line=dict(color=colors["secondary"], width=line_width, dash="dot"),
             showlegend=show_legend,
             connectgaps=True,
+            hovertemplate=(
+                f'<span style="color: {colors["secondary"]}"><b>Score</b>: %{{y:.1%}}<br>'
+                f'Time: %{{x}}</span><extra></extra>'
+            ),
         ),
         secondary_y=True,
     )
@@ -190,7 +198,11 @@ def plot_time_series(
                     showlegend=show_legend,
                     customdata=condition_df["anomaly_explanation"],
                     hovertemplate=(
-                        "Time: %{x}<br>LLM Alert: %{customdata}<extra></extra>"
+                        f'<span style="color: {props["color"]}">'
+                        f'<b>{props["name"]}</b><br>'
+                        'Time: %{x}<br>'
+                        '<b>Details</b>: %{customdata}'
+                        '</span><extra></extra>'
                     ),
                 ),
                 secondary_y=True,
@@ -230,6 +242,11 @@ def plot_time_series(
         ),
         margin=dict(t=5, b=5, l=5, r=5),
         height=height,
+        hoverlabel=dict(
+            bgcolor="white",
+            bordercolor="white",
+            font=dict(size=12),
+        ),
     )
 
     return fig
