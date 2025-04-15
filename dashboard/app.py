@@ -25,13 +25,17 @@ log = logging.getLogger("anomstack_dashboard")
 
 # Get PostHog API key from environment
 posthog_api_key = os.getenv('POSTHOG_API_KEY')
+if posthog_api_key:
+    from dashboard.constants import POSTHOG_SCRIPT
+    POSTHOG_SCRIPT = POSTHOG_SCRIPT.replace("window.POSTHOG_API_KEY || ''",
+                                            f"'{posthog_api_key}'")
 
 # Define the app
 app, rt = fast_app(
     hdrs=(
         Theme.blue.headers(),
         Script(src="https://cdn.plot.ly/plotly-2.32.0.min.js"),
-        Script(POSTHOG_SCRIPT),
+        Script(POSTHOG_SCRIPT) if posthog_api_key else None,
         Link(
             rel="icon",
             type="image/svg+xml",
@@ -39,8 +43,6 @@ app, rt = fast_app(
             "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNoYXJ0LWxpbmUiPjxwYXRoIGQ9Ik0zIDN2MTZhMiAyIDAgMCAwIDIgMmgxNiIvPjxwYXRoIGQ9Im0xOSA5LTUgNS00LTQtMyAzIi8+PC9zdmc+",
         ),
         Link(rel="stylesheet", href="dashboard/static/styles.css"),
-        # Add PostHog API key to headers if available
-        *(({'PostHog-API-Key': posthog_api_key},) if posthog_api_key else ())
     ),
     debug=os.getenv("ANOMSTACK_DASHBOARD_DEBUG", "false").lower() == "true",
     log=log,
