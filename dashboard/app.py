@@ -28,7 +28,7 @@ app, rt = fast_app(
     hdrs=(
         Theme.blue.headers(),
         Script(src="https://cdn.plot.ly/plotly-2.32.0.min.js"),
-        Script(POSTHOG_SCRIPT, type="module"),
+        Script(POSTHOG_SCRIPT),
         Link(
             rel="icon",
             type="image/svg+xml",
