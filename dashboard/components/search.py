@@ -8,7 +8,7 @@ This module contains the components for the search and filtering functionality.
 """
 
 #from fasthtml.common import Input
-from monsterui.all import Form, DivLAligned, Input
+from monsterui.all import Form, DivLAligned, Input, Button
 from dashboard.app import app
 
 
@@ -53,19 +53,27 @@ def create_last_n_form(batch_name: str) -> Form:
     Returns:
         Form: The last n number form.
     """
+    current_last_n = app.state.last_n.get(batch_name, "30n")
+    
     return Form(
         DivLAligned(
             Input(
                 type="text",
                 name="last_n",
-                value=app.state.last_n.get(batch_name, "30n"),
+                value=current_last_n,
                 pattern=r"^\d+[nNhmd]$",
                 title="Use format: 30n (observations), 24h (hours), 45m (minutes), 7d (days)",
                 cls="uk-input uk-form-small rounded-md border-gray-200 w-full md:w-[110px]",
                 uk_tooltip="Filter by last N observations or time period (e.g., 30n, 24h, 45m, 7d)",
+                hx_trigger="change delay:500ms",
+                hx_post=f"/batch/{batch_name}/update-n",
+                hx_target="#charts-container",
+                hx_swap="outerHTML",
+                hx_indicator="#loading",
+                hx_sync="closest form:abort",
             ),
             cls="space-x-2",
         ),
-        hx_post=f"/batch/{batch_name}/update-n",
-        hx_target="#main-content",
+        id=f"last-n-form-{batch_name}",
+        onsubmit="return false;",
     )

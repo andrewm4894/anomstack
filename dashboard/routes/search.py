@@ -107,17 +107,60 @@ def get(batch_name: str, start_index: int):
 def post(batch_name: str, last_n: str = "30n"):
     """Update time window."""
     try:
+        # Update the last_n value
         app.state.last_n[batch_name] = last_n
-        app.state.clear_batch_cache(batch_name)
+        
+        # Clear all caches for this batch
+        if batch_name in app.state.df_cache:
+            del app.state.df_cache[batch_name]
+        if batch_name in app.state.stats_cache:
+            del app.state.stats_cache[batch_name]
+        if batch_name in app.state.chart_cache:
+            del app.state.chart_cache[batch_name]
+        
+        # Get fresh data with new time window
         app.state.df_cache[batch_name] = get_data(
             app.state.specs_enabled[batch_name],
             last_n=last_n,
             ensure_timestamp=True
         )
+        
+        # Recalculate stats with new data
         app.state.calculate_metric_stats(batch_name)
-        return get_batch_view(batch_name, initial_load=DEFAULT_LOAD_N_CHARTS)
+        
+        # Return only the charts container content
+        metric_stats = app.state.stats_cache[batch_name]
+        remaining_metrics = len(metric_stats) - DEFAULT_LOAD_N_CHARTS
+        load_next = min(DEFAULT_LOAD_N_CHARTS, remaining_metrics)
+        
+        return [
+            Div(
+                *[
+                    ChartManager.create_chart_placeholder(
+                        stat["metric_name"], i, batch_name
+                    )
+                    for i, stat in enumerate(metric_stats[:DEFAULT_LOAD_N_CHARTS])
+                ],
+                id="charts-container",
+                cls=f"grid grid-cols-{2 if app.state.two_columns else 1} gap-4",
+            ),
+            Div(
+                Button(
+                    f"Load next {load_next} of {remaining_metrics}",
+                    hx_get=f"/batch/{batch_name}/load-more/{DEFAULT_LOAD_N_CHARTS}",
+                    hx_target="#charts-container",
+                    hx_swap="beforeend",
+                    hx_indicator="#loading",
+                    cls=ButtonT.secondary,
+                    style="width: 100%; margin-top: 1rem;",
+                    disabled=remaining_metrics <= 0,
+                ),
+                id="load-more-container",
+                hx_swap_oob="true",
+            ),
+        ]
     except ValueError as e:
         return Div(
             P(str(e), cls="text-red-500 p-4 text-center"),
-            id="main-content",
+            id="charts-container",
         )
