@@ -52,12 +52,12 @@ ranked as (
     row_number() over (partition by aggregated.metric_name order by aggregated.metric_timestamp desc) as recency_rank
   from 
     aggregated
-  left join
-    max_metric_timestamp
+  inner join
+    max_metric_timestamp_filter
   on 
-    aggregated.metric_name = max_metric_timestamp.metric_name
+    aggregated.metric_name = max_metric_timestamp_filter.metric_name
     and 
-    aggregated.metric_batch = max_metric_timestamp.metric_batch
+    aggregated.metric_batch = max_metric_timestamp_filter.metric_batch
 )
 
 select
