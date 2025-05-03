@@ -43,7 +43,7 @@ from
 )
 where
   -- remove stale metrics
-  metric_timestamp_max >= current_timestamp - interval '{{ dashboard_stale_metric_max_days_ago }} hours'
+  metric_timestamp_max >= current_timestamp - interval '{{ dashboard_stale_metric_max_days_ago }} days'
 ),
 
 ranked as (
