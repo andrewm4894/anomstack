@@ -27,12 +27,37 @@ aggregated as (
   group by 1,2,3
 ),
 
-ranked as (
-  select
-    *,
-    row_number() over (partition by metric_name order by metric_timestamp desc) as recency_rank
+max_metric_timestamp_filter as (
+select 
+  metric_name,
+  metric_batch
+from 
+  (
+  select 
+    metric_name,
+    metric_batch,
+    max(metric_timestamp) as metric_timestamp_max
   from 
     aggregated
+  group by 1,2
+)
+where
+  -- remove stale metrics
+  metric_timestamp_max >= current_timestamp - interval '{{ dashboard_stale_metric_max_days_ago }} hours'
+),
+
+ranked as (
+  select
+    aggregated.*,
+    row_number() over (partition by aggregated.metric_name order by aggregated.metric_timestamp desc) as recency_rank
+  from 
+    aggregated
+  left join
+    max_metric_timestamp
+  on 
+    aggregated.metric_name = max_metric_timestamp.metric_name
+    and 
+    aggregated.metric_batch = max_metric_timestamp.metric_batch
 )
 
 select

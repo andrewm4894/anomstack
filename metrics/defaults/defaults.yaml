@@ -6,6 +6,7 @@ table_key: "metrics" # table to store metrics in.
 # dashboard params
 ############################################
 disable_dashboard: False # if you want to disable the dashboard for some reason.
+dashboard_stale_metric_max_days_ago: 7 # metrics are considered stale if they haven't been updated in this many days.
 
 ############################################
 # model params
