@@ -111,11 +111,11 @@ def build_score_job(spec: dict) -> JobDefinition:
                 logger.debug(f"preprocess {metric_name} in {metric_batch} score job.")
                 logger.debug(f"df_metric:\n{df_metric.head()}")
 
-                X = preprocess(df_metric, **preprocess_params)
+                X = preprocess(df_metric[['metric_timestamp','metric_value']], **preprocess_params)
 
                 if len(X) == 0:
                     logger.debug(
-                        f"X is empty for {metric_name} in {metric_batch} score job."
+                        f"X is empty for {metric_name} in {metric_batch} score job (preprocess_params: {preprocess_params})."
                     )
                     continue
 
