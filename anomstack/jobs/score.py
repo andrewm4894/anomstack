@@ -140,6 +140,13 @@ def build_score_job(spec: dict) -> JobDefinition:
                             f"{metric_batch} score job."
                         )
                         continue
+                    except Exception as e:
+                        logger.warning(e)
+                        logger.warning(
+                            f"model failed for {metric_name} in "
+                            f"{metric_batch} score job."
+                        )
+                        continue
 
                 if model_combination_method == "mean":
                     scores = pd.DataFrame(scores).mean(axis=1).values

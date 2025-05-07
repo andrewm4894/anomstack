@@ -26,10 +26,10 @@ model_configs:
       contamination: 0.01
 model_combination_method: 'mean' # method to combine model scores, 'mean', 'min' or 'max'.
 train_max_n: 2500 # max number of observations for training a model.
-train_metric_timestamp_max_days_ago: 30
+train_metric_timestamp_max_days_ago: 90 # max number of days to look back for training.
 train_min_n: 14 # min number of observations for training a model.
 score_max_n: 25 # max n to pull for scoring to avoid pulling more than needed.
-score_metric_timestamp_max_days_ago: 7
+score_metric_timestamp_max_days_ago: 14 # max number of days to look back for scoring.
 preprocess_params:
   diff_n: 1 # 1 will use diff, 0 will use raw metric values.
   smooth_n: 3 # how much smoothing to apply in preprocessing.
