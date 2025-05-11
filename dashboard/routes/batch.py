@@ -352,6 +352,32 @@ def submit_thumbs_up(batch_name: str, metric_name: str, timestamp: str):
     
     log.info(f"Stored positive feedback for key: {feedback_key}")
     
+    # Save feedback to metrics table
+    spec = app.state.specs_enabled[batch_name]
+    db = spec["db"]
+    table_key = spec["table_key"]
+    
+    # Create feedback dataframe
+    df_feedback = pd.DataFrame({
+        "metric_timestamp": [pd.to_datetime(timestamp)],
+        "metric_batch": [batch_name],
+        "metric_name": [metric_name],
+        "metric_type": ["thumbsup"],
+        "metric_value": [1],
+        "metadata": [""]
+    })
+    
+    # Save to database
+    from anomstack.df.save import save_df
+    from anomstack.df.wrangle import wrangle_df
+    from anomstack.validate.validate import validate_df
+    
+    df_feedback = wrangle_df(df_feedback)
+    df_feedback = validate_df(df_feedback)
+    save_df(df_feedback, db, table_key)
+    
+    log.info(f"Saved positive feedback to {db} {table_key}")
+    
     # Return both buttons with updated states
     return DivLAligned(
         Button(
@@ -398,6 +424,32 @@ def submit_thumbs_down(batch_name: str, metric_name: str, timestamp: str):
     app.state.anomaly_feedback[feedback_key] = "negative"
     
     log.info(f"Stored negative feedback for key: {feedback_key}")
+    
+    # Save feedback to metrics table
+    spec = app.state.specs_enabled[batch_name]
+    db = spec["db"]
+    table_key = spec["table_key"]
+    
+    # Create feedback dataframe
+    df_feedback = pd.DataFrame({
+        "metric_timestamp": [pd.to_datetime(timestamp)],
+        "metric_batch": [batch_name],
+        "metric_name": [metric_name],
+        "metric_type": ["thumbsdown"],
+        "metric_value": [1],
+        "metadata": [""]
+    })
+    
+    # Save to database
+    from anomstack.df.save import save_df
+    from anomstack.df.wrangle import wrangle_df
+    from anomstack.validate.validate import validate_df
+    
+    df_feedback = wrangle_df(df_feedback)
+    df_feedback = validate_df(df_feedback)
+    save_df(df_feedback, db, table_key)
+    
+    log.info(f"Saved negative feedback to {db} {table_key}")
     
     # Return both buttons with updated states
     return DivLAligned(
