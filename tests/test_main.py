@@ -1,14 +1,17 @@
+import os
+from pathlib import Path
 import logging
 
 import pytest
 
+# Now we can import the modules
 from anomstack.main import ingest_jobs, ingest_schedules, jobs, schedules
 
 logger = logging.getLogger(__name__)
 
 
 def test_jobs_len():
-    assert len(jobs) == 169
+    assert len(jobs) == 177
 
 
 def test_jobs_len_ingest():
@@ -16,7 +19,7 @@ def test_jobs_len_ingest():
 
 
 def test_schedules_len():
-    assert len(schedules) == 169
+    assert len(schedules) == 177
 
 
 def test_schedules_len_ingest():
@@ -25,6 +28,12 @@ def test_schedules_len_ingest():
 
 def test_jobs_schedules_len_match():
     assert len(jobs) == len(schedules)
+
+
+def test_main_imports():
+    """Test that the main module imports work correctly."""
+    assert len(jobs) > 0
+    assert len(schedules) > 0
 
 
 # Run the test
