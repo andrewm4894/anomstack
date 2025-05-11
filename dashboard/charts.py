@@ -101,7 +101,7 @@ class ChartManager:
             str: The HTML for the sparkline.
         """
         colors = ChartStyle.get_colors(app.state.dark_mode)
-        fig = go.Figure()
+        fig = make_subplots(specs=[[{"secondary_y": True}]])
 
         # Add the main line
         fig.add_trace(
@@ -115,7 +115,25 @@ class ChartManager:
                     width=1,
                 ),
                 showlegend=False,
-            )
+            ),
+            secondary_y=False,
+        )
+
+        # Add the score line
+        fig.add_trace(
+            go.Scatter(
+                x=df_metric["metric_timestamp"],
+                y=df_metric["metric_score"],
+                name="Score",
+                mode="lines",
+                line=dict(
+                    color=colors["secondary"],
+                    width=1,
+                    dash="dot",
+                ),
+                showlegend=False,
+            ),
+            secondary_y=True,
         )
 
         # Add marker for the specific anomaly point if provided
@@ -134,7 +152,8 @@ class ChartManager:
                             symbol="diamond",
                         ),
                         showlegend=False,
-                    )
+                    ),
+                    secondary_y=False,
                 )
 
         fig.update_layout(
@@ -150,6 +169,12 @@ class ChartManager:
                 showgrid=False,
                 showticklabels=False,
                 zeroline=False,
+            ),
+            yaxis2=dict(
+                showgrid=False,
+                showticklabels=False,
+                zeroline=False,
+                range=[0, 1.05],
             ),
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
