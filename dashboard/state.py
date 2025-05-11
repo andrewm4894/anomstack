@@ -86,6 +86,8 @@ class AppState:
                         if df_metric["metric_score"].sum() > 0
                         else 0
                     ),
+                    "thumbsup_sum": df_metric["thumbsup_sum"].fillna(0).sum(),
+                    "thumbsdown_sum": df_metric["thumbsdown_sum"].fillna(0).sum(),
                 }
             )
         metric_stats.sort(key=lambda x: (-x["anomaly_rate"], -x["avg_score"]))

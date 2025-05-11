@@ -228,7 +228,26 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 20):
         safe_metric = metric_name.replace(':', '_').replace(' ', '_').replace('.', '_').replace('+', '_')
         safe_timestamp = str(timestamp).replace(':', '_').replace(' ', '_').replace('+', '_').replace('.', '_')
         feedback_key = f"{batch_name}-{safe_metric}-{safe_timestamp}"
-        feedback = app.state.anomaly_feedback.get(feedback_key, None)
+        
+        # Get the metric stats for this metric
+        metric_stats = next((stat for stat in app.state.stats_cache[batch_name] if stat["metric_name"] == metric_name), None)
+        
+        # Determine initial state based on thumbsup_sum and thumbsdown_sum
+        thumbsup_sum = metric_stats["thumbsup_sum"] if metric_stats else 0
+        thumbsdown_sum = metric_stats["thumbsdown_sum"] if metric_stats else 0
+        
+        # If there's existing feedback in app.state, use that instead
+        if hasattr(app.state, 'anomaly_feedback') and feedback_key in app.state.anomaly_feedback:
+            feedback = app.state.anomaly_feedback[feedback_key]
+        else:
+            # Otherwise use the database feedback counts
+            if thumbsup_sum > thumbsdown_sum:
+                feedback = "positive"
+            elif thumbsdown_sum > thumbsup_sum:
+                feedback = "negative"
+            else:
+                feedback = None
+        
         log.info(f"Creating feedback buttons for key: {feedback_key}, current feedback: {feedback}")
         
         rows.append(
