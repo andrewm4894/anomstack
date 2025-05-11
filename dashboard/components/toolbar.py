@@ -58,11 +58,6 @@ def create_toolbar_buttons(batch_name: str) -> Div:
             cls=ButtonT.secondary,
             uk_tooltip="View anomaly list",
         ),
-        Button(
-            DivLAligned(UkIcon("github")),
-            cls=ButtonT.secondary,
-            onclick="window.open('https://github.com/andrewm4894/anomstack', '_blank')",
-            uk_tooltip="View project on GitHub",
-        ),
+        
         cls="flex items-center space-x-2 flex-wrap",
     )
