@@ -271,22 +271,22 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 20):
                 Td(
                     DivLAligned(
                         Button(
-                            UkIcon("thumbs-up"),
+                            UkIcon("thumbs-up", cls="sm:w-5 sm:h-5 w-4 h-4"),
                             hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-up",
                             hx_target=f"#feedback-{feedback_key}",
                             hx_swap="outerHTML",
-                            cls=ButtonT.primary if feedback == "positive" else ButtonT.secondary,
+                            cls=(ButtonT.primary if feedback == "positive" else ButtonT.secondary) + " sm:p-2 p-1",
                             id=f"feedback-{feedback_key}-positive",
                         ),
                         Button(
-                            UkIcon("thumbs-down"),
+                            UkIcon("thumbs-down", cls="sm:w-5 sm:h-5 w-4 h-4"),
                             hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-down",
                             hx_target=f"#feedback-{feedback_key}",
                             hx_swap="outerHTML",
-                            cls=ButtonT.primary if feedback == "negative" else ButtonT.secondary,
+                            cls=(ButtonT.primary if feedback == "negative" else ButtonT.secondary) + " sm:p-2 p-1",
                             id=f"feedback-{feedback_key}-negative",
                         ),
-                        cls="space-x-2 justify-center",
+                        cls="space-x-1 sm:space-x-2 justify-center",
                         id=f"feedback-{feedback_key}",
                     ),
                     cls="w-[120px] text-center",
