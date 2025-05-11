@@ -41,6 +41,7 @@ class AppState:
         self.line_width = 2
         self.show_legend = False
         self.search_term = {}
+        self.anomaly_feedback = {}  # Store feedback for anomalies
         
         # Initialize all batch data and stats
         for batch_name in self.metric_batches:
