@@ -33,6 +33,8 @@ Metric batch view:
 Anomaly list view:
 ![anomaly_list_view](./docs/img/dashboard-anomaly-list-view.png)
 
+## Contents
+
 - [What is Anomstack?](#what-is-anomstack)
   - [How it works](#how-it-works)
   - [Why?](#why)
