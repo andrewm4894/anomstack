@@ -536,6 +536,15 @@ View all metrics in a batch with various UI settings, searchable and sorted by a
 
 ![metric_batch_view](./docs/img/dashboard-metric-batch-view.png)
 
+### Anomaly List View
+
+A dedicated view to see all anomalies across your metrics with:
+- Compact sparkline charts showing the metric trend and anomaly point
+- Timestamp and metric name information
+- Feedback system with thumbs up/down buttons to rate anomaly detection accuracy
+- Pagination for easy navigation through large numbers of anomalies
+- Feedback is persisted to your metrics database for future analysis
+
 ### Dagster UI Plots
 
 Within Dagster there is the [`plot.py`](./anomstack/jobs/plot.py) job to generate some plots of your metrics and anomaly scores for quick eyeballing within the dagster UI.
