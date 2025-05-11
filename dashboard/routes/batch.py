@@ -169,7 +169,7 @@ def refresh_batch(batch_name: str):
         del app.state.stats_cache[batch_name]
     if batch_name in app.state.chart_cache:
         del app.state.chart_cache[batch_name]
-    
+
     # Return the batch view with fresh data
     return get_batch_view(batch_name)
 
@@ -187,7 +187,7 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 20):
         Div: The anomaly list view.
     """
     log.info(f"Accessing anomaly list for batch: {batch_name}")
-    
+
     if batch_name not in app.state.df_cache:
         log.info(f"Cache miss for batch {batch_name}, fetching data...")
         app.state.df_cache[batch_name] = get_batch_data(batch_name)
@@ -195,47 +195,47 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 20):
 
     df = app.state.df_cache[batch_name]
     log.info(f"Found {len(df)} rows in dataframe")
-    
+
     # Filter for actual anomalies (where metric_alert=1)
     df_anomalies = df[df['metric_alert'] == 1].copy()
     log.info(f"Found {len(df_anomalies)} anomalies")
-    
+
     # Sort by timestamp descending
     df_anomalies = df_anomalies.sort_values('metric_timestamp', ascending=False)
-    
+
     # Calculate pagination
     total_anomalies = len(df_anomalies)
     total_pages = (total_anomalies + per_page - 1) // per_page
     page = max(1, min(page, total_pages))  # Ensure page is within valid range
     start_idx = (page - 1) * per_page
     end_idx = min(start_idx + per_page, total_anomalies)
-    
+
     # Get the current page of anomalies
     df_page = df_anomalies.iloc[start_idx:end_idx]
-    
+
     # Create table rows
     rows = []
     for _, row in df_page.iterrows():
         metric_name = row['metric_name']
         timestamp = row['metric_timestamp']
-        
+
         # Get the metric data for this anomaly
         df_metric = df[df['metric_name'] == metric_name].copy()
         df_metric = df_metric.sort_values('metric_timestamp')
         fig = ChartManager.create_sparkline(df_metric, anomaly_timestamp=timestamp)
-        
+
         # Create safe feedback key by replacing problematic characters
         safe_metric = metric_name.replace(':', '_').replace(' ', '_').replace('.', '_').replace('+', '_')
         safe_timestamp = str(timestamp).replace(':', '_').replace(' ', '_').replace('+', '_').replace('.', '_')
         feedback_key = f"{batch_name}-{safe_metric}-{safe_timestamp}"
-        
+
         # Get the metric stats for this metric
         metric_stats = next((stat for stat in app.state.stats_cache[batch_name] if stat["metric_name"] == metric_name), None)
-        
+
         # Determine initial state based on thumbsup_sum and thumbsdown_sum
         thumbsup_sum = metric_stats["thumbsup_sum"] if metric_stats else 0
         thumbsdown_sum = metric_stats["thumbsdown_sum"] if metric_stats else 0
-        
+
         # If there's existing feedback in app.state, use that instead
         if hasattr(app.state, 'anomaly_feedback') and feedback_key in app.state.anomaly_feedback:
             feedback = app.state.anomaly_feedback[feedback_key]
@@ -247,18 +247,22 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 20):
                 feedback = "negative"
             else:
                 feedback = None
-        
+
         log.info(f"Creating feedback buttons for key: {feedback_key}, current feedback: {feedback}")
-        
+
         rows.append(
             Tr(
                 Td(
-                    metric_name,
-                    cls="font-medium text-center w-[180px]",
+                    Div(
+                        metric_name,
+                        cls="truncate max-w-[120px] sm:max-w-[180px]",
+                        uk_tooltip=metric_name,
+                    ),
+                    cls="font-medium text-center",
                 ),
                 Td(
                     timestamp.strftime('%Y-%m-%d %H:%M:%S'),
-                    cls="text-muted-foreground text-center w-[160px]",
+                    cls="text-muted-foreground text-center sm:w-[160px] w-[100px] hidden md:table-cell",
                 ),
                 Td(
                     Div(
@@ -271,22 +275,22 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 20):
                 Td(
                     DivLAligned(
                         Button(
-                            UkIcon("thumbs-up"),
+                            UkIcon("thumbs-up", cls="sm:w-5 sm:h-5 w-4 h-4"),
                             hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-up",
                             hx_target=f"#feedback-{feedback_key}",
                             hx_swap="outerHTML",
-                            cls=ButtonT.primary if feedback == "positive" else ButtonT.secondary,
+                            cls=(ButtonT.primary if feedback == "positive" else ButtonT.secondary) + " sm:p-2 p-1",
                             id=f"feedback-{feedback_key}-positive",
                         ),
                         Button(
-                            UkIcon("thumbs-down"),
+                            UkIcon("thumbs-down", cls="sm:w-5 sm:h-5 w-4 h-4"),
                             hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-down",
                             hx_target=f"#feedback-{feedback_key}",
                             hx_swap="outerHTML",
-                            cls=ButtonT.primary if feedback == "negative" else ButtonT.secondary,
+                            cls=(ButtonT.primary if feedback == "negative" else ButtonT.secondary) + " sm:p-2 p-1",
                             id=f"feedback-{feedback_key}-negative",
                         ),
-                        cls="space-x-2 justify-center",
+                        cls="space-x-1 sm:space-x-2 justify-center",
                         id=f"feedback-{feedback_key}",
                     ),
                     cls="w-[120px] text-center",
@@ -296,7 +300,7 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 20):
         )
 
     log.info(f"Created {len(rows)} table rows for page {page}")
-    
+
     # Create pagination controls
     pagination = Div(
         DivLAligned(
@@ -321,20 +325,23 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 20):
             cls="justify-center mt-4",
         ),
     )
-    
+
     return Div(
         create_controls(batch_name),
         Card(
-            Table(
-                Tr(
-                    Th("Metric", cls="font-medium text-center w-[180px]"),
-                    Th("Timestamp", cls="font-medium text-center w-[160px]"),
-                    Th("Trend", cls="w-[300px] text-center"),
-                    Th("Feedback", cls="w-[120px] font-medium text-center"),
-                    cls="border-b",
+            Div(
+                Table(
+                    Tr(
+                        Th("Metric", cls="font-medium text-center sm:w-[180px] w-[120px]"),
+                        Th("Timestamp", cls="font-medium text-center sm:w-[160px] w-[100px] hidden sm:table-cell"),
+                        Th("Trend", cls="sm:w-[300px] w-[140px] text-center"),
+                        Th("Feedback", cls="sm:w-[120px] w-[80px] font-medium text-center"),
+                        cls="border-b",
+                    ),
+                    *rows,
+                    cls="w-full divide-y min-w-full table-fixed",
                 ),
-                *rows,
-                cls="w-full divide-y",
+                cls="overflow-x-auto -mx-4 sm:mx-0",
             ),
             header=Div(
                 H4("Anomalies", cls="mb-1"),
@@ -359,23 +366,23 @@ def submit_thumbs_up(batch_name: str, metric_name: str, timestamp: str):
         Div: The updated feedback buttons.
     """
     log.info(f"Thumbs up endpoint called for batch={batch_name}, metric={metric_name}, timestamp={timestamp}")
-    
+
     # Create safe feedback key by replacing problematic characters
     safe_metric = metric_name.replace(':', '_').replace(' ', '_').replace('.', '_').replace('+', '_')
     safe_timestamp = timestamp.replace(':', '_').replace(' ', '_').replace('+', '_').replace('.', '_')
     feedback_key = f"{batch_name}-{safe_metric}-{safe_timestamp}"
-    
+
     if not hasattr(app.state, 'anomaly_feedback'):
         app.state.anomaly_feedback = {}
     app.state.anomaly_feedback[feedback_key] = "positive"
-    
+
     log.info(f"Stored positive feedback for key: {feedback_key}")
-    
+
     # Save feedback to metrics table
     spec = app.state.specs_enabled[batch_name]
     db = spec["db"]
     table_key = spec["table_key"]
-    
+
     # Create feedback dataframe
     df_feedback = pd.DataFrame({
         "metric_timestamp": [pd.to_datetime(timestamp)],
@@ -385,18 +392,18 @@ def submit_thumbs_up(batch_name: str, metric_name: str, timestamp: str):
         "metric_value": [1],
         "metadata": [""]
     })
-    
+
     # Save to database
     from anomstack.df.save import save_df
     from anomstack.df.wrangle import wrangle_df
     from anomstack.validate.validate import validate_df
-    
+
     df_feedback = wrangle_df(df_feedback)
     df_feedback = validate_df(df_feedback)
     save_df(df_feedback, db, table_key)
-    
+
     log.info(f"Saved positive feedback to {db} {table_key}")
-    
+
     # Return both buttons with updated states
     return DivLAligned(
         Button(
@@ -432,23 +439,23 @@ def submit_thumbs_down(batch_name: str, metric_name: str, timestamp: str):
         Div: The updated feedback buttons.
     """
     log.info(f"Thumbs down endpoint called for batch={batch_name}, metric={metric_name}, timestamp={timestamp}")
-    
+
     # Create safe feedback key by replacing problematic characters
     safe_metric = metric_name.replace(':', '_').replace(' ', '_').replace('.', '_').replace('+', '_')
     safe_timestamp = timestamp.replace(':', '_').replace(' ', '_').replace('+', '_').replace('.', '_')
     feedback_key = f"{batch_name}-{safe_metric}-{safe_timestamp}"
-    
+
     if not hasattr(app.state, 'anomaly_feedback'):
         app.state.anomaly_feedback = {}
     app.state.anomaly_feedback[feedback_key] = "negative"
-    
+
     log.info(f"Stored negative feedback for key: {feedback_key}")
-    
+
     # Save feedback to metrics table
     spec = app.state.specs_enabled[batch_name]
     db = spec["db"]
     table_key = spec["table_key"]
-    
+
     # Create feedback dataframe
     df_feedback = pd.DataFrame({
         "metric_timestamp": [pd.to_datetime(timestamp)],
@@ -458,18 +465,18 @@ def submit_thumbs_down(batch_name: str, metric_name: str, timestamp: str):
         "metric_value": [1],
         "metadata": [""]
     })
-    
+
     # Save to database
     from anomstack.df.save import save_df
     from anomstack.df.wrangle import wrangle_df
     from anomstack.validate.validate import validate_df
-    
+
     df_feedback = wrangle_df(df_feedback)
     df_feedback = validate_df(df_feedback)
     save_df(df_feedback, db, table_key)
-    
+
     log.info(f"Saved negative feedback to {db} {table_key}")
-    
+
     # Return both buttons with updated states
     return DivLAligned(
         Button(
