@@ -225,8 +225,8 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 20):
         fig = ChartManager.create_sparkline(df_metric, anomaly_timestamp=timestamp)
         
         # Create safe feedback key by replacing problematic characters
-        safe_metric = metric_name.replace(':', '_').replace(' ', '_')
-        safe_timestamp = str(timestamp).replace(':', '_').replace(' ', '_').replace('+', '_')
+        safe_metric = metric_name.replace(':', '_').replace(' ', '_').replace('.', '_').replace('+', '_')
+        safe_timestamp = str(timestamp).replace(':', '_').replace(' ', '_').replace('+', '_').replace('.', '_')
         feedback_key = f"{batch_name}-{safe_metric}-{safe_timestamp}"
         feedback = app.state.anomaly_feedback.get(feedback_key, None)
         log.info(f"Creating feedback buttons for key: {feedback_key}, current feedback: {feedback}")
@@ -244,9 +244,10 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 20):
                 Td(
                     Div(
                         Safe(fig),
-                        cls="flex justify-center items-center w-[300px] h-[50px]",
+                        Style("svg { display: block; margin: auto; height: 100% !important; width: 100% !important; }"),
+                        cls="absolute inset-0 flex justify-center items-center h-full w-full p-0 m-0",
                     ),
-                    cls="w-[300px] text-center p-0",
+                    cls="w-[300px] h-[50px] text-center p-0 m-0 relative overflow-hidden",
                 ),
                 Td(
                     DivLAligned(
@@ -341,8 +342,8 @@ def submit_thumbs_up(batch_name: str, metric_name: str, timestamp: str):
     log.info(f"Thumbs up endpoint called for batch={batch_name}, metric={metric_name}, timestamp={timestamp}")
     
     # Create safe feedback key by replacing problematic characters
-    safe_metric = metric_name.replace(':', '_').replace(' ', '_')
-    safe_timestamp = timestamp.replace(':', '_').replace(' ', '_').replace('+', '_')
+    safe_metric = metric_name.replace(':', '_').replace(' ', '_').replace('.', '_').replace('+', '_')
+    safe_timestamp = timestamp.replace(':', '_').replace(' ', '_').replace('+', '_').replace('.', '_')
     feedback_key = f"{batch_name}-{safe_metric}-{safe_timestamp}"
     
     if not hasattr(app.state, 'anomaly_feedback'):
@@ -388,8 +389,8 @@ def submit_thumbs_down(batch_name: str, metric_name: str, timestamp: str):
     log.info(f"Thumbs down endpoint called for batch={batch_name}, metric={metric_name}, timestamp={timestamp}")
     
     # Create safe feedback key by replacing problematic characters
-    safe_metric = metric_name.replace(':', '_').replace(' ', '_')
-    safe_timestamp = timestamp.replace(':', '_').replace(' ', '_').replace('+', '_')
+    safe_metric = metric_name.replace(':', '_').replace(' ', '_').replace('.', '_').replace('+', '_')
+    safe_timestamp = timestamp.replace(':', '_').replace(' ', '_').replace('+', '_').replace('.', '_')
     feedback_key = f"{batch_name}-{safe_metric}-{safe_timestamp}"
     
     if not hasattr(app.state, 'anomaly_feedback'):
