@@ -12,7 +12,7 @@ select
   sum(case when metric_type = 'alert' then 1 else 0 end) as n_alert
 from {{ table_key }}
 where
-  metric_timestamp >= current_date - interval '{{ summary_metric_timestamp_max_days_ago }} day'
+  cast(metric_timestamp as timestamp) >= current_timestamp - interval '{{ summary_metric_timestamp_max_days_ago }} day'
 group by metric_batch, metric_name
 order by n_alert desc
 ;

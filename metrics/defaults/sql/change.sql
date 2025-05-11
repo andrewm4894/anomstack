@@ -17,7 +17,7 @@ metric_value_data as (
   where
     metric_batch = '{{ metric_batch }}'
     and metric_type = 'metric'
-    and metric_timestamp >= current_date - interval '{{ change_metric_timestamp_max_days_ago }} day'
+    and cast(metric_timestamp as timestamp) >= current_timestamp - interval '{{ change_metric_timestamp_max_days_ago }} day'
     {% if change_include_metrics is defined %}
       and metric_name in ({{ ','.join(change_include_metrics) }})
     {% endif %}
@@ -39,7 +39,7 @@ metric_change_alert_data as (
   where
     metric_batch = '{{ metric_batch }}'
     and metric_type = 'change'
-    and metric_timestamp >= current_date - interval '{{ change_metric_timestamp_max_days_ago }} day'
+    and cast(metric_timestamp as timestamp) >= current_timestamp - interval '{{ change_metric_timestamp_max_days_ago }} day'
     {% if change_include_metrics is defined %}
       and metric_name in ({{ ','.join(change_include_metrics) }})
     {% endif %}

@@ -14,7 +14,7 @@ data as (
   from {{ table_key }}
   where metric_batch = '{{ metric_batch }}'
     and metric_type = 'metric'
-    and metric_timestamp >= current_date - interval '{{ train_metric_timestamp_max_days_ago }} day'
+    and cast(metric_timestamp as timestamp) >= current_timestamp - interval '{{ train_metric_timestamp_max_days_ago }} day'
     {% if train_exclude_metrics is defined %}
     and metric_name not in ({{ ','.join(train_exclude_metrics) }})
     {% endif %}

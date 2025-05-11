@@ -16,7 +16,7 @@ data as (
   from {{ table_key }}
   where metric_batch = '{{ metric_batch }}'
     and metric_type in ('metric', 'score')
-    and metric_timestamp >= current_date - interval '{{ score_metric_timestamp_max_days_ago }} day'
+    and cast(metric_timestamp as timestamp) >= current_timestamp - interval '{{ score_metric_timestamp_max_days_ago }} day'
     {% if score_exclude_metrics is defined %}
     and metric_name not in ({{ ','.join(score_exclude_metrics) }})
     {% endif %}

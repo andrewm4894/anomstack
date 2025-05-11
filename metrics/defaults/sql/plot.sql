@@ -20,7 +20,7 @@ where
   and 
   metric_type = 'metric'
   and 
-  metric_timestamp >= current_date - interval '{{ alert_metric_timestamp_max_days_ago }}' day
+  cast(metric_timestamp as timestamp) >= current_timestamp - interval '{{ alert_metric_timestamp_max_days_ago }}' day
 group by 1,2,3
 ),
 

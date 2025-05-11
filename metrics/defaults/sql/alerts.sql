@@ -19,7 +19,7 @@ from
 where
   metric_batch = '{{ metric_batch }}'
   and metric_type = 'metric'
-  and metric_timestamp >= current_date - interval '{{ alert_metric_timestamp_max_days_ago }} day'
+  and cast(metric_timestamp as timestamp) >= current_timestamp - interval '{{ alert_metric_timestamp_max_days_ago }} day'
   {% if alert_exclude_metrics is defined %}
   and metric_name not in ({{ ','.join(alert_exclude_metrics) }})
   {% endif %}
