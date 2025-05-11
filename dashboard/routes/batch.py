@@ -258,7 +258,7 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 20):
                 ),
                 Td(
                     timestamp.strftime('%Y-%m-%d %H:%M:%S'),
-                    cls="text-muted-foreground text-center w-[160px]",
+                    cls="text-muted-foreground text-center sm:w-[160px] w-[100px] hidden md:table-cell",
                 ),
                 Td(
                     Div(
