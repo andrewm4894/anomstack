@@ -115,6 +115,7 @@ class ChartManager:
                     width=1,
                 ),
                 showlegend=False,
+                connectgaps=True,
             ),
             secondary_y=False,
         )
@@ -132,6 +133,7 @@ class ChartManager:
                     dash="dot",
                 ),
                 showlegend=False,
+                connectgaps=True,
             ),
             secondary_y=True,
         )
