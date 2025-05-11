@@ -23,10 +23,15 @@ Painless open source anomaly detection for your metrics! 📈📉🚀
 
 > _Note: If you are already using Airflow then also checkout the [`airflow-provider-anomaly-detection`](https://github.com/andrewm4894/airflow-provider-anomaly-detection) package._
 
+App screenshots:
+
+Homepage:
 ![homepage](./docs/img/dashboard-home.png)
 
+Metric batch view:
 ![batch view](./docs/img/dashboard-metric-batch-view.png)
 
+Anomaly list view:
 ![anomaly_list_view](./docs/img/dashboard-anomaly-list-view.png)
 
 - [What is Anomstack?](#what-is-anomstack)
