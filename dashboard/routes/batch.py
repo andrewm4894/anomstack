@@ -407,22 +407,22 @@ def submit_thumbs_up(batch_name: str, metric_name: str, timestamp: str):
     # Return both buttons with updated states
     return DivLAligned(
         Button(
-            UkIcon("thumbs-up"),
+            UkIcon("thumbs-up", cls="sm:w-5 sm:h-5 w-4 h-4"),
             hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-up",
             hx_target=f"#feedback-{feedback_key}",
             hx_swap="outerHTML",
-            cls=ButtonT.primary,
+            cls=ButtonT.primary + " sm:p-2 p-1",
             id=f"feedback-{feedback_key}-positive",
         ),
         Button(
-            UkIcon("thumbs-down"),
+            UkIcon("thumbs-down", cls="sm:w-5 sm:h-5 w-4 h-4"),
             hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-down",
             hx_target=f"#feedback-{feedback_key}",
             hx_swap="outerHTML",
-            cls=ButtonT.secondary,
+            cls=ButtonT.secondary + " sm:p-2 p-1",
             id=f"feedback-{feedback_key}-negative",
         ),
-        cls="space-x-2 justify-center",
+        cls="space-x-1 sm:space-x-2 justify-center",
         id=f"feedback-{feedback_key}",
     )
 
