@@ -11,6 +11,7 @@ from fasthtml.common import Div, P
 from monsterui.all import Card, DivLAligned, Loading, LoadingT, TextPresets
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import pandas as pd
 
 from dashboard.app import app
 
@@ -86,6 +87,106 @@ class ChartManager:
             hx_get=f"/batch/{batch_name}/chart/{index}",
             hx_trigger="load",
             hx_swap="outerHTML",
+        )
+
+    @staticmethod
+    def create_sparkline(df_metric: pd.DataFrame, anomaly_timestamp: pd.Timestamp = None) -> str:
+        """Create a sparkline chart for a metric.
+
+        Args:
+            df_metric (pd.DataFrame): The metric data.
+            anomaly_timestamp (pd.Timestamp): The specific timestamp of the anomaly to mark.
+
+        Returns:
+            str: The HTML for the sparkline.
+        """
+        colors = ChartStyle.get_colors(app.state.dark_mode)
+        fig = make_subplots(specs=[[{"secondary_y": True}]])
+
+        # Add the main line
+        fig.add_trace(
+            go.Scatter(
+                x=df_metric["metric_timestamp"],
+                y=df_metric["metric_value"],
+                name="Value",
+                mode="lines",
+                line=dict(
+                    color=colors["primary"],
+                    width=1,
+                ),
+                showlegend=False,
+                connectgaps=True,
+            ),
+            secondary_y=False,
+        )
+
+        # Add the score line
+        fig.add_trace(
+            go.Scatter(
+                x=df_metric["metric_timestamp"],
+                y=df_metric["metric_score"],
+                name="Score",
+                mode="lines",
+                line=dict(
+                    color=colors["secondary"],
+                    width=1,
+                    dash="dot",
+                ),
+                showlegend=False,
+                connectgaps=True,
+            ),
+            secondary_y=True,
+        )
+
+        # Add marker for the specific anomaly point if provided
+        if anomaly_timestamp is not None:
+            anomaly_point = df_metric[df_metric['metric_timestamp'] == anomaly_timestamp]
+            if not anomaly_point.empty:
+                fig.add_trace(
+                    go.Scatter(
+                        x=[anomaly_point["metric_timestamp"].iloc[0]],
+                        y=[anomaly_point["metric_value"].iloc[0]],
+                        name="Alert",
+                        mode="markers",
+                        marker=dict(
+                            color=colors["alert"],
+                            size=8,
+                            symbol="diamond",
+                        ),
+                        showlegend=False,
+                    ),
+                    secondary_y=False,
+                )
+
+        fig.update_layout(
+            height=50,
+            width=200,
+            margin=dict(l=0, r=0, t=0, b=0),
+            xaxis=dict(
+                showgrid=False,
+                showticklabels=False,
+                zeroline=False,
+            ),
+            yaxis=dict(
+                showgrid=False,
+                showticklabels=False,
+                zeroline=False,
+            ),
+            yaxis2=dict(
+                showgrid=False,
+                showticklabels=False,
+                zeroline=False,
+                range=[0, 1.05],
+            ),
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            modebar=dict(remove=["zoom", "pan", "select", "lasso", "zoomIn", "zoomOut", "autoScale", "resetScale"]),
+        )
+
+        return fig.to_html(
+            full_html=False,
+            include_plotlyjs=False,
+            config=dict(displayModeBar=False),
         )
 
 

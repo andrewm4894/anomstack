@@ -51,6 +51,14 @@ def create_toolbar_buttons(batch_name: str) -> Div:
             uk_tooltip="Refresh metrics data from source",
         ),
         Button(
+            DivLAligned(UkIcon("alert-circle")),
+            hx_get=f"/batch/{batch_name}/anomalies",
+            hx_push_url=f"/batch/{batch_name}/anomalies",
+            hx_target="#main-content",
+            cls=ButtonT.secondary,
+            uk_tooltip="View anomaly list",
+        ),
+        Button(
             DivLAligned(UkIcon("github")),
             cls=ButtonT.secondary,
             onclick="window.open('https://github.com/andrewm4894/anomstack', '_blank')",

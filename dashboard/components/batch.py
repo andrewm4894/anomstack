@@ -100,3 +100,26 @@ def create_batch_card(batch_name: str, stats: dict) -> Card:
         ),
         cls="px-2 py-0.5 hover:border-primary transition-colors duration-200",
     )
+
+
+def create_controls(batch_name: str) -> Div:
+    """Create the controls for the batch view.
+
+    Args:
+        batch_name (str): The name of the batch.
+
+    Returns:
+        Div: The controls.
+    """
+    return Div(
+        DivLAligned(
+            Button(
+                "Refresh",
+                hx_get=f"/batch/{batch_name}/refresh",
+                hx_target="#main-content",
+                hx_indicator="#loading",
+                cls=ButtonT.secondary,
+            ),
+            cls="space-x-2 mb-4",
+        ),
+    )

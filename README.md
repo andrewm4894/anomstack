@@ -27,6 +27,8 @@ Painless open source anomaly detection for your metrics! 📈📉🚀
 
 ![batch view](./docs/img/dashboard-metric-batch-view.png)
 
+![anomaly_list_view](./docs/img/dashboard-anomaly-list-view.png)
+
 - [What is Anomstack?](#what-is-anomstack)
   - [How it works](#how-it-works)
   - [Why?](#why)
@@ -178,23 +180,24 @@ It's still too hard and messy to get decent out of the box anomaly detection on 
 Here is a list of features of Anomstack (emoji alert warning!)
 
 1. 🌟 - You bring your metrics Anomstack will do the ML (❤️[PyOD](https://github.com/yzhao062/pyod)).
-2. 🚀 - Easy to [run yourself](#docker) or via [Dagster Cloud](#dagster-cloud).
-3. ⚙️ - Very flexible config, you can see all params in [`defaults.yaml`](./metrics/defaults/defaults.yaml) and override them in each metric batch config.
-4. 🧠 - Ability to define your own custom python ingest function instead of just SQL, check out the [`python_ingest_simple`](./metrics/examples/python/python_ingest_simple/python_ingest_simple.yaml) example.
-5. 🛠️ - Ability to define your own custom python preprocess function instead of the default at [`/metrics/defaults/python/preprocess.py`](./metrics/defaults/python/preprocess.py).
-6. 📧 - Email [alerting](#alerts) with fancy(ish) ascii art plots of your metrics and anomaly scores.
-7. 💬 - Slack alerts too (want to make these nicer).
-8. 🤖 - aGeNtIc LLM based alerts - use an [anomaly-agent](https://github.com/andrewm4894/anomaly-agent) to do anomaly detection and alerting - see [LLM Agent Alerts](#llm-agent-alerts).
-9. 🕒 - Ability to ingest at whatever frequency you want and then agg to a different level for training/scoring, see [`freq`](/metrics/examples/freq/README.md) example.
-10. 📊 - Plot jobs so you can just eyeball your metrics in Dagster job logs, see [#dagster-ui-plots](#dagster-ui-plots).
-11. 🏗️ - Minimal infrastructure requirements, Anomstack just reads from and writes to whatever database you use.
-12. 📈 - A nice fancy local [FastHTML](https://fastht.ml/) + [MonsterUI](https://github.com/AnswerDotAI/MonsterUI) (❤️) dashboard to visualize your metrics and anomaly scores, see [#dashboard](#dashboard).
-13. 📦 - Dockerized for easy deployment.
-14. 🔔 - Scores & Alerts saved to database so you can query them and do whatever you want with them.
-15. 🏷️ - Add custom metric tags for more complex alert routing e.g. priority or subject area based.
-16. 🔄 - Change detection jobs out of the box.
-17. 😴 - Ability to snooze alerts for a period of time to reduce repeated and duplicate alerts.
-18. 🗞️ - Daily summary emails.
+1. 🚀 - Easy to [run yourself](#docker) or via [Dagster Cloud](#dagster-cloud).
+1. ⚙️ - Very flexible config, you can see all params in [`defaults.yaml`](./metrics/defaults/defaults.yaml) and override them in each metric batch config.
+1. 🧠 - Ability to define your own custom python ingest function instead of just SQL, check out the [`python_ingest_simple`](./metrics/examples/python/python_ingest_simple/python_ingest_simple.yaml) example.
+1. 🛠️ - Ability to define your own custom python preprocess function instead of the default at [`/metrics/defaults/python/preprocess.py`](./metrics/defaults/python/preprocess.py).
+1. 📧 - Email [alerting](#alerts) with fancy(ish) ascii art plots of your metrics and anomaly scores.
+1. 💬 - Slack alerts too (want to make these nicer).
+1. 🤖 - aGeNtIc LLM based alerts - use an [anomaly-agent](https://github.com/andrewm4894/anomaly-agent) to do anomaly detection and alerting - see [LLM Agent Alerts](#llm-agent-alerts).
+1. 🕒 - Ability to ingest at whatever frequency you want and then agg to a different level for training/scoring, see [`freq`](/metrics/examples/freq/README.md) example.
+1. 📊 - Plot jobs so you can just eyeball your metrics in Dagster job logs, see [#dagster-ui-plots](#dagster-ui-plots).
+1. 🏗️ - Minimal infrastructure requirements, Anomstack just reads from and writes to whatever database you use.
+1. 📈 - A nice fancy local [FastHTML](https://fastht.ml/) + [MonsterUI](https://github.com/AnswerDotAI/MonsterUI) (❤️) dashboard to visualize your metrics and anomaly scores, see [#dashboard](#dashboard).
+1. 📦 - Dockerized for easy deployment.
+1. 🔔 - Scores & Alerts saved to database so you can query them and do whatever you want with them.
+1. 🏷️ - Add custom metric tags for more complex alert routing e.g. priority or subject area based.
+1. 🔄 - Change detection jobs out of the box.
+1. 😴 - Ability to snooze alerts for a period of time to reduce repeated and duplicate alerts.
+1. 👍 - Anomaly feedback system with thumbs up/down buttons to rate anomaly detection accuracy (see [#anomaly-list-view](#anomaly-list-view)).
+1. 🗞️ - Daily summary emails.
 
 ### Architecture
 
@@ -535,6 +538,17 @@ Simple homepage with some quick summary metrics for each metric batch.
 View all metrics in a batch with various UI settings, searchable and sorted by anomaly rate from highest to lowest. An "anomstack" if you will ;)
 
 ![metric_batch_view](./docs/img/dashboard-metric-batch-view.png)
+
+### Anomaly List View
+
+A dedicated view to see all anomalies across your metrics with:
+- Compact sparkline charts showing the metric trend and anomaly point
+- Timestamp and metric name information
+- Feedback system with thumbs up/down buttons to rate anomaly detection accuracy
+- Pagination for easy navigation through large numbers of anomalies
+- Feedback is persisted to your metrics database for future analysis
+
+![anomaly_list_view](./docs/img/dashboard-anomaly-list-view.png)
 
 ### Dagster UI Plots
 

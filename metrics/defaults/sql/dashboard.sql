@@ -16,6 +16,8 @@ aggregated as (
     max(case when metric_type = 'alert' then metric_value end) as metric_alert,
     max(case when metric_type = 'llmalert' then metric_value end) as metric_llmalert,
     max(case when metric_type = 'change' then metric_value end) as metric_change,
+    sum(case when metric_type = 'thumbsup' then metric_value end) as thumbsup_sum,
+    sum(case when metric_type = 'thumbsdown' then metric_value end) as thumbsdown_sum,
     array_agg(distinct metadata) as metadata
   from 
     {{ table_key }}
@@ -69,6 +71,8 @@ select
   metric_alert,
   metric_llmalert,
   metric_change,
+  thumbsup_sum,
+  thumbsdown_sum,
   metadata
 from 
   ranked
