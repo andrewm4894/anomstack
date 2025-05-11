@@ -12,7 +12,6 @@
 <a href="https://anomstack-demo.replit.app/">![Dashboard Demo](https://img.shields.io/badge/Dashboard_Demo-anomstack--demo.replit.app-blue?link=https%3A%2F%2Fanomstack-demo.replit.app%2F)</a>
 <a href="https://github.com/andrewm4894/anomstack/blob/main/LICENSE">![License](https://img.shields.io/badge/License-MIT-yellow.svg)</a>
 <a href="https://github.com/andrewm4894/anomstack/actions/workflows/pytest.yaml">![GitHub PyTest Workflow Status](https://img.shields.io/github/actions/workflow/status/andrewm4894/anomstack/pytest.yaml?label=Tests)</a>
-<a href="https://github.com/andrewm4894/anomstack/actions/workflows/deploy.yml">![GitHub Deployment Workflow Status](https://img.shields.io/github/actions/workflow/status/andrewm4894/anomstack/deploy.yml?label=Dagster%20Cloud%20Deployment)</a>
 <a href="https://github.com/andrewm4894/anomstack/actions/workflows/pre-commit.yaml">![GitHub Pre-Commit Workflow Status](https://img.shields.io/github/actions/workflow/status/andrewm4894/anomstack/pre-commit.yaml?label=Pre-Commit)</a>
 
 </div>
