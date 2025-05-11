@@ -22,7 +22,7 @@ mode = "parallel"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python -m uvicorn dashboard.app:app --host 0.0.0.0 --port 80 --reload"
+args = "python -m uvicorn dashboard.app:app --host 0.0.0.0 --port 80"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
@@ -48,8 +48,4 @@ args = "python -m dagster dev -h 0.0.0.0 -p 3000 -f anomstack/main.py"
 
 [deployment]
 deploymentTarget = "cloudrun"
-run = [
-  "sh",
-  "-c",
-  "python -m uvicorn dashboard.app:app --host 0.0.0.0 --port 80",
-]
+run = ["sh", "-c", "python -m uvicorn dashboard.app:app --host 0.0.0.0 --port 80"]
