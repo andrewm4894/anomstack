@@ -545,6 +545,8 @@ A dedicated view to see all anomalies across your metrics with:
 - Pagination for easy navigation through large numbers of anomalies
 - Feedback is persisted to your metrics database for future analysis
 
+![anomaly_list_view](./docs/img/dashboard-anomaly-list-view.png)
+
 ### Dagster UI Plots
 
 Within Dagster there is the [`plot.py`](./anomstack/jobs/plot.py) job to generate some plots of your metrics and anomaly scores for quick eyeballing within the dagster UI.
