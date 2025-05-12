@@ -142,6 +142,7 @@ class ChartManager:
         if anomaly_timestamp is not None:
             anomaly_point = df_metric[df_metric['metric_timestamp'] == anomaly_timestamp]
             if not anomaly_point.empty:
+                alert_color = colors["llmalert"] if df_metric["metric_llmalert"].iloc[-1] == 1 else colors["alert"]
                 fig.add_trace(
                     go.Scatter(
                         x=[anomaly_point["metric_timestamp"].iloc[0]],
@@ -149,7 +150,7 @@ class ChartManager:
                         name="Alert",
                         mode="markers",
                         marker=dict(
-                            color=colors["alert"],
+                            color=alert_color,
                             size=8,
                             symbol="diamond",
                         ),
