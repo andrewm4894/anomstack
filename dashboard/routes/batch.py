@@ -196,9 +196,12 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 20):
     df = app.state.df_cache[batch_name]
     log.info(f"Found {len(df)} rows in dataframe")
 
-    # Filter for actual anomalies (where metric_alert=1)
-    df_anomalies = df[df['metric_alert'] == 1].copy()
-    log.info(f"Found {len(df_anomalies)} anomalies")
+    # Filter for both standard anomalies and LLM alerts
+    df_anomalies = df[
+        ((df['metric_alert'] == 1) | 
+         ((df['metric_type'] == 'llmalert') & (df['metric_value'] == 1)))
+    ].copy()
+    log.info(f"Found {len(df_anomalies)} anomalies (including LLM alerts)")
 
     # Sort by timestamp descending
     df_anomalies = df_anomalies.sort_values('metric_timestamp', ascending=False)
