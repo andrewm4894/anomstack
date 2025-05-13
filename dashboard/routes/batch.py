@@ -257,10 +257,10 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 50):
                 Td(
                     Div(
                         metric_name,
-                        cls="truncate max-w-[120px] sm:max-w-[180px]",
+                        cls="truncate max-w-[120px] sm:max-w-[180px] mx-auto",
                         uk_tooltip=metric_name,
                     ),
-                    cls="font-medium text-center",
+                    cls="font-medium text-center w-full",
                 ),
                 Td(
                     timestamp.strftime('%Y-%m-%d %H:%M:%S'),
