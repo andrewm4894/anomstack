@@ -175,7 +175,7 @@ def refresh_batch(batch_name: str):
 
 
 @rt("/batch/{batch_name}/anomalies")
-def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 20):
+def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 50):
     """Get the anomaly list view for a batch.
 
     Args:
