@@ -135,7 +135,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                 if llmalert_metric_rounding >= 0:
                     df_prompt = df_prompt.round(llmalert_metric_rounding)
 
-                logger.debug(f"system_prompt: \n{system_prompt}")
+                # logger.debug(f"system_prompt: \n{system_prompt}")
                 df_detected_anomalies = detect_anomalies(
                     df_prompt, system_prompt
                 )
