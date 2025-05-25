@@ -82,6 +82,11 @@ llmalert_smooth_n: 0 # smooth metric value prior to sending to llm.
 llmalert_metric_rounding: -1 # round metric values to this number of decimal places.
 llmalert_metric_timestamp_max_days_ago: 30 # don't alert on metrics older than this.
 llmalert_prompt_max_n: 1000 # max n to include in prompt for llmalert.
+llmalert_anomaly_agent_system_prompt: |
+  You are an expert anomaly detection agent. You are given a time series and you need to identify the anomalies.
+
+  Notes:
+  - If you see a flat line its ok to flag as an anomaly the first few times but if it is consistently at the same number then just ignore it after a few observations.
 
 ############################################
 # schedules
