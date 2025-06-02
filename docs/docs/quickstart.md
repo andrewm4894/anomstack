@@ -80,6 +80,19 @@ python dashboard/app.py
 - [Customize the dashboard](features/dashboard)
 - [Explore deployment options](deployment/docker)
 
+## Ready-Made Example Metrics
+
+Want to see Anomstack in action with real data? Try these ready-made example metric batches:
+
+- [Currency](https://github.com/andrewm4894/anomstack/tree/main/metrics/examples/currency): Track currency exchange rates from public APIs.
+- [Yahoo Finance (yfinance)](https://github.com/andrewm4894/anomstack/tree/main/metrics/examples/yfinance): Monitor stock prices and financial data using the Yahoo Finance API.
+- [Weather](https://github.com/andrewm4894/anomstack/tree/main/metrics/examples/weather): Analyze weather data from Open Meteo.
+- [CoinDesk](https://github.com/andrewm4894/anomstack/tree/main/metrics/examples/coindesk): Get Bitcoin price data from the CoinDesk API.
+- [Hacker News](https://github.com/andrewm4894/anomstack/tree/main/metrics/examples/hackernews): Track top stories and scores from Hacker News.
+- [Netdata](https://github.com/andrewm4894/anomstack/tree/main/metrics/examples/netdata): Monitor system metrics using the Netdata API.
+
+See the [full list of examples](https://github.com/andrewm4894/anomstack/tree/main/metrics/examples) for more, including BigQuery, Prometheus, Google Trends, and more.
+
 ## Common Issues
 
 ### Metric Not Showing Up

@@ -43,8 +43,14 @@ const sidebars = {
       label: 'Data Sources',
       items: [
         'data-sources/python',
-        'bigquery',
-        'snowflake',
+        'data-sources/bigquery',
+        'data-sources/snowflake',
+        'data-sources/clickhouse',
+        'data-sources/duckdb',
+        'data-sources/sqlite',
+        'data-sources/motherduck',
+        'data-sources/turso',
+        'data-sources/redshift',
       ],
     },
     {

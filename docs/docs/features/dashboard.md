@@ -34,7 +34,12 @@ Customize your dashboard through:
 
 ## Examples
 
-Coming soon...
+You can explore a live demo of the Anomstack dashboard at [https://anomstack-demo.replit.app/](https://anomstack-demo.replit.app/). This demo instance showcases various features including:
+- Real-time metric monitoring
+- Anomaly detection visualization
+- Alert management
+- Different metric batch views
+- Configuration options
 
 ## Best Practices
 
