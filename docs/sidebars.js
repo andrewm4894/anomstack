@@ -18,23 +18,72 @@ const sidebars = {
 
   // But you can create a sidebar manually
   docsSidebar: [
-    'intro',
-    'bigquery',
-    'snowflake',
-    'gcs',
-    's3',
+    {
+      type: 'category',
+      label: 'Getting Started',
+      items: [
+        'intro',
+        'quickstart',
+        'concepts',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Core Features',
+      items: [
+        'features/metrics',
+        'features/anomaly-detection',
+        'features/alerts',
+        'features/dashboard',
+        'features/llm-agent',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Data Sources',
+      items: [
+        'data-sources/python',
+        'data-sources/bigquery',
+        'data-sources/snowflake',
+        'data-sources/clickhouse',
+        'data-sources/duckdb',
+        'data-sources/sqlite',
+        'data-sources/motherduck',
+        'data-sources/turso',
+        'data-sources/redshift',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Storage',
+      items: [
+        'gcs',
+        's3',
+      ],
+    },
     {
       type: 'category',
       label: 'Deployment',
-      items: ['deployment/gcp'],
+      items: [
+        'deployment/docker',
+        'deployment/gcp',
+      ],
     },
     {
-        type: 'category',
-        label: 'GraphQL',
-        items: [
-            'graphql/examples/start_schedule'
-        ],
-      },
+      type: 'category',
+      label: 'Configuration',
+      items: [
+        'configuration/metrics',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'API Reference',
+      items: [
+        'graphql/README',
+        'graphql/examples/start_schedule',
+      ],
+    },
   ],
 };
 
