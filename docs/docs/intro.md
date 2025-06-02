@@ -51,8 +51,7 @@ Choose your preferred way to get started:
 
 - [Quickstart Guide](quickstart)
 - [Docker Deployment](deployment/docker)
-- [Dagster Cloud Setup](deployment/dagster-cloud)
-- [Local Development](deployment/local)
+- [GCP Deployment](deployment/gcp)
 
 ## Architecture
 
