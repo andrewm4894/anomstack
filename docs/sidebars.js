@@ -43,22 +43,16 @@ const sidebars = {
       label: 'Data Sources',
       items: [
         'data-sources/python',
-        'data-sources/bigquery',
-        'data-sources/snowflake',
-        'data-sources/clickhouse',
-        'data-sources/duckdb',
-        'data-sources/sqlite',
-        'data-sources/motherduck',
-        'data-sources/turso',
+        'bigquery',
+        'snowflake',
       ],
     },
     {
       type: 'category',
       label: 'Storage',
       items: [
-        'storage/local',
-        'storage/gcs',
-        'storage/s3',
+        'gcs',
+        's3',
       ],
     },
     {
@@ -66,10 +60,7 @@ const sidebars = {
       label: 'Deployment',
       items: [
         'deployment/docker',
-        'deployment/dagster-cloud',
-        'deployment/github-codespaces',
-        'deployment/replit',
-        'deployment/local',
+        'deployment/gcp',
       ],
     },
     {
@@ -77,16 +68,14 @@ const sidebars = {
       label: 'Configuration',
       items: [
         'configuration/metrics',
-        'configuration/alerts',
-        'configuration/dashboard',
       ],
     },
     {
       type: 'category',
       label: 'API Reference',
       items: [
-        'api/graphql',
-        'api/python',
+        'graphql/README',
+        'graphql/examples/start_schedule',
       ],
     },
   ],
