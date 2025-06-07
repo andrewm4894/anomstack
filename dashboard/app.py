@@ -19,7 +19,10 @@ from dashboard.state import AppState
 from dashboard.constants import POSTHOG_SCRIPT
 
 # load the environment variables
-load_dotenv(override=True)
+try:
+    load_dotenv(override=True)
+except Exception as e:
+    print(f"Warning: Could not load .env file: {e}")
 
 log = logging.getLogger("anomstack_dashboard")
 
@@ -51,8 +54,22 @@ app, rt = fast_app(
 # Set the app state
 app.state = AppState()
 
+# Add health check endpoints
+@rt("/")
+def health_check():
+    return {"status": "healthy", "message": "Anomstack dashboard is running"}
+
+@rt("/health")
+def health():
+    return {"status": "ok"}
+
 # Import routes after app is defined
 from dashboard.routes import *
 
 if __name__ == "__main__":
-    serve(app, host="0.0.0.0", port=int(os.getenv("ANOMSTACK_DASHBOARD_PORT", 80)))
+    print("Starting Anomstack dashboard on port 80...")
+    try:
+        serve(app, host="0.0.0.0", port=80)
+    except Exception as e:
+        print(f"Failed to start dashboard: {e}")
+        raise
