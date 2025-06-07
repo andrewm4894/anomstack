@@ -55,4 +55,4 @@ app.state = AppState()
 from dashboard.routes import *
 
 if __name__ == "__main__":
-    serve(app, port=int(os.getenv("ANOMSTACK_DASHBOARD_PORT", 5001)))
+    serve(app, host="0.0.0.0", port=int(os.getenv("ANOMSTACK_DASHBOARD_PORT", 80)))
