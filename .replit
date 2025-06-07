@@ -8,6 +8,10 @@ channel = "stable-24_05"
 localPort = 80
 externalPort = 80
 
+[[ports]]
+localPort = 3000
+externalPort = 3000
+
 [workflows]
 runButton = "Full Stack"
 
