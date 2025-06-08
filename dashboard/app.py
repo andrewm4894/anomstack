@@ -29,9 +29,16 @@ except Exception as e:
 required_env_vars = ['ANOMSTACK_DUCKDB_PATH', 'ANOMSTACK_MOTHERDUCK_TOKEN', 'POSTHOG_API_KEY']
 missing_vars = [var for var in required_env_vars if not os.getenv(var)]
 if missing_vars:
-    print(f"Warning: Missing environment variables: {missing_vars}")
+    print(f"Error: Missing required environment variables: {missing_vars}")
+    print("Please ensure all required secrets are configured in your deployment.")
+    # Don't exit here, but log the issue
 else:
     print("All required environment variables are set")
+
+# Log environment status
+print(f"ANOMSTACK_DUCKDB_PATH: {'✓' if os.getenv('ANOMSTACK_DUCKDB_PATH') else '✗'}")
+print(f"ANOMSTACK_MOTHERDUCK_TOKEN: {'✓' if os.getenv('ANOMSTACK_MOTHERDUCK_TOKEN') else '✗'}")
+print(f"POSTHOG_API_KEY: {'✓' if os.getenv('POSTHOG_API_KEY') else '✗'}")
 
 log = logging.getLogger("anomstack_dashboard")
 
@@ -63,12 +70,38 @@ app, rt = fast_app(
 # Set the app state
 app.state = AppState()
 
+# Initialize database connection at startup
+try:
+    connection = app.state.get_connection()
+    if connection:
+        connection.close()
+        print("Database connection initialized successfully")
+except Exception as e:
+    print(f"Warning: Database connection failed during startup: {e}")
+
 
 # Add health check endpoint
 @rt("/health")
 def health():
-    print("Health check endpoint accessed")
-    return {"status": "ok", "port": 8080, "host": "0.0.0.0"}
+    try:
+        # Test database connection
+        conn = app.state.get_connection()
+        if conn:
+            conn.close()
+            db_status = "connected"
+        else:
+            db_status = "disconnected"
+    except Exception as e:
+        db_status = f"error: {str(e)}"
+    
+    print(f"Health check endpoint accessed - DB: {db_status}")
+    return {
+        "status": "ok", 
+        "port": 8080, 
+        "host": "0.0.0.0",
+        "database": db_status,
+        "app_state": "initialized" if hasattr(app, 'state') else "not_initialized"
+    }
 
 
 # Import routes after app is defined
@@ -76,15 +109,33 @@ from dashboard.routes import *
 
 if __name__ == "__main__":
     import logging
-    logging.basicConfig(level=logging.INFO)
+    import sys
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     logger = logging.getLogger(__name__)
     
-    logger.info("Starting Anomstack dashboard on port 8080...")
-    logger.info(f"Debug mode: {os.getenv('ANOMSTACK_DASHBOARD_DEBUG', 'false')}")
-    logger.info(f"PostHog API Key configured: {bool(posthog_api_key)}")
-    
     try:
-        serve(app, host="0.0.0.0", port=8080)
+        # Test critical imports first
+        from dashboard.routes import *
+        logger.info("Routes imported successfully")
+        
+        # Test database connection
+        try:
+            app.state.get_connection()
+            logger.info("Database connection successful")
+        except Exception as db_e:
+            logger.warning(f"Database connection failed: {db_e}")
+        
+        logger.info("Starting Anomstack dashboard on port 8080...")
+        logger.info(f"Debug mode: {os.getenv('ANOMSTACK_DASHBOARD_DEBUG', 'false')}")
+        logger.info(f"PostHog API Key configured: {bool(posthog_api_key)}")
+        
+        # Add startup timeout and more detailed error handling
+        serve(app, host="0.0.0.0", port=8080, workers=1)
+        
+    except ImportError as e:
+        logger.error(f"Import error during startup: {e}")
+        sys.exit(1)
     except Exception as e:
         logger.error(f"Failed to start dashboard: {e}")
-        raise
+        logger.exception("Full traceback:")
+        sys.exit(1)
