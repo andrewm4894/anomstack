@@ -28,14 +28,29 @@ def read_sql_duckdb(sql: str) -> pd.DataFrame:
 
     if duckdb_path.startswith("md:"):
         motherduck_token = os.environ.get("ANOMSTACK_MOTHERDUCK_TOKEN", None)
-        duckdb_path = duckdb_path + f"?motherduck_token={motherduck_token}"
+        if motherduck_token:
+            duckdb_path = duckdb_path + f"?motherduck_token={motherduck_token}"
+        else:
+            logger.warning("MotherDuck token not provided, falling back to local DuckDB")
+            duckdb_path = "tmpdata/anomstack-duckdb.db"
+            os.makedirs(os.path.dirname(duckdb_path), exist_ok=True)
     else:
         os.makedirs(os.path.dirname(duckdb_path), exist_ok=True)
 
-    conn = connect(duckdb_path)
-    df = query(connection=conn, query=sql).df()
-
-    return df
+    try:
+        conn = connect(duckdb_path)
+        df = query(connection=conn, query=sql).df()
+        return df
+    except Exception as e:
+        if "motherduck" in str(e).lower() or "token" in str(e).lower():
+            logger.warning(f"MotherDuck connection failed: {e}, falling back to local DuckDB")
+            fallback_path = "tmpdata/anomstack-duckdb.db"
+            os.makedirs(os.path.dirname(fallback_path), exist_ok=True)
+            conn = connect(fallback_path)
+            df = query(connection=conn, query=sql).df()
+            return df
+        else:
+            raise
 
 
 def save_df_duckdb(df: pd.DataFrame, table_key: str) -> pd.DataFrame:
@@ -57,21 +72,41 @@ def save_df_duckdb(df: pd.DataFrame, table_key: str) -> pd.DataFrame:
 
     if duckdb_path.startswith("md:"):
         motherduck_token = os.environ.get("ANOMSTACK_MOTHERDUCK_TOKEN", None)
-        duckdb_path = duckdb_path + f"?motherduck_token={motherduck_token}"
+        if motherduck_token:
+            duckdb_path = duckdb_path + f"?motherduck_token={motherduck_token}"
+        else:
+            logger.warning("MotherDuck token not provided, falling back to local DuckDB")
+            duckdb_path = "tmpdata/anomstack-duckdb.db"
+            os.makedirs(os.path.dirname(duckdb_path), exist_ok=True)
     else:
         os.makedirs(os.path.dirname(duckdb_path), exist_ok=True)
 
-    conn = connect(duckdb_path)
-
     try:
-        if "." in table_key:
-            schema, _ = table_key.split(".")
-            query(connection=conn, query=f"CREATE SCHEMA IF NOT EXISTS {schema}")
-        query(connection=conn, query=f"INSERT INTO {table_key} SELECT * FROM df")
-    except Exception:
-        query(connection=conn, query=f"CREATE TABLE {table_key} AS SELECT * FROM df")
-
-    return df
+        conn = connect(duckdb_path)
+        try:
+            if "." in table_key:
+                schema, _ = table_key.split(".")
+                query(connection=conn, query=f"CREATE SCHEMA IF NOT EXISTS {schema}")
+            query(connection=conn, query=f"INSERT INTO {table_key} SELECT * FROM df")
+        except Exception:
+            query(connection=conn, query=f"CREATE TABLE {table_key} AS SELECT * FROM df")
+        return df
+    except Exception as e:
+        if "motherduck" in str(e).lower() or "token" in str(e).lower():
+            logger.warning(f"MotherDuck connection failed: {e}, falling back to local DuckDB")
+            fallback_path = "tmpdata/anomstack-duckdb.db"
+            os.makedirs(os.path.dirname(fallback_path), exist_ok=True)
+            conn = connect(fallback_path)
+            try:
+                if "." in table_key:
+                    schema, _ = table_key.split(".")
+                    query(connection=conn, query=f"CREATE SCHEMA IF NOT EXISTS {schema}")
+                query(connection=conn, query=f"INSERT INTO {table_key} SELECT * FROM df")
+            except Exception:
+                query(connection=conn, query=f"CREATE TABLE {table_key} AS SELECT * FROM df")
+            return df
+        else:
+            raise
 
 
 def run_sql_duckdb(sql: str, return_df: bool = False) -> Union[pd.DataFrame, None]:
@@ -93,24 +128,39 @@ def run_sql_duckdb(sql: str, return_df: bool = False) -> Union[pd.DataFrame, Non
 
     if duckdb_path.startswith("md:"):
         motherduck_token = os.environ.get("ANOMSTACK_MOTHERDUCK_TOKEN", None)
-        duckdb_path = duckdb_path + f"?motherduck_token={motherduck_token}"
+        if motherduck_token:
+            duckdb_path = duckdb_path + f"?motherduck_token={motherduck_token}"
+        else:
+            logger.warning("MotherDuck token not provided, falling back to local DuckDB")
+            duckdb_path = "tmpdata/anomstack-duckdb.db"
+            os.makedirs(os.path.dirname(duckdb_path), exist_ok=True)
     else:
         os.makedirs(os.path.dirname(duckdb_path), exist_ok=True)
 
-    conn = connect(duckdb_path)
-
+    conn = None
     try:
+        conn = connect(duckdb_path)
         if return_df:
             df = query(connection=conn, query=sql).df()
-            
             return df
-        
         else:
             query(connection=conn, query=sql)
-    
     except Exception as e:
-        logger.error(f"Error executing SQL statement in DuckDB: {e}")
-        raise
-    
+        if "motherduck" in str(e).lower() or "token" in str(e).lower():
+            logger.warning(f"MotherDuck connection failed: {e}, falling back to local DuckDB")
+            if conn:
+                conn.close()
+            fallback_path = "tmpdata/anomstack-duckdb.db"
+            os.makedirs(os.path.dirname(fallback_path), exist_ok=True)
+            conn = connect(fallback_path)
+            if return_df:
+                df = query(connection=conn, query=sql).df()
+                return df
+            else:
+                query(connection=conn, query=sql)
+        else:
+            logger.error(f"Error executing SQL statement in DuckDB: {e}")
+            raise
     finally:
-        conn.close()
+        if conn:
+            conn.close()

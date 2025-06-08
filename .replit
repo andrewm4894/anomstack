@@ -5,7 +5,7 @@ hidden = [".config", ".pytest_cache"]
 channel = "stable-24_05"
 
 [[ports]]
-localPort = 80
+localPort = 8080
 externalPort = 80
 
 [[ports]]
@@ -13,7 +13,7 @@ localPort = 3000
 externalPort = 3000
 
 [workflows]
-runButton = "Full Stack"
+runButton = "Dashboard Only"
 
 [[workflows.workflow]]
 name = "Full Stack"
@@ -22,7 +22,7 @@ mode = "parallel"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python -m uvicorn dashboard.app:app --host 0.0.0.0 --port 80"
+args = "python -m uvicorn dashboard.app:app --host 0.0.0.0 --port 8080"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
@@ -35,7 +35,7 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python -m uvicorn dashboard.app:app --host 0.0.0.0 --port 80 --reload"
+args = "python -m uvicorn dashboard.app:app --host 0.0.0.0 --port 8080 --reload"
 
 [[workflows.workflow]]
 name = "Backend Only"
@@ -48,4 +48,7 @@ args = "python -m dagster dev -h 0.0.0.0 -p 3000 -f anomstack/main.py"
 
 [deployment]
 deploymentTarget = "cloudrun"
-run = ["sh", "-c", "python -m uvicorn dashboard.app:app --host 0.0.0.0 --port 80"]
+run = ["sh", "-c", "python -m uvicorn dashboard.app:app --host 0.0.0.0 --port 8080 --log-level info --timeout-keep-alive 60 --workers 1"]
+
+[env]
+REPLIT_WEBVIEW_PORT = "8080"
