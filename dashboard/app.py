@@ -54,11 +54,7 @@ app, rt = fast_app(
 # Set the app state
 app.state = AppState()
 
-# Add health check endpoints
-@rt("/")
-def health_check():
-    return {"status": "healthy", "message": "Anomstack dashboard is running"}
-
+# Add health check endpoint
 @rt("/health")
 def health():
     return {"status": "ok"}
