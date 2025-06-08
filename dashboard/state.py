@@ -25,26 +25,44 @@ class AppState:
         self._connection = None
 
     def get_connection(self):
-        """Get database connection - placeholder for now"""
+        """Get database connection with MotherDuck fallback"""
         import os
-        if os.getenv('ANOMSTACK_DUCKDB_PATH'):
-            try:
+        duckdb_path = os.getenv('ANOMSTACK_DUCKDB_PATH', 'tmpdata/anomstack-duckdb.db')
+        
+        if duckdb_path.startswith('md:'):
+            motherduck_token = os.getenv('ANOMSTACK_MOTHERDUCK_TOKEN')
+            if motherduck_token:
+                try:
+                    import duckdb
+                    connection_string = f"{duckdb_path}?motherduck_token={motherduck_token}"
+                    return duckdb.connect(connection_string)
+                except Exception as e:
+                    print(f"MotherDuck connection failed: {e}, falling back to local DuckDB")
+                    # Fall back to local DuckDB
+                    fallback_path = 'tmpdata/anomstack-duckdb.db'
+                    os.makedirs(os.path.dirname(fallback_path), exist_ok=True)
+                    import duckdb
+                    return duckdb.connect(fallback_path)
+            else:
+                print("No MotherDuck token provided, using local DuckDB")
+                fallback_path = 'tmpdata/anomstack-duckdb.db'
+                os.makedirs(os.path.dirname(fallback_path), exist_ok=True)
                 import duckdb
-                return duckdb.connect(os.getenv('ANOMSTACK_DUCKDB_PATH'))
+                return duckdb.connect(fallback_path)
+        else:
+            try:
+                os.makedirs(os.path.dirname(duckdb_path), exist_ok=True)
+                import duckdb
+                return duckdb.connect(duckdb_path)
             except Exception as e:
                 print(f"Failed to connect to DuckDB: {e}")
                 return None
-        return None
 
     def __init__(self):
         """
-        Initialize the app state.
+        Initialize the app state with lazy loading.
         """
-        self.specs = get_specs()
-        self.metric_batches = get_metric_batches(source="all")
-        if not self.metric_batches:
-            log.warning("No metric batches found.")
-        self.specs_enabled = {batch: self.specs[batch] for batch in self.metric_batches}
+        # Initialize basic state immediately
         self.df_cache = {}
         self.chart_cache = {}
         self.stats_cache = {}
@@ -57,20 +75,38 @@ class AppState:
         self.show_legend = False
         self.search_term = {}
         self.anomaly_feedback = {}  # Store feedback for anomalies
-
-        # Initialize all batch data and stats
-        for batch_name in self.metric_batches:
+        
+        # Lazy initialization flags
+        self._specs_loaded = False
+        self._metric_batches_loaded = False
+        
+        print("AppState initialized with lazy loading")
+    
+    def _ensure_specs_loaded(self):
+        """Lazy load specs and metric batches"""
+        if not self._specs_loaded:
             try:
-                from dashboard.data import get_data
-                from dashboard.constants import DEFAULT_LAST_N
-                self.df_cache[batch_name] = get_data(
-                    self.specs_enabled[batch_name],
-                    last_n=DEFAULT_LAST_N,
-                    ensure_timestamp=True
-                )
-                self.calculate_metric_stats(batch_name)
+                self.specs = get_specs()
+                self._specs_loaded = True
+                print("Specs loaded successfully")
             except Exception as e:
-                log.error(f"Error initializing batch {batch_name}: {e}")
+                log.error(f"Error loading specs: {e}")
+                self.specs = {}
+                
+    def _ensure_metric_batches_loaded(self):
+        """Lazy load metric batches"""
+        if not self._metric_batches_loaded:
+            try:
+                self.metric_batches = get_metric_batches(source="all")
+                if not self.metric_batches:
+                    log.warning("No metric batches found.")
+                self.specs_enabled = {batch: self.specs[batch] for batch in self.metric_batches}
+                self._metric_batches_loaded = True
+                print("Metric batches loaded successfully")
+            except Exception as e:
+                log.error(f"Error loading metric batches: {e}")
+                self.metric_batches = []
+                self.specs_enabled = {}
 
     def clear_batch_cache(self, batch_name):
         """

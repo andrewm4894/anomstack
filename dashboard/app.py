@@ -70,25 +70,25 @@ app, rt = fast_app(
 # Set the app state
 app.state = AppState()
 
-# Initialize database connection at startup (non-blocking)
-try:
-    if hasattr(app, 'state') and hasattr(app.state, 'get_connection'):
-        connection = app.state.get_connection()
-        if connection:
-            connection.close()
-            print("Database connection initialized successfully")
-        else:
-            print("Database connection returned None - will retry on first request")
-    else:
-        print("AppState not properly initialized")
-except Exception as e:
-    print(f"Warning: Database connection failed during startup: {e}")
-    print("App will continue without database connectivity")
+# Skip database initialization at startup to open port quickly
+print("Skipping database initialization at startup for faster port opening")
+print("Database will be initialized lazily on first request")
 
 
-# Add health check endpoint
+# Add immediate health check endpoint that opens port quickly
 @rt("/health")
 def health():
+    print("Health check endpoint accessed - returning immediate OK")
+    return {
+        "status": "ok", 
+        "port": 8080, 
+        "host": "0.0.0.0",
+        "timestamp": "ready"
+    }
+
+# Add a separate database status endpoint
+@rt("/db-status")
+def db_status():
     try:
         # Test database connection
         conn = app.state.get_connection()
@@ -100,11 +100,8 @@ def health():
     except Exception as e:
         db_status = f"error: {str(e)}"
     
-    print(f"Health check endpoint accessed - DB: {db_status}")
+    print(f"Database status check - DB: {db_status}")
     return {
-        "status": "ok", 
-        "port": 8080, 
-        "host": "0.0.0.0",
         "database": db_status,
         "app_state": "initialized" if hasattr(app, 'state') else "not_initialized"
     }
