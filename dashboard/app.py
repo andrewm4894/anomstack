@@ -25,13 +25,13 @@ try:
 except Exception as e:
     print(f"Warning: Could not load .env file: {e}")
 
-# Ensure critical environment variables are set
+# Check critical environment variables are set
 required_env_vars = ['ANOMSTACK_DUCKDB_PATH', 'ANOMSTACK_MOTHERDUCK_TOKEN', 'POSTHOG_API_KEY']
 missing_vars = [var for var in required_env_vars if not os.getenv(var)]
 if missing_vars:
-    print(f"Error: Missing required environment variables: {missing_vars}")
+    print(f"Warning: Missing environment variables: {missing_vars}")
+    print("App will continue but some features may not work.")
     print("Please ensure all required secrets are configured in your deployment.")
-    # Don't exit here, but log the issue
 else:
     print("All required environment variables are set")
 
@@ -70,14 +70,20 @@ app, rt = fast_app(
 # Set the app state
 app.state = AppState()
 
-# Initialize database connection at startup
+# Initialize database connection at startup (non-blocking)
 try:
-    connection = app.state.get_connection()
-    if connection:
-        connection.close()
-        print("Database connection initialized successfully")
+    if hasattr(app, 'state') and hasattr(app.state, 'get_connection'):
+        connection = app.state.get_connection()
+        if connection:
+            connection.close()
+            print("Database connection initialized successfully")
+        else:
+            print("Database connection returned None - will retry on first request")
+    else:
+        print("AppState not properly initialized")
 except Exception as e:
     print(f"Warning: Database connection failed during startup: {e}")
+    print("App will continue without database connectivity")
 
 
 # Add health check endpoint

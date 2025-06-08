@@ -22,6 +22,21 @@ class AppState:
     """
 
     def __init__(self):
+        self._connection = None
+
+    def get_connection(self):
+        """Get database connection - placeholder for now"""
+        import os
+        if os.getenv('ANOMSTACK_DUCKDB_PATH'):
+            try:
+                import duckdb
+                return duckdb.connect(os.getenv('ANOMSTACK_DUCKDB_PATH'))
+            except Exception as e:
+                print(f"Failed to connect to DuckDB: {e}")
+                return None
+        return None
+
+    def __init__(self):
         """
         Initialize the app state.
         """
@@ -42,7 +57,7 @@ class AppState:
         self.show_legend = False
         self.search_term = {}
         self.anomaly_feedback = {}  # Store feedback for anomalies
-        
+
         # Initialize all batch data and stats
         for batch_name in self.metric_batches:
             try:
