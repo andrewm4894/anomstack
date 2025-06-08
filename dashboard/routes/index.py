@@ -51,6 +51,10 @@ def get_sorted_batch_stats() -> tuple:
     Returns:
         tuple: A tuple containing the batch statistics and the sorted batch names.
     """
+    # Ensure metric batches are loaded
+    app.state._ensure_specs_loaded()
+    app.state._ensure_metric_batches_loaded()
+    
     batch_stats = {}
     for batch_name in app.state.metric_batches:
         df = get_batch_data(batch_name)
