@@ -33,14 +33,16 @@ def get_batch_data(batch_name: str) -> pd.DataFrame:
     """
     if batch_name not in app.state.df_cache:
         try:
-            df = get_data(app.state.specs_enabled[batch_name],
-                          last_n=DEFAULT_LAST_N,
-                          ensure_timestamp=True)
+            df = get_data(
+                app.state.specs_enabled[batch_name],
+                last_n=DEFAULT_LAST_N,
+                ensure_timestamp=True,
+            )
         except Exception as e:
             log.error(f"Error getting data for batch {batch_name}: {e}")
             df = pd.DataFrame(
-                data=[],
-                columns=["metric_name", "metric_timestamp", "metric_value"])
+                data=[], columns=["metric_name", "metric_timestamp", "metric_value"]
+            )
         app.state.df_cache[batch_name] = df
     return app.state.df_cache[batch_name]
 
@@ -54,7 +56,7 @@ def get_sorted_batch_stats() -> tuple:
     # Ensure metric batches are loaded
     app.state._ensure_specs_loaded()
     app.state._ensure_metric_batches_loaded()
-    
+
     batch_stats = {}
     for batch_name in app.state.metric_batches:
         df = get_batch_data(batch_name)
@@ -118,23 +120,27 @@ def create_main_content(batch_stats: dict, sorted_batch_names: list) -> Div:
                 ),
                 cls="flex justify-between items-center mb-6",
             ),
-            (Div(
-                DivLAligned(
-                    UkIcon("alert-triangle"),
-                    P(
-                        "No metric batches found. Is Dagster running?",
-                        cls=TextPresets.muted_sm,
+            (
+                Div(
+                    DivLAligned(
+                        UkIcon("alert-triangle"),
+                        P(
+                            "No metric batches found. Is Dagster running?",
+                            cls=TextPresets.muted_sm,
+                        ),
+                        cls="space-x-2 p-2 bg-yellow-50 text-yellow-700 rounded-md",
                     ),
-                    cls="space-x-2 p-2 bg-yellow-50 text-yellow-700 rounded-md",
-                ),
-                cls="mb-6",
-            ) if not app.state.metric_batches else Div(
-                *[
-                    create_batch_card(name, batch_stats[name])
-                    for name in sorted_batch_names
-                ],
-                cls="homepage-grid",
-            )),
+                    cls="mb-6",
+                )
+                if not app.state.metric_batches
+                else Div(
+                    *[
+                        create_batch_card(name, batch_stats[name])
+                        for name in sorted_batch_names
+                    ],
+                    cls="homepage-grid",
+                )
+            ),
             cls="p-2",
         ),
         id="main-content",
@@ -173,11 +179,13 @@ def index(request: Request):
     """
     is_htmx = request.headers.get("HX-Request") == "true"
 
-    script = Script(f"""
+    script = Script(
+        f"""
         if ({'true' if app.state.dark_mode else 'false'}) {{
             document.body.classList.add('dark-mode');
         }}
-    """)
+    """
+    )
 
     batch_stats, sorted_batch_names = get_sorted_batch_stats()
     main_content = create_main_content(batch_stats, sorted_batch_names)
@@ -195,3 +203,9 @@ def index(request: Request):
         ),
         main_content,
     )
+
+
+@rt("/health")
+def health():
+    print("Health check endpoint accessed - returning immediate OK")
+    return {"status": "ok"}
