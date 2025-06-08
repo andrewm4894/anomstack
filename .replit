@@ -5,7 +5,7 @@ hidden = [".config", ".pytest_cache"]
 channel = "stable-24_05"
 
 [[ports]]
-localPort = 80
+localPort = 8080
 externalPort = 80
 
 [[ports]]
@@ -13,7 +13,7 @@ localPort = 3000
 externalPort = 3000
 
 [workflows]
-runButton = "Full Stack"
+runButton = "Dashboard Only"
 
 [[workflows.workflow]]
 name = "Full Stack"
@@ -48,4 +48,8 @@ args = "python -m dagster dev -h 0.0.0.0 -p 3000 -f anomstack/main.py"
 
 [deployment]
 deploymentTarget = "cloudrun"
-run = ["sh", "-c", "python -m uvicorn dashboard.app:app --host 0.0.0.0 --port 80"]
+run = [
+  "sh",
+  "-c",
+  "python -m uvicorn dashboard.app:app --host 0.0.0.0 --port 80",
+]
