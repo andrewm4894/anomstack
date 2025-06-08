@@ -58,30 +58,5 @@ from dashboard.routes import *
 
 
 if __name__ == "__main__":
-    import logging
-    import sys
 
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    )
-    logger = logging.getLogger(__name__)
-
-    try:
-        # Test critical imports first
-        from dashboard.routes import *
-
-        logger.info("Routes imported successfully")
-        logger.info("Starting Anomstack dashboard on port 8080...")
-        logger.info(f"Debug mode: {os.getenv('ANOMSTACK_DASHBOARD_DEBUG', 'false')}")
-
-        # Add startup timeout and more detailed error handling
-        serve(app, host="0.0.0.0", port=8080, workers=1)
-
-    except ImportError as e:
-        logger.error(f"Import error during startup: {e}")
-        sys.exit(1)
-    except Exception as e:
-        logger.error(f"Failed to start dashboard: {e}")
-        logger.exception("Full traceback:")
-        sys.exit(1)
+    serve(app, host="0.0.0.0", port=8080, workers=1)
