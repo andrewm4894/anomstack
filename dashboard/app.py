@@ -21,8 +21,17 @@ from dashboard.constants import POSTHOG_SCRIPT
 # load the environment variables
 try:
     load_dotenv(override=True)
+    print("Environment variables loaded successfully")
 except Exception as e:
     print(f"Warning: Could not load .env file: {e}")
+
+# Ensure critical environment variables are set
+required_env_vars = ['ANOMSTACK_DUCKDB_PATH', 'ANOMSTACK_MOTHERDUCK_TOKEN', 'POSTHOG_API_KEY']
+missing_vars = [var for var in required_env_vars if not os.getenv(var)]
+if missing_vars:
+    print(f"Warning: Missing environment variables: {missing_vars}")
+else:
+    print("All required environment variables are set")
 
 log = logging.getLogger("anomstack_dashboard")
 
@@ -58,16 +67,24 @@ app.state = AppState()
 # Add health check endpoint
 @rt("/health")
 def health():
-    return {"status": "ok"}
+    print("Health check endpoint accessed")
+    return {"status": "ok", "port": 8080, "host": "0.0.0.0"}
 
 
 # Import routes after app is defined
 from dashboard.routes import *
 
 if __name__ == "__main__":
-    print("Starting Anomstack dashboard on port 8080...")
+    import logging
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
+    
+    logger.info("Starting Anomstack dashboard on port 8080...")
+    logger.info(f"Debug mode: {os.getenv('ANOMSTACK_DASHBOARD_DEBUG', 'false')}")
+    logger.info(f"PostHog API Key configured: {bool(posthog_api_key)}")
+    
     try:
         serve(app, host="0.0.0.0", port=8080)
     except Exception as e:
-        print(f"Failed to start dashboard: {e}")
+        logger.error(f"Failed to start dashboard: {e}")
         raise
