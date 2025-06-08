@@ -54,18 +54,20 @@ app, rt = fast_app(
 # Set the app state
 app.state = AppState()
 
+
 # Add health check endpoint
 @rt("/health")
 def health():
     return {"status": "ok"}
 
+
 # Import routes after app is defined
 from dashboard.routes import *
 
 if __name__ == "__main__":
-    print("Starting Anomstack dashboard on port 80...")
+    print("Starting Anomstack dashboard on port 8080...")
     try:
-        serve(app, host="0.0.0.0", port=80)
+        serve(app, host="0.0.0.0", port=8080)
     except Exception as e:
         print(f"Failed to start dashboard: {e}")
         raise
