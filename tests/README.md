@@ -5,8 +5,68 @@ This directory contains comprehensive tests for the anomstack anomaly detection 
 ## Test Overview
 
 **Total Tests:** 115 tests across 10 test files  
-**Runtime:** ~21 seconds for full suite  
-**Coverage:** Comprehensive anomstack functionality including ML, jobs, IO, configuration, data validation, SQL operations, alerts, and visualization
+**Runtime:** ~34 seconds for full suite  
+**Coverage:** 47% overall code coverage (1,940 total lines, 917 covered)  
+**Scope:** Comprehensive anomstack functionality including ML, jobs, IO, configuration, data validation, SQL operations, alerts, and visualization
+
+## Coverage Report
+
+The test suite achieves **47% overall coverage** across the anomstack codebase. Here's the breakdown by module:
+
+### High Coverage Modules (>90%)
+- **`alerts/send.py`** - 100% (23/23 lines) ✅
+- **`main.py`** - 100% (15/15 lines) ✅  
+- **`ml/preprocess.py`** - 100% (21/21 lines) ✅
+- **`ml/train.py`** - 100% (15/15 lines) ✅
+- **`plots/plot.py`** - 100% (65/65 lines) ✅
+- **`sensors/failure.py`** - 100% (6/6 lines) ✅
+- **`sql/translate.py`** - 100% (10/10 lines) ✅
+- **`validate/validate.py`** - 100% (21/21 lines) ✅
+- **`sql/read.py`** - 98% (46/47 lines) 🟢
+- **`config.py`** - 97% (38/39 lines) 🟢
+- **`df/wrangle.py`** - 97% (37/38 lines) 🟢
+- **`io/save.py`** - 96% (23/24 lines) 🟢
+- **`io/load.py`** - 94% (17/18 lines) 🟢
+- **`ml/change.py`** - 93% (28/30 lines) 🟢
+
+### Medium Coverage Modules (50-89%)
+- **`jobs/delete.py`** - 76% (31/41 lines) 🟡
+- **`jobs/ingest.py`** - 76% (47/62 lines) 🟡
+- **`jobs/summary.py`** - 71% (29/41 lines) 🟡
+- **`jobs/train.py`** - 63% (46/73 lines) 🟡
+- **`jobs/plot.py`** - 61% (37/61 lines) 🟡
+- **`jobs/alert.py`** - 58% (46/79 lines) 🟡
+
+### Lower Coverage Modules (<50%)
+- **`jobs/llmalert.py`** - 48% (53/111 lines) 🔶
+- **`jobs/change.py`** - 47% (44/93 lines) 🔶
+- **`jobs/score.py`** - 47% (50/107 lines) 🔶
+- **`llm/agent.py`** - 43% (3/7 lines) 🔶
+- **`df/save.py`** - 37% (7/19 lines) 🔶
+- **`df/utils.py`** - 37% (10/27 lines) 🔶
+- **`sql/utils.py`** - 36% (4/11 lines) 🔶
+
+### External Dependencies (<30%)
+These modules have lower coverage as they interface with external services and are harder to test:
+- **`external/`** modules (8-33% coverage) - Database and cloud service integrations
+- **`alerts/asciiart.py`** - 11% (26/245 lines) - Large ASCII art generation
+- **`alerts/email.py`** - 20% (12/61 lines) - Email sending functionality  
+- **`alerts/slack.py`** - 18% (9/50 lines) - Slack API integration
+
+### Coverage by Test File
+
+| Test File | Lines Covered | Primary Modules Tested |
+|-----------|---------------|------------------------|
+| `test_alerts.py` | `alerts/send.py` (100%) | Alert routing and sending |
+| `test_df.py` | `df/wrangle.py` (97%) | Data wrangling and metadata |
+| `test_validate.py` | `validate/validate.py` (100%) | DataFrame validation |
+| `test_sql.py` | `sql/read.py` (98%), `sql/translate.py` (100%) | SQL operations |
+| `test_plots.py` | `plots/plot.py` (100%) | Visualization functions |
+| `test_ml.py` | `ml/*` (93-100%) | Machine learning pipeline |
+| `test_io.py` | `io/*` (94-96%) | Model persistence |
+| `test_jobs.py` | `jobs/*` (47-76%) | Dagster job creation |
+| `test_config.py` | `config.py` (97%) | Configuration management |
+| `test_main.py` | `main.py` (100%) | Main module integration |
 
 ## Test Files
 
@@ -142,12 +202,41 @@ pytest tests/
 # Run with verbose output
 pytest tests/ -v
 
-# Run with coverage
-pytest tests/ --cov=anomstack
+# Run with coverage (terminal output)
+pytest tests/ --cov=anomstack --cov-report=term-missing
 
-# Run with coverage report
+# Run with coverage (HTML report)
 pytest tests/ --cov=anomstack --cov-report=html
+
+# Run with both terminal and HTML coverage reports
+pytest tests/ --cov=anomstack --cov-report=term --cov-report=html
 ```
+
+### Coverage Reports
+
+The test suite generates comprehensive coverage reports showing exactly which lines are tested:
+
+```bash
+# Generate detailed coverage report with missing lines
+pytest tests/ --cov=anomstack --cov-report=term-missing
+
+# Generate HTML coverage report (opens in browser)
+pytest tests/ --cov=anomstack --cov-report=html
+open htmlcov/index.html  # macOS
+xdg-open htmlcov/index.html  # Linux
+
+# Generate coverage report for specific modules
+pytest tests/ --cov=anomstack.ml --cov=anomstack.sql --cov-report=term-missing
+
+# Exclude external dependencies from coverage
+pytest tests/ --cov=anomstack --cov-report=term-missing --cov-config=.coveragerc
+```
+
+**Coverage Report Features:**
+- **Terminal Report:** Shows coverage percentages and highlights missing lines
+- **HTML Report:** Interactive web interface with syntax highlighting and drill-down capability
+- **Missing Lines:** Identifies exact line numbers that need test coverage
+- **Branch Coverage:** Shows which conditional branches are tested (when enabled)
 
 ### Run Specific Test Files
 ```bash

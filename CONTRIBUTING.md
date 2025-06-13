@@ -141,6 +141,51 @@ We want your work to be readable by others; therefore, we encourage you to note 
 - Avoid importing external libraries for basic algorithms. Only use those libraries for complicated algorithms.
 - If you need a third-party module that is not in the file __requirements.txt__, please add it to that file as part of your submission.
 
+#### Testing and Coverage
+
+- All new code should include appropriate tests. See the [`tests/README.md`](./tests/README.md) for detailed testing guidelines.
+- Run the full test suite before submitting: `pytest tests/`
+- Check test coverage: `pytest tests/ --cov=anomstack --cov-report=term-missing`
+- The project currently maintains **47% test coverage**. Contributions that increase coverage are especially welcome!
+
+#### Updating the Coverage Badge
+
+### Automatic Updates (Recommended) ✨
+
+The coverage badge is **automatically updated** by GitHub Actions whenever code is pushed to the main branch:
+
+1. **The pytest workflow** runs all tests with coverage analysis
+2. **Extracts the coverage percentage** from the results  
+3. **Updates the badge** in README.md with the correct percentage and color
+4. **Commits the changes** back to the repository with message: `🔄 Auto-update coverage badge to XX% [skip ci]`
+
+This ensures the badge is always accurate and up-to-date without manual intervention.
+
+### Pull Request Coverage Reports
+
+When you create a pull request, the GitHub Action will automatically comment with:
+- Current coverage percentage and color
+- Whether coverage improved or decreased from baseline (47%)
+- Link to detailed coverage report
+
+### Manual Updates (If Needed)
+
+If you need to update the coverage manually for any reason:
+
+1. Run coverage analysis: `pytest tests/ --cov=anomstack --cov-report=term-missing`
+2. Note the new coverage percentage from the output
+3. Update the badge in `README.md` by changing the coverage percentage:
+   ```markdown
+   ![Coverage](https://img.shields.io/badge/Coverage-XX%25-color?logo=pytest)
+   ```
+4. Update the coverage percentage in `tests/README.md` as well
+5. Use appropriate colors:
+   - Red: < 30%
+   - Orange: 30-49% 
+   - Yellow: 50-69%
+   - Green: 70-89%
+   - Bright Green: ≥ 90%
+
 #### Other Requirements for Submissions
 - The file extension for code files should be `.py`.
 - Strictly use snake_case (underscore_separated) in your file_name, as it will be easy to parse in future using scripts.
