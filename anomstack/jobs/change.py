@@ -148,16 +148,23 @@ def build_change_job(spec: dict) -> JobDefinition:
                         **metric_tags.get(metric_name, {}),
                     }
                     logger.debug(f"metric tags:\n{tags}")
-                    df_alert = send_alert(
-                        metric_name=metric_name,
-                        title=alert_title,
-                        df=df_alert,
-                        threshold=change_threshold,
-                        alert_methods=alert_methods,
-                        tags=tags,
-                        score_col="metric_score",
-                        score_title="change_score",
-                    )
+                    
+                    # Wrap send_alert in try-except to prevent blocking save_alerts
+                    try:
+                        df_alert = send_alert(
+                            metric_name=metric_name,
+                            title=alert_title,
+                            df=df_alert,
+                            threshold=change_threshold,
+                            alert_methods=alert_methods,
+                            tags=tags,
+                            score_col="metric_score",
+                            score_title="change_score",
+                        )
+                        logger.info(f"successfully sent change alert for {metric_name}")
+                    except Exception as e:
+                        logger.error(f"failed to send change alert for {metric_name}: {str(e)}")
+                        # Continue processing other metrics even if one fails
 
             return df_change_alerts
 
@@ -184,15 +191,15 @@ def build_change_job(spec: dict) -> JobDefinition:
                 df_change_alerts["metric_alert"] = df_change_alerts[
                     "metric_alert"
                 ].astype(float)
-                df_change_alerts = df_change_alerts[
-                    [
-                        "metric_timestamp",
-                        "metric_batch",
-                        "metric_name",
-                        "metric_type",
-                        "metric_alert",
-                    ]
+                # Explicitly select columns to ensure DataFrame type
+                columns_to_keep = [
+                    "metric_timestamp",
+                    "metric_batch",
+                    "metric_name",
+                    "metric_type",
+                    "metric_alert",
                 ]
+                df_change_alerts = df_change_alerts.loc[:, columns_to_keep].copy()
                 df_change_alerts = df_change_alerts.rename(
                     columns={"metric_alert": "metric_value"}
                 )
