@@ -4,17 +4,18 @@ This directory contains comprehensive tests for the anomstack anomaly detection 
 
 ## Test Overview
 
-**Total Tests:** 115 tests across 10 test files  
-**Runtime:** ~34 seconds for full suite  
-**Coverage:** 47% overall code coverage (1,940 total lines, 917 covered)  
-**Scope:** Comprehensive anomstack functionality including ML, jobs, IO, configuration, data validation, SQL operations, alerts, and visualization
+**Total Tests:** 134 tests across 13 test files  
+**Runtime:** ~40 seconds for full suite  
+**Coverage:** 52% overall code coverage (significantly improved from 47%)  
+**Scope:** Comprehensive anomstack functionality including ML, jobs, IO, configuration, data validation, SQL operations, alerts, visualization, email notifications, ASCII art generation, and external database integrations
 
 ## Coverage Report
 
-The test suite achieves **47% overall coverage** across the anomstack codebase. Here's the breakdown by module:
+The test suite achieves **52% overall coverage** across the anomstack codebase (improved from 47%). Here's the breakdown by module with recent improvements:
 
 ### High Coverage Modules (>90%)
 - **`alerts/send.py`** - 100% (23/23 lines) ✅
+- **`alerts/email.py`** - 100% (61/61 lines) ✅ *NEW - Improved from 20%*
 - **`main.py`** - 100% (15/15 lines) ✅  
 - **`ml/preprocess.py`** - 100% (21/21 lines) ✅
 - **`ml/train.py`** - 100% (15/15 lines) ✅
@@ -34,11 +35,13 @@ The test suite achieves **47% overall coverage** across the anomstack codebase. 
 - **`jobs/ingest.py`** - 76% (47/62 lines) 🟡
 - **`jobs/summary.py`** - 71% (29/41 lines) 🟡
 - **`jobs/train.py`** - 63% (46/73 lines) 🟡
+- **`alerts/asciiart.py`** - 62% (151/245 lines) 🟡 *NEW - Improved from 11%*
 - **`jobs/plot.py`** - 61% (37/61 lines) 🟡
 - **`jobs/alert.py`** - 58% (46/79 lines) 🟡
 
 ### Lower Coverage Modules (<50%)
 - **`jobs/llmalert.py`** - 48% (53/111 lines) 🔶
+- **`external/duckdb/duckdb.py`** - 47% (48/102 lines) 🔶 *NEW - Improved from 8%*
 - **`jobs/change.py`** - 47% (44/93 lines) 🔶
 - **`jobs/score.py`** - 47% (50/107 lines) 🔶
 - **`llm/agent.py`** - 43% (3/7 lines) 🔶
@@ -48,16 +51,22 @@ The test suite achieves **47% overall coverage** across the anomstack codebase. 
 
 ### External Dependencies (<30%)
 These modules have lower coverage as they interface with external services and are harder to test:
-- **`external/`** modules (8-33% coverage) - Database and cloud service integrations
-- **`alerts/asciiart.py`** - 11% (26/245 lines) - Large ASCII art generation
-- **`alerts/email.py`** - 20% (12/61 lines) - Email sending functionality  
+- **`external/`** modules (8-33% coverage) - Database and cloud service integrations  
 - **`alerts/slack.py`** - 18% (9/50 lines) - Slack API integration
+
+### Recent Test Coverage Improvements ✨
+- **`alerts/email.py`**: 20% → 100% (+80% coverage) - Complete email functionality testing
+- **`alerts/asciiart.py`**: 11% → 62% (+51% coverage) - ASCII art generation and alert message formatting
+- **`external/duckdb/duckdb.py`**: 8% → 47% (+39% coverage) - DuckDB database operations
 
 ### Coverage by Test File
 
 | Test File | Lines Covered | Primary Modules Tested |
 |-----------|---------------|------------------------|
 | `test_alerts.py` | `alerts/send.py` (100%) | Alert routing and sending |
+| `test_email.py` ⭐ | `alerts/email.py` (100%) | Email notifications with plots |
+| `test_asciiart.py` ⭐ | `alerts/asciiart.py` (62%) | ASCII art generation and alert messaging |
+| `test_external_duckdb_simple.py` ⭐ | `external/duckdb/duckdb.py` (47%) | DuckDB database operations |
 | `test_df.py` | `df/wrangle.py` (97%) | Data wrangling and metadata |
 | `test_validate.py` | `validate/validate.py` (100%) | DataFrame validation |
 | `test_sql.py` | `sql/read.py` (98%), `sql/translate.py` (100%) | SQL operations |
@@ -69,6 +78,48 @@ These modules have lower coverage as they interface with external services and a
 | `test_main.py` | `main.py` (100%) | Main module integration |
 
 ## Test Files
+
+### `test_email.py` (4 tests) ⭐ *NEW*
+Tests email notification and alert functionality:
+
+- **Email with Plot (2 tests):** `send_email_with_plot` with various configurations and custom parameters
+- **Basic Email (2 tests):** `send_email` with HTML content and environment variable handling
+
+**Key Features Tested:**
+- SMTP email sending with attachments
+- Plot generation and attachment to emails
+- Environment variable configuration for email settings
+- HTML email body support
+- Custom parameters for alerts (thresholds, score columns, tags)
+- Comprehensive mocking of external email services
+
+### `test_asciiart.py` (11 tests) ⭐ *NEW*
+Tests ASCII art generation and alert message formatting:
+
+- **Alert Message Generation (6 tests):** `make_alert_message` with various data scenarios, tags, and custom parameters
+- **ASCII Graph Class (5 tests):** `Pyasciigraph` initialization, simple graph creation, and helper methods
+
+**Key Features Tested:**
+- ASCII graph generation for time series data
+- Alert message formatting with HTML
+- Custom symbols and formatting options
+- Tag inclusion in alert messages
+- Unicode and ANSI code handling
+- String sanitization and color support
+
+### `test_external_duckdb_simple.py` (4 tests) ⭐ *NEW*
+Tests DuckDB database operations and connectivity:
+
+- **SQL Reading (1 test):** `read_sql_duckdb` with basic functionality
+- **DataFrame Saving (1 test):** `save_df_duckdb` with table creation
+- **SQL Execution (2 tests):** `run_sql_duckdb` with and without DataFrame return
+
+**Key Features Tested:**
+- DuckDB connection management
+- SQL query execution and result handling
+- DataFrame persistence to DuckDB tables
+- Connection cleanup and resource management
+- Comprehensive mocking of DuckDB operations
 
 ### `test_ml.py` (18 tests)
 Tests the machine learning pipeline components:
@@ -244,10 +295,13 @@ pytest tests/ --cov=anomstack --cov-report=term-missing --cov-config=.coveragerc
 pytest tests/test_df.py tests/test_validate.py
 
 # SQL and database tests
-pytest tests/test_sql.py
+pytest tests/test_sql.py tests/test_external_duckdb_simple.py
 
-# Alert and plotting tests
-pytest tests/test_alerts.py tests/test_plots.py
+# Alert and notification tests (NEW)
+pytest tests/test_alerts.py tests/test_email.py tests/test_asciiart.py
+
+# Plotting and visualization tests
+pytest tests/test_plots.py
 
 # Core ML and job tests
 pytest tests/test_ml.py tests/test_jobs.py
@@ -439,7 +493,10 @@ pytest tests/ --tb=long -W ignore::DeprecationWarning
 ## Performance Considerations
 
 - **ML Tests:** 3-4 seconds each (real model training)
+- **Email Tests:** 2-3 seconds each (SMTP mocking and plot generation) *NEW*
 - **Plotting Tests:** 2-3 seconds each (matplotlib figure generation)
+- **ASCII Art Tests:** 1-2 seconds each (graph generation and formatting) *NEW*
+- **DuckDB Tests:** <1 second each (mocked database operations) *NEW*
 - **SQL Tests:** <1 second each (mocked database calls)
 - **Data/Validation Tests:** <1 second each (pandas operations)
 - **Job Tests:** <1 second each (job creation only)
@@ -497,4 +554,27 @@ When adding tests for new modules:
 4. Add appropriate mocking for external dependencies
 5. Include both positive and negative test cases
 
-The test suite is designed to provide comprehensive coverage while maintaining fast execution times suitable for development workflows. With 115 tests covering all major components, the suite provides confidence in code quality and helps prevent regressions. 
+The test suite is designed to provide comprehensive coverage while maintaining fast execution times suitable for development workflows. With 134 tests covering all major components, the suite provides confidence in code quality and helps prevent regressions.
+
+## Recent Improvements Summary
+
+**🎯 Coverage Boost:** Overall coverage improved from 47% to 52% (+5 percentage points)
+
+**📊 New Test Files Added:**
+- `test_email.py` - 4 comprehensive email notification tests (100% coverage)
+- `test_asciiart.py` - 11 ASCII art generation and formatting tests (62% coverage)  
+- `test_external_duckdb_simple.py` - 4 DuckDB database operation tests (47% coverage)
+
+**⭐ Major Module Improvements:**
+- Email functionality: 20% → 100% coverage (+80%)
+- ASCII art generation: 11% → 62% coverage (+51%)  
+- DuckDB operations: 8% → 47% coverage (+39%)
+
+**✅ Testing Best Practices:**
+- Comprehensive mocking for external dependencies (SMTP, databases)
+- Realistic test data and scenarios
+- Error condition testing
+- Resource cleanup (matplotlib figures, connections)
+- Clear, descriptive test names and documentation
+
+These improvements significantly enhance the reliability and maintainability of the anomstack codebase, particularly for alert notifications and external database integrations. 
