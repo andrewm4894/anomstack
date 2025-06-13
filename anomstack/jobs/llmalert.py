@@ -210,22 +210,29 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                             f"🤖 LLM says [{metric_name}] looks anomalous "
                             f"({latest_anomaly_timestamp}) 🤖"
                         )
-                        df_metric = send_alert(
-                            metric_name=metric_name,
-                            title=alert_title,
-                            df=df_metric,
-                            threshold=threshold,
-                            alert_methods=alert_methods,
-                            description=anomaly_explanations,
-                            tags={
-                                "metric_batch": metric_batch,
-                                "metric_name": metric_name,
-                                "anomaly_timestamp": latest_anomaly_timestamp,
-                                "metric_timestamp_max": metric_timestamp_max,
-                                "alert_type": "llm",
-                            },
-                            score_col="metric_score",
-                        )
+                        
+                        # Wrap send_alert in try-except to prevent blocking save_llmalerts
+                        try:
+                            df_metric = send_alert(
+                                metric_name=metric_name,
+                                title=alert_title,
+                                df=df_metric,
+                                threshold=threshold,
+                                alert_methods=alert_methods,
+                                description=anomaly_explanations,
+                                tags={
+                                    "metric_batch": metric_batch,
+                                    "metric_name": metric_name,
+                                    "anomaly_timestamp": latest_anomaly_timestamp,
+                                    "metric_timestamp_max": metric_timestamp_max,
+                                    "alert_type": "llm",
+                                },
+                                score_col="metric_score",
+                            )
+                            logger.info(f"successfully sent LLM alert for {metric_name}")
+                        except Exception as e:
+                            logger.error(f"failed to send LLM alert for {metric_name}: {str(e)}")
+                            # Continue processing even if alert sending fails
 
                         # append the alerts to the df_alerts
                         df_alerts = pd.concat([df_alerts, df_metric])
@@ -259,16 +266,16 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                         json.dumps({"anomaly_explanation": x}) if pd.notna(x) else None
                     )
                 )
-                df_alerts = df_alerts[
-                    [
-                        "metric_timestamp",
-                        "metric_batch",
-                        "metric_name",
-                        "metric_type",
-                        "metric_value",
-                        "metadata",
-                    ]
+                # Explicitly select columns to ensure DataFrame type
+                columns_to_keep = [
+                    "metric_timestamp",
+                    "metric_batch",
+                    "metric_name",
+                    "metric_type",
+                    "metric_value",
+                    "metadata",
                 ]
+                df_alerts = df_alerts.loc[:, columns_to_keep].copy()
                 df_alerts = wrangle_df(df_alerts)
                 df_alerts = validate_df(df_alerts)
                 logger.info(f"saving {len(df_alerts)} llmalerts to {db} {table_key}")
