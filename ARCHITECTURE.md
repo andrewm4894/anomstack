@@ -446,47 +446,49 @@ graph TB
 
 ## Monitoring & Observability
 
-### System Metrics
+### Built-in Observability
+
+Anomstack leverages Dagster's built-in observability features and includes its own monitoring capabilities:
 
 ```mermaid
 graph TD
-    subgraph "Metrics Collection"
-        DAGSTER[Dagster Metrics]
-        APP[Application Metrics]
-        INFRA[Infrastructure Metrics]
+    subgraph "Dagster Observability"
+        RUNS[Job Runs & Status]
+        ASSETS[Asset Lineage]
+        LOGS[Execution Logs]
+        SENSORS[Failure Sensors]
     end
     
-    subgraph "Monitoring Stack"
-        PROM[Prometheus]
-        GRAF[Grafana]
-        ALERT[AlertManager]
+    subgraph "Anomstack Monitoring"
+        DASH[FastHTML Dashboard<br/>Metrics Visualization]
+        PLOTS[Plot Jobs<br/>Visual Diagnostics]
+        ALERTS[Alert System<br/>Email/Slack/LLM]
     end
     
-    subgraph "Alerting"
-        EMAIL[Email Alerts]
-        SLACK[Slack Alerts]
-        PAGER[PagerDuty]
+    subgraph "External Integration"
+        DAGUI[Dagster UI<br/>Pipeline Monitoring]
+        EMAIL[Email Notifications]
+        SLACK[Slack Notifications]
     end
     
-    DAGSTER --> PROM
-    APP --> PROM
-    INFRA --> PROM
+    RUNS --> DAGUI
+    ASSETS --> DAGUI
+    LOGS --> DAGUI
+    SENSORS --> ALERTS
     
-    PROM --> GRAF
-    PROM --> ALERT
-    
-    ALERT --> EMAIL
-    ALERT --> SLACK
-    ALERT --> PAGER
+    DASH --> PLOTS
+    ALERTS --> EMAIL
+    ALERTS --> SLACK
 ```
 
-### Key Performance Indicators
+### Available Monitoring Features
 
-- **Pipeline Success Rate**: Percentage of successful job executions
-- **Data Freshness**: Time since last successful data ingestion
-- **Model Performance**: Accuracy, precision, recall metrics
-- **Alert Response Time**: Time from anomaly detection to notification
-- **System Resource Usage**: CPU, memory, storage utilization
+- **Dagster UI**: Built-in pipeline monitoring, job status, and execution logs
+- **FastHTML Dashboard**: Real-time metrics visualization and anomaly tracking
+- **Plot Jobs**: Visual diagnostics embedded in Dagster job logs  
+- **Failure Sensors**: Automatic detection of pipeline failures (`anomstack/sensors/failure.py`)
+- **Alert System**: Multi-channel notifications for anomalies and system issues
+- **Asset Lineage**: Track data dependencies and freshness through Dagster assets
 
 ## Scalability Considerations
 
