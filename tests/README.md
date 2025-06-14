@@ -6,12 +6,12 @@ This directory contains comprehensive tests for the anomstack anomaly detection 
 
 **Total Tests:** 134 tests across 13 test files  
 **Runtime:** ~40 seconds for full suite  
-**Coverage:** 52% overall code coverage (significantly improved from 47%)  
+**Coverage:** 59% overall code coverage (significantly improved from 47%)  
 **Scope:** Comprehensive anomstack functionality including ML, jobs, IO, configuration, data validation, SQL operations, alerts, visualization, email notifications, ASCII art generation, and external database integrations
 
 ## Coverage Report
 
-The test suite achieves **52% overall coverage** across the anomstack codebase (improved from 47%). Here's the breakdown by module with recent improvements:
+The test suite achieves **59% overall coverage** across the anomstack codebase (improved from 47%). Here's the breakdown by module with recent improvements:
 
 ### High Coverage Modules (>90%)
 - **`alerts/send.py`** - 100% (23/23 lines) ✅
