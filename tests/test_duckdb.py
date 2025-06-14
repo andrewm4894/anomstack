@@ -220,8 +220,8 @@ class TestSaveDfDuckdb:
         mock_conn = MagicMock()
         mock_connect.return_value = mock_conn
         
-        # First INSERT fails, then CREATE SCHEMA and CREATE TABLE succeed
-        mock_query.side_effect = [Exception("Table doesn't exist"), None, None]
+        # First CREATE SCHEMA succeeds, then INSERT fails, then CREATE TABLE succeeds
+        mock_query.side_effect = [None, Exception("Table doesn't exist"), None]
         
         df = pd.DataFrame({'col1': [1, 2], 'col2': ['a', 'b']})
         
@@ -230,8 +230,8 @@ class TestSaveDfDuckdb:
         
         # Assertions
         assert mock_query.call_count == 3
-        mock_query.assert_any_call(connection=mock_conn, query="INSERT INTO my_schema.test_table SELECT * FROM df")
         mock_query.assert_any_call(connection=mock_conn, query="CREATE SCHEMA IF NOT EXISTS my_schema")
+        mock_query.assert_any_call(connection=mock_conn, query="INSERT INTO my_schema.test_table SELECT * FROM df")
         mock_query.assert_any_call(connection=mock_conn, query="CREATE TABLE my_schema.test_table AS SELECT * FROM df")
 
 
