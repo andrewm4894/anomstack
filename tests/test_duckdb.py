@@ -96,7 +96,10 @@ class TestReadSqlDuckdb:
         expected_df = pd.DataFrame({'result': [42]})
         mock_query.return_value.df.return_value = expected_df
         
-        with patch.dict(os.environ, {'ANOMSTACK_DUCKDB_PATH': 'md:my_db'}, clear=True):
+        with patch.dict(os.environ, {'ANOMSTACK_DUCKDB_PATH': 'md:my_db'}, clear=False):
+            # Ensure ANOMSTACK_MOTHERDUCK_TOKEN is not set
+            if 'ANOMSTACK_MOTHERDUCK_TOKEN' in os.environ:
+                del os.environ['ANOMSTACK_MOTHERDUCK_TOKEN']
             # Call function
             result = read_sql_duckdb("SELECT 42 as result")
             
