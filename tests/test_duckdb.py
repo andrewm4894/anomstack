@@ -89,7 +89,8 @@ class TestReadSqlDuckdb:
     def test_read_sql_duckdb_motherduck_no_token_fallback(self, mock_makedirs, mock_query, mock_connect, mock_logger):
         """Test read_sql_duckdb with MotherDuck but no token, should fallback to local."""
         # Setup
-        mock_logger.return_value = MagicMock()
+        mock_logger_instance = MagicMock()
+        mock_logger.return_value = mock_logger_instance
         mock_conn = MagicMock()
         mock_connect.return_value = mock_conn
         expected_df = pd.DataFrame({'result': [42]})
@@ -100,7 +101,7 @@ class TestReadSqlDuckdb:
             result = read_sql_duckdb("SELECT 42 as result")
             
             # Assertions
-            mock_logger.return_value.warning.assert_called_once()
+            mock_logger_instance.warning.assert_called_once()
             mock_connect.assert_called_once_with("tmpdata/anomstack-duckdb.db")
             pd.testing.assert_frame_equal(result, expected_df)
     
