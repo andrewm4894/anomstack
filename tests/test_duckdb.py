@@ -89,18 +89,22 @@ class TestReadSqlDuckdb:
     def test_read_sql_duckdb_motherduck_no_token_fallback(self, mock_makedirs, mock_query, mock_connect, mock_logger):
         """Test read_sql_duckdb with MotherDuck but no token, should fallback to local."""
         # Setup
-        mock_logger.return_value = MagicMock()
+        mock_logger_instance = MagicMock()
+        mock_logger.return_value = mock_logger_instance
         mock_conn = MagicMock()
         mock_connect.return_value = mock_conn
         expected_df = pd.DataFrame({'result': [42]})
         mock_query.return_value.df.return_value = expected_df
         
-        with patch.dict(os.environ, {'ANOMSTACK_DUCKDB_PATH': 'md:my_db'}, clear=True):
+        with patch.dict(os.environ, {'ANOMSTACK_DUCKDB_PATH': 'md:my_db'}, clear=False):
+            # Ensure ANOMSTACK_MOTHERDUCK_TOKEN is not set
+            if 'ANOMSTACK_MOTHERDUCK_TOKEN' in os.environ:
+                del os.environ['ANOMSTACK_MOTHERDUCK_TOKEN']
             # Call function
             result = read_sql_duckdb("SELECT 42 as result")
             
             # Assertions
-            mock_logger.return_value.warning.assert_called_once()
+            mock_logger_instance.warning.assert_called_once()
             mock_connect.assert_called_once_with("tmpdata/anomstack-duckdb.db")
             pd.testing.assert_frame_equal(result, expected_df)
     
@@ -216,8 +220,8 @@ class TestSaveDfDuckdb:
         mock_conn = MagicMock()
         mock_connect.return_value = mock_conn
         
-        # First INSERT fails, then CREATE SCHEMA and CREATE TABLE succeed
-        mock_query.side_effect = [Exception("Table doesn't exist"), None, None]
+        # First CREATE SCHEMA succeeds, then INSERT fails, then CREATE TABLE succeeds
+        mock_query.side_effect = [None, Exception("Table doesn't exist"), None]
         
         df = pd.DataFrame({'col1': [1, 2], 'col2': ['a', 'b']})
         
@@ -226,8 +230,8 @@ class TestSaveDfDuckdb:
         
         # Assertions
         assert mock_query.call_count == 3
-        mock_query.assert_any_call(connection=mock_conn, query="INSERT INTO my_schema.test_table SELECT * FROM df")
         mock_query.assert_any_call(connection=mock_conn, query="CREATE SCHEMA IF NOT EXISTS my_schema")
+        mock_query.assert_any_call(connection=mock_conn, query="INSERT INTO my_schema.test_table SELECT * FROM df")
         mock_query.assert_any_call(connection=mock_conn, query="CREATE TABLE my_schema.test_table AS SELECT * FROM df")
 
 
