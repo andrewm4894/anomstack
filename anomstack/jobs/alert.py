@@ -174,7 +174,10 @@ def build_alert_job(spec: dict) -> JobDefinition:
 
             return df_alerts
 
-        save_alerts(alert(get_alerts()))
+        # Restructured job flow: both alert and save_alerts depend on get_alerts
+        df_alerts = get_alerts()
+        alert(df_alerts)
+        save_alerts(df_alerts)
 
     return _job
 

@@ -168,7 +168,7 @@ class TestSendAlertSlack:
     
     @patch.dict(os.environ, {
         'ANOMSTACK_SLACK_BOT_TOKEN': 'xoxb-test-token'
-    })
+    }, clear=True)
     def test_send_alert_slack_missing_channel(self):
         """Test Slack alert fails when channel is not specified."""
         with pytest.raises(ValueError, match="Slack channel not specified"):

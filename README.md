@@ -194,6 +194,7 @@ Here is a list of features of Anomstack (emoji alert warning!)
 1. 📧 - Email [alerting](#alerts) with fancy(ish) ascii art plots of your metrics and anomaly scores.
 1. 💬 - Slack alerts too (want to make these nicer).
 1. 🤖 - aGeNtIc LLM based alerts - use an [anomaly-agent](https://github.com/andrewm4894/anomaly-agent) to do anomaly detection and alerting - see [LLM Agent Alerts](#llm-agent-alerts).
+1. ⚠️ - Threshold-based alerts - traditional rules-based alerting with configurable upper and lower bounds that are evaluated at ingest time.
 1. 🕒 - Ability to ingest at whatever frequency you want and then agg to a different level for training/scoring, see [`freq`](/metrics/examples/freq/README.md) example.
 1. 📊 - Plot jobs so you can just eyeball your metrics in Dagster job logs, see [#dagster-ui-plots](#dagster-ui-plots).
 1. 🏗️ - Minimal infrastructure requirements, Anomstack just reads from and writes to whatever database you use.

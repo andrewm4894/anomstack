@@ -5,5 +5,28 @@ ingest_cron_schedule: "*/2 * * * *"
 train_cron_schedule: "*/4 * * * *"
 score_cron_schedule: "*/3 * * * *"
 disable_llmalert: False
+
+# Enable threshold alerts
+disable_tholdalert: False
+tholdalert_methods: "email,slack"
+tholdalert_recent_n: 1
+tholdalert_snooze_n: 2
+tholdalert_thresholds:
+  metric1:
+    upper: 12  # Alert if metric1 > 12 (will catch spikes at 15-30)
+    lower: 0   # Alert if metric1 < 0 (will catch drops at -10 to -1)
+  metric2:
+    upper: 12  # Alert if metric2 > 12
+    lower: 0   # Alert if metric2 < 0
+  metric3:
+    upper: 12  # Alert if metric3 > 12
+    lower: 0   # Alert if metric3 < 0
+  metric4:
+    upper: 15  # Slightly higher threshold for metric4
+    lower: -0.5 # Slightly more tolerant for metric4
+  metric5:
+    upper: 10  # Tighter upper bound for metric5
+    lower: 1   # Don't allow metric5 to go below 1
+
 ingest_fn: >
   {% include "./examples/python/python_ingest_simple/ingest.py" %}

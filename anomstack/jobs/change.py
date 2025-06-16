@@ -214,7 +214,11 @@ def build_change_job(spec: dict) -> JobDefinition:
 
             return df_change_alerts
 
-        save_alerts(alert(detect_changes(get_change_data())))
+        # Restructured job flow: both alert and save_alerts depend on detect_changes output
+        df_data = get_change_data()
+        df_change_alerts = detect_changes(df_data)
+        alert(df_change_alerts)
+        save_alerts(df_change_alerts)
 
     return _job
 

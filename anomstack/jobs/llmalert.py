@@ -283,7 +283,10 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
 
             return df_alerts
 
-        save_llmalerts(llmalert(get_llmalert_data()))
+        # Restructured job flow: save_llmalerts depends on llmalert output
+        df_data = get_llmalert_data()
+        df_alerts = llmalert(df_data)
+        save_llmalerts(df_alerts)
 
     return _job
 

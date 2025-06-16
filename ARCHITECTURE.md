@@ -59,6 +59,7 @@ graph TB
         EMAIL[Email Alerts]
         SLACK[Slack Alerts]
         LLM[LLM Agent Alerts]
+        THRESH[Threshold Alerts]
     end
     
     BQ --> ING
@@ -74,6 +75,7 @@ graph TB
     SCORE --> EMAIL
     SCORE --> SLACK
     SCORE --> LLM
+    ING --> THRESH
     
     ML --> LOCAL
     ML --> S3
@@ -119,6 +121,7 @@ The core processing pipeline consists of several stages:
 - Executes SQL queries or Python functions
 - Handles parameterization and templating
 - Validates data quality and schema
+- Evaluates threshold-based alerts at ingest time
 
 #### Preprocessing (`anomstack/ml/preprocess.py`)
 - Data cleaning and normalization
@@ -159,6 +162,7 @@ Multi-channel alerting with intelligent filtering:
 - **Email Alerts**: Rich HTML emails with visualizations
 - **Slack Integration**: Real-time team notifications
 - **LLM Agent Alerts**: AI-powered contextual analysis
+- **Threshold Alerts**: Traditional rules-based alerting with configurable upper/lower bounds evaluated at ingest time
 - **Webhook Support**: Custom integrations
 
 ## Data Flow Architecture
@@ -215,6 +219,7 @@ flowchart TD
         EMAIL[Email Alerts<br/>SMTP/HTML]
         SLACK[Slack Notifications<br/>Webhooks]
         LLM[LLM Agent<br/>AI Analysis]
+        THRESH[Threshold Alerts<br/>Rules-based]
     end
     
     %% Data flow connections
@@ -237,6 +242,7 @@ flowchart TD
     J4 --> EMAIL
     J4 --> SLACK
     J4 --> LLM
+    J1 --> THRESH
     J5 --> VIZ
     
     %% Orchestration
