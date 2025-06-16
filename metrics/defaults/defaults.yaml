@@ -59,6 +59,22 @@ alert_threshold: 0.8 # threshold for smoothed anomaly score above which to alert
 #   - 'dummy_exclude_metric'
 
 ############################################
+# threshold alert params
+############################################
+disable_tholdalert: True # if you want to disable threshold alerts for some reason.
+tholdalert_methods: "email,slack" # comma separated list of alert methods to use for threshold alerts.
+tholdalert_recent_n: 1 # only alert on recent n so as to avoid continually alerting on threshold breaches.
+tholdalert_snooze_n: 3 # snooze threshold alerts for n periods after an alert.
+# optional threshold definitions per metric - if not defined, no threshold alerts will be sent for that metric
+# tholdalert_thresholds:
+#   metric_name:
+#     upper: 100  # upper bound - alert if metric_value > upper
+#     lower: 0    # lower bound - alert if metric_value < lower
+# optional list of metrics to exclude from threshold alerts.
+# tholdalert_exclude_metrics:
+#   - 'dummy_exclude_metric'
+
+############################################
 # change detection params
 ############################################
 change_metric_timestamp_max_days_ago: 45 # don't all metrics older than this into change detection.
