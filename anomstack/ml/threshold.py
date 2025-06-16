@@ -55,7 +55,7 @@ def detect_threshold_alerts(df: pd.DataFrame, thresholds: dict, recent_n: int = 
         # Track alerts we've already set in this processing loop
         alerts_set_positions = []
         
-        for _, row in recent_observations.iterrows():
+        for idx, row in recent_observations.iterrows():
             metric_value = row['metric_value']
             
             # Find the original index in the full dataframe
@@ -65,11 +65,11 @@ def detect_threshold_alerts(df: pd.DataFrame, thresholds: dict, recent_n: int = 
                 continue
             original_idx = matching_rows.index[0]
             
-            # Find current position in df_metric
-            current_pos = df_metric[df_metric['metric_timestamp'] == row['metric_timestamp']].index[0]
+            # Find current position in df_metric (use the reset index position)
+            current_pos = df_metric.reset_index(drop=True).index[df_metric['metric_timestamp'] == row['metric_timestamp']].tolist()[0]
             
             # Check if we should snooze (look back snooze_n periods for recent alerts)
-            lookback_start = max(0, current_pos - snooze_n + 1)
+            lookback_start = max(0, current_pos - snooze_n)
             
             # Check for recent alerts both in already processed data and alerts set in this loop
             recent_alert_positions = [pos for pos in alerts_set_positions if pos >= lookback_start and pos < current_pos]
