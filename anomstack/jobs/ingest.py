@@ -3,6 +3,7 @@ Generate ingest jobs and schedules.
 """
 
 import os
+import json
 from typing import Dict
 
 import pandas as pd
@@ -99,6 +100,29 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
             logger.debug(f"df: \n{df}")
             df["metric_batch"] = metric_batch
             df["metric_type"] = "metric"
+            
+            # Add threshold configuration to metadata for metrics with thresholds
+            if tholdalert_thresholds:
+                def add_threshold_metadata(row):
+                    """Add threshold configuration to metadata if it exists for this metric."""
+                    metadata = {}
+                    
+                    # Parse existing metadata if it exists
+                    if 'metadata' in df.columns and pd.notna(row.get('metadata')) and row.get('metadata'):
+                        try:
+                            metadata = json.loads(row['metadata']) if isinstance(row['metadata'], str) else {}
+                        except (json.JSONDecodeError, TypeError):
+                            metadata = {}
+                    
+                    # Add threshold configuration if metric has thresholds
+                    metric_name = row.get('metric_name')
+                    if metric_name and metric_name in tholdalert_thresholds:
+                        metadata['thresholds'] = tholdalert_thresholds[metric_name]
+                    
+                    return json.dumps(metadata) if metadata else ""
+                
+                df['metadata'] = df.apply(add_threshold_metadata, axis=1)
+            
             df = wrangle_df(df, rounding=ingest_metric_rounding)
             df = validate_df(df)
 
@@ -171,9 +195,17 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
             if len(alerts_to_send) == 0:
                 logger.info("No threshold alerts to send")
             else:
+                # Convert to proper DataFrame to ensure type consistency
+                alerts_to_send = pd.DataFrame(alerts_to_send)
+                
                 for metric_name in alerts_to_send['metric_name'].unique():
                     logger.info(f"sending threshold alert for {metric_name}")
-                    df_alert = alerts_to_send[alerts_to_send['metric_name'] == metric_name]
+                    df_alert = alerts_to_send[alerts_to_send['metric_name'] == metric_name].copy()
+                    
+                    # Ensure df_alert is a proper DataFrame
+                    if not isinstance(df_alert, pd.DataFrame):
+                        df_alert = pd.DataFrame(df_alert)
+                    
                     df_alert['metric_timestamp'] = pd.to_datetime(df_alert['metric_timestamp'])
                     
                     metric_timestamp_max = df_alert['metric_timestamp'].max().strftime("%Y-%m-%d %H:%M")
@@ -233,6 +265,28 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
             if len(df_alerts) > 0:
                 df_alerts["metric_type"] = "tholdalert"
                 df_alerts["metric_alert"] = df_alerts["threshold_alert"].astype(float)
+                
+                # Add threshold metadata to alert records
+                def add_threshold_alert_metadata(row):
+                    """Add threshold configuration and alert details to metadata."""
+                    metadata = {}
+                    
+                    metric_name = row.get('metric_name')
+                    if metric_name and metric_name in tholdalert_thresholds:
+                        metadata['thresholds'] = tholdalert_thresholds[metric_name]
+                        
+                        # Add details about which threshold was breached
+                        if pd.notna(row.get('threshold_type')):
+                            metadata['breached_threshold_type'] = row['threshold_type']
+                        if pd.notna(row.get('threshold_value')):
+                            metadata['breached_threshold_value'] = row['threshold_value']
+                        if pd.notna(row.get('metric_value')):
+                            metadata['metric_value_at_breach'] = row['metric_value']
+                    
+                    return json.dumps(metadata) if metadata else ""
+                
+                df_alerts['metadata'] = df_alerts.apply(add_threshold_alert_metadata, axis=1)
+                
                 # Explicitly select columns to ensure DataFrame type
                 columns_to_keep = [
                     "metric_timestamp",
@@ -240,6 +294,7 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
                     "metric_name",
                     "metric_type",
                     "metric_alert",
+                    "metadata",
                 ]
                 df_alerts = df_alerts.loc[:, columns_to_keep].copy()
                 df_alerts = df_alerts.rename(columns={"metric_alert": "metric_value"})
@@ -250,6 +305,9 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
             else:
                 logger.info("no threshold alerts to save")
 
+            # Ensure we return a proper DataFrame
+            if not isinstance(df_alerts, pd.DataFrame):
+                df_alerts = pd.DataFrame(df_alerts)
             return df_alerts
 
         # Main job flow - metrics saved normally, threshold alerts processed in parallel
