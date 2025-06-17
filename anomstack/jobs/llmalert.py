@@ -112,7 +112,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
             for metric_name in df["metric_name"].unique():
                 df_metric = (
                     df[df.metric_name == metric_name]
-                    .sort_values(by="metric_timestamp", ascending=True)
+                    .sort_values("metric_timestamp", ascending=True)
                     .reset_index(drop=True)
                 )
                 df_metric = df_metric.dropna()
@@ -129,7 +129,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
 
                 df_prompt = (
                     (df_metric[["metric_timestamp", "metric_value"]].dropna())
-                    .sort_values(by="metric_timestamp")
+                    .sort_values("metric_timestamp")
                     .tail(llmalert_prompt_max_n)
                 )
                 df_prompt["metric_timestamp"] = df_prompt[
@@ -148,7 +148,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                 df_detected_anomalies = df_detected_anomalies.rename(
                     columns={
                         "timestamp": "anomaly_timestamp",
-                        "description": "anomaly_explanation",
+                        "anomaly_description": "anomaly_explanation",
                     }
                 )
                 logger.debug(f"After rename - anomaly detection columns: {df_detected_anomalies.columns.tolist()}")
@@ -208,10 +208,11 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                         ]["anomaly_timestamp"].max()
                         # prefix each explanation with the timestamp
                         if "anomaly_explanation" in df_metric.columns:
+                            anomaly_df = df_metric[df_metric["anomaly_timestamp"].notnull()][
+                                ["anomaly_timestamp", "anomaly_explanation"]
+                            ]
                             anomaly_explanations = (
-                                df_metric[df_metric["anomaly_timestamp"].notnull()][
-                                    ["anomaly_timestamp", "anomaly_explanation"]
-                                ]
+                                anomaly_df
                                 .apply(lambda x: f"- {x[0]}: {x[1]}", axis=1)
                                 .sort_values(ascending=False)
                             )
