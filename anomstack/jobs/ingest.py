@@ -19,7 +19,7 @@ from dagster import (
 
 from anomstack.config import get_specs
 from anomstack.df.save import save_df
-from anomstack.df.wrangle import wrangle_df
+from anomstack.df.wrangle import wrangle_df, add_threshold_metadata_to_row
 from anomstack.fn.run import run_df_fn
 from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
@@ -72,6 +72,8 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
     tholdalert_exclude_metrics = spec.get("tholdalert_exclude_metrics", [])
     metric_tags = spec.get("metric_tags", {})
 
+
+
     @job(
         name=f"{metric_batch}_ingest",
         tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
@@ -103,25 +105,7 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
             
             # Add threshold configuration to metadata for metrics with thresholds
             if tholdalert_thresholds:
-                def add_threshold_metadata(row):
-                    """Add threshold configuration to metadata if it exists for this metric."""
-                    metadata = {}
-                    
-                    # Parse existing metadata if it exists
-                    if 'metadata' in df.columns and pd.notna(row.get('metadata')) and row.get('metadata'):
-                        try:
-                            metadata = json.loads(row['metadata']) if isinstance(row['metadata'], str) else {}
-                        except (json.JSONDecodeError, TypeError):
-                            metadata = {}
-                    
-                    # Add threshold configuration if metric has thresholds
-                    metric_name = row.get('metric_name')
-                    if metric_name and metric_name in tholdalert_thresholds:
-                        metadata['thresholds'] = tholdalert_thresholds[metric_name]
-                    
-                    return json.dumps(metadata) if metadata else ""
-                
-                df['metadata'] = df.apply(add_threshold_metadata, axis=1)
+                df['metadata'] = df.apply(lambda row: add_threshold_metadata_to_row(row, tholdalert_thresholds), axis=1)
             
             df = wrangle_df(df, rounding=ingest_metric_rounding)
             df = validate_df(df)
@@ -266,26 +250,11 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
                 df_alerts["metric_type"] = "tholdalert"
                 df_alerts["metric_alert"] = df_alerts["threshold_alert"].astype(float)
                 
-                # Add threshold metadata to alert records
-                def add_threshold_alert_metadata(row):
-                    """Add threshold configuration and alert details to metadata."""
-                    metadata = {}
-                    
-                    metric_name = row.get('metric_name')
-                    if metric_name and metric_name in tholdalert_thresholds:
-                        metadata['thresholds'] = tholdalert_thresholds[metric_name]
-                        
-                        # Add details about which threshold was breached
-                        if pd.notna(row.get('threshold_type')):
-                            metadata['breached_threshold_type'] = row['threshold_type']
-                        if pd.notna(row.get('threshold_value')):
-                            metadata['breached_threshold_value'] = row['threshold_value']
-                        if pd.notna(row.get('metric_value')):
-                            metadata['metric_value_at_breach'] = row['metric_value']
-                    
-                    return json.dumps(metadata) if metadata else ""
-                
-                df_alerts['metadata'] = df_alerts.apply(add_threshold_alert_metadata, axis=1)
+                # Add threshold metadata to alert records (including breach details)
+                df_alerts['metadata'] = df_alerts.apply(
+                    lambda row: add_threshold_metadata_to_row(row, tholdalert_thresholds, include_breach_details=True), 
+                    axis=1
+                )
                 
                 # Explicitly select columns to ensure DataFrame type
                 columns_to_keep = [

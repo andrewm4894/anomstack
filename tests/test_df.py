@@ -8,7 +8,7 @@ import numpy as np
 import json
 from unittest.mock import patch, MagicMock
 
-from anomstack.df.wrangle import wrangle_df, extract_metadata
+from anomstack.df.wrangle import wrangle_df, extract_metadata, add_threshold_metadata_to_row
 
 
 class TestWrangleDF:
@@ -222,4 +222,178 @@ class TestExtractMetadata:
         
         # Result should have the new column
         assert 'host' in result.columns
-        assert 'host' not in original_df.columns 
+        assert 'host' not in original_df.columns
+
+
+class TestAddThresholdMetadata:
+    """Test the add_threshold_metadata_to_row function."""
+    
+    def test_add_threshold_metadata_basic(self):
+        """Test basic threshold metadata addition."""
+        row = pd.Series({
+            'metric_name': 'cpu_usage',
+            'metadata': '{}'
+        })
+        
+        thresholds = {
+            'cpu_usage': {'upper': 90, 'lower': 10}
+        }
+        
+        result = add_threshold_metadata_to_row(row, thresholds)
+        
+        expected_metadata = {
+            'thresholds': {'upper': 90, 'lower': 10}
+        }
+        
+        assert result == json.dumps(expected_metadata)
+    
+    def test_add_threshold_metadata_no_thresholds_for_metric(self):
+        """Test when no thresholds exist for the specific metric."""
+        row = pd.Series({
+            'metric_name': 'memory_usage',
+            'metadata': '{}'
+        })
+        
+        thresholds = {
+            'cpu_usage': {'upper': 90, 'lower': 10}
+        }
+        
+        result = add_threshold_metadata_to_row(row, thresholds)
+        
+        assert result == ""  # Should return empty string when no metadata to add
+    
+    def test_add_threshold_metadata_preserves_existing_metadata(self):
+        """Test that existing metadata is preserved when adding thresholds."""
+        row = pd.Series({
+            'metric_name': 'cpu_usage',
+            'metadata': '{"host": "server1", "env": "prod"}'
+        })
+        
+        thresholds = {
+            'cpu_usage': {'upper': 90, 'lower': 10}
+        }
+        
+        result = add_threshold_metadata_to_row(row, thresholds)
+        parsed_result = json.loads(result)
+        
+        # Should preserve existing metadata
+        assert parsed_result['host'] == 'server1'
+        assert parsed_result['env'] == 'prod'
+        
+        # Should add threshold metadata
+        assert parsed_result['thresholds'] == {'upper': 90, 'lower': 10}
+    
+    def test_add_threshold_metadata_with_breach_details(self):
+        """Test adding breach details for threshold alerts."""
+        row = pd.Series({
+            'metric_name': 'cpu_usage',
+            'metric_value': 95.2,
+            'threshold_type': 'upper',
+            'threshold_value': 90,
+            'metadata': '{}'
+        })
+        
+        thresholds = {
+            'cpu_usage': {'upper': 90, 'lower': 10}
+        }
+        
+        result = add_threshold_metadata_to_row(row, thresholds, include_breach_details=True)
+        parsed_result = json.loads(result)
+        
+        # Should include threshold configuration
+        assert parsed_result['thresholds'] == {'upper': 90, 'lower': 10}
+        
+        # Should include breach details
+        assert parsed_result['breached_threshold_type'] == 'upper'
+        assert parsed_result['breached_threshold_value'] == 90
+        assert parsed_result['metric_value_at_breach'] == 95.2
+    
+    def test_add_threshold_metadata_invalid_existing_metadata(self):
+        """Test handling of invalid existing metadata JSON."""
+        row = pd.Series({
+            'metric_name': 'cpu_usage',
+            'metadata': 'invalid_json'
+        })
+        
+        thresholds = {
+            'cpu_usage': {'upper': 90, 'lower': 10}
+        }
+        
+        result = add_threshold_metadata_to_row(row, thresholds)
+        
+        # Should create new metadata despite invalid existing metadata
+        expected_metadata = {
+            'thresholds': {'upper': 90, 'lower': 10}
+        }
+        
+        assert result == json.dumps(expected_metadata)
+    
+    def test_add_threshold_metadata_empty_thresholds_dict(self):
+        """Test with empty thresholds dictionary."""
+        row = pd.Series({
+            'metric_name': 'cpu_usage',
+            'metadata': '{}'
+        })
+        
+        thresholds = {}
+        
+        result = add_threshold_metadata_to_row(row, thresholds)
+        
+        assert result == ""  # Should return empty string
+    
+    def test_add_threshold_metadata_missing_metric_name(self):
+        """Test with missing metric_name in row."""
+        row = pd.Series({
+            'metadata': '{}'
+        })
+        
+        thresholds = {
+            'cpu_usage': {'upper': 90, 'lower': 10}
+        }
+        
+        result = add_threshold_metadata_to_row(row, thresholds)
+        
+        assert result == ""  # Should return empty string
+    
+    def test_add_threshold_metadata_none_values_in_breach_details(self):
+        """Test breach details with None/NaN values."""
+        row = pd.Series({
+            'metric_name': 'cpu_usage',
+            'metric_value': 95.2,
+            'threshold_type': None,  # None value
+            'threshold_value': 90,
+            'metadata': '{}'
+        })
+        
+        thresholds = {
+            'cpu_usage': {'upper': 90, 'lower': 10}
+        }
+        
+        result = add_threshold_metadata_to_row(row, thresholds, include_breach_details=True)
+        parsed_result = json.loads(result)
+        
+        # Should include threshold configuration
+        assert parsed_result['thresholds'] == {'upper': 90, 'lower': 10}
+        
+        # Should include non-None breach details only
+        assert 'breached_threshold_type' not in parsed_result  # None value should be skipped
+        assert parsed_result['breached_threshold_value'] == 90
+        assert parsed_result['metric_value_at_breach'] == 95.2
+    
+    def test_add_threshold_metadata_no_existing_metadata_column(self):
+        """Test when metadata column doesn't exist in row."""
+        row = pd.Series({
+            'metric_name': 'cpu_usage'
+        })
+        
+        thresholds = {
+            'cpu_usage': {'upper': 90, 'lower': 10}
+        }
+        
+        result = add_threshold_metadata_to_row(row, thresholds)
+        
+        expected_metadata = {
+            'thresholds': {'upper': 90, 'lower': 10}
+        }
+        
+        assert result == json.dumps(expected_metadata)

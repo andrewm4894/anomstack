@@ -76,6 +76,30 @@ class TestIngestJob:
         except (KeyError, ValueError):
             # Acceptable to raise errors with incomplete configuration
             pass
+    
+    def test_build_ingest_job_with_threshold_metadata(self):
+        """Test that ingest job properly adds threshold metadata when thresholds are configured."""
+        spec = {
+            "metric_batch": "threshold_test",
+            "table_key": "test_table",
+            "db": "duckdb",
+            "ingest_sql": "SELECT NOW() as metric_timestamp, 'cpu_usage' as metric_name, 85.0 as metric_value",
+            "disable_tholdalert": False,
+            "tholdalert_thresholds": {
+                "cpu_usage": {"upper": 90, "lower": 10},
+                "memory_usage": {"upper": 80, "lower": 5}
+            }
+        }
+        
+        job = build_ingest_job(spec)
+        
+        # Verify the job was created with threshold configuration
+        assert job.name == "threshold_test_ingest"
+        assert job is not None
+        
+        # Job should be created successfully with threshold metadata functionality
+        # The actual metadata addition is tested in test_df.py::TestAddThresholdMetadata
+        assert hasattr(job, 'execute_in_process')
 
 
 class TestTrainJob:
