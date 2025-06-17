@@ -65,10 +65,13 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
     llmalert_smooth_n = spec["llmalert_smooth_n"]
     llmalert_metric_rounding = spec.get("llmalert_metric_rounding", -1)
     llmalert_prompt_max_n = spec.get("llmalert_prompt_max_n", 1000)
-    system_prompt = spec.get(
-        "llmalert_anomaly_agent_system_prompt",
-        "You are an expert anomaly detection agent. You are given a time series and you need to identify the anomalies.",
+    # Support both new and legacy parameter names for backward compatibility
+    # If no custom prompts are specified, defaults to None to use anomaly-agent's built-in defaults
+    detection_prompt = (
+        spec.get("llmalert_anomaly_agent_detection_prompt") or 
+        spec.get("llmalert_anomaly_agent_system_prompt")
     )
+    verification_prompt = spec.get("llmalert_anomaly_agent_verification_prompt")
 
     @job(
         name=f"{metric_batch}_llmalert_job",
@@ -135,9 +138,9 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                 if llmalert_metric_rounding >= 0:
                     df_prompt = df_prompt.round(llmalert_metric_rounding)
 
-                # logger.debug(f"system_prompt: \n{system_prompt}")
+                # logger.debug(f"detection_prompt: \n{detection_prompt}")
                 df_detected_anomalies = detect_anomalies(
-                    df_prompt, system_prompt
+                    df_prompt, detection_prompt, verification_prompt
                 )
                 df_detected_anomalies = df_detected_anomalies.rename(
                     columns={

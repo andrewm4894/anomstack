@@ -98,11 +98,24 @@ llmalert_smooth_n: 0 # smooth metric value prior to sending to llm.
 llmalert_metric_rounding: -1 # round metric values to this number of decimal places.
 llmalert_metric_timestamp_max_days_ago: 30 # don't alert on metrics older than this.
 llmalert_prompt_max_n: 1000 # max n to include in prompt for llmalert.
-llmalert_anomaly_agent_system_prompt: |
-  You are an expert anomaly detection agent. You are given a time series and you need to identify the anomalies.
-
-  Notes:
-  - If you see a flat line its ok to flag as an anomaly the first few times but if it is consistently at the same number then just ignore it after a few observations.
+# Custom prompts for anomaly-agent (optional - if not specified, anomaly-agent defaults will be used)
+# llmalert_anomaly_agent_detection_prompt: |
+#   You are an expert anomaly detection agent. You are given a time series and you need to identify the anomalies.
+#
+#   Notes:
+#   - If you see a flat line its ok to flag as an anomaly the first few times but if it is consistently at the same number then just ignore it after a few observations.
+# llmalert_anomaly_agent_verification_prompt: |
+#   You are an expert anomaly verification agent. Your task is to verify whether detected anomalies are truly significant.
+#   
+#   Review the detected anomalies and determine if they represent genuine issues that warrant attention or if they are likely false positives.
+#   
+#   Consider:
+#   - The magnitude of the deviation from normal patterns
+#   - Whether the anomaly represents a meaningful change in the underlying system
+#   - If the pattern could be explained by normal business operations or seasonality
+#   - The potential impact if this anomaly represents a real issue
+#   
+#   Provide clear explanations for your verification decisions.
 
 ############################################
 # schedules
