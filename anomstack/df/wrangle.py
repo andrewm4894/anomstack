@@ -59,6 +59,44 @@ def wrangle_df(df: pd.DataFrame, rounding: int = 4) -> pd.DataFrame:
     return df
 
 
+def add_threshold_metadata_to_row(row, thresholds: dict, include_breach_details: bool = False) -> str:
+    """
+    Add threshold configuration to metadata for a given row.
+    
+    Args:
+        row: DataFrame row containing metric data
+        thresholds: Dictionary of threshold configurations by metric name
+        include_breach_details: Whether to include breach-specific details
+    
+    Returns:
+        str: JSON string of metadata
+    """
+    metadata = {}
+    
+    # Parse existing metadata if it exists
+    if 'metadata' in row and pd.notna(row.get('metadata')) and row.get('metadata'):
+        try:
+            metadata = json.loads(row['metadata']) if isinstance(row['metadata'], str) else {}
+        except (json.JSONDecodeError, TypeError):
+            metadata = {}
+    
+    # Add threshold configuration if metric has thresholds
+    metric_name = row.get('metric_name')
+    if metric_name and metric_name in thresholds:
+        metadata['thresholds'] = thresholds[metric_name]
+        
+        # Add breach details if requested (for threshold alerts)
+        if include_breach_details:
+            if pd.notna(row.get('threshold_type')):
+                metadata['breached_threshold_type'] = row['threshold_type']
+            if pd.notna(row.get('threshold_value')):
+                metadata['breached_threshold_value'] = row['threshold_value']
+            if pd.notna(row.get('metric_value')):
+                metadata['metric_value_at_breach'] = row['metric_value']
+    
+    return json.dumps(metadata) if metadata else ""
+
+
 def extract_metadata(df: pd.DataFrame, key_name: str) -> pd.DataFrame:
     """Extract a key from the metadata column."""
     if "metadata" not in df.columns:
