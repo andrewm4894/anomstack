@@ -132,7 +132,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                     .sort_values(by="metric_timestamp")
                     .tail(llmalert_prompt_max_n)
                 )
-                df_prompt["metric_timestamp"] = df_metric[
+                df_prompt["metric_timestamp"] = df_prompt[
                     "metric_timestamp"
                 ].dt.strftime("%Y-%m-%d %H:%M:%S")
                 if llmalert_metric_rounding >= 0:
@@ -142,12 +142,16 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                 df_detected_anomalies = detect_anomalies(
                     df_prompt, detection_prompt, verification_prompt
                 )
+                logger.debug(f"Raw anomaly detection output columns: {df_detected_anomalies.columns.tolist()}")
+                logger.debug(f"Raw anomaly detection output shape: {df_detected_anomalies.shape}")
+                
                 df_detected_anomalies = df_detected_anomalies.rename(
                     columns={
-                        "metric_timestamp": "anomaly_timestamp",
-                        "anomaly_description": "anomaly_explanation",
+                        "timestamp": "anomaly_timestamp",
+                        "description": "anomaly_explanation",
                     }
                 )
+                logger.debug(f"After rename - anomaly detection columns: {df_detected_anomalies.columns.tolist()}")
 
                 num_anomalies_total = len(df_detected_anomalies)
                 logger.debug(
@@ -167,12 +171,18 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                     ].dt.strftime("%Y-%m-%d %H:%M:%S")
 
                     # merge the two dataframes on the metric_timestamp column
+                    logger.debug(f"Before merge - df_metric columns: {df_metric.columns.tolist()}")
+                    logger.debug(f"Before merge - df_detected_anomalies columns: {df_detected_anomalies.columns.tolist()}")
+                    
                     df_metric = df_metric.merge(
                         df_detected_anomalies,
                         how="left",
                         left_on="metric_timestamp",
                         right_on="anomaly_timestamp",
                     )
+                    logger.debug(f"After merge - df_metric columns: {df_metric.columns.tolist()}")
+                    logger.debug(f"After merge - df_metric shape: {df_metric.shape}")
+                    
                     df_metric["metric_timestamp"] = pd.to_datetime(
                         df_metric["metric_timestamp"], format="%Y-%m-%d %H:%M:%S"
                     )
@@ -197,13 +207,17 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                             df_metric["anomaly_timestamp"].notnull()
                         ]["anomaly_timestamp"].max()
                         # prefix each explanation with the timestamp
-                        anomaly_explanations = (
-                            df_metric[df_metric["anomaly_timestamp"].notnull()][
-                                ["anomaly_timestamp", "anomaly_explanation"]
-                            ]
-                            .apply(lambda x: f"- {x[0]}: {x[1]}", axis=1)
-                            .sort_values(ascending=False)
-                        )
+                        if "anomaly_explanation" in df_metric.columns:
+                            anomaly_explanations = (
+                                df_metric[df_metric["anomaly_timestamp"].notnull()][
+                                    ["anomaly_timestamp", "anomaly_explanation"]
+                                ]
+                                .apply(lambda x: f"- {x[0]}: {x[1]}", axis=1)
+                                .sort_values(ascending=False)
+                            )
+                        else:
+                            logger.warning(f"anomaly_explanation column missing for {metric_name}, using generic message")
+                            anomaly_explanations = pd.Series([f"- {latest_anomaly_timestamp}: Anomaly detected"])
                         anomaly_explanations = anomaly_explanations.head(
                             llmalert_recent_n
                         )
@@ -264,11 +278,14 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                 df_alerts["metric_type"] = "llmalert"
                 df_alerts["metric_alert"] = df_alerts["metric_alert"].astype(float)
                 df_alerts["metric_value"] = df_alerts["metric_alert"]
-                df_alerts["metadata"] = df_alerts["anomaly_explanation"].apply(
-                    lambda x: (
-                        json.dumps({"anomaly_explanation": x}) if pd.notna(x) else None
+                if "anomaly_explanation" in df_alerts.columns:
+                    df_alerts["metadata"] = df_alerts["anomaly_explanation"].apply(
+                        lambda x: (
+                            json.dumps({"anomaly_explanation": x}) if pd.notna(x) else None
+                        )
                     )
-                )
+                else:
+                    df_alerts["metadata"] = None
                 # Explicitly select columns to ensure DataFrame type
                 columns_to_keep = [
                     "metric_timestamp",

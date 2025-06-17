@@ -29,7 +29,12 @@ class TestDetectAnomalies:
         # Mock the return values
         mock_anomalies = Mock()
         mock_agent_instance.detect_anomalies.return_value = mock_anomalies
-        mock_df_result = pd.DataFrame({'timestamp': ['2023-01-01'], 'anomaly': [True]})
+        mock_df_result = pd.DataFrame({
+            'timestamp': ['2023-01-01'], 
+            'variable_name': ['var1'], 
+            'value': [3.279153], 
+            'description': ['Abrupt spike in value, significantly higher than previous observations.']
+        })
         mock_agent_instance.get_anomalies_df.return_value = mock_df_result
         
         df = self.create_sample_df()
@@ -59,7 +64,12 @@ class TestDetectAnomalies:
         
         mock_anomalies = Mock()
         mock_agent_instance.detect_anomalies.return_value = mock_anomalies
-        mock_df_result = pd.DataFrame({'timestamp': ['2023-01-01'], 'anomaly': [True]})
+        mock_df_result = pd.DataFrame({
+            'timestamp': ['2023-01-01'], 
+            'variable_name': ['var1'], 
+            'value': [3.279153], 
+            'description': ['Abrupt spike in value, significantly higher than previous observations.']
+        })
         mock_agent_instance.get_anomalies_df.return_value = mock_df_result
         
         df = self.create_sample_df()
@@ -83,7 +93,12 @@ class TestDetectAnomalies:
         
         mock_anomalies = Mock()
         mock_agent_instance.detect_anomalies.return_value = mock_anomalies
-        mock_df_result = pd.DataFrame({'timestamp': ['2023-01-01'], 'anomaly': [True]})
+        mock_df_result = pd.DataFrame({
+            'timestamp': ['2023-01-01'], 
+            'variable_name': ['var1'], 
+            'value': [3.279153], 
+            'description': ['Abrupt spike in value, significantly higher than previous observations.']
+        })
         mock_agent_instance.get_anomalies_df.return_value = mock_df_result
         
         df = self.create_sample_df()
@@ -104,7 +119,12 @@ class TestDetectAnomalies:
         
         mock_anomalies = Mock()
         mock_agent_instance.detect_anomalies.return_value = mock_anomalies
-        mock_df_result = pd.DataFrame({'timestamp': ['2023-01-01'], 'anomaly': [True]})
+        mock_df_result = pd.DataFrame({
+            'timestamp': ['2023-01-01'], 
+            'variable_name': ['var1'], 
+            'value': [3.279153], 
+            'description': ['Abrupt spike in value, significantly higher than previous observations.']
+        })
         mock_agent_instance.get_anomalies_df.return_value = mock_df_result
         
         df = self.create_sample_df()
