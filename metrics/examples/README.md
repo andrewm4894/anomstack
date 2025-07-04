@@ -29,6 +29,7 @@ A **metric batch** is Anomstack's core concept - a collection of related metrics
 - **[netdata_httpcheck](netdata_httpcheck/)**: Website availability monitoring
 - **[tomtom](tomtom/)**: TomTom traffic API integration
 - **[github](github/)**: GitHub API metrics (stars, issues, etc.)
+- **[posthog](posthog/)**: PostHog query API usage metrics
 - **[currency](currency/)**: Currency exchange rate monitoring
 - **[eirgrid](eirgrid/)**: Irish electrical grid data
 
@@ -112,4 +113,3 @@ See [`.example.env`](../../.example.env) for a complete list of available enviro
 - [weather](weather/): Example of a metric batch that uses Open Meteo data.
 - [weather_forecast](weather_forecast/): Example of a metric batch that uses weather forecast data from Snowflake.
 - [yfinance](yfinance/): Example of a metric batch that uses the Yahoo Finance API.
-

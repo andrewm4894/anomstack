@@ -11,6 +11,9 @@ The scripts in this directory provide helpful utilities for common administrativ
 ### `sqlite/`
 Contains SQLite-specific utility scripts for users running Anomstack with SQLite as their database backend.
 
+### `posthog_example.py`
+Runs the PostHog metrics ingest function to ensure your PostHog credentials work.
+
 ## Common Use Cases
 
 These scripts are typically used for:
@@ -57,4 +60,4 @@ When adding new utility scripts:
 - Include proper error handling and rollback mechanisms
 - Document any prerequisites or dependencies
 - Use appropriate logging levels for different operations
-- Follow the project's coding standards and conventions 
+- Follow the project's coding standards and conventions

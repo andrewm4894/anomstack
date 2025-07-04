@@ -16,6 +16,7 @@ SHELL=/bin/bash
 .PHONY: dashboard-uvicorn
 .PHONY: dashboardd-uvicorn
 .PHONY: requirements-install
+.PHONY: posthog-example
 
 # start dagster locally
 local:
@@ -76,4 +77,8 @@ dashboardd-uvicorn:
 	nohup uvicorn dashboard.app:app --host 0.0.0.0 --port 5003 --reload > /dev/null 2>&1 &
 
 requirements-install:
-	pip install -r requirements.txt
+        pip install -r requirements.txt
+
+# run the PostHog example ingest function
+posthog-example:
+	python scripts/posthog_example.py
