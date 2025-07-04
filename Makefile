@@ -7,6 +7,7 @@ SHELL=/bin/bash
 .PHONY: tests
 .PHONY: docs
 .PHONY: requirements
+.PHONY: coverage
 .PHONY: kill-locald
 .PHONY: kill-dashboardd
 .PHONY: ps-locald
@@ -47,6 +48,10 @@ pre-commit:
 # run tests
 tests:
 	pytest -v
+
+# run tests with coverage report
+coverage:
+	pytest -v --cov=anomstack --cov-report=term-missing
 
 # setup local development environment and install dependencies
 dev:

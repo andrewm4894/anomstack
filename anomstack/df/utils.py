@@ -19,12 +19,12 @@ def log_df_info(df: pd.DataFrame, logger=None):
     logger.info("df.info():\n%s", info_str)
 
 
-def generate_insert_sql(df, table_name, batch_size=100) -> str:
-    """Generate SQL DDL and batched DML from DataFrame."""
+def generate_insert_sql(df, table_name, batch_size=100) -> list[str]:
+    """Generate batched INSERT statements from DataFrame."""
     columns = ', '.join(df.columns)
     insert_sqls = []
     for i in range(0, len(df), batch_size):
-        batch = df.iloc[i:i + batch_size]
+        batch = df.iloc[i:i+batch_size]
         values_list = []
         for _, row in batch.iterrows():
             row_values = []
