@@ -1,5 +1,3 @@
-import os
-from pathlib import Path
 import logging
 
 import pytest
@@ -11,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 def test_jobs_len():
-    assert len(jobs) == 177
+    assert len(jobs) == 185
 
 
 def test_jobs_len_ingest():
@@ -19,7 +17,7 @@ def test_jobs_len_ingest():
 
 
 def test_schedules_len():
-    assert len(schedules) == 177
+    assert len(schedules) == 185
 
 
 def test_schedules_len_ingest():
