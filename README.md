@@ -408,13 +408,13 @@ In [`./metrics/examples/gsod/`](./metrics/examples/gsod/) you will find an examp
 
 ##### Use a custom python function to pull some weather metrics from the Open Meteo API
 
-In [`./metrics/examples/weather/`](./metrics/examples/weather/) you will find an example of using a customer Python function ([`ingest_weather.py`](./metrics/examples/weather/ingest_weather.py)) to pull current temperature data for some cities from the Open Meteo API and ingest it into a table called `metrics` in a `metrics` dataset in a Google Bigquery project. This is all defined in the [`weather.yaml`](./metrics/examples/weather/weather.yaml)` configuration file for this metric batch.
+In [`./metrics/examples/weather/`](./metrics/examples/weather/) you will find an example of using a custom Python function ([`ingest_weather.py`](./metrics/examples/weather/ingest_weather.py)) to pull current temperature data for some cities from the Open Meteo API and ingest it into a table called `metrics` in a `metrics` dataset in a Google Bigquery project. This is all defined in the [`weather.yaml`](./metrics/examples/weather/weather.yaml)` configuration file for this metric batch.
 
 #### Yahoo Finance
 
 ##### Use a custom python function to pull some Yahoo Finance data
 
-In [`./metrics/examples/yfinance/`](./metrics/examples/yfinance/) you will find an example of using a customer Python function ([`yfinance.py`](./metrics/examples/yfinance/yfinance.py)) to pull current stock price data for some stocks and ingest it into a table called `metrics` in a `metrics` dataset in a Google Bigquery project. This is all defined in the [`yfinance.yaml`](./metrics/examples/yfinance/yfinance.yaml)` configuration file for this metric batch.
+In [`./metrics/examples/yfinance/`](./metrics/examples/yfinance/) you will find an example of using a custom Python function ([`yfinance.py`](./metrics/examples/yfinance/yfinance.py)) to pull current stock price data for some stocks and ingest it into a table called `metrics` in a `metrics` dataset in a Google Bigquery project. This is all defined in the [`yfinance.yaml`](./metrics/examples/yfinance/yfinance.yaml)` configuration file for this metric batch.
 
 ## Project structure
 
