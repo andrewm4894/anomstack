@@ -4,8 +4,10 @@ SHELL=/bin/bash
 .PHONY: locald
 .PHONY: docker
 .PHONY: pre-commit
+.PHONY: lint
 .PHONY: tests
 .PHONY: docs
+.PHONY: docs-build
 .PHONY: requirements
 .PHONY: coverage
 .PHONY: kill-locald
@@ -16,6 +18,8 @@ SHELL=/bin/bash
 .PHONY: dashboard-uvicorn
 .PHONY: dashboardd-uvicorn
 .PHONY: requirements-install
+.PHONY: requirements-dev-install
+.PHONY: jupyter
 
 # start dagster locally
 local:
@@ -43,7 +47,10 @@ docker:
 
 # pre-commit
 pre-commit:
-	pre-commit run --all-files --config .pre-commit-config.yaml
+        pre-commit run --all-files --config .pre-commit-config.yaml
+
+# lint all files using pre-commit
+lint: pre-commit
 
 # run tests
 tests:
@@ -58,7 +65,11 @@ dev:
 	pre-commit install
 
 docs:
-	cd docs && yarn start
+        cd docs && yarn start
+
+# build the static documentation site
+docs-build:
+        cd docs && yarn build
 
 requirements:
 	pip-compile requirements.compile
@@ -73,7 +84,15 @@ dashboardd:
 	nohup python dashboard/app.py > /dev/null 2>&1 &
 
 dashboardd-uvicorn:
-	nohup uvicorn dashboard.app:app --host 0.0.0.0 --port 5003 --reload > /dev/null 2>&1 &
+        nohup uvicorn dashboard.app:app --host 0.0.0.0 --port 5003 --reload > /dev/null 2>&1 &
 
 requirements-install:
-	pip install -r requirements.txt
+        pip install -r requirements.txt
+
+# install development requirements
+requirements-dev-install:
+        pip install -r requirements-dev.txt
+
+# launch Jupyter for working with notebooks
+jupyter:
+        jupyter lab --NotebookApp.allow_origin='*' --ip 0.0.0.0 --port 8888 --no-browser
