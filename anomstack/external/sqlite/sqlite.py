@@ -56,21 +56,31 @@ def get_conn(sqlite_path: str) -> libsql.Connection:
         return libsql.connect(sqlite_path)
 
 
-def with_sqlite_retry(action, logger=None, max_retries=MAX_RETRIES, retry_delay=RETRY_DELAY):
+def with_sqlite_retry(
+    action,
+    logger=None,
+    max_retries=MAX_RETRIES,
+    retry_delay=RETRY_DELAY,
+):
     """
     Executes a callable with retry logic if the database is locked.
 
     Args:
-        action (callable): A zero-argument function that performs the DB action and returns a value.
-        logger (Logger, optional): Logger for logging warnings/errors. Defaults to None.
-        max_retries (int, optional): Maximum number of retries. Defaults to MAX_RETRIES.
-        retry_delay (float, optional): Delay in seconds between retries. Defaults to RETRY_DELAY.
+        action (callable): A zero-argument function that performs the DB action
+            and returns a value.
+        logger (Logger, optional): Logger for logging warnings/errors.
+            Defaults to ``None``.
+        max_retries (int, optional): Maximum number of retries. Defaults to
+            ``MAX_RETRIES``.
+        retry_delay (float, optional): Delay in seconds between retries.
+            Defaults to ``RETRY_DELAY``.
 
     Returns:
         The result of 'action' if successful.
 
     Raises:
-        Exception: If the database remains locked after all retries or another error occurs.
+        Exception: If the database remains locked after all retries or another
+            error occurs.
     """
     for attempt in range(max_retries):
         try:
@@ -155,7 +165,11 @@ def read_sql_sqlite(sql: str) -> pd.DataFrame:
         with sqlite_connection() as conn:
             cursor = conn.execute(sql)
             rows = cursor.fetchall()
-            columns = [desc[0] for desc in cursor.description] if cursor.description else get_columns_from_sql(sql)
+            columns = (
+                [desc[0] for desc in cursor.description]
+                if cursor.description
+                else get_columns_from_sql(sql)
+            )
             return pd.DataFrame(rows, columns=columns)
 
     return with_sqlite_retry(_action, logger=logger)
@@ -189,15 +203,19 @@ def save_df_sqlite(df: pd.DataFrame, table_key: str) -> pd.DataFrame:
 
 
 def run_sql_sqlite(sql: str, return_df: bool = False):
-    """
-    Execute a non-returning SQL statement (e.g. CREATE, INSERT, UPDATE, DELETE) with retry logic.
+    """Execute a SQL statement with retry logic.
+
+    When ``return_df`` is ``True``, the results of the statement are returned as a
+    :class:`~pandas.DataFrame`.
 
     Args:
         sql (str): The SQL statement to execute.
-        return_df (bool, optional): Whether to return the result as a DataFrame. Defaults to False.
+        return_df (bool, optional): If ``True``, return the results as a
+            DataFrame. Defaults to ``False``.
 
     Returns:
-        None
+        Optional[pd.DataFrame]: A DataFrame of results when ``return_df`` is
+        ``True``; otherwise ``None``.
     """
     logger = get_dagster_logger()
     logger.info(f"Executing SQL against DB path: {get_sqlite_path()}")
@@ -207,7 +225,11 @@ def run_sql_sqlite(sql: str, return_df: bool = False):
             cursor = conn.execute(sql)
             conn.commit()
             rows = cursor.fetchall()
-            columns = [desc[0] for desc in cursor.description] if cursor.description else get_columns_from_sql(sql)
+            columns = (
+                [desc[0] for desc in cursor.description]
+                if cursor.description
+                else get_columns_from_sql(sql)
+            )
             df = pd.DataFrame(rows, columns=columns)
             return df if return_df else None
 
