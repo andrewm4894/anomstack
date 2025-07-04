@@ -24,7 +24,7 @@ def generate_insert_sql(df, table_name, batch_size=100) -> str:
     columns = ', '.join(df.columns)
     insert_sqls = []
     for i in range(0, len(df), batch_size):
-        batch = df.iloc[i:i+batch_size]
+        batch = df.iloc[i:i + batch_size]
         values_list = []
         for _, row in batch.iterrows():
             row_values = []
@@ -38,4 +38,4 @@ def generate_insert_sql(df, table_name, batch_size=100) -> str:
         insert_sql = f"INSERT INTO {table_name} ({columns}) VALUES {values};"
         insert_sqls.append(insert_sql)
 
-        return insert_sqls
+    return insert_sqls
