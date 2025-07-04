@@ -16,6 +16,11 @@ SHELL=/bin/bash
 .PHONY: dashboard-uvicorn
 .PHONY: dashboardd-uvicorn
 .PHONY: requirements-install
+.PHONY: requirements-dev-install
+.PHONY: editable-install
+.PHONY: setup
+.PHONY: docker-down
+.PHONY: notebook
 
 # start dagster locally
 local:
@@ -39,7 +44,15 @@ ps-locald:
 
 # start docker containers
 docker:
-	docker compose up -d --build
+        docker compose up -d --build
+
+# stop docker containers
+docker-down:
+        docker compose down
+
+# open Jupyter notebooks
+notebook:
+        jupyter notebook
 
 # pre-commit
 pre-commit:
@@ -57,23 +70,41 @@ coverage:
 dev:
 	pre-commit install
 
+# run documentation site locally
 docs:
-	cd docs && yarn start
+        cd docs && yarn start
 
+# compile requirements from pins
 requirements:
-	pip-compile requirements.compile
+        pip-compile requirements.compile
 
+# run the dashboard
 dashboard:
-	python dashboard/app.py
+        python dashboard/app.py
 
+# run the dashboard using uvicorn
 dashboard-uvicorn:
-	uvicorn dashboard.app:app --host 0.0.0.0 --port 5003 --reload
+        uvicorn dashboard.app:app --host 0.0.0.0 --port 5003 --reload
 
+# run the dashboard as a daemon
 dashboardd:
-	nohup python dashboard/app.py > /dev/null 2>&1 &
+        nohup python dashboard/app.py > /dev/null 2>&1 &
 
+# run the uvicorn dashboard as a daemon
 dashboardd-uvicorn:
-	nohup uvicorn dashboard.app:app --host 0.0.0.0 --port 5003 --reload > /dev/null 2>&1 &
+        nohup uvicorn dashboard.app:app --host 0.0.0.0 --port 5003 --reload > /dev/null 2>&1 &
 
+# install runtime requirements
 requirements-install:
-	pip install -r requirements.txt
+        pip install -r requirements.txt
+
+# install development requirements
+requirements-dev-install:
+        pip install -r requirements-dev.txt
+
+# install anomstack in editable mode
+editable-install:
+        pip install -e .
+
+# install all requirements and anomstack
+setup: requirements-install requirements-dev-install editable-install
