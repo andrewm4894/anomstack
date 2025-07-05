@@ -17,6 +17,7 @@ SHELL=/bin/bash
 .PHONY: dashboardd-uvicorn
 .PHONY: requirements-install
 .PHONY: posthog-example
+.PHONY: kill-zombies
 
 # start dagster locally
 local:
@@ -82,3 +83,7 @@ requirements-install:
 # run the PostHog example ingest function
 posthog-example:
 	python scripts/posthog_example.py
+
+# cancel long running Dagster runs
+kill-zombies:
+	python scripts/kill_zombie_runs.py
