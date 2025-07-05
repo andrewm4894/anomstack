@@ -6,8 +6,5 @@ score_cron_schedule: "15 5 * * *"
 alert_cron_schedule: "30 5 * * *"
 change_cron_schedule: "15 5 * * *"
 llmalert_cron_schedule: "45 5 * * *"
-plot_cron_schedule: "15 6 * * *"
-alert_always: False
-alert_methods: "email"
 ingest_fn: >
   {% include "./examples/posthog/posthog.py" %}
