@@ -69,10 +69,9 @@ def ingest() -> pd.DataFrame:
             if value is not None:
                 all_rows.append({
                     "metric_timestamp": ts,
-                    "domain": domain,
                     "metric_name": f"ph.{domain}.{metric_key}",
                     "metric_value": float(value)
                 })
 
     df = pd.DataFrame(all_rows)
-    return df[["metric_timestamp", "domain", "metric_name", "metric_value"]] if not df.empty else df
+    return df[["metric_timestamp", "metric_name", "metric_value"]] if not df.empty else df
