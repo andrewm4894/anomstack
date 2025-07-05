@@ -17,7 +17,7 @@ def ingest() -> pd.DataFrame:
             "POSTHOG_API_KEY and POSTHOG_PROJECT_ID env vars must be set"
         )
 
-    host = os.getenv("POSTHOG_HOST", "https://app.posthog.com")
+    host = os.getenv("POSTHOG_HOST", "https://us.posthog.com")
     url = f"{host}/api/projects/{project_id}/query"
     headers = {
         "Authorization": f"Bearer {api_key}",
@@ -35,7 +35,7 @@ def ingest() -> pd.DataFrame:
 
     try:
         response = requests.post(
-            url, headers=headers, json={"query": query}, timeout=10
+            url, headers=headers, json={"query": {"kind": "HogQLQuery", "query": query}}, timeout=10
         )
         response.raise_for_status()
     except requests.RequestException as ex:
