@@ -6,6 +6,7 @@ import pandas as pd
 def ingest() -> pd.DataFrame:
     """Ingest headline metrics from the PostHog query API for multiple projects/domains."""
     import requests
+    import os
     from dagster import get_dagster_logger
 
     logger = get_dagster_logger()
