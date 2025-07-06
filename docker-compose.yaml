@@ -19,22 +19,20 @@ services:
   # Multiple containers like this can be deployed separately - each just needs to run on
   # its own port, and have its own entry in the workspace.yaml file that's loaded by dagit.
   anomstack_code:
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile.anomstack_code
+    image: andrewm4894/anomstack_code:latest
     container_name: anomstack_code
-    image: anomstack_code_image
     restart: always
     volumes:
       - ./tmp:/opt/dagster/app/tmp
-      - ./tmpdata:/opt/dagster/app/tmpdata
+      - anomstack_metrics_duckdb:/metrics_db/duckdb
     env_file:
       - .env
     environment:
       DAGSTER_POSTGRES_USER: "${ANOMSTACK_POSTGRES_USER:-postgres_user}"
       DAGSTER_POSTGRES_PASSWORD: "${ANOMSTACK_POSTGRES_PASSWORD:-postgres_password}"
       DAGSTER_POSTGRES_DB: "${ANOMSTACK_POSTGRES_DB:-postgres_db}"
-      DAGSTER_CURRENT_IMAGE: "anomstack_code_image"
+      DAGSTER_CURRENT_IMAGE: "andrewm4894/anomstack_code:latest"
+      ANOMSTACK_DUCKDB_PATH: "/metrics_db/duckdb/anomstack.db"
     networks:
       - anomstack_network
 
@@ -42,9 +40,7 @@ services:
   # Since our instance uses the QueuedRunCoordinator, any runs submitted from dagit will be put on
   # a queue and later dequeued and launched by dagster-daemon.
   anomstack_dagit:
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile.dagster
+    image: andrewm4894/anomstack_dagster:latest
     entrypoint:
       - dagit
       - -h
@@ -54,6 +50,7 @@ services:
       - -w
       - workspace.yaml
     container_name: anomstack_dagit
+    restart: on-failure
     expose:
       - "3000"
     ports:
@@ -68,7 +65,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/io_manager_storage:/tmp/io_manager_storage
       - ./tmp:/opt/dagster/app/tmp
-      - ./tmpdata:/opt/dagster/app/tmpdata
+      - anomstack_metrics_duckdb:/metrics_db/duckdb
     networks:
       - anomstack_network
     depends_on:
@@ -78,9 +75,7 @@ services:
   # This service runs the dagster-daemon process, which is responsible for taking runs
   # off of the queue and launching them, as well as creating runs from schedules or sensors.
   anomstack_daemon:
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile.dagster
+    image: andrewm4894/anomstack_dagster:latest
     entrypoint:
       - dagster-daemon
       - run
@@ -96,7 +91,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/io_manager_storage:/tmp/io_manager_storage
       - ./tmp:/opt/dagster/app/tmp
-      - ./tmpdata:/opt/dagster/app/tmpdata
+      - anomstack_metrics_duckdb:/metrics_db/duckdb
     networks:
       - anomstack_network
     depends_on:
@@ -105,15 +100,16 @@ services:
 
   # This service runs the dashboard
   anomstack_dashboard:
-    build:
-        context: .
-        dockerfile: ./docker/Dockerfile.anomstack_dashboard
+    image: andrewm4894/anomstack_dashboard:latest
     container_name: anomstack_dashboard
+    restart: on-failure
     ports:
-      - "5001:5001"
+      - "5001:8080"
     env_file:
       - .env
-    command: python /opt/dagster/app/dashboard/app.py
+    command: uvicorn dashboard.app:app --host 0.0.0.0 --port 8080 --reload
+    volumes:
+      - anomstack_metrics_duckdb:/metrics_db/duckdb
     networks:
       - anomstack_network
 
@@ -121,3 +117,7 @@ networks:
   anomstack_network:
     driver: bridge
     name: anomstack_network
+
+volumes:
+  anomstack_metrics_duckdb:
+    name: anomstack_metrics_duckdb

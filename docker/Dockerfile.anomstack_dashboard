@@ -27,6 +27,6 @@ RUN pip install -e /opt/dagster/app/.
 
 COPY .example.env .env
 
-EXPOSE 5001
+EXPOSE 8080
 
-ENTRYPOINT ["python", "/opt/dagster/app/dashboard/app.py"]
+# No ENTRYPOINT - let Docker Compose handle the command
