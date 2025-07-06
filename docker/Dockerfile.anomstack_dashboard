@@ -29,4 +29,4 @@ COPY .example.env .env
 
 EXPOSE 8080
 
-ENTRYPOINT ["python", "/opt/dagster/app/dashboard/app.py"]
+# No ENTRYPOINT - let Docker Compose handle the command

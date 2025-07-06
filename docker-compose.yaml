@@ -50,6 +50,7 @@ services:
       - -w
       - workspace.yaml
     container_name: anomstack_dagit
+    restart: on-failure
     expose:
       - "3000"
     ports:
@@ -101,11 +102,14 @@ services:
   anomstack_dashboard:
     image: andrewm4894/anomstack_dashboard:latest
     container_name: anomstack_dashboard
+    restart: on-failure
     ports:
       - "5001:8080"
     env_file:
       - .env
-    command: python /opt/dagster/app/dashboard/app.py
+    command: uvicorn dashboard.app:app --host 0.0.0.0 --port 8080 --reload
+    volumes:
+      - anomstack_metrics_duckdb:/metrics_db/duckdb
     networks:
       - anomstack_network
 
