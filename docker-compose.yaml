@@ -12,6 +12,20 @@ services:
       - "${ANOMSTACK_POSTGRES_FORWARD_PORT:-}:5432"
     networks:
       - anomstack_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${ANOMSTACK_POSTGRES_USER:-postgres_user} -d ${ANOMSTACK_POSTGRES_DB:-postgres_db}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.1'
 
   # This service runs the gRPC server that loads your user code, in both dagit
   # and dagster-daemon. By setting DAGSTER_CURRENT_IMAGE to its own image, we tell the
@@ -37,6 +51,20 @@ services:
       DAGSTER_HOME: "${DAGSTER_HOME:-/opt/dagster/dagster_home}"
     networks:
       - anomstack_network
+    healthcheck:
+      test: ["CMD", "dagster", "api", "grpc-health-check", "-p", "4000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.25'
 
   # This service runs dagit, which loads your user code from the user code container.
   # Since our instance uses the QueuedRunCoordinator, any runs submitted from dagit will be put on
@@ -75,6 +103,20 @@ services:
     depends_on:
       - anomstack_postgresql
       - anomstack_code
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/server_info"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.1'
 
   # This service runs the dagster-daemon process, which is responsible for taking runs
   # off of the queue and launching them, as well as creating runs from schedules or sensors.
@@ -103,6 +145,20 @@ services:
     depends_on:
       - anomstack_postgresql
       - anomstack_code
+    healthcheck:
+      test: ["CMD", "dagster-daemon", "liveness-check"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.1'
 
   # This service runs the dashboard
   anomstack_dashboard:
@@ -118,6 +174,20 @@ services:
       - anomstack_metrics_duckdb:/metrics_db/duckdb
     networks:
       - anomstack_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.1'
 
 networks:
   anomstack_network:
