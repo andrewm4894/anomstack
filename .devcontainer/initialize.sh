@@ -15,6 +15,9 @@ fi
 # Create tmp directory if it doesn't exist
 mkdir -p tmp
 
+# Create dagster_home directory if it doesn't exist
+mkdir -p dagster_home
+
 # Any other pre-container setup can go here
 # For example:
 # - Download required files

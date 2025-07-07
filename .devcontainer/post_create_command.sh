@@ -23,6 +23,12 @@ mkdir -p tmp
 # Set permissions for tmp directory
 chmod 777 tmp
 
+# Create dagster_home directory
+mkdir -p /opt/dagster/dagster_home
+
+# Set permissions for dagster_home directory
+chmod 777 /opt/dagster/dagster_home
+
 echo "Setup complete!"
 echo "Services:"
 echo "- Dagit (Dagster UI): http://localhost:3000"
