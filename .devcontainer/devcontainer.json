@@ -19,6 +19,7 @@
         }
     },
     "remoteUser": "root",
+    "initializeCommand": "bash .devcontainer/initialize.sh",
     "postCreateCommand": "bash .devcontainer/post_create_command.sh",
     "customizations": {
         "vscode": {

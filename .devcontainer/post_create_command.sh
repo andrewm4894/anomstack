@@ -10,9 +10,6 @@ pip install -r requirements-dev.txt
 # install pre-commit
 pre-commit install
 
-# copy .example.env to .env
-cp .example.env .env
-
 # Wait a moment for services to start
 sleep 5
 
