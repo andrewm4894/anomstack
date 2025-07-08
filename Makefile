@@ -53,6 +53,10 @@ ps-locald:
 docker:
 	docker compose up -d
 
+# start docker containers with local development images
+docker-dev:
+	docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d
+
 # build docker images locally
 docker-build:
 	docker build -f docker/Dockerfile.anomstack_code -t anomstack_code_image .

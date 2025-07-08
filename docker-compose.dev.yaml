@@ -1,0 +1,15 @@
+# Development override for docker-compose.yaml
+# Use this for local development with: docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d
+
+services:
+  anomstack_code:
+    image: anomstack_code_image
+    
+  anomstack_webserver:
+    image: anomstack_dagster_image
+    
+  anomstack_daemon:
+    image: anomstack_dagster_image
+    
+  anomstack_dashboard:
+    image: anomstack_dashboard_image 

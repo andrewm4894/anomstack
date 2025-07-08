@@ -80,7 +80,7 @@ services:
       - -p
       - "3000"
       - -w
-      - workspace.yaml
+      - /opt/dagster/dagster_home/workspace.yaml
     container_name: anomstack_webserver
     restart: on-failure
     expose:

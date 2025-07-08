@@ -181,3 +181,11 @@ tmpdata
 .sesskey
 .telemetry/id.yaml
 .sesskey
+dagster_home/.telemetry/id.yaml
+
+# dagster runtime data (but keep workspace.yaml)
+dagster_home/.telemetry/
+dagster_home/history/
+dagster_home/logs/
+dagster_home/schedules/
+dagster_home/.nux/

@@ -9,4 +9,12 @@ plotly
 jinja2
 python-fasthtml
 MonsterUI
-sqlglot 
+sqlglot
+requests
+dagster
+google-auth
+google-cloud-bigquery
+google-api-core
+snowflake-connector-python
+libsql-experimental
+clickhouse-connect 
