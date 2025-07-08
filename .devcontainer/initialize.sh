@@ -15,8 +15,8 @@ fi
 # Create tmp directory if it doesn't exist
 mkdir -p tmp
 
-# Create dagster_home directory if it doesn't exist
-mkdir -p dagster_home
+# Create dagster_home directory at the same path used by Docker Compose
+mkdir -p /opt/dagster/dagster_home
 
 # Any other pre-container setup can go here
 # For example:
