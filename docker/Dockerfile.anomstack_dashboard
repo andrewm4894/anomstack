@@ -27,4 +27,8 @@ COPY .example.env .env
 
 EXPOSE 8080
 
+# Health check for the web server
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
 # No ENTRYPOINT - let Docker Compose handle the command

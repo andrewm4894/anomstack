@@ -24,3 +24,8 @@ COPY workspace.yaml $DAGSTER_HOME
 COPY .example.env .env
 
 WORKDIR $DAGSTER_HOME
+
+# Health check that works for both webserver and daemon
+# This checks if any dagster process is running
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD pgrep -f "dagster" > /dev/null || exit 1

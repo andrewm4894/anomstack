@@ -18,6 +18,10 @@ COPY .example.env .env
 # Run dagster gRPC server on port 4000
 EXPOSE 4000
 
+# Health check for the gRPC server
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD dagster api grpc-health-check -p 4000
+
 # CMD allows this to be overridden from run launchers or executors that want
 # to run other commands against your repository
 CMD ["dagster", "api", "grpc", "-h", "0.0.0.0", "-p", "4000", "-f", "anomstack/main.py"]
