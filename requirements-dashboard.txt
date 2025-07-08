@@ -1,0 +1,12 @@
+# Dashboard-specific requirements (lightweight)
+fastapi
+uvicorn[standard]
+python-dotenv
+pyyaml
+duckdb
+pandas
+plotly
+jinja2
+python-fasthtml
+MonsterUI
+sqlglot 

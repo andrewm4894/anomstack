@@ -1,27 +1,31 @@
 FROM python:3.12-slim
 
+# Only install essential runtime dependencies (no build tools)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
     curl \
-    software-properties-common \
-    git \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt/dagster/app
 
-COPY ../requirements.txt /opt/dagster/app/requirements.txt
+# Use lightweight dashboard-specific requirements
+COPY ../requirements-dashboard.txt /opt/dagster/app/requirements-dashboard.txt
 
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements-dashboard.txt
 
-COPY anomstack /opt/dagster/app/anomstack
-
+# Only copy what the dashboard actually needs
 COPY dashboard /opt/dagster/app/dashboard
 
-COPY metrics /opt/dagster/app/metrics
+# Copy minimal anomstack components needed for dashboard
+COPY anomstack/__init__.py /opt/dagster/app/anomstack/
+COPY anomstack/config.py /opt/dagster/app/anomstack/
+COPY anomstack/external /opt/dagster/app/anomstack/external
+COPY anomstack/jinja /opt/dagster/app/anomstack/jinja
+COPY anomstack/sql /opt/dagster/app/anomstack/sql
+COPY anomstack/df /opt/dagster/app/anomstack/df
+COPY anomstack/validate /opt/dagster/app/anomstack/validate
 
-COPY setup.py /opt/dagster/app/setup.py
-
-RUN pip install -e /opt/dagster/app/.
+# Add current directory to Python path for anomstack imports
+ENV PYTHONPATH=/opt/dagster/app:$PYTHONPATH
 
 COPY .example.env .env
 
