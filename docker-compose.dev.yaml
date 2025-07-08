@@ -1,0 +1,37 @@
+# Development override for docker-compose.yaml
+# Use this for local development with: docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d
+
+services:
+  anomstack_code:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.anomstack_code
+    image: anomstack_code_image
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+          cpus: '1.5'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+    
+  anomstack_webserver:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dagster
+    image: anomstack_dagster_image
+    
+  anomstack_daemon:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dagster
+    image: anomstack_dagster_image
+    
+  anomstack_dashboard:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.anomstack_dashboard
+    image: anomstack_dashboard_image
+    volumes:
+      - ./metrics:/opt/dagster/app/metrics 

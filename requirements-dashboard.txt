@@ -1,0 +1,20 @@
+# Dashboard-specific requirements (lightweight)
+fastapi
+uvicorn[standard]
+python-dotenv
+pyyaml
+duckdb
+pandas
+plotly
+jinja2
+python-fasthtml
+MonsterUI
+sqlglot
+requests
+dagster
+google-auth
+google-cloud-bigquery
+google-api-core
+snowflake-connector-python
+libsql-experimental
+clickhouse-connect 

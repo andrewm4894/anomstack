@@ -1,8 +1,30 @@
 {
     "name": "anomstack",
-    "forwardPorts": [3000, 5001],
+    "dockerComposeFile": "../docker-compose.yaml",
+    "service": "anomstack_code",
+    "workspaceFolder": "/opt/dagster/app",
+    "forwardPorts": [3000, 5001, 5432],
+    "portsAttributes": {
+        "3000": {
+            "label": "Dagster Webserver",
+            "onAutoForward": "notify"
+        },
+        "5001": {
+            "label": "Dashboard",
+            "onAutoForward": "notify"
+        },
+        "5432": {
+            "label": "PostgreSQL",
+            "onAutoForward": "silent"
+        }
+    },
     "remoteUser": "root",
-    "postCreateCommand": "bash .devcontainer/post_create_command.sh",
+    "initializeCommand": "bash .devcontainer/initialize.sh",
+    "postCreateCommand": [
+        "bash",
+        "-c",
+        "chmod +x .devcontainer/post_create_command.sh && bash .devcontainer/post_create_command.sh"
+    ],
     "customizations": {
         "vscode": {
             "extensions": [
@@ -10,8 +32,14 @@
                 "github.copilot-chat",
                 "ms-azuretools.vscode-docker",
                 "ms-vscode.makefile-tools",
-                "ms-python.python"
+                "ms-python.python",
+                "ms-python.pylint",
+                "ms-python.black-formatter"
             ]
-    }
-  }
+        }
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+    },
+    "shutdownAction": "stopCompose"
 }

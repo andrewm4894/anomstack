@@ -1,33 +1,10 @@
 SHELL=/bin/bash
 
-.PHONY: local
-.PHONY: locald
-.PHONY: docker
-.PHONY: pre-commit
-.PHONY: tests
-.PHONY: docs
-.PHONY: requirements
-.PHONY: coverage
-.PHONY: kill-locald
-.PHONY: kill-dashboardd
-.PHONY: ps-locald
-.PHONY: dashboard
-.PHONY: dashboardd
-.PHONY: dashboard-uvicorn
-.PHONY: dashboardd-uvicorn
-.PHONY: requirements-install
-.PHONY: posthog-example
-.PHONY: docker-build
-.PHONY: docker-tag
-.PHONY: docker-push
-.PHONY: docker-build-push
-.PHONY: docker-pull
-.PHONY: docker-clean
-.PHONY: docker-logs
-.PHONY: docker-shell
-.PHONY: docker-stop
-.PHONY: docker-rm
-.PHONY: docker-prune
+# =============================================================================
+# LOCAL DEVELOPMENT
+# =============================================================================
+
+.PHONY: local locald kill-locald ps-locald dev
 
 # start dagster locally
 local:
@@ -41,23 +18,40 @@ locald:
 kill-locald:
 	kill -9 $(shell ps aux | grep dagster | grep -v grep | awk '{print $$2}')
 
-# kill any running dashboard process
-kill-dashboardd:
-	kill $(shell ps aux | grep dashboard/app.py | grep -v grep | awk '{print $$2}') $(shell lsof -ti :5000)
-
 # list any running dagster process
 ps-locald:
 	ps aux | grep dagster | grep -v grep
 
+# setup local development environment and install dependencies
+dev:
+	pre-commit install
+
+# =============================================================================
+# DOCKER OPERATIONS
+# =============================================================================
+
+.PHONY: docker docker-dev docker-build docker-dev-build docker-tag docker-push docker-build-push
+.PHONY: docker-pull docker-clean docker-logs docker-logs-code docker-logs-dagit docker-logs-daemon docker-logs-dashboard
+.PHONY: docker-shell-code docker-shell-dagit docker-shell-dashboard docker-restart-dashboard docker-restart-code
+.PHONY: docker-stop docker-down docker-rm docker-prune
+
 # start docker containers (now uses pre-built images)
 docker:
 	docker compose up -d
+
+# start docker containers with local development images
+docker-dev:
+	docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d
 
 # build docker images locally
 docker-build:
 	docker build -f docker/Dockerfile.anomstack_code -t anomstack_code_image .
 	docker build -f docker/Dockerfile.dagster -t anomstack_dagster_image .
 	docker build -f docker/Dockerfile.anomstack_dashboard -t anomstack_dashboard_image .
+
+# build docker images for development
+docker-dev-build:
+	docker compose -f docker-compose.yaml -f docker-compose.dev.yaml build --no-cache
 
 # tag docker images for Docker Hub
 docker-tag:
@@ -123,6 +117,10 @@ docker-restart-code:
 docker-stop:
 	docker compose down
 
+# alias for docker-stop
+docker-down:
+	docker compose down
+
 # remove all containers and networks
 docker-rm:
 	docker compose down --remove-orphans
@@ -132,7 +130,39 @@ docker-prune:
 	docker compose down -v --remove-orphans
 	docker system prune -a -f
 
-# pre-commit
+# =============================================================================
+# DASHBOARD OPERATIONS
+# =============================================================================
+
+.PHONY: dashboard dashboardd dashboard-uvicorn dashboardd-uvicorn kill-dashboardd
+
+# start dashboard locally
+dashboard:
+	python dashboard/app.py
+
+# start dashboard with uvicorn
+dashboard-uvicorn:
+	uvicorn dashboard.app:app --host 0.0.0.0 --port 5003 --reload
+
+# start dashboard locally as a daemon
+dashboardd:
+	nohup python dashboard/app.py > /dev/null 2>&1 &
+
+# start dashboard with uvicorn as a daemon
+dashboardd-uvicorn:
+	nohup uvicorn dashboard.app:app --host 0.0.0.0 --port 5003 --reload > /dev/null 2>&1 &
+
+# kill any running dashboard process
+kill-dashboardd:
+	kill $(shell ps aux | grep dashboard/app.py | grep -v grep | awk '{print $$2}') $(shell lsof -ti :5000)
+
+# =============================================================================
+# TESTING & QUALITY
+# =============================================================================
+
+.PHONY: tests coverage pre-commit
+
+# run pre-commit hooks on all files
 pre-commit:
 	pre-commit run --all-files --config .pre-commit-config.yaml
 
@@ -144,30 +174,35 @@ tests:
 coverage:
 	pytest -v --cov=anomstack --cov-report=term-missing
 
-# setup local development environment and install dependencies
-dev:
-	pre-commit install
+# =============================================================================
+# DOCUMENTATION
+# =============================================================================
 
+.PHONY: docs
+
+# start documentation development server
 docs:
 	cd docs && yarn start
 
+# =============================================================================
+# DEPENDENCIES
+# =============================================================================
+
+.PHONY: requirements requirements-install
+
+# compile requirements file
 requirements:
 	pip-compile requirements.compile
 
-dashboard:
-	python dashboard/app.py
-
-dashboard-uvicorn:
-	uvicorn dashboard.app:app --host 0.0.0.0 --port 5003 --reload
-
-dashboardd:
-	nohup python dashboard/app.py > /dev/null 2>&1 &
-
-dashboardd-uvicorn:
-	nohup uvicorn dashboard.app:app --host 0.0.0.0 --port 5003 --reload > /dev/null 2>&1 &
-
+# install requirements
 requirements-install:
 	pip install -r requirements.txt
+
+# =============================================================================
+# UTILITIES
+# =============================================================================
+
+.PHONY: posthog-example
 
 # run the PostHog example ingest function
 posthog-example:

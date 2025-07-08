@@ -2,40 +2,60 @@ scheduler:
   module: dagster.core.scheduler
   class: DagsterDaemonScheduler
 
-# run_coordinator:
-#   module: dagster.core.run_coordinator
-#   class: QueuedRunCoordinator
+run_coordinator:
+  module: dagster.core.run_coordinator
+  class: QueuedRunCoordinator
+  config:
+    max_concurrent_runs: 10
 
-# run_launcher:
-#   module: dagster.core.launcher
-#   class: DefaultRunLauncher
-#   config:
-#     env_vars:
-#       - DAGSTER_POSTGRES_USER
-#       - DAGSTER_POSTGRES_PASSWORD
-#       - DAGSTER_POSTGRES_DB
-#       - ANOMSTACK_GCP_PROJECT_ID
-#       - ANOMSTACK_DUCKDB_PATH
-#       - ANOMSTACK_TABLE_KEY
-#       - ANOMSTACK_MODEL_PATH
-#       - ANOMSTACK_SLACK_BOT_TOKEN
-#       - ANOMSTACK_SLACK_CHANNEL
-#       - ANOMSTACK_IGNORE_EXAMPLES
-#       - ANOMSTACK_ALERT_EMAIL_FROM
-#       - ANOMSTACK_ALERT_EMAIL_TO
-#       - ANOMSTACK_ALERT_EMAIL_SMTP_HOST
-#       - ANOMSTACK_ALERT_EMAIL_SMTP_PORT
-#       - ANOMSTACK_ALERT_EMAIL_PASSWORD
-#       - ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS
-#     network: anomstack_network
-#     container_kwargs:
-#       volumes: # Make docker client accessible to any launched containers as well
-#         #- ${ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS}:/tmp/conf/gcp_credentials.json # <--doesn't work
-#         - C:/Users/andre/Documents/conf/andrewm4894-4d8b5a41b891.json:/tmp/conf/gcp_credentials.json # <--works
-#         - /var/run/docker.sock:/var/run/docker.sock
-#         - /tmp/io_manager_storage:/tmp/io_manager_storage
-#         - ./tmp:/opt/dagster/app/tmp
-#         - ./tmpdata:/opt/dagster/app/tmpdata
+run_launcher:
+  module: dagster_docker.run_launcher
+  class: DockerRunLauncher
+  config:
+    env_vars:
+      - DAGSTER_POSTGRES_USER
+      - DAGSTER_POSTGRES_PASSWORD
+      - DAGSTER_POSTGRES_DB
+      - ANOMSTACK_GCP_PROJECT_ID
+      - ANOMSTACK_DUCKDB_PATH
+      - ANOMSTACK_TABLE_KEY
+      - ANOMSTACK_MODEL_PATH
+      - ANOMSTACK_SLACK_BOT_TOKEN
+      - ANOMSTACK_SLACK_CHANNEL
+      - ANOMSTACK_IGNORE_EXAMPLES
+      - ANOMSTACK_ALERT_EMAIL_FROM
+      - ANOMSTACK_ALERT_EMAIL_TO
+      - ANOMSTACK_ALERT_EMAIL_SMTP_HOST
+      - ANOMSTACK_ALERT_EMAIL_SMTP_PORT
+      - ANOMSTACK_ALERT_EMAIL_PASSWORD
+      - ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS
+      - ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS_JSON
+      - ANOMSTACK_OPENAI_KEY
+      - OPENAI_API_KEY
+      - ANOMSTACK_ANTHROPIC_KEY
+      - ANOMSTACK_MOTHERDUCK_TOKEN
+      - ANOMSTACK_TURSO_DATABASE_URL
+      - ANOMSTACK_TURSO_AUTH_TOKEN
+      - ANOMSTACK_CLICKHOUSE_HOST
+      - ANOMSTACK_CLICKHOUSE_PORT
+      - ANOMSTACK_CLICKHOUSE_USER
+      - ANOMSTACK_CLICKHOUSE_PASSWORD
+      - ANOMSTACK_CLICKHOUSE_DATABASE
+      - ANOMSTACK_AWS_ACCESS_KEY_ID
+      - ANOMSTACK_AWS_SECRET_ACCESS_KEY
+      - ANOMSTACK_SNOWFLAKE_ACCOUNT
+      - ANOMSTACK_SNOWFLAKE_USER
+      - ANOMSTACK_SNOWFLAKE_PASSWORD
+      - ANOMSTACK_SNOWFLAKE_WAREHOUSE
+      - DAGSTER_HOME
+    network: anomstack_network
+    container_kwargs:
+      volumes: # Make docker client accessible to any launched containers as well
+        - /var/run/docker.sock:/var/run/docker.sock
+        - /tmp/io_manager_storage:/tmp/io_manager_storage
+        - ./tmp:/opt/dagster/app/tmp
+        - ./dagster_home:/opt/dagster/dagster_home
+        - anomstack_metrics_duckdb:/metrics_db/duckdb
 
 run_storage:
   module: dagster_postgres.run_storage
@@ -54,6 +74,11 @@ run_storage:
 run_retries:
   enabled: true
   max_retries: 1
+
+run_monitoring:
+  enabled: true
+  start_timeout_seconds: 600
+  cancel_timeout_seconds: 300
 
 schedule_storage:
   module: dagster_postgres.schedule_storage

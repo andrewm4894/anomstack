@@ -1,17 +1,16 @@
-# Dagster libraries to run both dagit and the dagster-daemon. Does not
+# Dagster libraries to run both dagster-webserver and the dagster-daemon. Does not
 # need to have access to any pipeline code.
 
 FROM python:3.12-slim
 
-RUN apt-get update && apt-get install -y git
+RUN apt-get update && apt-get install -y --no-install-recommends git curl && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN pip install \
     dagster \
     dagster-graphql \
     dagster-webserver \
     dagster-postgres \
-    dagster-docker \
-    dagit
+    dagster-docker
 
 # Set $DAGSTER_HOME and copy dagster instance and workspace YAML there
 ENV DAGSTER_HOME=/opt/dagster/dagster_home/
@@ -25,3 +24,8 @@ COPY workspace.yaml $DAGSTER_HOME
 COPY .example.env .env
 
 WORKDIR $DAGSTER_HOME
+
+# Health check that works for both webserver and daemon
+# This checks if any dagster process is running
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD pgrep -f "dagster" > /dev/null || exit 1
