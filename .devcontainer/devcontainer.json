@@ -6,7 +6,7 @@
     "forwardPorts": [3000, 5001, 5432],
     "portsAttributes": {
         "3000": {
-            "label": "Dagit",
+            "label": "Dagster Webserver",
             "onAutoForward": "notify"
         },
         "5001": {
