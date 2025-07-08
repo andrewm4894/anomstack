@@ -188,4 +188,5 @@ dagster_home/.telemetry/
 dagster_home/history/
 dagster_home/logs/
 dagster_home/schedules/
+dagster_home/storage/
 dagster_home/.nux/

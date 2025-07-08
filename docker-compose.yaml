@@ -10,6 +10,8 @@ services:
       POSTGRES_DB: "${ANOMSTACK_POSTGRES_DB:-postgres_db}"
     ports:
       - "${ANOMSTACK_POSTGRES_FORWARD_PORT:-}:5432"
+    volumes:
+      - anomstack_postgresql_data:/var/lib/postgresql/data
     networks:
       - anomstack_network
     healthcheck:
@@ -174,6 +176,7 @@ services:
     command: uvicorn dashboard.app:app --host 0.0.0.0 --port 8080 --reload
     volumes:
       - anomstack_metrics_duckdb:/metrics_db/duckdb
+      - ./metrics:/opt/dagster/app/metrics
     networks:
       - anomstack_network
     healthcheck:
@@ -199,3 +202,5 @@ networks:
 volumes:
   anomstack_metrics_duckdb:
     name: anomstack_metrics_duckdb
+  anomstack_postgresql_data:
+    name: anomstack_postgresql_data

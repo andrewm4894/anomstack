@@ -18,6 +18,8 @@ SHELL=/bin/bash
 .PHONY: requirements-install
 .PHONY: posthog-example
 .PHONY: docker-build
+.PHONY: docker-dev-build
+.PHONY: docker-dev
 .PHONY: docker-tag
 .PHONY: docker-push
 .PHONY: docker-build-push
@@ -62,6 +64,10 @@ docker-build:
 	docker build -f docker/Dockerfile.anomstack_code -t anomstack_code_image .
 	docker build -f docker/Dockerfile.dagster -t anomstack_dagster_image .
 	docker build -f docker/Dockerfile.anomstack_dashboard -t anomstack_dashboard_image .
+
+# build docker images for development
+docker-dev-build:
+	docker compose -f docker-compose.yaml -f docker-compose.dev.yaml build --no-cache
 
 # tag docker images for Docker Hub
 docker-tag:
@@ -125,6 +131,10 @@ docker-restart-code:
 
 # stop all containers
 docker-stop:
+	docker compose down
+
+# alias for docker-stop
+docker-down:
 	docker compose down
 
 # remove all containers and networks
