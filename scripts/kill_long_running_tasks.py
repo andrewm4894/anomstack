@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 
 from dagster import DagsterInstance
 from dagster._core.storage.pipeline_run import RunsFilter, DagsterRunStatus
-from dagster import DagsterUserCodeUnreachableError
+from dagster import DagsterUserCodeExecutionError
 
 # Dynamically set DAGSTER_HOME to be parent of this script dir
 script_dir = Path(__file__).resolve().parent
@@ -33,7 +33,7 @@ for run in running_runs:
                 print(f"Terminating run: {run.run_id} (started at {started_at}, duration {duration})")
                 instance.report_run_canceling(run)
                 instance.run_launcher.terminate(run.run_id)
-            except DagsterUserCodeUnreachableError as e:
+            except DagsterUserCodeExecutionError as e:
                 print(f"⚠️ Could not terminate run {run.run_id}: {e}")
         else:
             print(f"Skipping run {run.run_id} (only running for {duration})")
