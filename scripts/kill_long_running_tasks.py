@@ -2,8 +2,7 @@ import os
 from pathlib import Path
 from datetime import datetime, timedelta, timezone
 
-from dagster import DagsterInstance
-from dagster._core.storage.pipeline_run import RunsFilter, DagsterRunStatus
+from dagster import DagsterInstance, DagsterRunStatus, RunsFilter
 from dagster import DagsterUserCodeExecutionError
 
 # Dynamically set DAGSTER_HOME to be parent of this script dir
@@ -12,6 +11,11 @@ dagster_home = script_dir.parent / ""
 
 os.environ["DAGSTER_HOME"] = str(dagster_home)
 dagster_home.mkdir(parents=True, exist_ok=True)
+
+# Set required Dagster environment variables
+os.environ["ANOMSTACK_DAGSTER_SQLITE_STORAGE_BASE_DIR"] = "tmp"
+os.environ["ANOMSTACK_DAGSTER_LOCAL_COMPUTE_LOG_MANAGER_DIRECTORY"] = "tmp"
+os.environ["ANOMSTACK_DAGSTER_LOCAL_ARTIFACT_STORAGE_DIR"] = "tmp"
 
 # Cutoff for long-running (1 hour ago)
 cutoff_time = datetime.now(timezone.utc) - timedelta(hours=1)
