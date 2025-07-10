@@ -37,10 +37,19 @@ for run in running_runs:
                 print(f"Terminating run: {run.run_id} (started at {started_at}, duration {duration})")
                 instance.report_run_canceling(run)
                 instance.run_launcher.terminate(run.run_id)
+                print(f"✅ Successfully terminated run {run.run_id}")
             except DagsterUserCodeUnreachableError as e:
                 print(f"⚠️ Could not terminate run {run.run_id}: {e}")
+                print(f"🔄 Marking run {run.run_id} as failed since user code server is unreachable")
+                # Mark the run as failed since we can't reach the user code server
+                instance.report_run_failed(run)
+                print(f"✅ Marked run {run.run_id} as failed")
             except Exception as e:
                 print(f"⚠️ Unexpected error terminating run {run.run_id}: {e}")
+                print(f"🔄 Marking run {run.run_id} as failed due to unexpected error")
+                # Mark the run as failed for other errors too
+                instance.report_run_failed(run)
+                print(f"✅ Marked run {run.run_id} as failed")
         else:
             print(f"Skipping run {run.run_id} (only running for {duration})")
     else:
