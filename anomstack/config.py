@@ -43,6 +43,8 @@ def get_specs(metrics_dir: str = "./metrics"):
             merged_specs["metrics_dir"] = str(metrics_dir)
             if merged_specs.get("disable_batch"):
                 return
+            
+            # Apply global environment variable overrides
             for env_var in env_vars:
                 if env_var in os.environ:
                     param_key = env_var.replace("ANOMSTACK_", "").lower()
@@ -51,6 +53,18 @@ def get_specs(metrics_dir: str = "./metrics"):
                     # Only override if the parameter is not in either YAML file
                     if yaml_value is None:
                         merged_specs[param_key] = os.getenv(env_var)
+            
+            # Apply metric batch-specific environment variable overrides
+            # Pattern: ANOMSTACK__<METRIC_BATCH>__<PARAM>
+            # These should override both defaults and metric-specific YAML values
+            metric_batch_upper = metric_batch.upper().replace("-", "_")
+            for env_var, value in os.environ.items():
+                if env_var.startswith(f"ANOMSTACK__{metric_batch_upper}__"):
+                    # Extract the parameter name from the environment variable
+                    param_key = env_var.replace(f"ANOMSTACK__{metric_batch_upper}__", "").lower()
+                    # Do NOT convert underscores to hyphens; keep as is to match YAML keys
+                    merged_specs[param_key] = value
+            
             specs[metric_batch] = merged_specs
 
     # Walk through the metrics directory and process YAML files
