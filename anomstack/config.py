@@ -50,9 +50,8 @@ def get_specs(metrics_dir: str = "./metrics"):
                     param_key = env_var.replace("ANOMSTACK_", "").lower()
                     # Check if the parameter exists in either YAML file
                     yaml_value = metric_specs.get(param_key) or defaults.get(param_key)
-                    # Only override if the parameter is not in either YAML file
-                    if yaml_value is None:
-                        merged_specs[param_key] = os.getenv(env_var)
+                    # Always override with the environment variable value
+                    merged_specs[param_key] = os.getenv(env_var)
             
             # Apply metric batch-specific environment variable overrides
             # Pattern: ANOMSTACK__<METRIC_BATCH>__<PARAM>
