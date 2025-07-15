@@ -30,7 +30,7 @@ dev:
 # DOCKER OPERATIONS
 # =============================================================================
 
-.PHONY: docker docker-dev docker-build docker-dev-build docker-tag docker-push docker-build-push
+.PHONY: docker docker-dev docker-smart docker-build docker-dev-build docker-tag docker-push docker-build-push
 .PHONY: docker-pull docker-clean docker-logs docker-logs-code docker-logs-dagit docker-logs-daemon docker-logs-dashboard
 .PHONY: docker-shell-code docker-shell-dagit docker-shell-dashboard docker-restart-dashboard docker-restart-code
 .PHONY: docker-stop docker-down docker-rm docker-prune
@@ -38,6 +38,17 @@ dev:
 # start docker containers (now uses pre-built images)
 docker:
 	docker compose up -d
+
+# smart docker start: try to pull, fallback to build if images don't exist
+docker-smart:
+	@echo "🔄 Attempting to pull pre-built images..."
+	@if docker compose pull 2>/dev/null; then \
+		echo "✅ Successfully pulled images, starting containers..."; \
+		docker compose up -d; \
+	else \
+		echo "⚠️  Pull failed, building images locally..."; \
+		make docker-dev-build && make docker-dev; \
+	fi
 
 # start docker containers with local development images
 docker-dev:
