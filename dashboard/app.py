@@ -60,6 +60,20 @@ def health_check():
     """Quick health check endpoint for deployment."""
     return {"status": "ok", "service": "anomstack-dashboard"}
 
+# Add lightweight root handler for deployment health checks
+@rt("/")
+def root_health_check(request):
+    """Handle root path health checks from Cloud Run."""
+    user_agent = request.headers.get("User-Agent", "")
+    # Check if this is a health check request
+    if (user_agent.startswith("GoogleHC") or 
+        user_agent.startswith("kube-probe") or 
+        user_agent.startswith("Google-Cloud-Tasks")):
+        return {"status": "healthy", "service": "anomstack-dashboard"}
+    # Otherwise, let the regular index route handle it
+    from dashboard.routes.index import index
+    return index(request)
+
 # Import routes after app is defined
 from dashboard.routes import *
 

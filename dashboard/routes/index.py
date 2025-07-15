@@ -205,12 +205,3 @@ def index(request: Request):
     )
 
 
-@rt("/health")
-def health():
-    # Quick response for health checks
-    user_agent = request.headers.get("User-Agent", "")
-    if (user_agent.startswith("GoogleHC") or 
-        user_agent.startswith("kube-probe") or 
-        user_agent.startswith("Google-Cloud-Tasks") or
-        "health" in request.url.path.lower()):
-        return {"status": "ok"}
