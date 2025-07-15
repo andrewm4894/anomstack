@@ -1,6 +1,9 @@
 {
-    "name": "anomstack (User/Demo)",
-    "dockerComposeFile": "../docker-compose.yaml",
+    "name": "anomstack (Development)",
+    "dockerComposeFile": [
+        "../docker-compose.yaml",
+        "../docker-compose.dev.yaml"
+    ],
     "service": "anomstack_code",
     "workspaceFolder": "/opt/dagster/app",
     "forwardPorts": [3000, 5001, 5432],
@@ -34,7 +37,9 @@
                 "ms-vscode.makefile-tools",
                 "ms-python.python",
                 "ms-python.pylint",
-                "ms-python.black-formatter"
+                "ms-python.black-formatter",
+                "ms-python.isort",
+                "ms-python.flake8"
             ]
         }
     },
@@ -42,4 +47,4 @@
         "ghcr.io/devcontainers/features/docker-in-docker:2": {}
     },
     "shutdownAction": "stopCompose"
-}
+} 
