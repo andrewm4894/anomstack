@@ -54,10 +54,20 @@ app, rt = fast_app(
 app.state = AppState()
 
 
+# Add health check endpoint for Cloud Run
+@rt("/health")
+def health_check():
+    """Quick health check endpoint for deployment."""
+    return {"status": "ok", "service": "anomstack-dashboard"}
+
 # Import routes after app is defined
 from dashboard.routes import *
 
 
 if __name__ == "__main__":
-
-    serve(app, host="0.0.0.0", port=8080)
+    try:
+        print("Starting Anomstack dashboard on port 8080")
+        serve(app, host="0.0.0.0", port=8080)
+    except Exception as e:
+        print(f"Failed to start dashboard: {e}")
+        raise
