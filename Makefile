@@ -213,8 +213,12 @@ requirements-install:
 # UTILITIES
 # =============================================================================
 
-.PHONY: posthog-example
+.PHONY: posthog-example kill-long-runs
 
 # run the PostHog example ingest function
 posthog-example:
-	python scripts/posthog_example.py
+        python scripts/posthog_example.py
+
+# kill any dagster runs exceeding configured timeout
+kill-long-runs:
+        python scripts/kill_long_running_tasks.py
