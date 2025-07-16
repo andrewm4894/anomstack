@@ -54,10 +54,34 @@ app, rt = fast_app(
 app.state = AppState()
 
 
+# Add health check endpoint for Cloud Run
+@rt("/health")
+def health_check():
+    """Quick health check endpoint for deployment."""
+    return {"status": "ok", "service": "anomstack-dashboard"}
+
+# Add lightweight root handler for deployment health checks
+@rt("/")
+def root_health_check(request):
+    """Handle root path health checks from Cloud Run."""
+    user_agent = request.headers.get("User-Agent", "")
+    # Check if this is a health check request
+    if (user_agent.startswith("GoogleHC") or 
+        user_agent.startswith("kube-probe") or 
+        user_agent.startswith("Google-Cloud-Tasks")):
+        return {"status": "healthy", "service": "anomstack-dashboard"}
+    # Otherwise, let the regular index route handle it
+    from dashboard.routes.index import index
+    return index(request)
+
 # Import routes after app is defined
 from dashboard.routes import *
 
 
 if __name__ == "__main__":
-
-    serve(app, host="0.0.0.0", port=8080)
+    try:
+        print("Starting Anomstack dashboard on port 8080")
+        serve(app, host="0.0.0.0", port=8080)
+    except Exception as e:
+        print(f"Failed to start dashboard: {e}")
+        raise
