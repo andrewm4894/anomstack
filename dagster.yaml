@@ -44,3 +44,7 @@ retention:
 
 telemetry:
   enabled: true
+
+# kill sensor configuration
+kill_sensor:
+  kill_after_minutes: 60

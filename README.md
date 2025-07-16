@@ -620,6 +620,18 @@ Below you see an example of an LLM alert via email. In this case we add a descri
 
 </details>
 
+## Killing Long Running Jobs
+
+Sometimes Dagster runs can get stuck. Anomstack ships with a sensor that
+terminates any run exceeding a configurable timeout. By default runs are killed
+after 60 minutes. You can override this in your `dagster.yaml` or via the
+`ANOMSTACK_KILL_RUN_AFTER_MINUTES` environment variable. You can also invoke the
+cleanup manually with:
+
+```bash
+make kill-long-runs
+```
+
 ## Contributing
 
 Read the [contributing guide](./CONTRIBUTING.md) to learn about our development process, how to propose bugfixes and improvements, and how to build and test your changes to Anomstack.
