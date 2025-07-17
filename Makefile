@@ -6,9 +6,9 @@ SHELL=/bin/bash
 
 .PHONY: local locald kill-locald ps-locald dev
 
-# start dagster locally
+# start dagster locally (simple - just set DAGSTER_HOME directly)
 local:
-	dagster dev -f anomstack/main.py
+	DAGSTER_HOME=$$(pwd)/dagster_home dagster dev -f anomstack/main.py
 
 # start dagster locally as a daemon with no log file
 locald:
@@ -124,10 +124,6 @@ docker-restart-dashboard:
 docker-restart-code:
 	docker compose restart anomstack_code
 
-# stop all containers
-docker-stop:
-	docker compose down
-
 # alias for docker-stop
 docker-down:
 	docker compose down
@@ -217,8 +213,16 @@ requirements-install:
 
 # run the PostHog example ingest function
 posthog-example:
-        python scripts/posthog_example.py
+	python scripts/posthog_example.py
 
 # kill any dagster runs exceeding configured timeout
 kill-long-runs:
-        python scripts/kill_long_running_tasks.py
+	python scripts/kill_long_running_tasks.py
+
+# run docker in dev mode with correct environment
+docker-dev-env:
+	docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d
+
+# stop docker containers
+docker-stop:
+	docker compose -f docker-compose.yaml -f docker-compose.dev.yaml down

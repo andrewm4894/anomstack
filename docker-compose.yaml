@@ -44,6 +44,7 @@ services:
       - ./tmp:/opt/dagster/app/tmp
       - anomstack_metrics_duckdb:/metrics_db/duckdb
       - ./dagster_home:/opt/dagster/dagster_home
+      - ./dagster_docker.yaml:/opt/dagster/dagster_home/dagster.yaml
     env_file:
       - .env
     environment:
@@ -52,7 +53,7 @@ services:
       DAGSTER_POSTGRES_DB: "${ANOMSTACK_POSTGRES_DB:-postgres_db}"
       DAGSTER_CURRENT_IMAGE: "andrewm4894/anomstack_code:latest"
       ANOMSTACK_DUCKDB_PATH: "/metrics_db/duckdb/anomstack.db"
-      DAGSTER_HOME: "${DAGSTER_HOME:-/opt/dagster/dagster_home}"
+      DAGSTER_HOME: "/opt/dagster/dagster_home"
     networks:
       - anomstack_network
     healthcheck:
@@ -95,13 +96,14 @@ services:
       DAGSTER_POSTGRES_USER: "${ANOMSTACK_POSTGRES_USER:-postgres_user}"
       DAGSTER_POSTGRES_PASSWORD: "${ANOMSTACK_POSTGRES_PASSWORD:-postgres_password}"
       DAGSTER_POSTGRES_DB: "${ANOMSTACK_POSTGRES_DB:-postgres_db}"
-      DAGSTER_HOME: "${DAGSTER_HOME:-/opt/dagster/dagster_home}"
+      DAGSTER_HOME: "/opt/dagster/dagster_home"
     volumes: # Make docker client accessible so we can terminate containers from the webserver
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/io_manager_storage:/tmp/io_manager_storage
       - ./tmp:/opt/dagster/app/tmp
       - anomstack_metrics_duckdb:/metrics_db/duckdb
       - ./dagster_home:/opt/dagster/dagster_home
+      - ./dagster_docker.yaml:/opt/dagster/dagster_home/dagster.yaml
     networks:
       - anomstack_network
     depends_on:
@@ -137,13 +139,14 @@ services:
       DAGSTER_POSTGRES_USER: "${ANOMSTACK_POSTGRES_USER:-postgres_user}"
       DAGSTER_POSTGRES_PASSWORD: "${ANOMSTACK_POSTGRES_PASSWORD:-postgres_password}"
       DAGSTER_POSTGRES_DB: "${ANOMSTACK_POSTGRES_DB:-postgres_db}"
-      DAGSTER_HOME: "${DAGSTER_HOME:-/opt/dagster/dagster_home}"
+      DAGSTER_HOME: "/opt/dagster/dagster_home"
     volumes: # Make docker client accessible so we can launch containers using host docker
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/io_manager_storage:/tmp/io_manager_storage
       - ./tmp:/opt/dagster/app/tmp
       - anomstack_metrics_duckdb:/metrics_db/duckdb
       - ./dagster_home:/opt/dagster/dagster_home
+      - ./dagster_docker.yaml:/opt/dagster/dagster_home/dagster.yaml
     networks:
       - anomstack_network
     depends_on:
