@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 from datetime import datetime, timedelta, timezone
 
@@ -17,8 +18,14 @@ os.environ["ANOMSTACK_DAGSTER_SQLITE_STORAGE_BASE_DIR"] = "tmp"
 os.environ["ANOMSTACK_DAGSTER_LOCAL_COMPUTE_LOG_MANAGER_DIRECTORY"] = "tmp"
 os.environ["ANOMSTACK_DAGSTER_LOCAL_ARTIFACT_STORAGE_DIR"] = "tmp"
 
-# Cutoff for long-running (1 hour ago)
-cutoff_time = datetime.now(timezone.utc) - timedelta(hours=1)
+# Add the parent directory to sys.path to import the sensor module
+sys.path.append(str(script_dir.parent))
+from anomstack.sensors.timeout import get_kill_after_minutes
+
+# Use the same configurable timeout as the sensor
+kill_after_minutes = get_kill_after_minutes()
+cutoff_time = datetime.now(timezone.utc) - timedelta(minutes=kill_after_minutes)
+print(f"Using {kill_after_minutes} minute timeout")
 
 instance = DagsterInstance.get()
 running_runs = instance.get_runs(filters=RunsFilter(statuses=[DagsterRunStatus.STARTED]))

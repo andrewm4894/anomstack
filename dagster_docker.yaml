@@ -60,9 +60,13 @@ run_monitoring:
   start_timeout_seconds: 600
   cancel_timeout_seconds: 300
 
-# kill sensor configuration
-kill_sensor:
-  kill_after_minutes: 60
+schedules:
+  use_threads: true
+  num_workers: 8
+
+sensors:
+  use_threads: true
+  num_workers: 4
 
 schedule_storage:
   module: dagster_postgres.schedule_storage
