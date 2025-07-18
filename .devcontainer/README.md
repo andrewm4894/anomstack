@@ -1,5 +1,7 @@
 # Devcontainer Configurations
 
+[![Open Dev Codespace](https://img.shields.io/badge/Codespace-Dev-blue?logo=github)](https://github.com/codespaces/new/andrewm4894/anomstack?devcontainer_path=.devcontainer/devcontainer.dev.json)
+
 This directory contains multiple devcontainer configurations for different use cases.
 
 ## 📋 Available Configurations
@@ -8,7 +10,7 @@ This directory contains multiple devcontainer configurations for different use c
 - **Purpose**: Quick start for new users or demos
 - **Docker Strategy**: Pulls pre-built images from Docker Hub
 - **Speed**: ⚡ Fast startup (30-60 seconds)
-- **Use Cases**: 
+- **Use Cases**:
   - New users trying out anomstack
   - Demos and presentations
   - Quick testing without development setup
@@ -27,12 +29,12 @@ This directory contains multiple devcontainer configurations for different use c
 ### GitHub Codespaces
 
 1. **Default (User/Demo)**: Just click "Create codespace" - uses `devcontainer.json`
-2. **Development**: When creating a codespace, click "..." → "Configure dev container" → select `devcontainer.dev.json`
+2. **Development**: Use the **Dev Codespace** link above or when creating a codespace click "..." → "Configure dev container" → select `devcontainer.dev.json`
 
 ### VS Code Dev Containers
 
 1. **Default**: Open folder in VS Code → "Reopen in Container"
-2. **Development**: 
+2. **Development**:
    - Open Command Palette (`Ctrl+Shift+P`)
    - "Dev Containers: Reopen in Container"
    - Select `devcontainer.dev.json`
@@ -78,4 +80,4 @@ Both configurations provide:
 
 ## 📚 Documentation
 
-For more information, see the main [README.md](../README.md) and [DOCKER.md](../DOCKER.md) files. 
+For more information, see the main [README.md](../README.md) and [DOCKER.md](../DOCKER.md) files.
