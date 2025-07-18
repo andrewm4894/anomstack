@@ -525,6 +525,40 @@ You can customize the default params for your metrics in the [`metrics/defaults`
 
 Environment variables for your metrics can be set in the `.env` file (see [`.example.env`](.example.env) for examples and comments) or in the `docker-compose.yml` file.
 
+### Overriding metric batch config with environment variables
+
+You can override any config parameter for a specific metric batch using environment variables of the form:
+
+```
+ANOMSTACK__<METRIC_BATCH>__<PARAM>
+```
+
+- `<METRIC_BATCH>` should be the `metric_batch` name from your YAML config, uppercased (and with dashes replaced by underscores if present).
+- `<PARAM>` should be the config parameter name, uppercased (use underscores, e.g. `ALERT_METHODS`).
+
+**Example:**
+
+Suppose you have a metric batch config with:
+
+```yaml
+metric_batch: "python_ingest_simple"
+db: "duckdb"
+alert_methods: "email,slack"
+ingest_cron_schedule: "*/2 * * * *"
+```
+
+To override these via environment variables, add to your `.env` file:
+
+```
+ANOMSTACK__PYTHON_INGEST_SIMPLE__DB=bigquery
+ANOMSTACK__PYTHON_INGEST_SIMPLE__ALERT_METHODS=email
+ANOMSTACK__PYTHON_INGEST_SIMPLE__INGEST_CRON_SCHEDULE=*/1 * * * *
+```
+
+This will override the `db`, `alert_methods`, and `ingest_cron_schedule` parameters for the `python_ingest_simple` metric batch at runtime, without changing the YAML file.
+
+This makes it easy to manage config via environment variables for different deployments or local development.
+
 ## Dashboard
 
 [back to top](#anomstack)

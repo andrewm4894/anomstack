@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 
 import yaml
+from dagster import get_dagster_logger
 
 # environment variables that can be used to override the configuration.
 env_vars = ["ANOMSTACK_GCP_PROJECT_ID", "ANOMSTACK_MODEL_PATH", "ANOMSTACK_TABLE_KEY"]
@@ -23,38 +24,54 @@ def get_specs(metrics_dir: str = "./metrics"):
     Returns:
         dict: Dictionary of processed metric configurations.
     """
-    metrics_dir = Path(metrics_dir).resolve()
-    defaults_dir = metrics_dir / "defaults"
-    examples_dir = metrics_dir / "examples"
+    logger = get_dagster_logger()
+    logger.info("get_specs called")
+    metrics_dir_path = Path(metrics_dir).resolve()
+    defaults_dir = metrics_dir_path / "defaults"
+    examples_dir = metrics_dir_path / "examples"
     specs = {}
 
     # Load defaults
-    defaults_file = defaults_dir / "defaults.yaml"
-    if not defaults_file.exists():
+    defaults_file = str(defaults_dir / "defaults.yaml")
+    if not Path(defaults_file).exists():
         raise FileNotFoundError(f"Defaults file not found: {defaults_file}")
     with open(defaults_file, "r", encoding="utf-8") as file:
         defaults = yaml.safe_load(file)
 
     def process_yaml_file(yaml_file: str):
+        logger.info(f"process_yaml_file called for {yaml_file}")
         with open(yaml_file, "r", encoding="utf-8") as f:
             metric_specs = yaml.safe_load(f)
             metric_batch = metric_specs["metric_batch"]
             merged_specs = {**defaults, **metric_specs}
-            merged_specs["metrics_dir"] = str(metrics_dir)
+            merged_specs["metrics_dir"] = str(metrics_dir_path)
             if merged_specs.get("disable_batch"):
                 return
+            
+            # Apply global environment variable overrides
             for env_var in env_vars:
                 if env_var in os.environ:
                     param_key = env_var.replace("ANOMSTACK_", "").lower()
-                    # Check if the parameter exists in either YAML file
                     yaml_value = metric_specs.get(param_key) or defaults.get(param_key)
-                    # Only override if the parameter is not in either YAML file
-                    if yaml_value is None:
-                        merged_specs[param_key] = os.getenv(env_var)
+                    merged_specs[param_key] = os.getenv(env_var)
+                    logger.info(f"ENV OVERRIDE: {env_var} replaces {param_key} (was: {yaml_value}, now: {merged_specs[param_key]})")
+            
+            # Apply metric batch-specific environment variable overrides
+            # Pattern: ANOMSTACK__<METRIC_BATCH>__<PARAM>
+            # These should override both defaults and metric-specific YAML values
+            metric_batch_upper = metric_batch.upper().replace("-", "_")
+            for env_var, value in os.environ.items():
+                if env_var.startswith(f"ANOMSTACK__{metric_batch_upper}__"):
+                    # Extract the parameter name from the environment variable
+                    param_key = env_var.replace(f"ANOMSTACK__{metric_batch_upper}__", "").lower()
+                    old_value = merged_specs.get(param_key, None)
+                    merged_specs[param_key] = value
+                    logger.info(f"ENV BATCH OVERRIDE: {env_var} replaces {param_key} (was: {old_value}, now: {value})")
+            
             specs[metric_batch] = merged_specs
 
     # Walk through the metrics directory and process YAML files
-    for root, dirs, files in os.walk(metrics_dir):
+    for root, dirs, files in os.walk(str(metrics_dir_path)):
         # Skip the examples directory if the environment variable is set
         if (
             os.getenv("ANOMSTACK_IGNORE_EXAMPLES") == "yes"
@@ -65,7 +82,7 @@ def get_specs(metrics_dir: str = "./metrics"):
             if yaml_file == "defaults.yaml":
                 continue
             if yaml_file.endswith(".yaml"):
-                yaml_path = Path(root) / yaml_file
+                yaml_path = str(Path(root) / yaml_file)
                 process_yaml_file(yaml_path)
 
     return specs
