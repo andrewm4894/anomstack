@@ -61,9 +61,9 @@ def test_config_overrides():
         print("python_ingest_simple batch not found in specs")
     
     # Clean up environment variables
-    del os.environ["ANOMSTACK__PYTHON_INGEST_SIMPLE__DB"]
-    del os.environ["ANOMSTACK__PYTHON_INGEST_SIMPLE__ALERT_METHODS"]
-    del os.environ["ANOMSTACK__PYTHON_INGEST_SIMPLE__INGEST_CRON_SCHEDULE"]
+    os.environ.pop("ANOMSTACK__PYTHON_INGEST_SIMPLE__DB", None)
+    os.environ.pop("ANOMSTACK__PYTHON_INGEST_SIMPLE__ALERT_METHODS", None)
+    os.environ.pop("ANOMSTACK__PYTHON_INGEST_SIMPLE__INGEST_CRON_SCHEDULE", None)
     
     print("\n" + "=" * 60)
     print("Test completed!")
