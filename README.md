@@ -13,7 +13,7 @@
 <a href="https://github.com/andrewm4894/anomstack/blob/main/LICENSE">![License](https://img.shields.io/badge/License-MIT-yellow.svg)</a>
 <a href="https://github.com/andrewm4894/anomstack/actions/workflows/pytest.yaml">![GitHub PyTest Workflow Status](https://img.shields.io/github/actions/workflow/status/andrewm4894/anomstack/pytest.yaml?label=Tests)</a>
 <a href="https://github.com/andrewm4894/anomstack/actions/workflows/pre-commit.yaml">![GitHub Pre-Commit Workflow Status](https://img.shields.io/github/actions/workflow/status/andrewm4894/anomstack/pre-commit.yaml?label=Pre-Commit)</a>
-<a href="./tests/README.md#coverage-report">![Coverage](https://img.shields.io/badge/Coverage-64%25-yellow?logo=pytest)</a>
+<a href="./tests/README.md#coverage-report">![Coverage](https://img.shields.io/badge/Coverage-63%25-yellow?logo=pytest)</a>
 
 </div>
 
@@ -653,6 +653,18 @@ Below you see an example of an LLM alert via email. In this case we add a descri
 ![llmalert2](./docs/img/llmalert2.png)
 
 </details>
+
+## Killing Long Running Jobs
+
+Sometimes Dagster runs can get stuck. Anomstack ships with a sensor that
+terminates any run exceeding a configurable timeout. By default runs are killed
+after 60 minutes. You can override this in your `dagster.yaml` or via the
+`ANOMSTACK_KILL_RUN_AFTER_MINUTES` environment variable. You can also invoke the
+cleanup manually with:
+
+```bash
+make kill-long-runs
+```
 
 ## Contributing
 

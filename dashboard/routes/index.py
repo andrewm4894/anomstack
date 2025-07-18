@@ -205,7 +205,3 @@ def index(request: Request):
     )
 
 
-@rt("/health")
-def health():
-    print("Health check endpoint accessed - returning immediate OK")
-    return {"status": "ok"}

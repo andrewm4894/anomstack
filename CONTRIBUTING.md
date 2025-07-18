@@ -146,7 +146,7 @@ We want your work to be readable by others; therefore, we encourage you to note 
 - All new code should include appropriate tests. See the [`tests/README.md`](./tests/README.md) for detailed testing guidelines.
 - Run the full test suite before submitting: `pytest tests/`
 - Check test coverage: `pytest tests/ --cov=anomstack --cov-report=term-missing`
-- The project currently maintains **64% test coverage**. Contributions that increase coverage are especially welcome!
+- The project currently maintains **63% test coverage**. Contributions that increase coverage are especially welcome!
 
 #### Updating the Coverage Badge
 
