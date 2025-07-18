@@ -8,11 +8,11 @@ SHELL=/bin/bash
 
 # start dagster locally (simple - just set DAGSTER_HOME directly)
 local:
-	DAGSTER_HOME=$$(pwd)/dagster_home dagster dev -f anomstack/main.py
+	export DAGSTER_HOME=`pwd`/dagster_home; dagster dev -f anomstack/main.py
 
 # start dagster locally as a daemon with no log file
 locald:
-	nohup dagster dev -f anomstack/main.py > /dev/null 2>&1 &
+	export DAGSTER_HOME=`pwd`/dagster_home; nohup dagster dev -f anomstack/main.py > /dev/null 2>&1 &
 
 # kill any running dagster process
 kill-locald:
