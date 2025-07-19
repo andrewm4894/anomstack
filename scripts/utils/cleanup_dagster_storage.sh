@@ -154,26 +154,115 @@ cleanup_aggressive() {
     cd "$PROJECT_ROOT"
     
     if [ -d "tmp" ]; then
-        # Remove run directories older than 7 days
-        print_info "Removing run directories older than 7 days..."
-        find tmp/ -maxdepth 1 -type d -name "*-*-*-*-*" -mtime +7 -exec rm -rf {} \; 2>/dev/null || true
+        # Count total directories to clean for progress tracking
+        print_info "📊 Counting directories to clean..."
+        total_dirs=$(find tmp/ -maxdepth 1 -type d -name "*-*-*-*-*" -mtime +7 2>/dev/null | wc -l | tr -d ' ')
         
-        # Clean all old logs
-        find tmp/ -name "*.log" -mtime +3 -delete 2>/dev/null || true
-        find tmp/ -name "compute_logs" -type d -exec find {} -name "*.log" -mtime +3 -delete \; 2>/dev/null || true
+        if [ "$total_dirs" -gt 0 ]; then
+            print_info "🗂️  Found $total_dirs run directories older than 7 days to clean"
+            print_info "⏱️  Starting cleanup (this may take several minutes)..."
+            
+            # Enhanced removal with progress tracking
+            count=0
+            batch_size=100
+            start_time=$(date +%s)
+            
+            # Use find with -print0 and process in batches for better performance
+            find tmp/ -maxdepth 1 -type d -name "*-*-*-*-*" -mtime +7 -print0 2>/dev/null | \
+            while IFS= read -r -d '' dir; do
+                # Remove directory
+                rm -rf "$dir" 2>/dev/null || true
+                
+                # Increment counter
+                count=$((count + 1))
+                
+                # Show progress every batch_size directories
+                if [ $((count % batch_size)) -eq 0 ] || [ "$count" -eq "$total_dirs" ]; then
+                    # Calculate progress percentage
+                    progress=$((count * 100 / total_dirs))
+                    
+                    # Calculate elapsed time and estimate remaining
+                    current_time=$(date +%s)
+                    elapsed=$((current_time - start_time))
+                    
+                    if [ "$count" -gt 0 ] && [ "$elapsed" -gt 0 ]; then
+                        rate=$((count * 60 / elapsed))  # dirs per minute
+                        remaining_dirs=$((total_dirs - count))
+                        
+                        if [ "$rate" -gt 0 ]; then
+                            eta_minutes=$((remaining_dirs / rate))
+                            print_info "🗂️  Progress: $count/$total_dirs (${progress}%) | Rate: ${rate}/min | ETA: ${eta_minutes}min"
+                        else
+                            print_info "🗂️  Progress: $count/$total_dirs (${progress}%) | Elapsed: ${elapsed}s"
+                        fi
+                    else
+                        print_info "🗂️  Progress: $count/$total_dirs (${progress}%)"
+                    fi
+                    
+                    # Show current directory being processed (truncated for readability)
+                    dir_name=$(basename "$dir")
+                    if [ ${#dir_name} -gt 50 ]; then
+                        dir_display="${dir_name:0:25}...${dir_name: -20}"
+                    else
+                        dir_display="$dir_name"
+                    fi
+                    print_info "📁 Processing: $dir_display"
+                fi
+            done
+            
+            print_success "✅ Removed $total_dirs run directories"
+        else
+            print_info "🎉 No run directories older than 7 days found"
+        fi
+        
+        # Clean all old logs with progress
+        print_info "🧹 Cleaning old log files..."
+        log_count=$(find tmp/ -name "*.log" -mtime +3 2>/dev/null | wc -l | tr -d ' ')
+        if [ "$log_count" -gt 0 ]; then
+            print_info "📄 Found $log_count log files to clean"
+            find tmp/ -name "*.log" -mtime +3 -delete 2>/dev/null || true
+            print_success "✅ Cleaned $log_count log files"
+        fi
+        
+        # Clean compute logs with progress
+        compute_log_count=$(find tmp/ -name "compute_logs" -type d -exec find {} -name "*.log" -mtime +3 \; 2>/dev/null | wc -l | tr -d ' ')
+        if [ "$compute_log_count" -gt 0 ]; then
+            print_info "💾 Found $compute_log_count compute log files to clean"
+            find tmp/ -name "compute_logs" -type d -exec find {} -name "*.log" -mtime +3 -delete \; 2>/dev/null || true
+            print_success "✅ Cleaned $compute_log_count compute log files"
+        fi
     fi
     
-    # Aggressive storage cleanup
+    # Aggressive storage cleanup with progress
     if [ -d "dagster_home/storage" ]; then
-        find dagster_home/storage/ -type f -mtime +7 -delete 2>/dev/null || true
+        print_info "🗄️  Cleaning dagster_home/storage..."
+        storage_files=$(find dagster_home/storage/ -type f -mtime +7 2>/dev/null | wc -l | tr -d ' ')
+        if [ "$storage_files" -gt 0 ]; then
+            print_info "📦 Found $storage_files storage files to clean"
+            find dagster_home/storage/ -type f -mtime +7 -delete 2>/dev/null || true
+            print_success "✅ Cleaned $storage_files storage files"
+        fi
     fi
     
-    # Clean old history
+    # Clean old history with progress
     if [ -d "dagster_home/history" ]; then
-        find dagster_home/history/ -type f -mtime +7 -delete 2>/dev/null || true
+        print_info "📚 Cleaning dagster_home/history..."
+        history_files=$(find dagster_home/history/ -type f -mtime +7 2>/dev/null | wc -l | tr -d ' ')
+        if [ "$history_files" -gt 0 ]; then
+            print_info "📋 Found $history_files history files to clean"
+            find dagster_home/history/ -type f -mtime +7 -delete 2>/dev/null || true
+            print_success "✅ Cleaned $history_files history files"
+        fi
     fi
     
-    print_success "Aggressive cleanup completed"
+    # Final cleanup summary
+    print_info "📊 Final storage analysis..."
+    final_dirs=$(find tmp/ -maxdepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')
+    final_size=$(du -sh tmp/ 2>/dev/null | cut -f1 || echo "0B")
+    
+    print_success "🔥 Aggressive cleanup completed!"
+    print_info "📈 Remaining directories: $final_dirs"
+    print_info "💾 Remaining tmp/ size: $final_size"
 }
 
 cleanup_nuclear() {

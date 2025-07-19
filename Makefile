@@ -32,7 +32,7 @@ dev:
 
 .PHONY: docker docker-dev docker-smart docker-build docker-dev-build docker-tag docker-push docker-build-push
 .PHONY: docker-pull docker-clean docker-logs docker-logs-code docker-logs-dagit docker-logs-daemon docker-logs-dashboard
-.PHONY: docker-shell-code docker-shell-dagit docker-shell-dashboard docker-restart-dashboard docker-restart-code
+.PHONY: docker-shell-code docker-shell-dagit docker-shell-dashboard docker-restart-dashboard docker-restart-code docker-restart reload-config enable-auto-reload enable-config-watcher
 .PHONY: docker-stop docker-down docker-rm docker-prune
 
 # start docker containers (now uses pre-built images)
@@ -123,6 +123,28 @@ docker-restart-dashboard:
 
 docker-restart-code:
 	docker compose restart anomstack_code
+
+# restart all containers (useful for .env changes)
+docker-restart:
+	docker compose restart
+
+# reload configuration without restarting containers (hot reload)
+reload-config:
+	@echo "🔄 Reloading Anomstack configuration..."
+	python3 scripts/reload_config.py
+
+# enable automatic config reloading via Dagster scheduled job
+enable-auto-reload:
+	@echo "🤖 Enabling automatic configuration reloading..."
+	@echo "ANOMSTACK_AUTO_CONFIG_RELOAD=true" >> .env
+	@echo "ANOMSTACK_CONFIG_RELOAD_STATUS=RUNNING" >> .env
+	@echo "✅ Auto reload enabled! Restart containers: make docker-restart"
+
+# enable smart config file watcher sensor
+enable-config-watcher:
+	@echo "👁️ Enabling smart configuration file watcher..."
+	@echo "ANOMSTACK_CONFIG_WATCHER=true" >> .env  
+	@echo "✅ Config watcher enabled! Restart containers: make docker-restart"
 
 # alias for docker-stop
 docker-down:
