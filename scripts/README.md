@@ -11,8 +11,20 @@ The scripts in this directory provide helpful utilities for common administrativ
 ### `sqlite/`
 Contains SQLite-specific utility scripts for users running Anomstack with SQLite as their database backend.
 
+### `utils/`
+Contains general utility scripts for system management and maintenance.
+
 ### `posthog_example.py`
 Runs the PostHog metrics ingest function to ensure your PostHog credentials work.
+
+### `utils/reset_docker.sh`
+Comprehensive Docker reset utility with multiple cleanup levels:
+- **Gentle**: Rebuild containers with fresh images (safest)
+- **Medium**: Remove containers and networks, preserve data volumes
+- **Nuclear**: Remove all data including volumes and local files
+- **Full Nuclear**: Nuclear reset + complete Docker system cleanup
+
+Can be run interactively or with specific reset levels via Makefile targets.
 
 ## Common Use Cases
 
