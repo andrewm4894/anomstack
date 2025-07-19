@@ -75,6 +75,7 @@ const sidebars = {
       label: 'Configuration',
       items: [
         'configuration/metrics',
+        'configuration/hot-reload',
       ],
     },
     {
