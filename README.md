@@ -478,6 +478,15 @@ docker compose build
 docker compose up -d
 ```
 
+**💡 Pro Tip:** Anomstack includes a comprehensive Makefile with many useful targets for development and deployment. For detailed documentation of all available commands, see [`Makefile.md`](./Makefile.md). Quick examples:
+
+```bash
+make docker-dev          # Start with local development images
+make reset-interactive   # Interactive reset with cleanup options  
+make docker-logs         # View all container logs
+make tests              # Run test suite
+```
+
 ### Replit
 
 You can run Anomstack directly on Replit:
