@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /opt/dagster/app
 
-COPY ../requirements.txt /opt/dagster/app/requirements.txt
+COPY requirements.txt /opt/dagster/app/requirements.txt
 
 RUN pip install -r requirements.txt
 
@@ -22,10 +22,10 @@ COPY .example.env .env
 # Run dagster gRPC server on port 4000
 EXPOSE 4000
 
-# Health check for the gRPC server
+# Health check for the code server
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD dagster api grpc-health-check -p 4000
 
 # CMD allows this to be overridden from run launchers or executors that want
 # to run other commands against your repository
-CMD ["dagster", "api", "grpc", "-h", "0.0.0.0", "-p", "4000", "-f", "anomstack/main.py"]
+CMD ["dagster", "code-server", "start", "-h", "0.0.0.0", "-p", "4000", "-f", "anomstack/main.py"]

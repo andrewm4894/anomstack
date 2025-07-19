@@ -35,6 +35,7 @@ run_launcher:
         - /tmp/io_manager_storage:/tmp/io_manager_storage
         - /Users/andrewmaguire/Documents/GitHub/anomstack/tmp:/opt/dagster/app/tmp
         - /Users/andrewmaguire/Documents/GitHub/anomstack/dagster_home:/opt/dagster/dagster_home
+        - /Users/andrewmaguire/Documents/GitHub/anomstack/metrics:/opt/dagster/app/metrics
         - anomstack_metrics_duckdb:/metrics_db/duckdb
 
 run_storage:
