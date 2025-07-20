@@ -131,7 +131,7 @@ docker-restart:
 # reload configuration without restarting containers (hot reload)
 reload-config:
 	@echo "🔄 Reloading Anomstack configuration..."
-	python3 scripts/reload_config.py
+	python3 scripts/configuration/reload_config.py
 
 # enable automatic config reloading via Dagster scheduled job
 enable-auto-reload:
@@ -158,6 +158,39 @@ docker-rm:
 docker-prune:
 	docker compose down -v --remove-orphans
 	docker system prune -a -f
+
+# =============================================================================
+# FLY.IO DEPLOYMENT
+# =============================================================================
+
+.PHONY: fly-validate fly-preview fly-deploy fly-status fly-logs fly-ssh
+
+# validate fly.io configuration
+fly-validate:
+	./scripts/deployment/validate_fly_config.sh
+
+# preview what environment variables will be set as Fly secrets
+fly-preview:
+	./scripts/deployment/preview_fly_secrets.sh
+
+# deploy to fly.io (reads .env file automatically)
+fly-deploy:
+	./scripts/deployment/deploy_fly.sh
+
+# check fly.io app status (requires app name as FLY_APP env var)
+fly-status:
+	@if [ -z "$$FLY_APP" ]; then echo "Set FLY_APP environment variable"; exit 1; fi
+	fly status -a $$FLY_APP
+
+# view fly.io app logs (requires app name as FLY_APP env var)
+fly-logs:
+	@if [ -z "$$FLY_APP" ]; then echo "Set FLY_APP environment variable"; exit 1; fi
+	fly logs -f -a $$FLY_APP
+
+# ssh into fly.io app (requires app name as FLY_APP env var)
+fly-ssh:
+	@if [ -z "$$FLY_APP" ]; then echo "Set FLY_APP environment variable"; exit 1; fi
+	fly ssh console -a $$FLY_APP
 
 # =============================================================================
 # RESET OPERATIONS
@@ -307,11 +340,11 @@ requirements-install:
 
 # run the PostHog example ingest function
 posthog-example:
-	python scripts/posthog_example.py
+	python scripts/examples/posthog_example.py
 
 # kill any dagster runs exceeding configured timeout
 kill-long-runs:
-	python scripts/kill_long_running_tasks.py
+	python scripts/maintenance/kill_long_running_tasks.py
 
 # run docker in dev mode with correct environment
 docker-dev-env:

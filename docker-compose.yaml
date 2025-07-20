@@ -54,6 +54,7 @@ services:
       DAGSTER_POSTGRES_USER: "${ANOMSTACK_POSTGRES_USER:-postgres_user}"
       DAGSTER_POSTGRES_PASSWORD: "${ANOMSTACK_POSTGRES_PASSWORD:-postgres_password}"
       DAGSTER_POSTGRES_DB: "${ANOMSTACK_POSTGRES_DB:-postgres_db}"
+      DAGSTER_CODE_SERVER_HOST: "${DAGSTER_CODE_SERVER_HOST:-anomstack_code}"
       DAGSTER_CURRENT_IMAGE: "andrewm4894/anomstack_code:latest"
       ANOMSTACK_DUCKDB_PATH: "/metrics_db/duckdb/anomstack.db"
       DAGSTER_HOME: "/opt/dagster/dagster_home"

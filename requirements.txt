@@ -8,6 +8,7 @@ dagster-gcp
 dagster-gcp-pandas
 dagster-postgres
 dagster-webserver
+psycopg2-binary
 dagster-cloud
 duckdb
 google-auth
