@@ -21,9 +21,6 @@ class AppState:
     State manager for the dashboard.
     """
 
-    def __init__(self):
-        self._connection = None
-
     def get_connection(self):
         """Get database connection with MotherDuck fallback"""
         import os
@@ -79,34 +76,84 @@ class AppState:
         # Lazy initialization flags
         self._specs_loaded = False
         self._metric_batches_loaded = False
+        self._specs = None
+        self._metric_batches = None
+        self._specs_enabled = None
         
         print("AppState initialized with lazy loading")
+
+    @property
+    def specs(self):
+        """Lazy-loaded specs property"""
+        if not self._specs_loaded:
+            self._ensure_specs_loaded()
+        return self._specs
+
+    @specs.setter
+    def specs(self, value):
+        """Setter for specs"""
+        self._specs = value
+        self._specs_loaded = True
+
+    @property
+    def metric_batches(self):
+        """Lazy-loaded metric batches property"""
+        if not self._metric_batches_loaded:
+            self._ensure_metric_batches_loaded()
+        return self._metric_batches
+
+    @metric_batches.setter 
+    def metric_batches(self, value):
+        """Setter for metric_batches"""
+        self._metric_batches = value
+
+    @property
+    def specs_enabled(self):
+        """Lazy-loaded specs_enabled property"""
+        if not self._metric_batches_loaded:
+            self._ensure_metric_batches_loaded()
+        return self._specs_enabled
+
+    @specs_enabled.setter
+    def specs_enabled(self, value):
+        """Setter for specs_enabled"""
+        self._specs_enabled = value
     
     def _ensure_specs_loaded(self):
         """Lazy load specs and metric batches"""
         if not self._specs_loaded:
             try:
-                self.specs = get_specs()
+                self._specs = get_specs()
                 self._specs_loaded = True
                 print("Specs loaded successfully")
             except Exception as e:
                 log.error(f"Error loading specs: {e}")
-                self.specs = {}
+                self._specs = {}
                 
     def _ensure_metric_batches_loaded(self):
         """Lazy load metric batches"""
         if not self._metric_batches_loaded:
             try:
-                self.metric_batches = get_metric_batches(source="all")
-                if not self.metric_batches:
-                    log.warning("No metric batches found.")
-                self.specs_enabled = {batch: self.specs[batch] for batch in self.metric_batches}
-                self._metric_batches_loaded = True
-                print("Metric batches loaded successfully")
-            except Exception as e:
-                log.error(f"Error loading metric batches: {e}")
-                self.metric_batches = []
-                self.specs_enabled = {}
+                # Ensure specs are loaded first
+                if not self._specs_loaded:
+                    self._ensure_specs_loaded()
+                    
+                                                  self._metric_batches = get_metric_batches(source="all")
+                 if not self._metric_batches:
+                     log.warning("No metric batches found.")
+                     self._metric_batches = []
+                 
+                 if self._specs and self._metric_batches:
+                     self._specs_enabled = {batch: self._specs[batch] for batch in self._metric_batches if batch in self._specs}
+                 else:
+                     self._specs_enabled = {}
+                 
+                 self._metric_batches_loaded = True
+                 print("Metric batches loaded successfully")
+             except Exception as e:
+                 log.error(f"Error loading metric batches: {e}")
+                 self._metric_batches = []
+                 self._specs_enabled = {}
 
     def clear_batch_cache(self, batch_name):
         """
