@@ -67,6 +67,7 @@ const sidebars = {
       items: [
         'deployment/docker',
         'deployment/gcp',
+        'deployment/fly',
         'storage-optimization',
       ],
     },
