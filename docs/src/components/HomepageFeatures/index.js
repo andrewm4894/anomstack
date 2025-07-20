@@ -3,44 +3,71 @@ import Heading from '@theme/Heading';
 import styles from './styles.module.css';
 
 const FeatureList = [
-/*   {
-    title: 'Easy to Use',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+  {
+    title: '🚀 Easy Setup & Deploy',
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Get anomaly detection running in minutes with Docker, GitHub Codespaces, 
+        Dagster Cloud, or local Python. No complex infrastructure required - just 
+        bring your metrics and we'll handle the ML.
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    title: '🌟 Flexible Data Sources',
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Connect to BigQuery, Snowflake, ClickHouse, DuckDB, SQLite, MotherDuck, 
+        Turso, and more. Define metrics with SQL or custom Python functions. 
+        Works with your existing data stack.
       </>
     ),
   },
   {
-    title: 'Powered by React',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    title: '🧠 Intelligent Detection',
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Powered by PyOD machine learning algorithms with configurable thresholds. 
+        Plus optional AI-powered anomaly detection using LLM agents for more 
+        nuanced analysis and explanations.
       </>
     ),
-  }, */
+  },
+  {
+    title: '📧 Smart Alerts',
+    description: (
+      <>
+        Get notified via Email and Slack with beautiful ASCII art plots and 
+        detailed context. Includes snoozing, feedback system, and daily summaries 
+        to reduce alert fatigue.
+      </>
+    ),
+  },
+  {
+    title: '📊 Beautiful Dashboard',
+    description: (
+      <>
+        Monitor your metrics with a modern FastHTML + MonsterUI dashboard. 
+        View trends, anomaly scores, feedback ratings, and manage alerts 
+        all in one place.
+      </>
+    ),
+  },
+  {
+    title: '⚙️ Highly Configurable',
+    description: (
+      <>
+        Customize everything from ML algorithms to alert routing with flexible 
+        YAML configs. Override settings per metric batch and add custom 
+        preprocessing functions.
+      </>
+    ),
+  },
 ];
 
-function Feature({Svg, title, description}) {
+function Feature({title, description}) {
   return (
     <div className={clsx('col col--4')}>
-      <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
-      </div>
       <div className="text--center padding-horiz--md">
         <Heading as="h3">{title}</Heading>
         <p>{description}</p>
