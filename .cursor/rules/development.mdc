@@ -1,0 +1,51 @@
+---
+description: "Development workflow and Makefile commands for Anomstack project"
+globs: ["Makefile", "scripts/**", "docker/**", "*.yaml", "*.yml", "requirements*.txt"]
+alwaysApply: true
+---
+
+# Anomstack Development Workflow
+
+## Makefile Commands
+The **Makefile contains many common development commands** organized by category:
+
+### 🚀 Quick Start Commands
+- `make local` - Start Dagster locally for development
+- `make docker` - Start all services with Docker (uses pre-built images)
+- `make docker-smart` - Intelligent start (pull images or build if needed)
+- `make dashboard` - Start dashboard locally
+- `make docs` - Start documentation development server
+
+### 🐳 Docker Operations
+- `make docker-dev` - Start with local development images
+- `make docker-build` - Build all images locally
+- `make docker-logs` - View logs for all containers
+- `make docker-logs-code` / `docker-logs-dashboard` - View specific service logs
+- `make docker-shell-code` - Get shell access to code container
+- `make docker-restart` - Restart all containers (useful for .env changes)
+
+### 🔄 Configuration & Hot Reload
+- `make reload-config` - Reload configuration without restarting
+- `make enable-auto-reload` - Enable automatic config reloading
+- `make enable-config-watcher` - Enable smart config file watcher
+
+### 🧹 Reset & Cleanup
+- `make reset-interactive` - Interactive reset with guided options
+- `make reset-gentle` - Rebuild containers (safest reset)
+- `make reset-nuclear` - Remove everything including data
+- `make dagster-cleanup-standard` - Clean up old Dagster runs
+
+### 🧪 Testing & Quality
+- `make tests` - Run test suite
+- `make coverage` - Run tests with coverage report
+- `make pre-commit` - Run pre-commit hooks on all files
+
+### 📚 Documentation
+- `make docs-start` - Start docs dev server with live reload
+- `make docs-build` - Build static documentation site
+
+## Project Structure
+- **Local development**: Use `make local` for Dagster + `make dashboard` 
+- **Docker development**: Use `make docker-smart` for full stack
+- **Hot reload**: Configuration changes can be reloaded without restarts
+- **Multiple reset levels**: From gentle rebuilds to nuclear cleanup options

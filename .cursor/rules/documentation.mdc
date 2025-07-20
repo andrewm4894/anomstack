@@ -1,0 +1,27 @@
+---
+description: "Documentation structure and Docusaurus configuration for Anomstack project"
+globs: ["docs/**", "*.md", "README*"]
+alwaysApply: true
+---
+
+# Anomstack Documentation
+
+## Documentation Structure
+- This project uses **Docusaurus** for detailed documentation
+- Documentation files are located in `docs/docs/` folder
+- The main Docusaurus config is in `docs/docusaurus.config.js`
+- Documentation is built and deployed as a static site
+
+## Documentation Content
+The documentation covers:
+- **Quickstart guide** (`docs/docs/quickstart.md`) - Getting started with Anomstack
+- **Data source integrations** - BigQuery, ClickHouse, DuckDB, Snowflake, etc.
+- **Features** - Alerts, anomaly detection, dashboard, LLM agent
+- **Deployment guides** - Docker, GCP, and other deployment options
+- **Configuration options** - Environment variables, metrics, hot-reload
+
+## Working with Documentation
+- To run the docs locally: `cd docs && npm run start`
+- Documentation files use standard Markdown with Docusaurus extensions
+- Images are stored in `docs/static/img/` and `docs/img/`
+- Sidebar configuration is in `docs/sidebars.js`
