@@ -32,7 +32,7 @@ dev:
 
 .PHONY: docker docker-dev docker-smart docker-build docker-dev-build docker-tag docker-push docker-build-push
 .PHONY: docker-pull docker-clean docker-logs docker-logs-code docker-logs-dagit docker-logs-daemon docker-logs-dashboard
-.PHONY: docker-shell-code docker-shell-dagit docker-shell-dashboard docker-restart-dashboard docker-restart-code
+.PHONY: docker-shell-code docker-shell-dagit docker-shell-dashboard docker-restart-dashboard docker-restart-code docker-restart reload-config enable-auto-reload enable-config-watcher
 .PHONY: docker-stop docker-down docker-rm docker-prune
 
 # start docker containers (now uses pre-built images)
@@ -124,6 +124,28 @@ docker-restart-dashboard:
 docker-restart-code:
 	docker compose restart anomstack_code
 
+# restart all containers (useful for .env changes)
+docker-restart:
+	docker compose restart
+
+# reload configuration without restarting containers (hot reload)
+reload-config:
+	@echo "🔄 Reloading Anomstack configuration..."
+	python3 scripts/reload_config.py
+
+# enable automatic config reloading via Dagster scheduled job
+enable-auto-reload:
+	@echo "🤖 Enabling automatic configuration reloading..."
+	@echo "ANOMSTACK_AUTO_CONFIG_RELOAD=true" >> .env
+	@echo "ANOMSTACK_CONFIG_RELOAD_STATUS=RUNNING" >> .env
+	@echo "✅ Auto reload enabled! Restart containers: make docker-restart"
+
+# enable smart config file watcher sensor
+enable-config-watcher:
+	@echo "👁️ Enabling smart configuration file watcher..."
+	@echo "ANOMSTACK_CONFIG_WATCHER=true" >> .env  
+	@echo "✅ Config watcher enabled! Restart containers: make docker-restart"
+
 # alias for docker-stop
 docker-down:
 	docker compose down
@@ -136,6 +158,58 @@ docker-rm:
 docker-prune:
 	docker compose down -v --remove-orphans
 	docker system prune -a -f
+
+# =============================================================================
+# RESET OPERATIONS
+# =============================================================================
+
+.PHONY: reset-gentle reset-medium reset-nuclear reset-full-nuclear reset-interactive
+
+# interactive reset with guided options
+reset-interactive:
+	@scripts/utils/reset_docker.sh
+
+# gentle reset: rebuild containers with fresh images (safest)
+reset-gentle:
+	@scripts/utils/reset_docker.sh gentle
+
+# medium reset: remove containers, keep data volumes
+reset-medium:
+	@scripts/utils/reset_docker.sh medium
+
+# nuclear reset: remove everything including local data
+reset-nuclear:
+	@scripts/utils/reset_docker.sh nuclear
+
+# full nuclear reset: nuclear + full docker system cleanup (maximum cleanup)
+reset-full-nuclear:
+	@scripts/utils/reset_docker.sh full-nuclear
+
+# =============================================================================
+# DAGSTER STORAGE CLEANUP
+# =============================================================================
+
+.PHONY: dagster-cleanup-status dagster-cleanup-minimal dagster-cleanup-standard dagster-cleanup-aggressive
+
+# show current dagster storage usage and configuration status
+dagster-cleanup-status:
+	@scripts/utils/cleanup_dagster_storage.sh status
+
+# minimal dagster cleanup - remove old logs only (safe)
+dagster-cleanup-minimal:
+	@scripts/utils/cleanup_dagster_storage.sh minimal
+
+# standard dagster cleanup - remove runs older than 30 days
+dagster-cleanup-standard:
+	@scripts/utils/cleanup_dagster_storage.sh standard
+
+# aggressive dagster cleanup - remove runs older than 7 days
+dagster-cleanup-aggressive:
+	@scripts/utils/cleanup_dagster_storage.sh aggressive
+
+# interactive dagster cleanup menu
+dagster-cleanup-menu:
+	@scripts/utils/cleanup_dagster_storage.sh menu
 
 # =============================================================================
 # DASHBOARD OPERATIONS
@@ -185,11 +259,31 @@ coverage:
 # DOCUMENTATION
 # =============================================================================
 
-.PHONY: docs
+.PHONY: docs docs-start docs-build docs-serve docs-clear docs-install
 
-# start documentation development server
+# start documentation development server (alias for docs-start)
 docs:
-	cd docs && yarn start
+	@$(MAKE) docs-start
+
+# install documentation dependencies
+docs-install:
+	cd docs && npm install
+
+# start development server with live reload
+docs-start:
+	cd docs && npm start
+
+# build static documentation site
+docs-build:
+	cd docs && npm run build
+
+# serve built documentation locally
+docs-serve:
+	cd docs && npm run serve
+
+# clear documentation build cache
+docs-clear:
+	cd docs && npm run clear
 
 # =============================================================================
 # DEPENDENCIES

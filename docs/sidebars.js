@@ -67,6 +67,7 @@ const sidebars = {
       items: [
         'deployment/docker',
         'deployment/gcp',
+        'storage-optimization',
       ],
     },
     {
@@ -74,6 +75,7 @@ const sidebars = {
       label: 'Configuration',
       items: [
         'configuration/metrics',
+        'configuration/hot-reload',
       ],
     },
     {

@@ -1,10 +1,10 @@
 metric_batch: "python_ingest_simple"
 table_key: "metrics_python_ingest_simple"
 alert_methods: "email,slack"
-ingest_cron_schedule: "*/5 * * * *"
-train_cron_schedule: "*/10 * * * *"
-score_cron_schedule: "*/6 * * * *"
-alert_cron_schedule: "*/5 * * * *"
+ingest_cron_schedule: "*/10 * * * *"
+train_cron_schedule: "*/15 * * * *"
+score_cron_schedule: "*/11 * * * *"
+alert_cron_schedule: "*/12 * * * *"
 disable_llmalert: False
 
 # Enable threshold alerts

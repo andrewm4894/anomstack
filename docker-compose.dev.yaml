@@ -7,6 +7,9 @@ services:
       context: .
       dockerfile: docker/Dockerfile.anomstack_code
     image: anomstack_code_image
+    environment:
+      DAGSTER_HOST: "anomstack_webserver"
+      DAGSTER_PORT: "3000"
     deploy:
       resources:
         limits:

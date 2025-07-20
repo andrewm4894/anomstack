@@ -35,7 +35,9 @@ services:
   # Multiple containers like this can be deployed separately - each just needs to run on
   # its own port, and have its own entry in the workspace.yaml file that's loaded by the webserver.
   anomstack_code:
-    image: andrewm4894/anomstack_code:latest
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.anomstack_code
     container_name: anomstack_code
     restart: always
     expose:
@@ -45,6 +47,7 @@ services:
       - anomstack_metrics_duckdb:/metrics_db/duckdb
       - ./dagster_home:/opt/dagster/dagster_home
       - ./dagster_docker.yaml:/opt/dagster/dagster_home/dagster.yaml
+      - ./metrics:/opt/dagster/app/metrics  # 🔥 ENABLES HOT CONFIG UPDATES
     env_file:
       - .env
     environment:
@@ -104,6 +107,7 @@ services:
       - anomstack_metrics_duckdb:/metrics_db/duckdb
       - ./dagster_home:/opt/dagster/dagster_home
       - ./dagster_docker.yaml:/opt/dagster/dagster_home/dagster.yaml
+      - ./metrics:/opt/dagster/app/metrics  # 🔥 ENABLES HOT CONFIG UPDATES
     networks:
       - anomstack_network
     depends_on:
@@ -147,6 +151,7 @@ services:
       - anomstack_metrics_duckdb:/metrics_db/duckdb
       - ./dagster_home:/opt/dagster/dagster_home
       - ./dagster_docker.yaml:/opt/dagster/dagster_home/dagster.yaml
+      - ./metrics:/opt/dagster/app/metrics  # 🔥 ENABLES HOT CONFIG UPDATES
     networks:
       - anomstack_network
     depends_on:
