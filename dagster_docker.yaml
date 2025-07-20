@@ -28,14 +28,15 @@ run_launcher:
       - ANOMSTACK_MODEL_PATH
       - ANOMSTACK_IGNORE_EXAMPLES
       - DAGSTER_HOME
+      - ANOMSTACK_HOME
     network: anomstack_network
     container_kwargs:
       volumes: # Make docker client accessible to any launched containers as well
         - /var/run/docker.sock:/var/run/docker.sock
         - /tmp/io_manager_storage:/tmp/io_manager_storage
-        - /Users/andrewmaguire/Documents/GitHub/anomstack/tmp:/opt/dagster/app/tmp
-        - /Users/andrewmaguire/Documents/GitHub/anomstack/dagster_home:/opt/dagster/dagster_home
-        - /Users/andrewmaguire/Documents/GitHub/anomstack/metrics:/opt/dagster/app/metrics
+        - ${ANOMSTACK_HOME}/tmp:/opt/dagster/app/tmp
+        - ${ANOMSTACK_HOME}/dagster_home:/opt/dagster/dagster_home
+        - ${ANOMSTACK_HOME}/metrics:/opt/dagster/app/metrics
         - anomstack_metrics_duckdb:/metrics_db/duckdb
 
 run_storage:
