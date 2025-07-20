@@ -74,6 +74,7 @@ const sidebars = {
       type: 'category',
       label: 'Configuration',
       items: [
+        'configuration/environment-variables',
         'configuration/metrics',
         'configuration/hot-reload',
       ],
@@ -84,6 +85,13 @@ const sidebars = {
       items: [
         'graphql/README',
         'graphql/examples/start_schedule',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Miscellaneous',
+      items: [
+        'miscellaneous/scripts-utilities',
       ],
     },
   ],
