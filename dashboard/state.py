@@ -138,9 +138,9 @@ class AppState:
                 if not self._specs_loaded:
                     self._ensure_specs_loaded()
                     
-                                                  self._metric_batches = get_metric_batches(source="all")
-                 if not self._metric_batches:
-                     log.warning("No metric batches found.")
+                self._metric_batches = get_metric_batches(source="all")
+                if not self._metric_batches:
+                    log.warning("No metric batches found.")
                      self._metric_batches = []
                  
                  if self._specs and self._metric_batches:
