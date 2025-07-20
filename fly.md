@@ -54,7 +54,7 @@ fly secrets set ANOMSTACK_ALERT_EMAIL_TO="your@email.com"
 - `nginx.conf` - Reverse proxy with auth
 - `docker/Dockerfile.fly` - Multi-service container
 - `dagster_fly.yaml` - PostgreSQL Dagster config
-- `start.sh` - Service startup script
+- `scripts/deployment/start.sh` - Service startup script
 
 ## Access
 

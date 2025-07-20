@@ -25,7 +25,7 @@ COPY metrics ./metrics
 # Copy configuration files
 COPY dagster_fly.yaml ./dagster_home/dagster.yaml
 COPY dagster_home/workspace.yaml ./dagster_home/workspace.yaml
-COPY start.sh /opt/dagster/start.sh
+COPY scripts/deployment/start.sh /opt/dagster/start.sh
 
 # Verify files were copied and create any missing directories
 RUN ls -la ./dagster_home/ && \
