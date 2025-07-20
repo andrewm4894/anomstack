@@ -1,0 +1,82 @@
+scheduler:
+  module: dagster.core.scheduler
+  class: DagsterDaemonScheduler
+
+run_coordinator:
+  module: dagster.core.run_coordinator
+  class: QueuedRunCoordinator
+  config:
+    max_concurrent_runs: 12  # Increased for 8GB RAM + 4 performance CPUs (prevents queue backup)
+    tag_concurrency_limits:
+      - key: "dagster/concurrency_key"
+        value: "database"
+        limit: 2
+      - key: "dagster/concurrency_key"
+        value: "ml_training"
+        limit: 1
+
+# Use DefaultRunLauncher instead of DockerRunLauncher for Fly.io
+run_launcher:
+  module: dagster.core.launcher.default_run_launcher
+  class: DefaultRunLauncher
+
+run_storage:
+  module: dagster_postgres.run_storage
+  class: PostgresRunStorage
+  config:
+    postgres_url:
+      env: DATABASE_URL
+
+run_retries:
+  enabled: true
+  max_retries: 1
+
+# Aggressive retention policies optimized for Fly.io disk usage
+retention:
+  schedule:
+    purge_after_days: 2  # Keep for 2 days
+  sensor:
+    purge_after_days:
+      skipped: 1
+      failure: 2
+      success: 1
+
+# Run monitoring for Fly.io environment
+run_monitoring:
+  enabled: true
+  start_timeout_seconds: 180   # 3 minutes to start
+  cancel_timeout_seconds: 120  # 2 minutes to cancel
+  max_runtime_seconds: 2700    # 45 minutes max runtime per run (increased with better resources)
+  poll_interval_seconds: 60    # Check every minute
+
+# Disable telemetry
+telemetry:
+  enabled: false
+
+schedules:
+  use_threads: true
+  num_workers: 4  # Conservative for Fly.io
+
+sensors:
+  use_threads: true
+  num_workers: 2  # Conservative for Fly.io
+
+schedule_storage:
+  module: dagster_postgres.schedule_storage
+  class: PostgresScheduleStorage
+  config:
+    postgres_url:
+      env: DATABASE_URL
+
+event_log_storage:
+  module: dagster_postgres.event_log
+  class: PostgresEventLogStorage
+  config:
+    postgres_url:
+      env: DATABASE_URL
+
+compute_logs:
+  module: dagster.core.storage.local_compute_log_manager
+  class: LocalComputeLogManager
+  config:
+    base_dir: "/tmp/dagster/compute_logs" 

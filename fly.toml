@@ -1,0 +1,80 @@
+app = "anomstack-demo"
+primary_region = "ord"  # Chicago - you can change this to your preferred region
+
+[experimental]
+  auto_rollback = true
+
+[build]
+  dockerfile = "docker/Dockerfile.fly"
+
+# Environment variables
+[env]
+  DAGSTER_HOME = "/opt/dagster/dagster_home"
+  DAGSTER_CODE_SERVER_HOST = "localhost"
+  ANOMSTACK_DUCKDB_PATH = "/data/anomstack.db"
+  ANOMSTACK_MODEL_PATH = "local:///data/models"
+  ANOMSTACK_TABLE_KEY = "metrics"
+  ANOMSTACK_IGNORE_EXAMPLES = "no"
+  PYTHONPATH = "/opt/dagster/app"
+  # Admin authentication (override via fly secrets for production)
+  ANOMSTACK_ADMIN_USERNAME = "admin"
+  ANOMSTACK_ADMIN_PASSWORD = "anomstack2024"
+
+# nginx reverse proxy handles all routing
+[[services]]
+  protocol = "tcp"
+  internal_port = 80
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+    force_https = true
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+  [services.concurrency]
+    type = "connections"
+    hard_limit = 50
+    soft_limit = 40
+
+  [[services.tcp_checks]]
+    interval = "15s"
+    timeout = "10s"
+    grace_period = "30s"
+    port = 80
+
+# Persistent volumes for data
+[mounts]
+  destination = "/data"
+  source = "anomstack_data"
+
+# VM configuration - Scaled up for Dagster ML workloads with anti-hanging protection
+[vm]
+  memory = "8192"  # 8GB RAM (doubled from 4GB) - prevents resource exhaustion
+  cpu_kind = "performance"  # Better CPU for compute-intensive jobs
+  cpus = 4  # 4 dedicated CPUs for better concurrent job handling (prevents queue backup)
+
+# Auto-scaling
+[scaling]
+  min_machines_running = 1
+  max_machines_running = 2
+
+# Health checks
+[checks]
+  [checks.nginx_proxy]
+    port = 80
+    type = "http"
+    interval = "30s"
+    timeout = "5s"
+    path = "/nginx-health"
+    grace_period = "10s"
+
+  [checks.dashboard_via_nginx]
+    port = 80
+    type = "http"
+    interval = "30s"
+    timeout = "5s"
+    path = "/health"
+    grace_period = "10s" 
