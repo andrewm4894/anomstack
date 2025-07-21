@@ -11,6 +11,8 @@ primary_region = "ord"  # Chicago - you can change this to your preferred region
 [env]
   DAGSTER_HOME = "/opt/dagster/dagster_home"
   DAGSTER_CODE_SERVER_HOST = "localhost"
+  DAGSTER_WEBSERVER_HOST = "0.0.0.0"
+  DAGSTER_WEBSERVER_PORT = "3000"
   ANOMSTACK_DUCKDB_PATH = "/data/anomstack.db"
   ANOMSTACK_MODEL_PATH = "local:///data/models"
   ANOMSTACK_TABLE_KEY = "metrics"
