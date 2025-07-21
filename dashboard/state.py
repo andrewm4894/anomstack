@@ -141,19 +141,19 @@ class AppState:
                 self._metric_batches = get_metric_batches(source="all")
                 if not self._metric_batches:
                     log.warning("No metric batches found.")
-                     self._metric_batches = []
-                 
-                 if self._specs and self._metric_batches:
-                     self._specs_enabled = {batch: self._specs[batch] for batch in self._metric_batches if batch in self._specs}
-                 else:
-                     self._specs_enabled = {}
-                 
-                 self._metric_batches_loaded = True
-                 print("Metric batches loaded successfully")
-             except Exception as e:
-                 log.error(f"Error loading metric batches: {e}")
-                 self._metric_batches = []
-                 self._specs_enabled = {}
+                    self._metric_batches = []
+                
+                if self._specs and self._metric_batches:
+                    self._specs_enabled = {batch: self._specs[batch] for batch in self._metric_batches if batch in self._specs}
+                else:
+                    self._specs_enabled = {}
+                
+                self._metric_batches_loaded = True
+                print("Metric batches loaded successfully")
+            except Exception as e:
+                log.error(f"Error loading metric batches: {e}")
+                self._metric_batches = []
+                self._specs_enabled = {}
 
     def clear_batch_cache(self, batch_name):
         """
