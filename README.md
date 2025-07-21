@@ -46,6 +46,7 @@ Anomaly list view:
 - [Quickstart](#quickstart)
   - [GitHub Codespaces](#github-codespaces)
   - [Dagster Cloud](#dagster-cloud)
+  - [Fly.io Deployment](#flyio-deployment)
   - [Docker](#docker)
   - [Replit](#replit)
   - [Local Python env](#local-python-env)
@@ -132,6 +133,7 @@ Supported ways to run this project:
         <tr>
             <th align="center"><a href="#local-python-env">Python Env</a></th>
             <th align="center"><a href="#docker">Docker</a></th>
+            <th align="center"><a href="#fly-io-deployment">Fly.io</a></th>
             <th align="center"><a href="#dagster-cloud">Dagster Cloud</a></th>
             <th align="center"><a href="#github-codespaces">GitHub Codespaces</a></th>
             <th align="center"><a href="#replit">Replit</a></th>
@@ -141,6 +143,7 @@ Supported ways to run this project:
         <tr>
             <td align="center">✅</td>
             <td align="center">✅</td>
+            <td align="center">🆕</td>
             <td align="center">✅</td>
             <td align="center">✅</td>
             <td align="center">✅</td>
@@ -450,6 +453,32 @@ You can see the [`.devcontainer`](./.devcontainer) folder for the config used to
 You can run this project in Dagster Cloud. Fork the repo (or make a completely new repo using the `andrewm4894/anomstack` GitHub template) and then follow the instructions [here](https://docs.dagster.io/dagster-cloud/deployment/serverless#with-github) to deploy to Dagster Cloud from your forked repo.
 
 You can then manage you metrics via PR's in your GitHub repo ([here](https://github.com/andrewm4894/anomstack/pull/40/files) is a PR to add Google Trends metrics) and run them in Dagster Cloud which will just sync with your repo.
+
+### Fly.io Deployment
+
+Deploy to [Fly.io](https://fly.io) for production-ready, globally distributed anomaly detection.
+
+**🚀 Live Demo**: https://anomstack-demo.fly.dev
+
+```bash
+# New! Automatic .env integration 🎉
+cp .example.env .env          # Edit with your secrets
+make fly-preview              # Preview what will be deployed
+make fly-deploy               # Deploy with your environment variables
+
+# Or using scripts directly
+./scripts/deployment/preview_fly_secrets.sh
+./scripts/deployment/deploy_fly.sh
+```
+
+**✨ Features:**
+- 🔒 **Secure secret management** via Fly secrets
+- 🧠 **Smart filtering** (skips local-only variables)  
+- 🔐 **Configurable admin credentials**
+- 📊 **Public dashboard** + protected admin interface
+- 🌐 **Global edge deployment** with auto-scaling
+
+See [full deployment docs](docs/docs/deployment/fly.md) for detailed instructions.
 
 ### Docker
 

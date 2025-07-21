@@ -1,161 +1,182 @@
 # Scripts Directory
 
-This directory contains utility scripts and tools for managing and maintaining your Anomstack deployment.
+This directory contains utility scripts and tools organized by category for managing and maintaining your Anomstack deployment.
 
-## Overview
+## Directory Structure
 
-The scripts in this directory provide helpful utilities for common administrative tasks, database setup, data migration, and development workflows.
+The scripts are organized into descriptive subfolders based on their purpose:
 
-## Structure
+### 📁 [`deployment/`](deployment/)
+Scripts for deploying Anomstack to cloud platforms:
+- **`deploy_fly.sh`** - Automated Fly.io deployment with **NEW! .env integration** 🎉
+- **`preview_fly_secrets.sh`** - **NEW!** Preview what environment variables will be deployed as Fly secrets
+- **`validate_fly_config.sh`** - Pre-deployment configuration validation for Fly.io
 
-### `kill_long_running_tasks.py`
-Dagster utility for terminating or marking as failed any runs that exceed the configured timeout. 
+### 📁 [`configuration/`](configuration/)
+Scripts for managing Anomstack configuration:
+- **`reload_config.py`** - Hot-reload Dagster configuration without container restarts
 
-**Features:**
-- Uses the same timeout configuration as the timeout sensor
-- Gracefully handles unreachable user code servers
-- Provides detailed logging of termination actions
-- Automatically marks stuck runs as failed when termination isn't possible
+### 📁 [`maintenance/`](maintenance/)
+Scripts for system maintenance and cleanup:
+- **`kill_long_running_tasks.py`** - Terminate stuck Dagster runs and cleanup resources
 
-**Usage:**
+### 📁 [`examples/`](examples/)
+Example scripts for testing integrations and validating setup:
+- **`posthog_example.py`** - Test PostHog integration and validate credentials
+
+### 📁 [`sqlite/`](sqlite/)
+SQLite-specific database utilities (existing):
+- **`create_index.py`** - Create performance indexes on common columns
+- **`list_tables.py`** - List all database tables with details
+- **`list_indexes.py`** - List all database indexes
+- **`qry.py`** - Execute ad-hoc SQL queries from qry.sql file
+
+### 📁 [`utils/`](utils/)
+General system utilities (existing):
+- **`reset_docker.sh`** - Comprehensive Docker environment reset with multiple cleanup levels
+- **`cleanup_dagster_storage.sh`** - Clean up old Dagster runs and storage
+
+## Quick Start Guide
+
+### Common Administrative Tasks
+
+**Deploy to Fly.io:**
 ```bash
-cd scripts/
-python kill_long_running_tasks.py
+# New! Automatic .env integration
+cd scripts/deployment/
+cp ../../.example.env ../../.env      # Edit with your secrets
+./preview_fly_secrets.sh              # Preview what will be deployed
+./validate_fly_config.sh              # Validate configuration first
+./deploy_fly.sh                       # Deploy with your environment variables
 ```
 
-### `posthog_example.py`
-Runs the PostHog metrics ingest function to ensure your PostHog credentials work.
-
-### `sqlite/`
-Contains SQLite-specific utility scripts for users running Anomstack with SQLite as their database backend:
-
-#### `create_index.py`
-Automatically creates performance indexes on common metric columns (`metric_timestamp`, `metric_batch`, `metric_type`) for all tables in the SQLite database.
-
-**Usage:**
+**Configuration Management:**
 ```bash
-cd scripts/sqlite/
-python create_index.py
+cd scripts/configuration/
+python reload_config.py  # Hot-reload configurations
 ```
 
-#### `list_tables.py`
-Lists all tables in the SQLite database with their names and details.
-
-**Usage:**
+**System Maintenance:**
 ```bash
-cd scripts/sqlite/
-python list_tables.py
+cd scripts/maintenance/
+python kill_long_running_tasks.py  # Clean up stuck jobs
+
+cd scripts/utils/
+./cleanup_dagster_storage.sh       # Clean up old Dagster data
 ```
 
-#### `list_indexes.py`
-Lists all indexes in the SQLite database with their names and associated tables.
-
-**Usage:**
+**Integration Testing:**
 ```bash
-cd scripts/sqlite/
-python list_indexes.py
+cd scripts/examples/
+python posthog_example.py  # Test PostHog integration
 ```
 
-#### `qry.py`
-Executes the SQL query from `qry.sql` file and returns results as a DataFrame. Useful for running ad-hoc SQL queries against your SQLite database.
-
-**Usage:**
-```bash
-cd scripts/sqlite/
-# Edit qry.sql with your query first
-python qry.py
-```
-
-### `utils/`
-Contains general utility scripts for system management and maintenance.
-
-### `utils/reset_docker.sh`
-Comprehensive Docker reset utility with multiple cleanup levels:
-- **Gentle**: Rebuild containers with fresh images (safest)
-- **Medium**: Remove containers and networks, preserve data volumes
-- **Nuclear**: Remove all data including volumes and local files
-- **Full Nuclear**: Nuclear reset + complete Docker system cleanup
-
-Can be run interactively or with specific reset levels via Makefile targets.
-
-## Common Use Cases
-
-These scripts are typically used for:
-
-- **Database Setup**: Initialize databases and create required tables
-- **Database Performance**: Create indexes to improve query performance (`create_index.py`)
-- **Database Inspection**: View table and index structures (`list_tables.py`, `list_indexes.py`)
-- **Data Migration**: Move data between different storage backends
-- **Data Analysis**: Run ad-hoc SQL queries for troubleshooting (`qry.py`)
-- **Maintenance**: Clean up old data, optimize performance
-- **Task Management**: Terminate stuck or long-running Dagster jobs (`kill_long_running_tasks.py`)
-- **Development**: Setup development environments and test data
-- **Deployment**: Automate deployment tasks and configuration
-- **System Reset**: Clean up Docker environments with various levels of data preservation (`reset_docker.sh`)
-- **Credential Validation**: Test external service integrations (`posthog_example.py`)
-
-## Usage
-
-Most scripts can be run directly from the command line:
-
-```bash
-# Navigate to the scripts directory
-cd scripts/
-
-# Run a specific script
-python script_name.py
-```
-
-### Quick Examples
-
-**Database performance optimization:**
+**Database Operations:**
 ```bash
 cd scripts/sqlite/
-python create_index.py  # Create performance indexes
+python create_index.py    # Optimize database performance
+python list_tables.py     # Inspect database structure
 ```
 
-**Database inspection:**
-```bash
-cd scripts/sqlite/
-python list_tables.py   # See all tables
-python list_indexes.py  # See all indexes
-```
+## Script Categories Explained
 
-**Clean up stuck Dagster jobs:**
-```bash
-cd scripts/
-python kill_long_running_tasks.py
-```
+### 🚀 **Deployment Scripts**
+Handle deployment to cloud platforms with proper validation, configuration management, and error handling. These scripts ensure reliable deployment processes and provide comprehensive validation before deployment.
 
-**Complete Docker environment reset:**
-```bash
-make reset-interactive  # Interactive mode
-# or
-make reset-nuclear      # Nuclear reset
-```
+### ⚙️ **Configuration Scripts** 
+Enable hot-reloading of configurations without service restarts. Essential for development workflows and production configuration updates without downtime.
 
-## Database-Specific Scripts
+### 🔧 **Maintenance Scripts**
+Keep your Anomstack deployment running smoothly by cleaning up stuck processes, managing resources, and performing regular maintenance tasks.
 
-Different database backends may have specific requirements and utilities:
+### 🧪 **Example Scripts**
+Validate integrations, test connectivity, and provide working examples of how to interact with external services. Useful for troubleshooting and learning.
 
-- **SQLite**: Scripts for local development and small deployments
-- **DuckDB**: Utilities for analytical workloads
-- **Cloud Databases**: Migration and setup scripts for cloud platforms
+### 🗄️ **Database Scripts**
+Database-specific utilities for performance optimization, inspection, and maintenance. Currently focused on SQLite but can be extended for other databases.
 
-## Contributing Scripts
+### 🛠️ **General Utils**
+System-level utilities for environment management, cleanup operations, and general administrative tasks.
 
-When adding new utility scripts:
+## Usage Patterns
 
-1. Place them in the appropriate subdirectory based on their purpose
-2. Include clear documentation and usage examples
-3. Add error handling and logging
-4. Test scripts thoroughly before committing
-5. Update this README with information about new scripts
+### Development Workflow
+1. **Setup**: Use example scripts to validate integrations
+2. **Configure**: Use configuration scripts for hot-reloading during development
+3. **Maintain**: Use maintenance scripts to clean up development artifacts
+4. **Deploy**: Use deployment scripts for testing deployments
+
+### Production Operations
+1. **Deploy**: Use deployment scripts with proper validation
+2. **Monitor**: Use maintenance scripts for regular cleanup
+3. **Update**: Use configuration scripts for zero-downtime updates
+4. **Troubleshoot**: Use example scripts to validate external dependencies
+
+### Database Administration
+1. **Optimize**: Use database scripts to create indexes and optimize performance
+2. **Inspect**: Use database scripts to understand schema and structure
+3. **Query**: Use database scripts for ad-hoc analysis and troubleshooting
+4. **Maintain**: Use database scripts for cleanup and maintenance
 
 ## Best Practices
 
-- Always test scripts in a development environment first
+### Security
+- Always validate scripts in development before production use
+- Use environment variables for sensitive configuration
+- Review scripts for security implications before execution
+- Keep credentials out of script files
+
+### Reliability
+- Test scripts thoroughly in development environments
 - Include proper error handling and rollback mechanisms
-- Document any prerequisites or dependencies
 - Use appropriate logging levels for different operations
-- Follow the project's coding standards and conventions
+- Document prerequisites and dependencies clearly
+
+### Maintenance
+- Keep scripts updated with system changes
+- Include proper documentation and usage examples
+- Follow consistent naming and organization patterns
+- Regular review and cleanup of obsolete scripts
+
+## Integration with Makefile
+
+Many scripts are integrated with the project Makefile for convenience:
+
+- `make reload-config` → `scripts/configuration/reload_config.py`
+- `make reset-interactive` → `scripts/utils/reset_docker.sh`
+- `make dagster-cleanup-standard` → `scripts/utils/cleanup_dagster_storage.sh`
+
+See the main project Makefile for complete integration details.
+
+## Contributing New Scripts
+
+When adding new utility scripts:
+
+1. **Choose the Right Category**: Place scripts in the appropriate subdirectory
+2. **Follow Naming Conventions**: Use descriptive, consistent names
+3. **Include Documentation**: Add comprehensive README updates and inline documentation
+4. **Add Error Handling**: Include proper error handling and user feedback
+5. **Test Thoroughly**: Validate scripts in development environments
+6. **Update Documentation**: Keep README files current with new functionality
+
+### Creating New Categories
+
+If you need a new category:
+1. Create the subdirectory with a descriptive name
+2. Add a comprehensive README.md file
+3. Update this main README with the new category
+4. Consider Makefile integration for common operations
+
+## Support and Troubleshooting
+
+Each subdirectory contains detailed README files with:
+- Specific usage instructions
+- Troubleshooting guidance
+- Common use cases and examples
+- Integration details and requirements
+
+For general issues:
+- Check script permissions and execution environment
+- Verify all prerequisites and dependencies are met
+- Review logs and error output for specific guidance
+- Test in development environment before production use

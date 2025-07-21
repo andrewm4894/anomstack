@@ -44,7 +44,7 @@ services:
       - "4000"
     volumes:
       - ./tmp:/opt/dagster/app/tmp
-      - anomstack_metrics_duckdb:/metrics_db/duckdb
+      - anomstack_metrics_duckdb:/data
       - ./dagster_home:/opt/dagster/dagster_home
       - ./dagster_docker.yaml:/opt/dagster/dagster_home/dagster.yaml
       - ./metrics:/opt/dagster/app/metrics  # 🔥 ENABLES HOT CONFIG UPDATES
@@ -54,8 +54,9 @@ services:
       DAGSTER_POSTGRES_USER: "${ANOMSTACK_POSTGRES_USER:-postgres_user}"
       DAGSTER_POSTGRES_PASSWORD: "${ANOMSTACK_POSTGRES_PASSWORD:-postgres_password}"
       DAGSTER_POSTGRES_DB: "${ANOMSTACK_POSTGRES_DB:-postgres_db}"
+      DAGSTER_CODE_SERVER_HOST: "${DAGSTER_CODE_SERVER_HOST:-anomstack_code}"
       DAGSTER_CURRENT_IMAGE: "andrewm4894/anomstack_code:latest"
-      ANOMSTACK_DUCKDB_PATH: "/metrics_db/duckdb/anomstack.db"
+      ANOMSTACK_DUCKDB_PATH: "/data/anomstack.db"
       DAGSTER_HOME: "/opt/dagster/dagster_home"
     networks:
       - anomstack_network
@@ -104,7 +105,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/io_manager_storage:/tmp/io_manager_storage
       - ./tmp:/opt/dagster/app/tmp
-      - anomstack_metrics_duckdb:/metrics_db/duckdb
+      - anomstack_metrics_duckdb:/data
       - ./dagster_home:/opt/dagster/dagster_home
       - ./dagster_docker.yaml:/opt/dagster/dagster_home/dagster.yaml
       - ./metrics:/opt/dagster/app/metrics  # 🔥 ENABLES HOT CONFIG UPDATES
@@ -148,7 +149,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/io_manager_storage:/tmp/io_manager_storage
       - ./tmp:/opt/dagster/app/tmp
-      - anomstack_metrics_duckdb:/metrics_db/duckdb
+      - anomstack_metrics_duckdb:/data
       - ./dagster_home:/opt/dagster/dagster_home
       - ./dagster_docker.yaml:/opt/dagster/dagster_home/dagster.yaml
       - ./metrics:/opt/dagster/app/metrics  # 🔥 ENABLES HOT CONFIG UPDATES
@@ -183,7 +184,7 @@ services:
       - .env
     command: uvicorn dashboard.app:app --host 0.0.0.0 --port 8080 --reload
     volumes:
-      - anomstack_metrics_duckdb:/metrics_db/duckdb
+      - anomstack_metrics_duckdb:/data
       - ./metrics:/opt/dagster/app/metrics
     networks:
       - anomstack_network
