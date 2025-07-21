@@ -66,7 +66,7 @@ Configure where metrics and metadata are stored.
 
 | Variable | Required | Description | Docker Default | Local Default |
 |----------|----------|-------------|---------------|---------------|
-| `ANOMSTACK_DUCKDB_PATH` | No | DuckDB database path | `/metrics_db/duckdb/anomstack.db` | `tmpdata/anomstack-duckdb.db` |
+| `ANOMSTACK_DUCKDB_PATH` | No | DuckDB database path | `/data/anomstack.db` | `tmpdata/anomstack-duckdb.db` |
 | `ANOMSTACK_SQLITE_PATH` | No | SQLite database path | `tmpdata/anomstack-sqlite.db` | `tmpdata/anomstack-sqlite.db` |
 | `ANOMSTACK_TABLE_KEY` | No | Table identifier for metrics | `tmp.metrics` | `production.metrics` |
 
@@ -277,7 +277,7 @@ ANOMSTACK_ALERT_EMAIL_TO=developer@company.com
 ```bash
 # Use cloud storage
 ANOMSTACK_MODEL_PATH=gs://company-anomstack/models
-ANOMSTACK_DUCKDB_PATH=/metrics_db/duckdb/anomstack.db
+ANOMSTACK_DUCKDB_PATH=/data/anomstack.db
 
 # Production alerts
 ANOMSTACK_ALERT_EMAIL_FROM=alerts@company.com

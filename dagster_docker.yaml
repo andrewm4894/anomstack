@@ -37,7 +37,7 @@ run_launcher:
         - ${ANOMSTACK_HOME}/tmp:/opt/dagster/app/tmp
         - ${ANOMSTACK_HOME}/dagster_home:/opt/dagster/dagster_home
         - ${ANOMSTACK_HOME}/metrics:/opt/dagster/app/metrics
-        - anomstack_metrics_duckdb:/metrics_db/duckdb
+        - anomstack_metrics_duckdb:/data
 
 run_storage:
   module: dagster_postgres.run_storage

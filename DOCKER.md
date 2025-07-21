@@ -43,7 +43,7 @@ make docker
 - **Restart Policy**: `always`
 - **Volumes**:
   - `./tmp:/opt/dagster/app/tmp` (temporary files)
-  - `anomstack_metrics_duckdb:/metrics_db/duckdb` (DuckDB data)
+  - `anomstack_metrics_duckdb:/data` (DuckDB data)
 
 ### 3. Dagster UI (`anomstack_dagit`)
 - **Image**: `andrewm4894/anomstack_dagster:latest`
@@ -70,7 +70,7 @@ make docker
 
 ### Named Volumes
 - **`anomstack_metrics_duckdb`**: Persistent storage for DuckDB metrics database
-  - **Mount Point**: `/metrics_db/duckdb/`
+  - **Mount Point**: `/data/`
   - **Purpose**: Stores time-series metrics data
   - **Persistence**: Data survives container restarts
 
@@ -86,7 +86,7 @@ Create a `.env` file based on `.example.env`:
 
 ```bash
 # Database paths
-ANOMSTACK_DUCKDB_PATH=/metrics_db/duckdb/anomstack.db
+ANOMSTACK_DUCKDB_PATH=/data/anomstack.db
 ANOMSTACK_SQLITE_PATH=tmpdata/anomstack-sqlite.db
 
 # PostgreSQL
@@ -191,7 +191,7 @@ make docker-restart-[service]
 ## Data Persistence
 
 ### DuckDB Database
-- **Location**: `/metrics_db/duckdb/anomstack.db` (inside containers)
+- **Location**: `/data/anomstack.db` (inside containers)
 - **Volume**: `anomstack_metrics_duckdb`
 - **Backup**: Use `docker volume` commands to backup
 
