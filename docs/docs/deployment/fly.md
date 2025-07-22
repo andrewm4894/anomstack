@@ -21,7 +21,7 @@ Deploy Anomstack to Fly.io for a production-ready, scalable anomaly detection pl
 - **🔐 Protected Admin UI**: Secure access to orchestration controls
 - **📡 Global Edge Deployment**: Run close to your data sources worldwide
 - **⚡ Auto-scaling**: Scale up/down based on demand
-- **🗄️ Managed PostgreSQL**: Fully managed database with automatic backups  
+- **🗄️ SQLite Storage**: Simple, reliable storage on persistent volumes
 - **📦 Persistent Volumes**: Reliable storage for metrics and models
 - **💰 Simple Pricing**: Pay only for what you use
 
@@ -48,8 +48,7 @@ graph TB
     end
 
     subgraph "Fly.io Services"
-        PG[(🗄️ Managed PostgreSQL)]
-        VOL[📦 Persistent Volume<br/>10GB]
+        VOL[📦 Persistent Volume<br/>10GB<br/>SQLite Storage]
     end
 
     USERS --> PROXY
@@ -58,8 +57,8 @@ graph TB
     PROXY -->|"/dagster (basic auth)"| WEB
     WEB --> CODE
     DAEMON --> CODE
-    WEB --> PG
-    DAEMON --> PG
+    WEB --> VOL
+    DAEMON --> VOL
     CODE --> VOL
 ```
 
@@ -262,10 +261,13 @@ Our deployment uses several key configuration files:
 app = "my-anomstack"
 primary_region = "ord"
 
-# Single container with startup script
+[build]
+  dockerfile = "docker/Dockerfile.fly"
+
+# nginx reverse proxy handles all routing
 [[services]]
   protocol = "tcp"
-  internal_port = 80  # nginx proxy port
+  internal_port = 80
 
   [[services.ports]]
     port = 80
@@ -276,14 +278,16 @@ primary_region = "ord"
     port = 443
     handlers = ["tls", "http"]
 
+# Persistent volumes for data
 [mounts]
   destination = "/data"
   source = "anomstack_data"
 
+# VM configuration - Scaled for ML workloads
 [vm]
-  memory = "2048"
-  cpu_kind = "shared"
-  cpus = 1
+  memory = "8192"  # 8GB RAM for Dagster ML workloads
+  cpu_kind = "performance"
+  cpus = 4
 ```
 
 ### `nginx.conf` - Reverse Proxy with Auth
@@ -294,10 +298,10 @@ Key features:
 - **Basic authentication** for admin features
 - **WebSocket support** for real-time updates
 
-### `dagster_fly.yaml` - PostgreSQL Configuration
+### `dagster_fly.yaml` - Storage Configuration
 
 Configured for:
-- **DATABASE_URL** from Fly.io PostgreSQL
+- **SQLite storage** on persistent volume
 - **DefaultRunLauncher** (no Docker dependency)
 - **Persistent storage** on mounted volume
 
@@ -415,14 +419,15 @@ curl -I -u admin:anomstack2024 https://your-app.fly.dev/dagster  # Should get 20
 ### Database Management
 
 ```bash
-# Connect to database
-fly postgres connect -a my-anomstack-db
+# Access SQLite database via SSH
+fly ssh console -a my-anomstack
 
-# View database status
-fly status -a my-anomstack-db
+# Create backup of SQLite database
+cp /data/anomstack.db /tmp/backup_$(date +%Y%m%d_%H%M%S).db
 
-# Create backup
-fly postgres backup my-anomstack-db
+# View database size and usage
+ls -lh /data/anomstack.db
+sqlite3 /data/anomstack.db ".tables"
 ```
 
 ## Storage & Data Management
@@ -460,11 +465,11 @@ tar -czf /tmp/models_backup.tar.gz /data/models/
 
 Typical monthly costs for different workloads:
 
-| Workload | Memory | CPU | Storage | PostgreSQL | Est. Cost/Month* |
-|----------|--------|-----|---------|------------|-----------------|
-| **Light** (10 metrics) | 1GB | shared-cpu-1x | 10GB | 1 CPU | $15-25 |
-| **Medium** (100 metrics) | 2GB | shared-cpu-2x | 25GB | 1 CPU | $35-50 |
-| **Heavy** (1000+ metrics) | 4GB | dedicated-cpu-1x | 100GB | 2 CPU | $75-120 |
+| Workload | Memory | CPU | Storage | Est. Cost/Month* |
+|----------|--------|-----|---------|-----------------|
+| **Light** (10 metrics) | 1GB | shared-cpu-1x | 10GB | $10-20 |
+| **Medium** (100 metrics) | 2GB | shared-cpu-2x | 25GB | $25-40 |
+| **Heavy** (1000+ metrics) | 4GB | dedicated-cpu-1x | 100GB | $50-80 |
 
 *Estimates based on Fly.io pricing. Check [fly.io/docs/about/pricing](https://fly.io/docs/about/pricing/) for current rates.
 
@@ -510,13 +515,15 @@ nginx -t  # Test configuration
 #### Database Connection Issues
 
 ```bash
-# Test DATABASE_URL
+# Test SQLite database access
 fly ssh console -a my-anomstack
-echo $DATABASE_URL
 python -c "
-from sqlalchemy import create_engine
-engine = create_engine('$DATABASE_URL')
-print('Database connection successful!')
+import sqlite3
+conn = sqlite3.connect('/data/anomstack.db')
+cursor = conn.cursor()
+cursor.execute('SELECT name FROM sqlite_master WHERE type=\"table\";')
+print('SQLite connection successful! Tables:', cursor.fetchall())
+conn.close()
 "
 ```
 
@@ -542,7 +549,7 @@ print('DuckDB connection successful!')
 
 1. **High Memory Usage**: Scale up with `fly scale memory 4096`
 2. **Slow Queries**: Optimize your metric ingestion SQL
-3. **Database Bottlenecks**: Upgrade PostgreSQL instance
+3. **Storage I/O**: Consider upgrading to faster storage or optimizing queries
 4. **Network Issues**: Consider multi-region deployment
 
 ## Advanced Configuration

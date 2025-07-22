@@ -4,6 +4,8 @@
 
 [![Run on Repl.it](https://replit.com/badge/github/andrewm4894/anomstack)](https://replit.com/new/github/andrewm4894/anomstack)
 
+[![Deploy on Fly.io](https://img.shields.io/badge/Deploy%20on-Fly.io-blueviolet?logo=fly.io&logoColor=white)](https://andrewm4894.github.io/anomstack/docs/deployment/fly)
+
 <div align="left">
 
 <a href="https://github.com/andrewm4894/anomstack/stargazers">![GitHub Repo stars](https://img.shields.io/github/stars/andrewm4894/anomstack?style=social)</a>
