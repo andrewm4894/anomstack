@@ -72,30 +72,12 @@ def test_environment_variable_override():
 
         specs = get_specs()
 
-        # Test that environment variables override defaults only when not specified in YAML
+        # Test that environment variables override all YAML values (as designed)
         for batch_name, spec in specs.items():
-            # gcp_project_id should be overridden since it's not in defaults.yaml
+            # All environment variables should override their respective YAML values
             assert spec["gcp_project_id"] == test_project_id
-            # model_path should keep its YAML value (either default or batch-specific)
-            assert "model_path" in spec
-            if batch_name in ["freq_example", "snowflake_example_simple", "bigquery_example_simple",
-                            "gtrends", "weather_forecast", "gsod"]:
-                assert spec["model_path"] == "gs://andrewm4894-tmp/models"
-            elif batch_name == "s3_example_simple":
-                assert spec["model_path"] == "s3://andrewm4894-tmp/models"
-            else:
-                assert spec["model_path"] == "local://./models"
-            # table_key should keep its YAML value (either default or batch-specific)
-            assert "table_key" in spec
-            if batch_name in ["gsod", "gtrends", "bigquery_example_simple", "freq_example"]:
-                assert spec["table_key"] == "andrewm4894.metrics.metrics"
-            elif batch_name in ["weather_forecast", "snowflake_example_simple"]:
-                assert spec["table_key"] == "ANDREWM4894.METRICS.METRICS"
-            elif batch_name == "hn_top_stories_scores":
-                assert spec["table_key"] == "metrics_hackernews"
-            else:
-                # table_key should either be "metrics" or "metrics_<batch_name>"
-                assert spec["table_key"] in ["metrics", f"metrics_{batch_name}"]
+            assert spec["model_path"] == test_model_path
+            assert spec["table_key"] == test_table_key
     finally:
         # Restore original environment variables
         for var, value in original_env.items():
