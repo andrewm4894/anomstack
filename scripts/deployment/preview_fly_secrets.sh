@@ -1,6 +1,24 @@
 #!/bin/bash
 
-echo "🔍 Previewing Fly.io secrets from .env file..."
+echo "🔍 Previewing Fly.io secrets configuration..."
+
+# Parse command line arguments for profile support
+PROFILE=""
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --profile)
+            PROFILE="$2"
+            shift 2
+            ;;
+        -p)
+            PROFILE="$2"
+            shift 2
+            ;;
+        *)
+            shift
+            ;;
+    esac
+done
 
 # Function to preview environment variables from .env file (matches deploy_fly.sh)
 preview_env_vars_from_file() {
@@ -129,5 +147,46 @@ preview_env_vars_from_file() {
     echo "   ./scripts/deployment/deploy_fly.sh [app-name]"
 }
 
-# Run the preview
-preview_env_vars_from_file ".env" 
+# Handle deployment profile if specified (same logic as deploy_fly.sh)
+if [[ -n "$PROFILE" ]]; then
+    PROFILE_FILE="profiles/${PROFILE}.env"
+    if [[ -f "$PROFILE_FILE" ]]; then
+        echo "🎯 Using deployment profile: $PROFILE"
+        echo "📄 Profile file: $PROFILE_FILE"
+        
+        # Create temporary merged .env file
+        TEMP_ENV_FILE=$(mktemp)
+        
+        # Start with existing .env if it exists
+        if [[ -f ".env" ]]; then
+            cat ".env" > "$TEMP_ENV_FILE"
+            echo "✅ Base configuration loaded from .env"
+        else
+            touch "$TEMP_ENV_FILE"
+        fi
+        
+        # Append profile configuration (profile values override .env values)
+        echo "" >> "$TEMP_ENV_FILE"  # Add separator
+        echo "# Profile: $PROFILE (applied during deployment)" >> "$TEMP_ENV_FILE"
+        cat "$PROFILE_FILE" >> "$TEMP_ENV_FILE"
+        echo "✅ Profile configuration merged"
+        
+        # Use the merged file for preview
+        ENV_FILE="$TEMP_ENV_FILE"
+        
+        # Run the preview with merged configuration
+        preview_env_vars_from_file "$ENV_FILE"
+        
+        # Clean up
+        rm "$TEMP_ENV_FILE"
+        
+    else
+        echo "❌ Profile file not found: $PROFILE_FILE"
+        echo "Available profiles:"
+        ls -1 profiles/*.env 2>/dev/null | sed 's/profiles\///g' | sed 's/\.env//g' | sed 's/^/  - /'
+        exit 1
+    fi
+else
+    # Run the standard preview
+    preview_env_vars_from_file ".env"
+fi 

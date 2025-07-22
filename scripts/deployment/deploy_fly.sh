@@ -5,6 +5,32 @@ set -e
 
 echo "🚀 Deploying Anomstack to Fly.io..."
 
+# Parse command line arguments for profile support
+PROFILE=""
+APP_NAME=""
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --profile)
+            PROFILE="$2"
+            shift 2
+            ;;
+        -p)
+            PROFILE="$2"
+            shift 2
+            ;;
+        *)
+            if [[ -z "$APP_NAME" ]]; then
+                APP_NAME="$1"
+            fi
+            shift
+            ;;
+    esac
+done
+
+# Set default app name if not provided
+APP_NAME="${APP_NAME:-anomstack-demo}"
+
 # Check if fly CLI is installed and user is logged in
 if ! command -v fly &> /dev/null; then
     echo "❌ Fly CLI is not installed. Please install it first:"
@@ -18,10 +44,44 @@ if ! fly auth whoami &> /dev/null; then
 fi
 
 echo "✅ Fly CLI is installed and you are logged in."
-
-# Set app name (can be customized)
-APP_NAME="${1:-anomstack-demo}"
 echo "📱 App name: $APP_NAME"
+
+# Handle deployment profile if specified
+if [[ -n "$PROFILE" ]]; then
+    PROFILE_FILE="profiles/${PROFILE}.env"
+    if [[ -f "$PROFILE_FILE" ]]; then
+        echo "🎯 Using deployment profile: $PROFILE"
+        echo "📄 Profile file: $PROFILE_FILE"
+        
+        # Create temporary merged .env file
+        TEMP_ENV_FILE=$(mktemp)
+        
+        # Start with existing .env if it exists
+        if [[ -f ".env" ]]; then
+            cat ".env" > "$TEMP_ENV_FILE"
+            echo "✅ Base configuration loaded from .env"
+        else
+            touch "$TEMP_ENV_FILE"
+        fi
+        
+        # Append profile configuration (profile values override .env values)
+        echo "" >> "$TEMP_ENV_FILE"  # Add separator
+        echo "# Profile: $PROFILE (applied during deployment)" >> "$TEMP_ENV_FILE"
+        cat "$PROFILE_FILE" >> "$TEMP_ENV_FILE"
+        echo "✅ Profile configuration merged"
+        
+        # Use the merged file for deployment
+        ENV_FILE="$TEMP_ENV_FILE"
+    else
+        echo "❌ Profile file not found: $PROFILE_FILE"
+        echo "Available profiles:"
+        ls -1 profiles/*.env 2>/dev/null | sed 's/profiles\///g' | sed 's/\.env//g' | sed 's/^/  - /'
+        exit 1
+    fi
+else
+    ENV_FILE=".env"
+    echo "📄 Using standard .env file"
+fi
 
 
 
@@ -65,24 +125,24 @@ declare -a all_secrets=()
 all_secrets+=("DAGSTER_HOME=/opt/dagster/dagster_home")
 all_secrets+=("PYTHONPATH=/opt/dagster/app")
 
-# Set Fly.io defaults only if not already defined in .env
-if ! grep -q "^DAGSTER_CODE_SERVER_HOST=" ".env" 2>/dev/null; then
+# Set Fly.io defaults only if not already defined in configuration
+if ! grep -q "^DAGSTER_CODE_SERVER_HOST=" "$ENV_FILE" 2>/dev/null; then
     all_secrets+=("DAGSTER_CODE_SERVER_HOST=localhost")
 fi
 
-if ! grep -q "^ANOMSTACK_DUCKDB_PATH=" ".env" 2>/dev/null; then
+if ! grep -q "^ANOMSTACK_DUCKDB_PATH=" "$ENV_FILE" 2>/dev/null; then
     all_secrets+=("ANOMSTACK_DUCKDB_PATH=/data/anomstack.db")
 fi
 
-if ! grep -q "^ANOMSTACK_MODEL_PATH=" ".env" 2>/dev/null; then
+if ! grep -q "^ANOMSTACK_MODEL_PATH=" "$ENV_FILE" 2>/dev/null; then
     all_secrets+=("ANOMSTACK_MODEL_PATH=local:///data/models")
 fi
 
-if ! grep -q "^ANOMSTACK_TABLE_KEY=" ".env" 2>/dev/null; then
+if ! grep -q "^ANOMSTACK_TABLE_KEY=" "$ENV_FILE" 2>/dev/null; then
     all_secrets+=("ANOMSTACK_TABLE_KEY=metrics")
 fi
 
-if ! grep -q "^ANOMSTACK_IGNORE_EXAMPLES=" ".env" 2>/dev/null; then
+if ! grep -q "^ANOMSTACK_IGNORE_EXAMPLES=" "$ENV_FILE" 2>/dev/null; then
     all_secrets+=("ANOMSTACK_IGNORE_EXAMPLES=no")
 fi
 
@@ -90,8 +150,8 @@ fi
 ADMIN_USERNAME="admin"
 ADMIN_PASSWORD=""
 
-if [[ ! -f ".env" ]] || ! grep -q "ANOMSTACK_ADMIN_PASSWORD=" ".env" 2>/dev/null; then
-    echo "🔐 Generating admin credentials (no .env admin password found)..."
+if [[ ! -f "$ENV_FILE" ]] || ! grep -q "ANOMSTACK_ADMIN_PASSWORD=" "$ENV_FILE" 2>/dev/null; then
+    echo "🔐 Generating admin credentials (no admin password found in config)..."
     ADMIN_PASSWORD="$(openssl rand -base64 12)"
     all_secrets+=("ANOMSTACK_ADMIN_USERNAME=$ADMIN_USERNAME")
     all_secrets+=("ANOMSTACK_ADMIN_PASSWORD=$ADMIN_PASSWORD")
@@ -100,18 +160,18 @@ if [[ ! -f ".env" ]] || ! grep -q "ANOMSTACK_ADMIN_PASSWORD=" ".env" 2>/dev/null
     echo "  Password: $ADMIN_PASSWORD"
     echo "  (Save these credentials securely!)"
 else
-    # Get credentials from .env
-    ADMIN_USERNAME=$(grep "ANOMSTACK_ADMIN_USERNAME=" ".env" 2>/dev/null | cut -d'=' -f2 | tr -d ' ' || echo "admin")
-    ADMIN_PASSWORD=$(grep "ANOMSTACK_ADMIN_PASSWORD=" ".env" 2>/dev/null | cut -d'=' -f2 | tr -d ' ')
-    echo "✅ Using admin credentials from .env file"
+    # Get credentials from environment file
+    ADMIN_USERNAME=$(grep "ANOMSTACK_ADMIN_USERNAME=" "$ENV_FILE" 2>/dev/null | cut -d'=' -f2 | tr -d ' ' || echo "admin")
+    ADMIN_PASSWORD=$(grep "ANOMSTACK_ADMIN_PASSWORD=" "$ENV_FILE" 2>/dev/null | cut -d'=' -f2 | tr -d ' ')
+    echo "✅ Using admin credentials from configuration"
     echo "🔑 Admin credentials:"
     echo "  Username: $ADMIN_USERNAME"
     echo "  Password: $ADMIN_PASSWORD"
 fi
 
-# Add environment variables from .env file
-if [[ -f ".env" ]]; then
-    echo "📁 Reading environment variables from .env..."
+# Add environment variables from environment file
+if [[ -f "$ENV_FILE" ]]; then
+    echo "📁 Reading environment variables from $ENV_FILE..."
     
     # Variables that should NOT be sent to Fly (local development only)
     skip_patterns=(
@@ -150,7 +210,13 @@ if [[ -f ".env" ]]; then
             all_secrets+=("$var_name=$var_value")
         fi
         
-    done < ".env"
+    done < "$ENV_FILE"
+fi
+
+# Clean up temporary file if we created one
+if [[ -n "$TEMP_ENV_FILE" && -f "$TEMP_ENV_FILE" ]]; then
+    rm "$TEMP_ENV_FILE"
+    echo "🧹 Cleaned up temporary configuration file"
 fi
 
 # Set all secrets in one command to minimize releases
@@ -184,6 +250,12 @@ echo ""
 echo "🎉 Deployment complete!"
 echo "📊 Public Dashboard: https://$APP_NAME.fly.dev/"
 echo "🔐 Admin Interface: https://$APP_NAME.fly.dev/dagster (login: $ADMIN_USERNAME/$ADMIN_PASSWORD)"
+
+# Show profile info if one was used
+if [[ -n "$PROFILE" ]]; then
+    echo "🎯 Applied profile: $PROFILE"
+fi
+
 echo ""
 echo "Useful commands:"
 echo "  fly logs -a $APP_NAME                    # View logs"
@@ -191,7 +263,11 @@ echo "  fly ssh console -a $APP_NAME            # SSH into the app"
 echo "  fly status -a $APP_NAME                 # Check status"
 echo "  fly scale count 2 -a $APP_NAME          # Scale to 2 instances"
 echo ""
-echo "To set up alerting (optional):"
+echo "Deploy with profiles:"
+echo "  ./scripts/deployment/deploy_fly.sh --profile demo    # Deploy demo config"
+echo "  ./scripts/deployment/deploy_fly.sh --profile production  # Deploy production config"
+echo ""
+echo "To set up alerting (if not configured in profile):"
 echo "  fly secrets set ANOMSTACK_ALERT_EMAIL_FROM='your-email@domain.com' -a $APP_NAME"
 echo "  fly secrets set ANOMSTACK_ALERT_EMAIL_TO='alerts@domain.com' -a $APP_NAME"
 echo "  fly secrets set ANOMSTACK_ALERT_EMAIL_PASSWORD='your-app-password' -a $APP_NAME" 
