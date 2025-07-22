@@ -49,15 +49,14 @@ def get_specs(metrics_dir: str = "./metrics"):
                 return
             
             # Apply global environment variable overrides
-            # Only override if the parameter is NOT specified in either defaults or specific YAML file
+            # Environment variables should ALWAYS override YAML values
             for env_var in env_vars:
                 if env_var in os.environ:
                     param_key = env_var.replace("ANOMSTACK_", "").lower()
-                    # Only override if the parameter is NOT specified in either defaults or specific YAML file
-                    if param_key not in metric_specs and param_key not in defaults:
-                        yaml_value = merged_specs.get(param_key)
-                        merged_specs[param_key] = os.getenv(env_var)
-                        logger.info(f"ENV OVERRIDE: {env_var} replaces {param_key} (was: {yaml_value}, now: {merged_specs[param_key]})")
+                    # Environment variables should always take precedence over YAML values
+                    yaml_value = merged_specs.get(param_key)
+                    merged_specs[param_key] = os.getenv(env_var)
+                    logger.info(f"ENV OVERRIDE: {env_var} replaces {param_key} (was: {yaml_value}, now: {merged_specs[param_key]})")
             
             # Apply metric batch-specific environment variable overrides
             # Pattern: ANOMSTACK__<METRIC_BATCH>__<PARAM>
