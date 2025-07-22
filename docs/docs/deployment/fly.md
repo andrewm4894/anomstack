@@ -175,6 +175,26 @@ After deployment completes:
 - **📊 Dashboard**: `https://your-app-name.fly.dev/`
 - **🔐 Admin UI**: `https://your-app-name.fly.dev/dagster` (credentials shown after deploy)
 
+## Deployment Profiles
+
+Anomstack supports **deployment profiles** that act like "Helm values files", allowing you to configure different environments (demo, production, development) without modifying the original metric batch examples.
+
+:::tip Learn More
+📋 **[See the complete Deployment Profiles guide](profiles.md)** for detailed instructions on using profiles for environment-specific configurations.
+:::
+
+**Quick examples:**
+```bash
+# Deploy demo instance (enables key examples)
+make fly-deploy-demo
+
+# Deploy production instance (clean, focused)  
+make fly-deploy-production
+
+# Preview before deploying
+make fly-preview-demo
+```
+
 ## Manual Deployment
 
 For more control over the deployment process:

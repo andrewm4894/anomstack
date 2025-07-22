@@ -136,6 +136,14 @@ Scalable options for production workloads.
 | **Kubernetes** | Multi-node, enterprise scale |
 | **Docker Swarm** | Simple orchestration |
 
+### Configuration Management
+
+| Feature | Description | Compatibility |
+|---------|-------------|---------------|
+| **[Deployment Profiles](profiles.md)** | Environment-specific configurations (demo, production, dev) | Fly.io, Docker, Custom |
+| **[Environment Variables](../configuration/environment-variables.md)** | Runtime configuration overrides | All platforms |
+| **[Hot Reload](../configuration/hot-reload.md)** | Dynamic configuration updates | Docker, Local |
+
 ## Architecture Patterns
 
 ### Pattern 1: All-in-One (Recommended for Getting Started)
@@ -271,7 +279,8 @@ ANOMSTACK_ALERT_WEBHOOK_URL=https://api.company.com/alerts
 ### Deployment Guides
 
 - **[Docker Deployment](docker.md)** - Self-hosted with Docker Compose
-- **[Fly.io Deployment](fly.md)** - Global edge deployment with managed infrastructure  
+- **[Fly.io Deployment](fly.md)** - Global edge deployment with managed infrastructure
+- **[Deployment Profiles](profiles.md)** - Environment-specific configurations (demo, production, dev)  
 - **[Google Cloud Deployment](gcp.md)** - GCP-native integration
 - **[Storage Optimization](storage-optimization.md)** - Optimize storage for large deployments
 
