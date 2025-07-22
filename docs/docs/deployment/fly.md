@@ -54,8 +54,8 @@ graph TB
     
     USERS --> PROXY
     ADMIN --> PROXY
-    PROXY -->|/ (no auth)| DASH
-    PROXY -->|/dagster (basic auth)| WEB
+    PROXY -->|"/ (no auth)"| DASH
+    PROXY -->|"/dagster (basic auth)"| WEB
     WEB --> CODE
     DAEMON --> CODE
     WEB --> PG
