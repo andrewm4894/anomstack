@@ -4,11 +4,12 @@ This module provides functions to save Pandas DataFrames to various databases.
 
 import pandas as pd
 
+from anomstack.external.clickhouse.clickhouse import save_df_clickhouse
 from anomstack.external.duckdb.duckdb import save_df_duckdb
 from anomstack.external.gcp.bigquery import save_df_bigquery
 from anomstack.external.snowflake.snowflake import save_df_snowflake
 from anomstack.external.sqlite.sqlite import save_df_sqlite
-from anomstack.external.clickhouse.clickhouse import save_df_clickhouse
+
 
 def save_df(
     df: pd.DataFrame, db: str, table_key: str, if_exists: str = "append"

@@ -75,4 +75,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD /usr/local/bin/health-check.sh
 
 # Use simple startup script
-CMD ["/opt/dagster/start.sh"] 
+CMD ["/opt/dagster/start.sh"]

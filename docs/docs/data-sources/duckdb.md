@@ -66,4 +66,4 @@ Check out the [DuckDB example](https://github.com/andrewm4894/anomstack/tree/mai
 
 - [DuckDB Documentation](https://duckdb.org/docs)
 - [Example Queries](https://github.com/andrewm4894/anomstack/tree/main/metrics/examples/duckdb)
-- [Default Configuration](https://github.com/andrewm4894/anomstack/tree/main/metrics/defaults/defaults.yaml) 
+- [Default Configuration](https://github.com/andrewm4894/anomstack/tree/main/metrics/defaults/defaults.yaml)

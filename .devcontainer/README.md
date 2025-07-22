@@ -8,7 +8,7 @@ This directory contains multiple devcontainer configurations for different use c
 - **Purpose**: Quick start for new users or demos
 - **Docker Strategy**: Pulls pre-built images from Docker Hub
 - **Speed**: ⚡ Fast startup (30-60 seconds)
-- **Use Cases**: 
+- **Use Cases**:
   - New users trying out anomstack
   - Demos and presentations
   - Quick testing without development setup
@@ -32,7 +32,7 @@ This directory contains multiple devcontainer configurations for different use c
 ### VS Code Dev Containers
 
 1. **Default**: Open folder in VS Code → "Reopen in Container"
-2. **Development**: 
+2. **Development**:
    - Open Command Palette (`Ctrl+Shift+P`)
    - "Dev Containers: Reopen in Container"
    - Select `devcontainer.dev.json`
@@ -78,4 +78,4 @@ Both configurations provide:
 
 ## 📚 Documentation
 
-For more information, see the main [README.md](../README.md) and [DOCKER.md](../DOCKER.md) files. 
+For more information, see the main [README.md](../README.md) and [DOCKER.md](../DOCKER.md) files.

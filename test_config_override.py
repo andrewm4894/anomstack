@@ -12,12 +12,13 @@ sys.path.insert(0, str(Path(__file__).parent / "anomstack"))
 
 from config import get_specs
 
+
 def test_config_overrides():
     """Test the new environment variable override functionality."""
-    
+
     print("Testing metric batch-specific environment variable overrides...")
     print("=" * 60)
-    
+
     # First, get specs without environment variables to see original values
     print("Original values (without environment variables):")
     specs_original = get_specs("./metrics")
@@ -28,7 +29,7 @@ def test_config_overrides():
         print(f"  Ingest cron schedule: {batch_spec.get('ingest_cron_schedule')}")
         print(f"  Table key: {batch_spec.get('table_key')}")
     print()
-    
+
     # Set up test environment variables
     print("Setting environment variables:")
     os.environ["ANOMSTACK__PYTHON_INGEST_SIMPLE__DB"] = "bigquery"
@@ -38,11 +39,11 @@ def test_config_overrides():
     print("  ANOMSTACK__PYTHON_INGEST_SIMPLE__ALERT_METHODS=email")
     print("  ANOMSTACK__PYTHON_INGEST_SIMPLE__INGEST_CRON_SCHEDULE=*/1 * * * *")
     print()
-    
+
     # Get the specs with environment variables
     print("Values after environment variable overrides:")
     specs = get_specs("./metrics")
-    
+
     # Check if python_ingest_simple batch exists
     if "python_ingest_simple" in specs:
         batch_spec = specs["python_ingest_simple"]
@@ -50,7 +51,7 @@ def test_config_overrides():
         print(f"  Alert methods (should be 'email'): {batch_spec.get('alert_methods')}")
         print(f"  Ingest cron schedule (should be '*/1 * * * *'): {batch_spec.get('ingest_cron_schedule')}")
         print(f"  Table key (should be from YAML): {batch_spec.get('table_key')}")
-        
+
         # Verify the overrides worked
         print()
         print("Verification:")
@@ -59,14 +60,14 @@ def test_config_overrides():
         print(f"  Cron schedule override worked: {batch_spec.get('ingest_cron_schedule') == '*/1 * * * *'}")
     else:
         print("python_ingest_simple batch not found in specs")
-    
+
     # Clean up environment variables
     os.environ.pop("ANOMSTACK__PYTHON_INGEST_SIMPLE__DB", None)
     os.environ.pop("ANOMSTACK__PYTHON_INGEST_SIMPLE__ALERT_METHODS", None)
     os.environ.pop("ANOMSTACK__PYTHON_INGEST_SIMPLE__INGEST_CRON_SCHEDULE", None)
-    
+
     print("\n" + "=" * 60)
     print("Test completed!")
 
 if __name__ == "__main__":
-    test_config_overrides() 
+    test_config_overrides()

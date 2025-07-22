@@ -61,7 +61,7 @@ Anomstack expects SQL files to follow this structure:
 
 ```sql
 -- metrics/your_batch/your_metric.sql
-SELECT 
+SELECT
     timestamp_column as ds,
     metric_value as y,
     additional_dimensions
@@ -76,7 +76,7 @@ ORDER BY timestamp_column
 SQL queries support Jinja2 templating for dynamic content:
 
 ```sql
-SELECT 
+SELECT
     {{ timestamp_col }} as ds,
     {{ metric_col }} as y
 FROM {{ table_name }}
@@ -208,4 +208,4 @@ import logging
 logging.getLogger('anomstack.sql').setLevel(logging.DEBUG)
 ```
 
-This will log all executed queries and their parameters for troubleshooting. 
+This will log all executed queries and their parameters for troubleshooting.

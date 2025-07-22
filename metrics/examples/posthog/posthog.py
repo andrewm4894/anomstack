@@ -1,12 +1,12 @@
-import os
 
 import pandas as pd
 
 
 def ingest() -> pd.DataFrame:
     """Ingest headline metrics from the PostHog query API for multiple projects/domains."""
-    import requests
     import os
+
+    import requests
     from dagster import get_dagster_logger
 
     logger = get_dagster_logger()
@@ -36,7 +36,7 @@ def ingest() -> pd.DataFrame:
 
     all_rows = []
     ts = pd.Timestamp.utcnow().floor("s")
-    
+
     for project_id, domain in project_domain_map.items():
         url = f"{host}/api/projects/{project_id}/query"
         try:
@@ -55,7 +55,7 @@ def ingest() -> pd.DataFrame:
         if isinstance(first, dict):
             metrics = {
                 "events_yday": first.get("events_yday"),
-                "users_yday": first.get("users_yday"), 
+                "users_yday": first.get("users_yday"),
                 "pageviews_yday": first.get("pageviews_yday")
             }
         else:

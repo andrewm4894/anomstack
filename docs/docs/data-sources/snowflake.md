@@ -51,4 +51,4 @@ Check out the [Snowflake example](https://github.com/andrewm4894/anomstack/tree/
 ## Related Links
 
 - [Snowflake Documentation](https://docs.snowflake.com/)
-- [Example Queries](https://github.com/andrewm4894/anomstack/tree/main/metrics/examples/snowflake) 
+- [Example Queries](https://github.com/andrewm4894/anomstack/tree/main/metrics/examples/snowflake)

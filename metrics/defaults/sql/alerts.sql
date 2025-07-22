@@ -7,7 +7,7 @@ Written for DuckDB but will be translated to target dialect based on `db` param 
 with
 
 -- Filter the data to the relevant metric batch for metrics
-metric_value_data as 
+metric_value_data as
 (
 select
   metric_timestamp,
@@ -27,7 +27,7 @@ group by metric_timestamp, metric_batch, metric_name
 ),
 
 -- Filter the data to the relevant metric batch for scores
-metric_score_data as 
+metric_score_data as
 (
 select
   metric_timestamp,
@@ -44,7 +44,7 @@ group by metric_timestamp, metric_batch, metric_name
 ),
 
 -- Filter the data to the relevant metric batch for alerts
-metric_alert_data as 
+metric_alert_data as
 (
 select
   metric_timestamp,
@@ -61,7 +61,7 @@ group by metric_timestamp, metric_batch, metric_name
 ),
 
 -- Rank the score data by recency
-metric_score_recency_ranked as 
+metric_score_recency_ranked as
 (
 select
   metric_timestamp,
@@ -74,7 +74,7 @@ from
 ),
 
 -- Rank the value data by recency
-metric_value_recency_ranked as 
+metric_value_recency_ranked as
 (
 select
   metric_timestamp,
@@ -101,13 +101,13 @@ from
   metric_value_recency_ranked m
 left join
   metric_score_recency_ranked s
-on 
+on
   m.metric_name = s.metric_name
   and m.metric_batch = s.metric_batch
   and m.metric_timestamp = s.metric_timestamp
 left join
   metric_alert_data a
-on 
+on
   m.metric_name = a.metric_name
   and m.metric_batch = a.metric_batch
   and m.metric_timestamp = a.metric_timestamp
@@ -134,7 +134,7 @@ select
     order by metric_score_recency_rank
     rows between {{ alert_snooze_n }} preceding and 1 preceding
   ) as metric_has_recent_alert
-from 
+from
   data_ranked
 ),
 

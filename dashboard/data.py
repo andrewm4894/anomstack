@@ -7,14 +7,15 @@ This module contains functions for getting data from the database for the dashbo
 
 """
 
-import pandas as pd
-from anomstack.jinja.render import render
-from anomstack.sql.read import read_sql
+import logging
 import re
 from datetime import datetime, timedelta
-import logging
-from dashboard.constants import DEFAULT_LAST_N
 
+import pandas as pd
+
+from anomstack.jinja.render import render
+from anomstack.sql.read import read_sql
+from dashboard.constants import DEFAULT_LAST_N
 
 log = logging.getLogger("anomstack_dashboard")
 

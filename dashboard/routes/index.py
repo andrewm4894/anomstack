@@ -7,17 +7,17 @@ This module contains the route for the index page.
 
 """
 
-from fasthtml.common import Div, H2, P, A, Script, Title, Safe, Request
-from monsterui.all import UkIcon, ButtonT, TextPresets, Card, Button, DivLAligned
-import pandas as pd
 import logging
 
-from dashboard.app import app, rt
-from dashboard.components import create_batch_card
-from dashboard.batch_stats import calculate_batch_stats
-from dashboard.data import get_data
-from dashboard.constants import DEFAULT_LAST_N
+import pandas as pd
+from fasthtml.common import H2, A, Div, P, Request, Safe, Script, Title
+from monsterui.all import Button, ButtonT, Card, DivLAligned, TextPresets, UkIcon
 
+from dashboard.app import app, rt
+from dashboard.batch_stats import calculate_batch_stats
+from dashboard.components import create_batch_card
+from dashboard.constants import DEFAULT_LAST_N
+from dashboard.data import get_data
 
 log = logging.getLogger("anomstack_dashboard")
 
@@ -203,5 +203,3 @@ def index(request: Request):
         ),
         main_content,
     )
-
-

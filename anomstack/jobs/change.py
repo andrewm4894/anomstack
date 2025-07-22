@@ -148,7 +148,7 @@ def build_change_job(spec: dict) -> JobDefinition:
                         **metric_tags.get(metric_name, {}),
                     }
                     logger.debug(f"metric tags:\n{tags}")
-                    
+
                     # Wrap send_alert in try-except to prevent blocking save_alerts
                     try:
                         df_alert = send_alert(

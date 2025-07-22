@@ -8,7 +8,8 @@ This module contains the components for the search and filtering functionality.
 """
 
 #from fasthtml.common import Input
-from monsterui.all import Form, DivLAligned, Input, Button
+from monsterui.all import DivLAligned, Form, Input
+
 from dashboard.app import app
 
 
@@ -57,7 +58,7 @@ def create_last_n_form(batch_name: str) -> Form:
         Form: The last n number form.
     """
     current_last_n = app.state.last_n.get(batch_name, "30n")
-    
+
     return Form(
         DivLAligned(
             Input(

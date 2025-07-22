@@ -3,9 +3,10 @@ Some helper functions for ClickHouse using clickhouse-connect.
 """
 
 import os
+
 import pandas as pd
-from dagster import get_dagster_logger
 from clickhouse_connect import get_client
+from dagster import get_dagster_logger
 
 
 def map_dtype(dtype) -> str:
@@ -42,10 +43,10 @@ def get_clickhouse_client():
     logger.info(f"ClickHouse connection: {host}:{port}/{database}")
 
     return get_client(
-        host=host, 
-        port=port, 
-        username=user, 
-        password=password, 
+        host=host,
+        port=port,
+        username=user,
+        password=password,
         database=database
     )
 
@@ -62,7 +63,7 @@ def read_sql_clickhouse(sql: str) -> pd.DataFrame:
     """
     client = get_clickhouse_client()
     result = client.query(sql)
-    
+
     return pd.DataFrame(result.result_set, columns=result.column_names)
 
 

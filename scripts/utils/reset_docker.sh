@@ -22,16 +22,16 @@ print_error() { echo -e "${RED}❌ $1${NC}"; }
 confirm() {
     local message="$1"
     local default="${2:-n}"
-    
+
     if [[ "$default" == "y" ]]; then
         prompt="[Y/n]"
     else
         prompt="[y/N]"
     fi
-    
+
     read -p "$(echo -e "${YELLOW}$message $prompt${NC} ")" -n 1 -r
     echo
-    
+
     if [[ "$default" == "y" ]]; then
         [[ $REPLY =~ ^[Nn]$ ]] && return 1 || return 0
     else
@@ -42,19 +42,19 @@ confirm() {
 # Function to show data sizes
 show_data_sizes() {
     print_info "Current data usage:"
-    
+
     if [ -d "$PROJECT_ROOT/tmp" ] && [ "$(ls -A "$PROJECT_ROOT/tmp" 2>/dev/null)" ]; then
         echo -e "  📁 tmp/ directory: $(du -sh "$PROJECT_ROOT/tmp" 2>/dev/null | cut -f1 || echo "empty")"
     fi
-    
+
     if [ -d "$PROJECT_ROOT/dagster_home/storage" ] && [ "$(ls -A "$PROJECT_ROOT/dagster_home/storage" 2>/dev/null)" ]; then
         echo -e "  🗄️  dagster_home/storage: $(du -sh "$PROJECT_ROOT/dagster_home/storage" 2>/dev/null | cut -f1 || echo "empty")"
     fi
-    
+
     if [ -d "$PROJECT_ROOT/dagster_home/history" ] && [ "$(ls -A "$PROJECT_ROOT/dagster_home/history" 2>/dev/null)" ]; then
         echo -e "  📚 dagster_home/history: $(du -sh "$PROJECT_ROOT/dagster_home/history" 2>/dev/null | cut -f1 || echo "empty")"
     fi
-    
+
     # Show Docker volumes
     volumes=$(docker volume ls -q | grep -E "anomstack" 2>/dev/null || echo "")
     if [ -n "$volumes" ]; then
@@ -79,18 +79,18 @@ show_preserved() {
 gentle_reset() {
     print_info "🔄 GENTLE RESET: Rebuilding containers with fresh images"
     show_preserved
-    
+
     if confirm "Proceed with gentle reset?"; then
         cd "$PROJECT_ROOT"
         print_info "Stopping containers..."
         make docker-down
-        
+
         print_info "Building fresh images..."
         make docker-dev-build --no-cache
-        
+
         print_info "Starting containers..."
         make docker-dev
-        
+
         print_success "Gentle reset complete! 🎉"
     else
         print_info "Reset cancelled."
@@ -99,23 +99,23 @@ gentle_reset() {
 
 medium_reset() {
     print_info "🧹 MEDIUM RESET: Remove containers and networks, keep data volumes"
-    
+
     show_data_sizes
     show_preserved
     print_success "Docker volumes will be PRESERVED (your data is safe)"
     echo
-    
+
     if confirm "Proceed with medium reset?"; then
         cd "$PROJECT_ROOT"
         print_info "Removing containers and networks..."
         make docker-rm || docker-compose down --remove-orphans
-        
+
         print_info "Building fresh images..."
         make docker-dev-build
-        
+
         print_info "Starting fresh containers..."
         make docker-dev
-        
+
         print_success "Medium reset complete! 🎉"
     else
         print_info "Reset cancelled."
@@ -124,7 +124,7 @@ medium_reset() {
 
 nuclear_reset() {
     print_info "☢️  NUCLEAR RESET: Remove containers, volumes, and local data"
-    
+
     show_data_sizes
     show_preserved
     print_error "⚠️  ALL DATA WILL BE LOST:"
@@ -132,17 +132,17 @@ nuclear_reset() {
     echo -e "  🗑️  All local run data (tmp/, storage/, history/)"
     echo -e "  🗑️  All Dagster run history and logs"
     echo
-    
+
     if confirm "Are you absolutely sure you want to delete ALL data?" "n"; then
         if confirm "This cannot be undone. Really proceed?" "n"; then
             cd "$PROJECT_ROOT"
-            
+
             print_info "Stopping and removing containers with volumes..."
             make docker-prune || {
                 docker-compose down -v --remove-orphans
                 docker system prune -f
             }
-            
+
             print_info "Removing local data directories..."
             [ -d "tmp" ] && rm -rf tmp/* && print_success "Cleared tmp/ directory"
             [ -d "dagster_home/storage" ] && rm -rf dagster_home/storage/* && print_success "Cleared dagster storage"
@@ -151,13 +151,13 @@ nuclear_reset() {
             [ -d "dagster_home/logs" ] && rm -rf dagster_home/logs/* && print_success "Cleared logs"
             [ -d "dagster_home/.nux" ] && rm -rf dagster_home/.nux/* && print_success "Cleared nux cache"
             [ -d "dagster_home/.telemetry" ] && rm -rf dagster_home/.telemetry/* && print_success "Cleared telemetry"
-            
+
             print_info "Building fresh images..."
             make docker-dev-build
-            
+
             print_info "Starting completely fresh setup..."
             make docker-dev
-            
+
             print_success "Nuclear reset complete! Everything is fresh and clean 🎉"
             print_info "Your setup is now like a brand new installation"
         else
@@ -170,7 +170,7 @@ nuclear_reset() {
 
 full_nuclear_reset() {
     print_info "💥 FULL NUCLEAR RESET: Everything + Docker system cleanup"
-    
+
     show_data_sizes
     show_preserved
     print_error "⚠️  EVERYTHING DOCKER WILL BE CLEANED:"
@@ -178,34 +178,34 @@ full_nuclear_reset() {
     echo -e "  🗑️  ALL unused Docker images, networks, build cache"
     echo -e "  🗑️  Docker system prune (frees maximum disk space)"
     echo
-    
+
     if confirm "Are you absolutely sure? This is the most destructive option!" "n"; then
         if confirm "This will clean up ALL Docker resources. Really proceed?" "n"; then
             cd "$PROJECT_ROOT"
-            
+
             # Do nuclear reset first
             print_info "Performing nuclear data cleanup..."
             make docker-prune || {
                 docker-compose down -v --remove-orphans
                 docker system prune -f
             }
-            
+
             print_info "Removing local data directories..."
             [ -d "tmp" ] && rm -rf tmp/* && print_success "Cleared tmp/ directory"
             [ -d "dagster_home/storage" ] && rm -rf dagster_home/storage/* && print_success "Cleared dagster storage"
             [ -d "dagster_home/history" ] && rm -rf dagster_home/history/* && print_success "Cleared dagster history"
             [ -d "dagster_home/.logs_queue" ] && rm -rf dagster_home/.logs_queue/* && print_success "Cleared logs queue"
             [ -d "dagster_home/logs" ] && rm -rf dagster_home/logs/* && print_success "Cleared logs"
-            
+
             print_info "Performing full Docker system cleanup..."
             docker system prune -a -f
-            
+
             print_info "Building completely fresh images..."
             make docker-dev-build
-            
+
             print_info "Starting pristine setup..."
             make docker-dev
-            
+
             print_success "Full nuclear reset complete! Maximum cleanup achieved 🎉"
             print_info "You've reclaimed maximum disk space and have a pristine setup"
         else
@@ -231,10 +231,10 @@ usage() {
 
 main() {
     cd "$PROJECT_ROOT"
-    
+
     print_info "🐳 Anomstack Docker Reset Tool"
     echo
-    
+
     case "${1:-}" in
         "gentle")
             gentle_reset
@@ -260,10 +260,10 @@ main() {
             echo "4) 💥 Full Nuclear - Nuclear + full Docker cleanup"
             echo "5) ❌ Cancel"
             echo
-            
+
             read -p "Choose option [1-5]: " -n 1 -r choice
             echo
-            
+
             case $choice in
                 1) gentle_reset ;;
                 2) medium_reset ;;
@@ -280,4 +280,4 @@ main() {
     esac
 }
 
-main "$@" 
+main "$@"

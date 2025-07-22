@@ -143,7 +143,7 @@ enable-auto-reload:
 # enable smart config file watcher sensor
 enable-config-watcher:
 	@echo "👁️ Enabling smart configuration file watcher..."
-	@echo "ANOMSTACK_CONFIG_WATCHER=true" >> .env  
+	@echo "ANOMSTACK_CONFIG_WATCHER=true" >> .env
 	@echo "✅ Config watcher enabled! Restart containers: make docker-restart"
 
 # alias for docker-stop
@@ -179,7 +179,7 @@ fly-preview:
 fly-preview-demo:
 	./scripts/deployment/preview_fly_secrets.sh --profile demo
 
-# preview deployment with production profile  
+# preview deployment with production profile
 fly-preview-production:
 	./scripts/deployment/preview_fly_secrets.sh --profile production
 

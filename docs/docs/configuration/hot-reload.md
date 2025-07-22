@@ -334,4 +334,4 @@ fswatch -o metrics/ | xargs -n1 -I{} make reload-config
 
 ---
 
-*This feature requires Anomstack v1.x+ with updated Docker configurations.* 
+*This feature requires Anomstack v1.x+ with updated Docker configurations.*

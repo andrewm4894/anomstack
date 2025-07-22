@@ -10,7 +10,7 @@ def ingest() -> pd.DataFrame:
     """
     import requests
     from dagster import get_dagster_logger
-    
+
     logger = get_dagster_logger()
 
     url = "https://data-api.coindesk.com/index/cc/v1/latest/tick"

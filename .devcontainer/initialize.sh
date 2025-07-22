@@ -22,7 +22,7 @@ mkdir -p /opt/dagster/dagster_home
 PYTHON_INGEST_CONFIG="metrics/examples/python/python_ingest_simple/python_ingest_simple.yaml"
 if [ -f "$PYTHON_INGEST_CONFIG" ]; then
     echo "Updating python_ingest_simple job schedules to RUNNING for Codespaces..."
-    
+
     # Array of schedule statuses to set to RUNNING
     SCHEDULE_STATUSES=(
         "ingest_default_schedule_status"
@@ -30,7 +30,7 @@ if [ -f "$PYTHON_INGEST_CONFIG" ]; then
         "score_default_schedule_status"
         "alert_default_schedule_status"
     )
-    
+
     # Update each schedule status
     for status in "${SCHEDULE_STATUSES[@]}"; do
         if grep -q "$status:" "$PYTHON_INGEST_CONFIG"; then
@@ -43,7 +43,7 @@ if [ -f "$PYTHON_INGEST_CONFIG" ]; then
             echo "Added $status: RUNNING"
         fi
     done
-    
+
     echo "Updated python_ingest_simple job schedules to RUNNING"
 else
     echo "Warning: python_ingest_simple.yaml not found at $PYTHON_INGEST_CONFIG"
@@ -55,4 +55,4 @@ fi
 # - Set up configuration
 # - Prepare volumes/directories
 
-echo "Initialize script completed successfully!" 
+echo "Initialize script completed successfully!"

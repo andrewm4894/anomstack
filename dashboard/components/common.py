@@ -9,7 +9,8 @@ This module contains the common components for the dashboard.
 
 from fasthtml.common import Div
 from monsterui.all import Card, DivFullySpaced
-from .search import create_search_form, create_last_n_form
+
+from .search import create_last_n_form, create_search_form
 from .toolbar import create_toolbar_buttons
 
 

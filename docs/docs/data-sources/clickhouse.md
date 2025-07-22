@@ -50,4 +50,4 @@ Check out the [ClickHouse example](https://github.com/andrewm4894/anomstack/tree
 ## Related Links
 
 - [ClickHouse Documentation](https://clickhouse.com/docs)
-- [Example Queries](https://github.com/andrewm4894/anomstack/tree/main/metrics/examples/clickhouse) 
+- [Example Queries](https://github.com/andrewm4894/anomstack/tree/main/metrics/examples/clickhouse)

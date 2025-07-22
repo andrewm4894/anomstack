@@ -64,12 +64,12 @@ plotting:
   theme: "anomstack"
   color_palette: ["#1f77b4", "#ff7f0e", "#2ca02c"]
   figure_size: [12, 6]
-  
+
   # Content settings
   show_anomalies: true
   show_confidence_bands: true
   anomaly_threshold_line: true
-  
+
   # Output settings
   dpi: 150
   format: "png"
@@ -192,4 +192,4 @@ logging.getLogger('anomstack.plots').setLevel(logging.DEBUG)
 - Use data sampling for large datasets
 - Enable plot caching for repeated views
 - Choose appropriate output formats for use case
-- Monitor memory usage during plot generation 
+- Monitor memory usage during plot generation

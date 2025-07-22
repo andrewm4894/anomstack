@@ -68,4 +68,4 @@ Check out the [Redshift example](https://github.com/andrewm4894/anomstack/tree/m
 
 - [Redshift Documentation](https://docs.aws.amazon.com/redshift/)
 - [Example Queries](https://github.com/andrewm4894/anomstack/tree/main/metrics/examples/redshift)
-- [Default Configuration](https://github.com/andrewm4894/anomstack/tree/main/metrics/defaults/defaults.yaml) 
+- [Default Configuration](https://github.com/andrewm4894/anomstack/tree/main/metrics/defaults/defaults.yaml)

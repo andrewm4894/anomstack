@@ -7,12 +7,13 @@ This module contains the routes for the search and load more functionality.
 
 """
 
-from fasthtml.common import Div, P, FT
-from monsterui.all import DivLAligned, Button, ButtonT
+from fasthtml.common import FT, Div, P
+from monsterui.all import Button, ButtonT
 
 from dashboard.app import app, rt
-from .batch import ChartManager, get_batch_view, DEFAULT_LOAD_N_CHARTS
 from dashboard.data import get_data
+
+from .batch import DEFAULT_LOAD_N_CHARTS, ChartManager
 
 
 @rt("/batch/{batch_name}/search")
@@ -146,7 +147,7 @@ def post(batch_name: str, last_n: str = "30n"):
     try:
         # Update the last_n value
         app.state.last_n[batch_name] = last_n
-        
+
         # Clear all caches for this batch
         if batch_name in app.state.df_cache:
             del app.state.df_cache[batch_name]
@@ -154,22 +155,22 @@ def post(batch_name: str, last_n: str = "30n"):
             del app.state.stats_cache[batch_name]
         if batch_name in app.state.chart_cache:
             del app.state.chart_cache[batch_name]
-        
+
         # Get fresh data with new time window
         app.state.df_cache[batch_name] = get_data(
             app.state.specs_enabled[batch_name],
             last_n=last_n,
             ensure_timestamp=True
         )
-        
+
         # Recalculate stats with new data
         app.state.calculate_metric_stats(batch_name)
-        
+
         # Return only the charts container content
         metric_stats = app.state.stats_cache[batch_name]
         remaining_metrics = len(metric_stats) - DEFAULT_LOAD_N_CHARTS
         load_next = min(DEFAULT_LOAD_N_CHARTS, remaining_metrics)
-        
+
         return [
             Div(
                 *[

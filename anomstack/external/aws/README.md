@@ -174,4 +174,4 @@ logging.getLogger('botocore').setLevel(logging.DEBUG)
 Monitor S3 performance using:
 - AWS CloudWatch metrics
 - S3 access logs
-- AWS X-Ray tracing (if enabled) 
+- AWS X-Ray tracing (if enabled)

@@ -157,7 +157,7 @@ function CTASection() {
             Ready to detect anomalies in your metrics?
           </Heading>
           <p className="margin-bottom--lg" style={{fontSize: '1.2rem'}}>
-            Join the growing community of developers using Anomstack for reliable, 
+            Join the growing community of developers using Anomstack for reliable,
             open-source anomaly detection.
           </p>
           <div className={styles.buttons}>

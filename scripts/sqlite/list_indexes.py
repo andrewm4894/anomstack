@@ -1,5 +1,6 @@
-from anomstack.external.sqlite.sqlite import run_sql_sqlite
 from dotenv import load_dotenv
+
+from anomstack.external.sqlite.sqlite import run_sql_sqlite
 
 load_dotenv(override=True)
 
@@ -11,4 +12,3 @@ def list_indexes():
 
 if __name__ == "__main__":
     df = list_indexes()
-

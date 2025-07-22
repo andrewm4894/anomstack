@@ -17,4 +17,4 @@ google-cloud-bigquery
 google-api-core
 snowflake-connector-python
 libsql-experimental
-clickhouse-connect 
+clickhouse-connect

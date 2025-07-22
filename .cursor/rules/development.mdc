@@ -45,7 +45,7 @@ The **Makefile contains many common development commands** organized by category
 - `make docs-build` - Build static documentation site
 
 ## Project Structure
-- **Local development**: Use `make local` for Dagster + `make dashboard` 
+- **Local development**: Use `make local` for Dagster + `make dashboard`
 - **Docker development**: Use `make docker-smart` for full stack
 - **Hot reload**: Configuration changes can be reloaded without restarts
 - **Multiple reset levels**: From gentle rebuilds to nuclear cleanup options

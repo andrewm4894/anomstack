@@ -646,4 +646,4 @@ make kill-long-runs        # Kill long-running tasks
 - Run `make reset-interactive` for guided Docker operations
 - Check `scripts/utils/README.md` for detailed reset documentation
 - Use `make docker-logs` to diagnose container issues
-- Most targets have descriptive comments in the Makefile itself 
+- Most targets have descriptive comments in the Makefile itself

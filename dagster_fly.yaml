@@ -70,4 +70,4 @@ local_artifact_storage:
   module: dagster.core.storage.root
   class: LocalArtifactStorage
   config:
-    base_dir: "/data/artifacts" 
+    base_dir: "/data/artifacts"

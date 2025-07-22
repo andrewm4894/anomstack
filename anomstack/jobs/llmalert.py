@@ -2,8 +2,8 @@
 Generate llmalert jobs and schedules.
 """
 
-import os
 import json
+import os
 
 import pandas as pd
 from dagster import (
@@ -20,7 +20,6 @@ from anomstack.alerts.send import send_alert
 from anomstack.config import get_specs
 from anomstack.df.save import save_df
 from anomstack.df.wrangle import wrangle_df
-from anomstack.fn.run import define_fn
 from anomstack.jinja.render import render
 from anomstack.llm.agent import detect_anomalies
 from anomstack.sql.read import read_sql
@@ -68,7 +67,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
     # Support both new and legacy parameter names for backward compatibility
     # If no custom prompts are specified, defaults to None to use anomaly-agent's built-in defaults
     detection_prompt = (
-        spec.get("llmalert_anomaly_agent_detection_prompt") or 
+        spec.get("llmalert_anomaly_agent_detection_prompt") or
         spec.get("llmalert_anomaly_agent_system_prompt")
     )
     verification_prompt = spec.get("llmalert_anomaly_agent_verification_prompt")
@@ -144,7 +143,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                 )
                 logger.debug(f"Raw anomaly detection output columns: {df_detected_anomalies.columns.tolist()}")
                 logger.debug(f"Raw anomaly detection output shape: {df_detected_anomalies.shape}")
-                
+
                 df_detected_anomalies = df_detected_anomalies.rename(
                     columns={
                         "timestamp": "anomaly_timestamp",
@@ -173,7 +172,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                     # merge the two dataframes on the metric_timestamp column
                     logger.debug(f"Before merge - df_metric columns: {df_metric.columns.tolist()}")
                     logger.debug(f"Before merge - df_detected_anomalies columns: {df_detected_anomalies.columns.tolist()}")
-                    
+
                     df_metric = df_metric.merge(
                         df_detected_anomalies,
                         how="left",
@@ -182,7 +181,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                     )
                     logger.debug(f"After merge - df_metric columns: {df_metric.columns.tolist()}")
                     logger.debug(f"After merge - df_metric shape: {df_metric.shape}")
-                    
+
                     df_metric["metric_timestamp"] = pd.to_datetime(
                         df_metric["metric_timestamp"], format="%Y-%m-%d %H:%M:%S"
                     )
@@ -228,7 +227,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                             f"🤖 LLM says [{metric_name}] looks anomalous "
                             f"({latest_anomaly_timestamp}) 🤖"
                         )
-                        
+
                         # Wrap send_alert in try-except to prevent blocking save_llmalerts
                         try:
                             df_metric = send_alert(

@@ -35,23 +35,23 @@ graph TB
         USERS[👥 Users]
         ADMIN[🔐 Admin Users]
     end
-    
+
     subgraph "Fly.io Edge (nginx)"
         PROXY[nginx Reverse Proxy<br/>Port 80/443]
     end
-    
+
     subgraph "Fly.io VM Container"
         DASH[📊 Dashboard<br/>Port 8080<br/><i>Public</i>]
         WEB[⚙️ Dagster Webserver<br/>Port 3000<br/><i>Protected</i>]
         DAEMON[🔄 Dagster Daemon<br/>Background Jobs]
         CODE[📦 Code Server<br/>Port 4000<br/>Internal]
     end
-    
+
     subgraph "Fly.io Services"
         PG[(🗄️ Managed PostgreSQL)]
         VOL[📦 Persistent Volume<br/>10GB]
     end
-    
+
     USERS --> PROXY
     ADMIN --> PROXY
     PROXY -->|"/ (no auth)"| DASH
@@ -350,13 +350,13 @@ After deployment, add your metric configurations:
    ```yaml
    metric_batch: 'my_company_metrics'
    ingest_sql: |
-     SELECT 
+     SELECT
        CURRENT_TIMESTAMP as metric_timestamp,
        'revenue' as metric_name,
        daily_revenue as metric_value
      FROM my_table
      WHERE date = CURRENT_DATE
-   
+
    data_source: 'bigquery'  # or your data source
    schedule: "0 9 * * *"    # Daily at 9 AM
    ```
@@ -649,7 +649,7 @@ After successful deployment:
 
 :::info Questions?
 Join our [GitHub Discussions](https://github.com/andrewm4894/anomstack/discussions) or file an issue for deployment help!
-::: 
+:::
 
 ## Smart Environment Variable Management
 
@@ -713,4 +713,4 @@ PYTHONPATH="/opt/dagster/app"                        # Container path
 #   ANOMSTACK_DUCKDB_PATH
 #   ANOMSTACK_DASHBOARD_PORT
 #   ...
-``` 
+```

@@ -5,18 +5,18 @@ def add_indexes_to_metrics():
     # Get the list of tables
     tables_query = "SELECT name FROM sqlite_master WHERE type='table';"
     tables = run_sql_sqlite(tables_query)
-    
+
     if not tables:
         print("No tables found.")
         return
 
     for table_row in tables:
         table = table_row[0]  # Extract table name from row tuple
-        
+
         # Check if the table contains 'metric_timestamp', 'metric_batch', or 'metric_type'
         columns_query = f"PRAGMA table_info({table});"
         columns = run_sql_sqlite(columns_query)
-        
+
         column_names = [col[1] for col in columns]  # Extract column names
 
         # Create index on metric_timestamp if it exists

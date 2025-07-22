@@ -75,4 +75,4 @@ cd scripts/deployment/
 **Getting Help:**
 - Check Fly.io logs: `fly logs`
 - Validate configuration: `./validate_fly_config.sh`
-- Review Fly.io documentation: https://fly.io/docs/ 
+- Review Fly.io documentation: https://fly.io/docs/

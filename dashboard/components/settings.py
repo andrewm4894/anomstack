@@ -8,7 +8,8 @@ This module contains the components for the settings dropdown menu.
 """
 
 from fasthtml.common import A, Li
-from monsterui.all import DropDownNavContainer, NavHeaderLi, NavDividerLi
+from monsterui.all import DropDownNavContainer, NavDividerLi, NavHeaderLi
+
 from dashboard.app import app
 
 
@@ -87,6 +88,6 @@ def create_settings_dropdown(batch_name: str) -> DropDownNavContainer:
     ])
 
     return DropDownNavContainer(
-        NavHeaderLi("settings"), 
+        NavHeaderLi("settings"),
         *menu_items,
     )

@@ -121,24 +121,24 @@ python qry.py
 **Example queries:**
 ```sql
 -- Recent anomalies across all metric batches
-SELECT 
+SELECT
     metric_timestamp,
     metric_batch,
     metric_name,
     metric_value as anomaly_score
-FROM metrics 
-WHERE metric_type = 'alert' 
+FROM metrics
+WHERE metric_type = 'alert'
     AND metric_value = 1
     AND metric_timestamp >= datetime('now', '-7 days')
 ORDER BY metric_timestamp DESC;
 
 -- Top metrics by anomaly count
-SELECT 
+SELECT
     metric_batch,
     metric_name,
     COUNT(*) as anomaly_count
-FROM metrics 
-WHERE metric_type = 'alert' 
+FROM metrics
+WHERE metric_type = 'alert'
     AND metric_value = 1
 GROUP BY metric_batch, metric_name
 ORDER BY anomaly_count DESC
@@ -380,4 +380,4 @@ make docker
 - Check individual script help: `python script_name.py --help`
 - Review README files in each directory
 - Check Dagster UI for job status and logs
-- Use interactive modes when available (`make reset-interactive`) 
+- Use interactive modes when available (`make reset-interactive`)

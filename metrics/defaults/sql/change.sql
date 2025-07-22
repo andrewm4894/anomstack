@@ -58,7 +58,7 @@ metric_value_recency_ranked as (
     m.metric_value,
     coalesce(c.metric_change, 0) as metric_change,
     row_number() over (
-      partition by m.metric_name 
+      partition by m.metric_name
       order by m.metric_timestamp desc
     ) as metric_value_recency_rank
   from

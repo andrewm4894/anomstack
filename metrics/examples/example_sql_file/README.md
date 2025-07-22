@@ -93,11 +93,11 @@ alert_threshold: 0.8
 2. **Edit the SQL file**: Modify `example_sql_file.sql`:
    ```sql
    -- Clean, readable SQL with comments
-   SELECT 
+   SELECT
      created_at as metric_timestamp,
      'user_signups' as metric_name,
      COUNT(*) as metric_value
-   FROM users 
+   FROM users
    WHERE created_at >= NOW() - INTERVAL '1 day'
    GROUP BY DATE(created_at)
    ```
@@ -118,33 +118,33 @@ alert_threshold: 0.8
 -- example_sql_file.sql
 -- Sales performance metrics with business rules
 WITH daily_sales AS (
-  SELECT 
+  SELECT
     DATE(order_date) as date,
     SUM(amount) as daily_revenue,
     COUNT(*) as daily_orders,
     COUNT(DISTINCT customer_id) as daily_customers
-  FROM orders 
+  FROM orders
   WHERE order_date >= CURRENT_DATE - INTERVAL '30 days'
   GROUP BY DATE(order_date)
 ),
 sales_metrics AS (
-  SELECT 
+  SELECT
     date as metric_timestamp,
     'daily_revenue' as metric_name,
     daily_revenue as metric_value
   FROM daily_sales
-  
+
   UNION ALL
-  
-  SELECT 
+
+  SELECT
     date as metric_timestamp,
     'daily_orders' as metric_name,
     daily_orders as metric_value
   FROM daily_sales
-  
+
   UNION ALL
-  
-  SELECT 
+
+  SELECT
     date as metric_timestamp,
     'avg_order_value' as metric_name,
     daily_revenue / NULLIF(daily_orders, 0) as metric_value
@@ -157,9 +157,9 @@ ORDER BY metric_timestamp DESC;
 ### Multi-Table Joins
 ```sql
 -- Complex joins with proper formatting
-SELECT 
+SELECT
   u.created_at as metric_timestamp,
-  CASE 
+  CASE
     WHEN u.subscription_tier = 'premium' THEN 'premium_signups'
     WHEN u.subscription_tier = 'basic' THEN 'basic_signups'
     ELSE 'free_signups'
@@ -171,7 +171,7 @@ LEFT JOIN user_profiles p ON u.id = p.user_id
 WHERE u.created_at >= CURRENT_DATE - INTERVAL '7 days'
   AND u.status = 'active'
   AND p.email_verified = true
-GROUP BY 
+GROUP BY
   DATE(u.created_at),
   u.subscription_tier
 ORDER BY u.created_at DESC;
@@ -180,14 +180,14 @@ ORDER BY u.created_at DESC;
 ### Conditional Metrics
 ```sql
 -- Dynamic metrics based on conditions
-SELECT 
+SELECT
   event_timestamp as metric_timestamp,
   event_type || '_' || LOWER(event_category) as metric_name,
   COUNT(*) as metric_value
-FROM events 
+FROM events
 WHERE event_timestamp >= NOW() - INTERVAL '1 hour'
   AND event_type IN ('click', 'view', 'purchase', 'signup')
-GROUP BY 
+GROUP BY
   DATE_TRUNC('minute', event_timestamp),
   event_type,
   event_category
@@ -232,7 +232,7 @@ my_batch/
 ### DuckDB (Default)
 ```sql
 -- DuckDB-specific functions
-SELECT 
+SELECT
   NOW() as metric_timestamp,
   'random_metric' as metric_name,
   RANDOM() * 100 as metric_value
@@ -241,7 +241,7 @@ SELECT
 ### BigQuery
 ```sql
 -- BigQuery-specific syntax
-SELECT 
+SELECT
   CURRENT_TIMESTAMP() as metric_timestamp,
   'bigquery_metric' as metric_name,
   RAND() * 100 as metric_value
@@ -250,7 +250,7 @@ SELECT
 ### Snowflake
 ```sql
 -- Snowflake-specific syntax
-SELECT 
+SELECT
   CURRENT_TIMESTAMP() as metric_timestamp,
   'snowflake_metric' as metric_name,
   UNIFORM(1, 100, RANDOM()) as metric_value
@@ -268,11 +268,11 @@ SELECT
 ### Error Handling
 ```sql
 -- Handle potential NULL values and edge cases
-SELECT 
+SELECT
   COALESCE(event_timestamp, CURRENT_TIMESTAMP) as metric_timestamp,
   CONCAT('events_', COALESCE(event_type, 'unknown')) as metric_name,
   COALESCE(COUNT(*), 0) as metric_value
-FROM events 
+FROM events
 WHERE event_timestamp >= NOW() - INTERVAL '1 day'
 GROUP BY event_type;
 ```
@@ -280,11 +280,11 @@ GROUP BY event_type;
 ### Performance Optimization
 ```sql
 -- Use appropriate indexes and query patterns
-SELECT 
+SELECT
   DATE_TRUNC('hour', created_at) as metric_timestamp,
   'hourly_signups' as metric_name,
   COUNT(*) as metric_value
-FROM users 
+FROM users
 WHERE created_at >= NOW() - INTERVAL '24 hours'  -- Narrow time window
   AND status = 'active'                          -- Use indexed columns
 GROUP BY DATE_TRUNC('hour', created_at)

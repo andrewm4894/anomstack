@@ -65,7 +65,7 @@ preprocess_params:
 
 # Example SQL that generates high-frequency dummy data
 ingest_sql: >
-  SELECT 
+  SELECT
     NOW() as metric_timestamp,
     'high_freq_metric' as metric_name,
     RANDOM() * 100 + 50 * SIN(EXTRACT(epoch FROM NOW()) / 3600) as metric_value
@@ -159,7 +159,7 @@ preprocess_params:
 ### Web Analytics (Pageview → Hourly)
 ```yaml
 # Collect pageviews continuously, detect hourly anomalies
-metric_batch: 'web_hourly' 
+metric_batch: 'web_hourly'
 ingest_cron_schedule: "*/30 * * * * *"  # Every 30 seconds
 preprocess_params:
   freq: '1H'
@@ -196,7 +196,7 @@ preprocess_params:
 metric_batch: 'mixed_agg'
 ingest_sql: >
   SELECT metric_timestamp, metric_name, metric_value FROM (
-    VALUES 
+    VALUES
       (NOW(), 'revenue_hourly_sum', revenue_value),
       (NOW(), 'revenue_hourly_max', revenue_value),
       (NOW(), 'revenue_hourly_std', revenue_value)

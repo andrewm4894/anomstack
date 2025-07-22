@@ -7,11 +7,11 @@ This module contains the ChartManager class, which is responsible for creating c
 
 """
 
+import pandas as pd
+import plotly.graph_objects as go
 from fasthtml.common import Div, P
 from monsterui.all import Card, DivLAligned, Loading, LoadingT, TextPresets
-import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-import pandas as pd
 
 from dashboard.app import app
 

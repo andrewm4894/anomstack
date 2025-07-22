@@ -14,9 +14,9 @@ from anomstack.jobs.reload import reload_jobs, reload_schedules
 from anomstack.jobs.score import score_jobs, score_schedules
 from anomstack.jobs.summary import summary_jobs, summary_schedules
 from anomstack.jobs.train import train_jobs, train_schedules
+from anomstack.sensors.config_reload import config_file_watcher
 from anomstack.sensors.failure import email_on_run_failure
 from anomstack.sensors.timeout import kill_long_running_runs
-from anomstack.sensors.config_reload import config_file_watcher
 
 jobs = (
     ingest_jobs

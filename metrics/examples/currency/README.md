@@ -75,7 +75,7 @@ The example monitors these major currency pairs by default:
        'jpy',  # Japanese Yen
        'chf'   # Swiss Franc
    ]
-   
+
    # Target currencies to convert to
    TARGET_CURRENCIES = ['usd', 'eur', 'gbp', 'jpy', 'cad', 'aud']
    ```
@@ -228,10 +228,10 @@ def detect_arbitrage(eur_usd, gbp_usd, eur_gbp):
     # Calculate implied EUR/GBP from USD cross rates
     implied_eur_gbp = eur_usd / gbp_usd
     actual_eur_gbp = eur_gbp
-    
+
     # Calculate arbitrage spread
     spread = abs(implied_eur_gbp - actual_eur_gbp) / actual_eur_gbp * 100
-    
+
     return {
         'metric_timestamp': datetime.now(),
         'metric_name': 'EUR_GBP_arbitrage_spread',
@@ -245,20 +245,20 @@ def detect_arbitrage(eur_usd, gbp_usd, eur_gbp):
 def calculate_currency_strength(currency_rates):
     base_currencies = ['usd', 'eur', 'gbp', 'jpy']
     strength_index = {}
-    
+
     for base in base_currencies:
         total_change = 0
         pair_count = 0
-        
+
         for pair, rate in currency_rates.items():
             if pair.startswith(base + '_'):
                 # Calculate percentage change from previous day
                 change = calculate_daily_change(pair, rate)
                 total_change += change
                 pair_count += 1
-        
+
         strength_index[base] = total_change / pair_count if pair_count > 0 else 0
-    
+
     return [
         {
             'metric_timestamp': datetime.now(),
@@ -274,14 +274,14 @@ def calculate_currency_strength(currency_rates):
 # Calculate currency volatility metrics
 def calculate_forex_volatility(rate_history, window=30):
     import numpy as np
-    
+
     # Calculate daily returns
     returns = np.diff(rate_history) / rate_history[:-1] * 100
-    
+
     # Calculate volatility metrics
     volatility = np.std(returns[-window:]) if len(returns) >= window else 0
     var_95 = np.percentile(returns[-window:], 5) if len(returns) >= window else 0
-    
+
     return [
         {
             'metric_timestamp': datetime.now(),
@@ -342,4 +342,3 @@ def safe_currency_request(base_currency, retries=3):
 - **Correlation Risk**: Currency movements can be highly correlated during stress
 
 This example provides a comprehensive foundation for currency exchange rate monitoring and anomaly detection, enabling sophisticated analysis of forex markets within the Anomstack ecosystem.
-

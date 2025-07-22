@@ -1,9 +1,8 @@
 import os
-import pytest
-import yaml
-from pathlib import Path
 
-from anomstack.config import get_specs, env_vars
+import pytest
+
+from anomstack.config import env_vars, get_specs
 
 
 def test_process_yaml_file():
@@ -25,7 +24,7 @@ def test_specs_structure():
         assert "train_cron_schedule" in spec
         assert "score_cron_schedule" in spec
         assert "alert_cron_schedule" in spec
-        
+
         # Test field types
         assert isinstance(spec["metric_batch"], str)
         assert isinstance(spec["db"], str)
@@ -60,19 +59,19 @@ def test_environment_variable_override():
         original_env[var] = os.environ.get(var)
         if var in os.environ:
             del os.environ[var]
-    
+
     try:
         # Set test environment variables
         test_project_id = "test-project"
         test_model_path = "test-model-path"
         test_table_key = "test-table"
-        
+
         os.environ["ANOMSTACK_GCP_PROJECT_ID"] = test_project_id
         os.environ["ANOMSTACK_MODEL_PATH"] = test_model_path
         os.environ["ANOMSTACK_TABLE_KEY"] = test_table_key
-        
+
         specs = get_specs()
-        
+
         # Test that environment variables override defaults only when not specified in YAML
         for batch_name, spec in specs.items():
             # gcp_project_id should be overridden since it's not in defaults.yaml
@@ -126,12 +125,12 @@ def test_metrics_dir_parameter():
     # Test with default metrics directory
     specs_default = get_specs()
     assert len(specs_default) > 0
-    
+
     # Test with custom metrics directory
     custom_metrics_dir = "./metrics"
     specs_custom = get_specs(metrics_dir=custom_metrics_dir)
     assert len(specs_custom) > 0
-    
+
     # Test that specs are the same regardless of metrics_dir parameter
     assert specs_default == specs_custom
 

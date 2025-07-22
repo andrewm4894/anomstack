@@ -67,4 +67,4 @@ Check out the [MotherDuck example](https://github.com/andrewm4894/anomstack/tree
 
 - [MotherDuck Documentation](https://motherduck.com/docs)
 - [Example Queries](https://github.com/andrewm4894/anomstack/tree/main/metrics/examples/motherduck)
-- [Default Configuration](https://github.com/andrewm4894/anomstack/tree/main/metrics/defaults/defaults.yaml) 
+- [Default Configuration](https://github.com/andrewm4894/anomstack/tree/main/metrics/defaults/defaults.yaml)

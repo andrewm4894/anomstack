@@ -7,18 +7,19 @@ This module contains the components for the batch view.
 
 """
 
-from fasthtml.common import Div, A, P, Li
+from fasthtml.common import A, Div, Li, P
 from monsterui.all import (
-    Card,
-    DivLAligned,
-    DividerLine,
-    DropDownNavContainer,
-    TextPresets,
-    UkIcon,
     Button,
     ButtonT,
+    Card,
+    DividerLine,
+    DivLAligned,
+    DropDownNavContainer,
     NavHeaderLi,
+    TextPresets,
+    UkIcon,
 )
+
 from dashboard.app import app
 
 

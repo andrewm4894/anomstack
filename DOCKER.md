@@ -313,4 +313,4 @@ Images are automatically tagged and pushed using the Makefile:
 make docker-build-push
 ```
 
-This ensures consistent deployments across environments. 
+This ensures consistent deployments across environments.

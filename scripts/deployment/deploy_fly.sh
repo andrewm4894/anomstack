@@ -52,10 +52,10 @@ if [[ -n "$PROFILE" ]]; then
     if [[ -f "$PROFILE_FILE" ]]; then
         echo "🎯 Using deployment profile: $PROFILE"
         echo "📄 Profile file: $PROFILE_FILE"
-        
+
         # Create temporary merged .env file
         TEMP_ENV_FILE=$(mktemp)
-        
+
         # Start with existing .env if it exists
         if [[ -f ".env" ]]; then
             cat ".env" > "$TEMP_ENV_FILE"
@@ -63,13 +63,13 @@ if [[ -n "$PROFILE" ]]; then
         else
             touch "$TEMP_ENV_FILE"
         fi
-        
+
         # Append profile configuration (profile values override .env values)
         echo "" >> "$TEMP_ENV_FILE"  # Add separator
         echo "# Profile: $PROFILE (applied during deployment)" >> "$TEMP_ENV_FILE"
         cat "$PROFILE_FILE" >> "$TEMP_ENV_FILE"
         echo "✅ Profile configuration merged"
-        
+
         # Use the merged file for deployment
         ENV_FILE="$TEMP_ENV_FILE"
     else
@@ -161,7 +161,7 @@ fi
 # Add environment variables from environment file
 if [[ -f "$ENV_FILE" ]]; then
     echo "📁 Reading environment variables from $ENV_FILE..."
-    
+
     # Variables that should NOT be sent to Fly (local development only)
     skip_patterns=(
         "ANOMSTACK_HOME=\\."              # Current directory
@@ -169,22 +169,22 @@ if [[ -f "$ENV_FILE" ]]; then
         "DAGSTER_CODE_SERVER_HOST.*anomstack_code" # Docker compose specific
         "ANOMSTACK_DASHBOARD_PORT"        # Local dashboard port
     )
-    
+
     # Read .env file and process each line
     while IFS= read -r line || [[ -n "$line" ]]; do
         # Skip empty lines and comments
         [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
-        
+
         # Skip lines that don't contain =
         [[ ! "$line" =~ = ]] && continue
-        
+
         # Extract variable name and value
         var_name=$(echo "$line" | cut -d'=' -f1 | tr -d ' ')
         var_value=$(echo "$line" | cut -d'=' -f2- | tr -d ' ')
-        
+
         # Skip empty values
         [[ -z "$var_value" ]] && continue
-        
+
         # Check if this variable should be skipped (local development only)
         should_skip=false
         for pattern in "${skip_patterns[@]}"; do
@@ -193,12 +193,12 @@ if [[ -f "$ENV_FILE" ]]; then
                 break
             fi
         done
-        
+
         # Add to secrets array if not skipped
         if [[ "$should_skip" == "false" ]]; then
             all_secrets+=("$var_name=$var_value")
         fi
-        
+
     done < "$ENV_FILE"
 fi
 
@@ -211,10 +211,10 @@ fi
 # Set all secrets in one command to minimize releases
 if [[ ${#all_secrets[@]} -gt 0 ]]; then
     echo "🔐 Setting ${#all_secrets[@]} environment variables as Fly secrets in single operation..."
-    
+
     # Set all secrets at once
     fly secrets set "${all_secrets[@]}" -a "$APP_NAME"
-    
+
     echo "✅ All environment variables set successfully!"
 else
     echo "⚠️  No environment variables found to set."
@@ -259,4 +259,4 @@ echo ""
 echo "To set up alerting (if not configured in profile):"
 echo "  fly secrets set ANOMSTACK_ALERT_EMAIL_FROM='your-email@domain.com' -a $APP_NAME"
 echo "  fly secrets set ANOMSTACK_ALERT_EMAIL_TO='alerts@domain.com' -a $APP_NAME"
-echo "  fly secrets set ANOMSTACK_ALERT_EMAIL_PASSWORD='your-app-password' -a $APP_NAME" 
+echo "  fly secrets set ANOMSTACK_ALERT_EMAIL_PASSWORD='your-app-password' -a $APP_NAME"

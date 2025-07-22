@@ -8,8 +8,9 @@ This module contains functions for calculating statistics for a batch of metrics
 """
 
 from datetime import datetime, timezone
+from typing import Any, Dict
+
 import pandas as pd
-from typing import Dict, Any
 
 
 def calculate_batch_stats(df: pd.DataFrame, batch_name: str) -> Dict[str, Any]:

@@ -145,7 +145,7 @@ ANOMSTACK_DAGSTER_DEQUEUE_NUM_WORKERS=2        # Reduced from 4
    ```bash
    # Weekly cleanup cron job
    0 2 * * 0 /path/to/cleanup_dagster_storage.sh minimal
-   
+
    # Monthly aggressive cleanup
    0 3 1 * * /path/to/cleanup_dagster_storage.sh standard
    ```
@@ -175,7 +175,7 @@ ANOMSTACK_DAGSTER_DEQUEUE_NUM_WORKERS=2        # Reduced from 4
 **Solution:** Run nuclear cleanup, then configure retention policies
 
 ### Issue: "Disk space full"
-**Solution:** 
+**Solution:**
 1. Run `make dagster-cleanup-aggressive`
 2. If still full, run `make reset-nuclear`
 3. Configure retention policies before restarting
@@ -211,4 +211,4 @@ ANOMSTACK_DAGSTER_DEQUEUE_NUM_WORKERS=2        # Reduced from 4
 
 ---
 
-**💡 Key Takeaway**: Proactive storage management prevents the 63GB+ buildup problem. Regular monitoring and cleanup are essential for healthy Dagster deployments. 
+**💡 Key Takeaway**: Proactive storage management prevents the 63GB+ buildup problem. Regular monitoring and cleanup are essential for healthy Dagster deployments.

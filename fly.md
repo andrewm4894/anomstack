@@ -82,4 +82,4 @@ fly secrets set ANOMSTACK_ALERT_EMAIL_TO="your@email.com"
 
 ---
 
-📖 **For detailed documentation**: See [docs/docs/deployment/fly.md](docs/docs/deployment/fly.md) 
+📖 **For detailed documentation**: See [docs/docs/deployment/fly.md](docs/docs/deployment/fly.md)

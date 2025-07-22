@@ -55,4 +55,4 @@ echo "Dashboard PID: $DASHBOARD_PID"
 echo "Nginx PID: $NGINX_PID"
 
 # Keep the script running
-wait 
+wait

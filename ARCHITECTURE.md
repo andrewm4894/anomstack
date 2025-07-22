@@ -22,53 +22,53 @@ The system follows a layered architecture with clear separation between data ing
 graph TB
     subgraph "Data Sources"
         BQ[BigQuery]
-        SF[Snowflake] 
+        SF[Snowflake]
         CH[ClickHouse]
         DB[DuckDB]
         SQ[SQLite]
         PY[Python Functions]
     end
-    
+
     subgraph "Anomstack Core"
         subgraph "Orchestration Layer"
             DG[Dagster]
             JOBS[Jobs Pipeline]
         end
-        
+
         subgraph "Processing Layer"
             ING[Ingestion]
             PREP[Preprocessing]
             ML[ML Training]
             SCORE[Scoring]
         end
-        
+
         subgraph "Storage Layer"
             LOCAL[Local Storage]
             S3[Amazon S3]
             GCS[Google Cloud Storage]
         end
     end
-    
+
     subgraph "User Interfaces"
         DASH[FastHTML Dashboard]
         DGUI[Dagster UI]
         API[REST API]
     end
-    
+
     subgraph "Alerting System"
         EMAIL[Email Alerts]
         SLACK[Slack Alerts]
         LLM[LLM Agent Alerts]
         THRESH[Threshold Alerts]
     end
-    
+
     BQ --> ING
     SF --> ING
     CH --> ING
     DB --> ING
     SQ --> ING
     PY --> ING
-    
+
     ING --> PREP
     PREP --> ML
     ML --> SCORE
@@ -76,17 +76,17 @@ graph TB
     SCORE --> SLACK
     SCORE --> LLM
     ING --> THRESH
-    
+
     ML --> LOCAL
     ML --> S3
     ML --> GCS
-    
+
     DG --> JOBS
     JOBS --> ING
     JOBS --> PREP
     JOBS --> ML
     JOBS --> SCORE
-    
+
     DASH --> DG
     DGUI --> DG
     API --> DG
@@ -179,7 +179,7 @@ flowchart TD
         DS5[SQLite]
         DS6[Python Functions]
     end
-    
+
     subgraph "Dagster Orchestration"
         subgraph "Jobs Pipeline"
             J1[Ingest Job]
@@ -188,13 +188,13 @@ flowchart TD
             J4[Alert Job]
             J5[Plot Job]
         end
-        
+
         subgraph "Schedules & Sensors"
             SCH[Schedules]
             SEN[Sensors]
         end
     end
-    
+
     subgraph "Processing Components"
         ING[Data Ingestion<br/>SQL/Python Execution]
         PREP[Preprocessing<br/>Feature Engineering]
@@ -202,26 +202,26 @@ flowchart TD
         SCORE[Anomaly Scoring<br/>Real-time Detection]
         VIZ[Visualization<br/>Plot Generation]
     end
-    
+
     subgraph "Storage Systems"
         MS[Model Storage<br/>Local/S3/GCS]
         DS[Data Storage<br/>Cache/Database]
         META[Metadata<br/>Dagster Assets]
     end
-    
+
     subgraph "User Interfaces"
         DASH[FastHTML Dashboard<br/>Metrics & Anomalies]
         DGUI[Dagster UI<br/>Pipeline Management]
         API[REST API<br/>Programmatic Access]
     end
-    
+
     subgraph "Alerting Channels"
         EMAIL[Email Alerts<br/>SMTP/HTML]
         SLACK[Slack Notifications<br/>Webhooks]
         LLM[LLM Agent<br/>AI Analysis]
         THRESH[Threshold Alerts<br/>Rules-based]
     end
-    
+
     %% Data flow connections
     DS1 --> J1
     DS2 --> J1
@@ -229,7 +229,7 @@ flowchart TD
     DS4 --> J1
     DS5 --> J1
     DS6 --> J1
-    
+
     J1 --> ING
     ING --> PREP
     PREP --> J2
@@ -244,7 +244,7 @@ flowchart TD
     J4 --> LLM
     J1 --> THRESH
     J5 --> VIZ
-    
+
     %% Orchestration
     SCH --> J1
     SCH --> J2
@@ -252,7 +252,7 @@ flowchart TD
     SCH --> J4
     SEN --> J1
     SEN --> J3
-    
+
     %% Storage connections
     ING --> DS
     PREP --> DS
@@ -260,7 +260,7 @@ flowchart TD
     VIZ --> DS
     TRAIN --> META
     SCORE --> META
-    
+
     %% UI connections
     DASH --> DS
     DASH --> META
@@ -280,7 +280,7 @@ sequenceDiagram
     participant SQL as SQL Engine
     participant DS as Data Source
     participant Cache as Data Cache
-    
+
     Config->>Dagster: Trigger Ingest Job
     Dagster->>SQL: Load SQL Template
     SQL->>SQL: Parameter Substitution
@@ -299,7 +299,7 @@ sequenceDiagram
     participant ML as ML Engine
     participant PyOD as PyOD Library
     participant Storage as Model Storage
-    
+
     Cache->>Prep: Load Historical Data
     Prep->>Prep: Feature Engineering
     Prep->>ML: Processed Dataset
@@ -317,7 +317,7 @@ sequenceDiagram
     participant Score as Scoring Engine
     participant Alert as Alert System
     participant UI as Dashboard
-    
+
     Cache->>Score: New Data Point
     Storage->>Score: Load Trained Model
     Score->>Score: Calculate Anomaly Score
@@ -371,7 +371,7 @@ graph LR
         FS[File System]
         DASH[Dashboard]
     end
-    
+
     D --> DB
     D --> FS
     DASH --> D
@@ -385,20 +385,20 @@ graph TB
         subgraph "Dagster Container"
             DG[Dagster]
         end
-        
+
         subgraph "Dashboard Container"
             DASH[FastHTML Dashboard]
         end
-        
+
         subgraph "Database Container"
             PG[(PostgreSQL)]
         end
-        
+
         subgraph "Storage"
             VOL[Docker Volumes]
         end
     end
-    
+
     DG --> PG
     DG --> VOL
     DASH --> DG
@@ -413,21 +413,21 @@ graph TB
             JOBS[Jobs]
             SCHED[Schedules]
         end
-        
+
         subgraph "Branch Deployments"
             PROD[Production]
             STAGE[Staging]
             DEV[Development]
         end
     end
-    
+
     subgraph "Cloud Services"
         BQ[(BigQuery)]
         S3[(S3 Storage)]
         SLACK[Slack API]
         EMAIL[Email Service]
     end
-    
+
     JOBS --> BQ
     JOBS --> S3
     JOBS --> SLACK
@@ -464,24 +464,24 @@ graph TD
         LOGS[Execution Logs]
         SENSORS[Failure Sensors]
     end
-    
+
     subgraph "Anomstack Monitoring"
         DASH[FastHTML Dashboard<br/>Metrics Visualization]
         PLOTS[Plot Jobs<br/>Visual Diagnostics]
         ALERTS[Alert System<br/>Email/Slack/LLM]
     end
-    
+
     subgraph "External Integration"
         DAGUI[Dagster UI<br/>Pipeline Monitoring]
         EMAIL[Email Notifications]
         SLACK[Slack Notifications]
     end
-    
+
     RUNS --> DAGUI
     ASSETS --> DAGUI
     LOGS --> DAGUI
     SENSORS --> ALERTS
-    
+
     DASH --> PLOTS
     ALERTS --> EMAIL
     ALERTS --> SLACK
@@ -563,4 +563,4 @@ Anomstack provides APIs for external integration:
 | Containerization | Docker | Application packaging and deployment |
 | Monitoring | Prometheus, Grafana | System monitoring and alerting |
 
-This architecture enables Anomstack to provide a robust, scalable, and maintainable anomaly detection platform that can adapt to various deployment scenarios and organizational requirements. 
+This architecture enables Anomstack to provide a robust, scalable, and maintainable anomaly detection platform that can adapt to various deployment scenarios and organizational requirements.

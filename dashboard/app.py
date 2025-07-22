@@ -12,12 +12,13 @@ It is built with FastHTML and MonsterUI.
 
 import logging
 import os
+
 from dotenv import load_dotenv
-from fasthtml.common import fast_app, Script, Link, serve
+from fasthtml.common import Link, Script, fast_app, serve
 from monsterui.all import *
 
-from dashboard.state import AppState
 from dashboard.constants import POSTHOG_SCRIPT
+from dashboard.state import AppState
 
 # load the environment variables
 load_dotenv(override=True)
@@ -66,8 +67,8 @@ def root_health_check(request):
     """Handle root path health checks from Cloud Run."""
     user_agent = request.headers.get("User-Agent", "")
     # Check if this is a health check request
-    if (user_agent.startswith("GoogleHC") or 
-        user_agent.startswith("kube-probe") or 
+    if (user_agent.startswith("GoogleHC") or
+        user_agent.startswith("kube-probe") or
         user_agent.startswith("Google-Cloud-Tasks")):
         return {"status": "healthy", "service": "anomstack-dashboard"}
     # Otherwise, let the regular index route handle it
@@ -76,7 +77,6 @@ def root_health_check(request):
 
 # Import routes after app is defined
 from dashboard.routes import *
-
 
 if __name__ == "__main__":
     try:

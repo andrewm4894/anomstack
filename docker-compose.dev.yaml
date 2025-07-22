@@ -18,23 +18,23 @@ services:
         reservations:
           memory: 1G
           cpus: '0.5'
-    
+
   anomstack_webserver:
     build:
       context: .
       dockerfile: docker/Dockerfile.dagster
     image: anomstack_dagster_image
-    
+
   anomstack_daemon:
     build:
       context: .
       dockerfile: docker/Dockerfile.dagster
     image: anomstack_dagster_image
-    
+
   anomstack_dashboard:
     build:
       context: .
       dockerfile: docker/Dockerfile.anomstack_dashboard
     image: anomstack_dashboard_image
     volumes:
-      - ./metrics:/opt/dagster/app/metrics 
+      - ./metrics:/opt/dagster/app/metrics

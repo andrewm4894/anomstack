@@ -7,8 +7,8 @@ const FeatureList = [
     title: '🚀 Easy Setup & Deploy',
     description: (
       <>
-        Get anomaly detection running in minutes with Docker, GitHub Codespaces, 
-        Dagster Cloud, or local Python. No complex infrastructure required - just 
+        Get anomaly detection running in minutes with Docker, GitHub Codespaces,
+        Dagster Cloud, or local Python. No complex infrastructure required - just
         bring your metrics and we'll handle the ML.
       </>
     ),
@@ -17,8 +17,8 @@ const FeatureList = [
     title: '🌟 Flexible Data Sources',
     description: (
       <>
-        Connect to BigQuery, Snowflake, ClickHouse, DuckDB, SQLite, MotherDuck, 
-        Turso, and more. Define metrics with SQL or custom Python functions. 
+        Connect to BigQuery, Snowflake, ClickHouse, DuckDB, SQLite, MotherDuck,
+        Turso, and more. Define metrics with SQL or custom Python functions.
         Works with your existing data stack.
       </>
     ),
@@ -27,8 +27,8 @@ const FeatureList = [
     title: '🧠 Intelligent Detection',
     description: (
       <>
-        Powered by PyOD machine learning algorithms with configurable thresholds. 
-        Plus optional AI-powered anomaly detection using LLM agents for more 
+        Powered by PyOD machine learning algorithms with configurable thresholds.
+        Plus optional AI-powered anomaly detection using LLM agents for more
         nuanced analysis and explanations.
       </>
     ),
@@ -37,8 +37,8 @@ const FeatureList = [
     title: '📧 Smart Alerts',
     description: (
       <>
-        Get notified via Email and Slack with beautiful ASCII art plots and 
-        detailed context. Includes snoozing, feedback system, and daily summaries 
+        Get notified via Email and Slack with beautiful ASCII art plots and
+        detailed context. Includes snoozing, feedback system, and daily summaries
         to reduce alert fatigue.
       </>
     ),
@@ -47,8 +47,8 @@ const FeatureList = [
     title: '📊 Beautiful Dashboard',
     description: (
       <>
-        Monitor your metrics with a modern FastHTML + MonsterUI dashboard. 
-        View trends, anomaly scores, feedback ratings, and manage alerts 
+        Monitor your metrics with a modern FastHTML + MonsterUI dashboard.
+        View trends, anomaly scores, feedback ratings, and manage alerts
         all in one place.
       </>
     ),
@@ -57,8 +57,8 @@ const FeatureList = [
     title: '⚙️ Highly Configurable',
     description: (
       <>
-        Customize everything from ML algorithms to alert routing with flexible 
-        YAML configs. Override settings per metric batch and add custom 
+        Customize everything from ML algorithms to alert routing with flexible
+        YAML configs. Override settings per metric batch and add custom
         preprocessing functions.
       </>
     ),

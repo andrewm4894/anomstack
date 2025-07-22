@@ -15,23 +15,23 @@ jobs:
     - uses: actions/checkout@v4
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        
+
     - name: Set up Python 3.11
       uses: actions/setup-python@v4
       with:
         python-version: "3.11"
-        
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install pytest pytest-cov
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
-        
+
     - name: Test with pytest and generate coverage
       run: |
         pytest tests/ --cov=anomstack --cov-report=term-missing --cov-report=json
-        
+
     - name: Extract coverage percentage
       id: coverage
       run: |
@@ -44,7 +44,7 @@ jobs:
         ")
         echo "percentage=$COVERAGE" >> $GITHUB_OUTPUT
         echo "Coverage: $COVERAGE%"
-        
+
     - name: Determine badge color
       id: badge-color
       run: |
@@ -62,29 +62,29 @@ jobs:
         fi
         echo "color=$COLOR" >> $GITHUB_OUTPUT
         echo "Badge color: $COLOR"
-        
+
     - name: Update coverage badge in README
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
         COVERAGE=${{ steps.coverage.outputs.percentage }}
         COLOR=${{ steps.badge-color.outputs.color }}
-        
+
         # Update main README.md
         sed -i "s/Coverage-[0-9]*%25-[a-z]*/Coverage-${COVERAGE}%25-${COLOR}/g" README.md
-        
+
         # Update tests/README.md
         sed -i "s/\*\*Coverage:\*\* [0-9]*% overall/\*\*Coverage:\*\* ${COVERAGE}% overall/g" tests/README.md
         sed -i "s/achieves \*\*[0-9]*% overall coverage\*\*/achieves \*\*${COVERAGE}% overall coverage\*\*/g" tests/README.md
         sed -i "s/maintains \*\*[0-9]*% test coverage\*\*/maintains \*\*${COVERAGE}% test coverage\*\*/g" CONTRIBUTING.md
-        
+
         echo "Updated coverage badge to ${COVERAGE}% with color ${COLOR}"
-        
+
     - name: Commit and push changes
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        
+
         if git diff --quiet; then
           echo "No changes to commit"
         else
@@ -92,7 +92,7 @@ jobs:
           git commit -m "🔄 Auto-update coverage badge to ${{ steps.coverage.outputs.percentage }}% [skip ci]"
           git push
         fi
-        
+
     - name: Comment PR with coverage
       if: github.event_name == 'pull_request'
       uses: actions/github-script@v6
@@ -100,16 +100,16 @@ jobs:
         script: |
           const coverage = '${{ steps.coverage.outputs.percentage }}';
           const color = '${{ steps.badge-color.outputs.color }}';
-          
+
           const comment = `## 📊 Test Coverage Report
-          
+
           **Coverage:** ${coverage}% (${color})
-          
+
           ${coverage >= 47 ? '✅ Coverage maintained or improved!' : '⚠️ Coverage decreased from baseline (47%)'}
-          
+
           > 💡 See detailed coverage report in the [tests README](./tests/README.md#coverage-report)
           `;
-          
+
           github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,

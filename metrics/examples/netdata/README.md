@@ -70,7 +70,7 @@ This example uses Netdata's public demo servers by default:
    # Your own Netdata instances
    NETDATA_HOSTS = [
        "http://server1:19999",
-       "http://server2:19999", 
+       "http://server2:19999",
        "http://monitoring.company.com:19999"
    ]
    # Or keep demo servers for testing
@@ -108,7 +108,7 @@ NETDATA_HOSTS = [
 
 CHARTS_TO_MONITOR = [
     'system.cpu',
-    'system.ram', 
+    'system.ram',
     'nginx.requests',
     'nginx.connections',
     'web_log.response_codes'
@@ -137,7 +137,7 @@ CHARTS_TO_MONITOR = [
 ```python
 NETDATA_HOSTS = [
     "http://k8s-node01:19999",
-    "http://k8s-node02:19999", 
+    "http://k8s-node02:19999",
     "http://k8s-node03:19999"
 ]
 
@@ -278,13 +278,13 @@ NETDATA_CHARTS="system.cpu,system.ram,system.net"  # Comma-separated
 def aggregate_metrics(hosts, chart):
     total_cpu = 0
     host_count = 0
-    
+
     for host in hosts:
         data = get_netdata_metric(host, chart)
         if data:
             total_cpu += extract_cpu_usage(data)
             host_count += 1
-    
+
     return {
         'metric_timestamp': datetime.now(),
         'metric_name': f'cluster_avg_{chart}',
@@ -298,13 +298,13 @@ def aggregate_metrics(hosts, chart):
 def discover_charts(netdata_host):
     response = requests.get(f"{netdata_host}/api/v1/charts")
     charts = response.json()
-    
+
     # Filter for interesting charts
     system_charts = [
         chart_id for chart_id, chart_info in charts['charts'].items()
         if chart_id.startswith(('system.', 'apps.', 'users.'))
     ]
-    
+
     return system_charts
 ```
 
@@ -319,12 +319,12 @@ def get_netdata_data(host, chart, auth=None):
         'before': 0,
         'points': 1
     }
-    
+
     if auth:
         response = requests.get(url, params=params, auth=auth)
     else:
         response = requests.get(url, params=params)
-    
+
     return response.json()
 ```
 

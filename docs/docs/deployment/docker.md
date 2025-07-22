@@ -47,4 +47,4 @@ Dagster can accumulate significant storage over time. To prevent disk space issu
 - **Configure retention policies**: Ensure your `dagster_docker.yaml` has appropriate cleanup settings
 - **Schedule regular cleanup**: Run weekly/monthly cleanup jobs
 
-For detailed guidance, see the [Storage Optimization](../storage-optimization.md) guide. 
+For detailed guidance, see the [Storage Optimization](../storage-optimization.md) guide.
