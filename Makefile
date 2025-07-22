@@ -164,6 +164,8 @@ docker-prune:
 # =============================================================================
 
 .PHONY: fly-validate fly-preview fly-deploy fly-status fly-logs fly-ssh
+.PHONY: fly-preview-demo fly-preview-production fly-preview-development
+.PHONY: fly-deploy-demo fly-deploy-production fly-deploy-development
 
 # validate fly.io configuration
 fly-validate:
@@ -173,9 +175,33 @@ fly-validate:
 fly-preview:
 	./scripts/deployment/preview_fly_secrets.sh
 
+# preview deployment with demo profile
+fly-preview-demo:
+	./scripts/deployment/preview_fly_secrets.sh --profile demo
+
+# preview deployment with production profile  
+fly-preview-production:
+	./scripts/deployment/preview_fly_secrets.sh --profile production
+
+# preview deployment with development profile
+fly-preview-development:
+	./scripts/deployment/preview_fly_secrets.sh --profile development
+
 # deploy to fly.io (reads .env file automatically)
 fly-deploy:
 	./scripts/deployment/deploy_fly.sh
+
+# deploy to fly.io with demo profile (enables demo metric batches)
+fly-deploy-demo:
+	./scripts/deployment/deploy_fly.sh --profile demo
+
+# deploy to fly.io with production profile (production-ready settings)
+fly-deploy-production:
+	./scripts/deployment/deploy_fly.sh --profile production
+
+# deploy to fly.io with development profile (all examples enabled)
+fly-deploy-development:
+	./scripts/deployment/deploy_fly.sh --profile development
 
 # check fly.io app status (requires app name as FLY_APP env var)
 fly-status:

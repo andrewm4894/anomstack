@@ -1,4 +1,8 @@
-# Goolge Cloud Platform
+---
+sidebar_position: 5
+---
+
+# Google Cloud Platform
 
 ## Deploying to a VM
 
