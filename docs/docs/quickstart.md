@@ -253,7 +253,7 @@ Now that you're up and running:
 1. **[Learn the core concepts](concepts)** - Understand metric batches, jobs, and the ML workflow
 2. **[Configure environment variables](configuration/environment-variables)** - Set up database connections, alerts, and advanced options
 3. **[Configure alerts](features/alerts)** - Get notified of anomalies via email/Slack  
-4. **[Explore data sources](data-sources/)** - Connect to BigQuery, Snowflake, ClickHouse, and more
+4. **[Explore data sources](data-sources/bigquery)** - Connect to BigQuery, Snowflake, ClickHouse, and more
 5. **[Deploy to production](deployment/)** - Use Dagster Cloud, scale with Docker, or deploy on your infrastructure
 
 ---
