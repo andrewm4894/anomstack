@@ -621,12 +621,12 @@ After successful deployment:
 
 ## Related Resources
 
-- **📁 Quick Reference**: [fly.md](../../../fly.md) in repository root
+- **📁 Quick Reference**: [fly.md](https://github.com/andrewm4894/anomstack/blob/main/fly.md) in repository root
 - **🌐 Fly.io Docs**: [fly.io/docs](https://fly.io/docs)
 - **💬 Community**: [community.fly.io](https://community.fly.io)
 - **🐛 Issues**: [GitHub Issues](https://github.com/andrewm4894/anomstack/issues)
 - **📧 Alerts Setup**: [Email Configuration](../features/alerts.md)
-- **💬 Slack Setup**: [Slack Integration](../features/alerts.md#slack-alerts)
+- **💬 Slack Setup**: [Slack Integration](../features/alerts.md)
 
 :::info Questions?
 Join our [GitHub Discussions](https://github.com/andrewm4894/anomstack/discussions) or file an issue for deployment help!

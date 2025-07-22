@@ -41,6 +41,10 @@ const sidebars = {
     {
       type: 'category',
       label: 'Data Sources',
+      link: {
+        type: 'doc',
+        id: 'data-sources',
+      },
       items: [
         'data-sources/python',
         'data-sources/bigquery',
