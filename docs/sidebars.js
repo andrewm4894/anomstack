@@ -69,6 +69,7 @@ const sidebars = {
       type: 'category',
       label: 'Deployment',
       items: [
+        'deployment/overview',
         'deployment/docker',
         'deployment/gcp',
         'deployment/fly',
