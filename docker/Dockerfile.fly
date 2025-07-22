@@ -34,8 +34,8 @@ RUN ls -la ./dagster_home/ && \
     ls -la /opt/dagster/dagster_home/ && \
     chmod +x /opt/dagster/start.sh
 
-# Create necessary directories
-RUN mkdir -p /data/models /tmp/dagster/compute_logs
+# Create necessary directories for SQLite storage and artifacts
+RUN mkdir -p /data/models /data/dagster_storage /data/artifacts /tmp/dagster/compute_logs
 
 # Environment setup
 ENV DAGSTER_HOME=/opt/dagster/dagster_home

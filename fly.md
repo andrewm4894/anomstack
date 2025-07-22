@@ -7,7 +7,7 @@
 - **📊 Public Dashboard**: https://anomstack-demo.fly.dev/ (no authentication)
 - **🔐 Protected Dagster**: https://anomstack-demo.fly.dev/dagster (configurable admin credentials)
 - **🌐 nginx Reverse Proxy**: Routes and protects services
-- **🗄️ Managed PostgreSQL**: Fly.io hosted database
+- **🗄️ SQLite Storage**: Simple, reliable file-based storage on persistent volume
 - **📦 Persistent Volume**: 10GB for DuckDB and models
 
 ## Quick Deploy
@@ -53,7 +53,7 @@ fly secrets set ANOMSTACK_ALERT_EMAIL_TO="your@email.com"
 - `fly.toml` - App configuration
 - `nginx.conf` - Reverse proxy with auth
 - `docker/Dockerfile.fly` - Multi-service container
-- `dagster_fly.yaml` - PostgreSQL Dagster config
+- `dagster_fly.yaml` - SQLite Dagster config
 - `scripts/deployment/start.sh` - Service startup script
 
 ## Access

@@ -67,6 +67,12 @@ if [[ -f "dagster_fly.yaml" ]]; then
         echo "❌ Not using DefaultRunLauncher - this won't work on Fly.io"
         exit 1
     fi
+    
+    if grep -q "sqlite:" dagster_fly.yaml; then
+        echo "✅ Using SQLite storage (simplified deployment)"
+    else
+        echo "⚠️  Warning: Not using SQLite storage - PostgreSQL dependency required"
+    fi
 else
     echo "❌ dagster_fly.yaml not found"
     exit 1

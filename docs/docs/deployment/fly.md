@@ -206,24 +206,23 @@ For more control over the deployment process:
 fly apps create my-anomstack
 ```
 
-### 2. Set Up Database
+### 2. ~~Set Up Database~~ (No longer needed!)
+
+**🎉 SQLite simplification!** Anomstack now uses SQLite storage on the persistent volume, eliminating the need for a separate PostgreSQL database. This makes deployment simpler, faster, and more cost-effective.
 
 ```bash
-# Create PostgreSQL cluster
-fly postgres create --name my-anomstack-db --region ord
-
-# Attach to your app (creates DATABASE_URL secret automatically)
-fly postgres attach my-anomstack-db -a my-anomstack
+# No database setup required - SQLite files are created automatically!
+echo "✅ Using SQLite storage on persistent volume"
 ```
 
 ### 3. Create Persistent Volume
 
 ```bash
-# Create 10GB volume for metrics data
+# Create 10GB volume for metrics data and SQLite storage
 fly volumes create anomstack_data --region ord --size 10 -a my-anomstack
 ```
 
-### 4. Configure Secrets (Optional)
+### 3. Configure Secrets (Optional)
 
 Set up alerts and integrations:
 
@@ -247,7 +246,7 @@ fly secrets set \
   -a my-anomstack
 ```
 
-### 5. Deploy
+### 4. Deploy
 
 ```bash
 fly deploy -a my-anomstack

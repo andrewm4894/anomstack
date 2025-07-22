@@ -102,19 +102,8 @@ else
     echo "✅ Volume anomstack_data already exists"
 fi
 
-# Create Postgres database
-echo "🗄️  Setting up PostgreSQL database..."
-if ! fly postgres list | grep -q "$APP_NAME-db"; then
-    echo "Creating new Postgres cluster..."
-    fly postgres create --name "$APP_NAME-db" --region ord --initial-cluster-size 1 --vm-size shared-cpu-1x --volume-size 10
-    echo "✅ PostgreSQL database created"
-else
-    echo "✅ PostgreSQL database already exists"
-fi
-
-# Attach the database to the app
-echo "🔗 Attaching database to app..."
-fly postgres attach "$APP_NAME-db" -a "$APP_NAME" || echo "Database may already be attached"
+# Note: Using SQLite storage on persistent volume instead of PostgreSQL
+echo "📁 SQLite storage will be created automatically on persistent volume at /data/dagster_storage"
 
 echo "⚙️  Setting environment variables..."
 
