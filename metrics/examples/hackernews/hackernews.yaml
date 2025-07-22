@@ -1,4 +1,4 @@
-metric_batch: "hn_top_stories_scores"
+metric_batch: "hackernews"
 table_key: "metrics_hackernews"
 ingest_cron_schedule: "45 6 * * *"
 train_cron_schedule: "15 8 * * *"
