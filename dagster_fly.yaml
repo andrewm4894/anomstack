@@ -20,12 +20,10 @@ run_launcher:
   module: dagster.core.launcher.default_run_launcher
   class: DefaultRunLauncher
 
-run_storage:
-  module: dagster_postgres.run_storage
-  class: PostgresRunStorage
-  config:
-    postgres_url:
-      env: DATABASE_URL
+# Use SQLite storage instead of PostgreSQL for simpler deployment
+storage:
+  sqlite:
+    base_dir: "/data/dagster_storage"
 
 run_retries:
   enabled: true
@@ -61,22 +59,15 @@ sensors:
   use_threads: true
   num_workers: 2  # Conservative for Fly.io
 
-schedule_storage:
-  module: dagster_postgres.schedule_storage
-  class: PostgresScheduleStorage
-  config:
-    postgres_url:
-      env: DATABASE_URL
-
-event_log_storage:
-  module: dagster_postgres.event_log
-  class: PostgresEventLogStorage
-  config:
-    postgres_url:
-      env: DATABASE_URL
-
 compute_logs:
   module: dagster.core.storage.local_compute_log_manager
   class: LocalComputeLogManager
   config:
-    base_dir: "/tmp/dagster/compute_logs" 
+    base_dir: "/tmp/dagster/compute_logs"
+
+# Local artifact storage for Fly.io persistent volume
+local_artifact_storage:
+  module: dagster.core.storage.root
+  class: LocalArtifactStorage
+  config:
+    base_dir: "/data/artifacts"

@@ -7,7 +7,7 @@ This module contains the routes for the dashboard.
 
 """
 
-from .index import *
 from .batch import *
-from .toggles import *
+from .index import *
 from .search import *
+from .toggles import *

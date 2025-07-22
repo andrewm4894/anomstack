@@ -17,7 +17,7 @@ Deployment profiles leverage Anomstack's existing environment variable override 
 
 ## Available Profiles
 
-### `demo.env` 
+### `demo.env`
 **Purpose**: Configuration for the public demo instance  
 **Features**:
 - Enables key examples (netdata, weather, hackernews, python_ingest_simple)
@@ -179,4 +179,4 @@ EOF
 
 ## Next Steps
 
-To implement profile support in the deployment script, see the enhancement in `scripts/deployment/deploy_fly.sh` that adds the `--profile` flag. 
+To implement profile support in the deployment script, see the enhancement in `scripts/deployment/deploy_fly.sh` that adds the `--profile` flag.

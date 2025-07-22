@@ -19,7 +19,7 @@ def ingest() -> pd.DataFrame:
     """
     import requests
     from dagster import get_dagster_logger
-    
+
     logger = get_dagster_logger()
 
     # List of GitHub repositories in the format "owner/repo"
@@ -80,5 +80,5 @@ def ingest() -> pd.DataFrame:
 
     # Ensure the DataFrame has the expected column order.
     df = df[["metric_timestamp", "metric_name", "metric_value"]]
-    
+
     return df

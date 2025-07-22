@@ -1,9 +1,8 @@
 import os
-import pytest
-import yaml
-from pathlib import Path
 
-from anomstack.config import get_specs, env_vars
+import pytest
+
+from anomstack.config import env_vars, get_specs
 
 
 def test_process_yaml_file():
@@ -25,7 +24,7 @@ def test_specs_structure():
         assert "train_cron_schedule" in spec
         assert "score_cron_schedule" in spec
         assert "alert_cron_schedule" in spec
-        
+
         # Test field types
         assert isinstance(spec["metric_batch"], str)
         assert isinstance(spec["db"], str)
@@ -60,43 +59,25 @@ def test_environment_variable_override():
         original_env[var] = os.environ.get(var)
         if var in os.environ:
             del os.environ[var]
-    
+
     try:
         # Set test environment variables
         test_project_id = "test-project"
         test_model_path = "test-model-path"
         test_table_key = "test-table"
-        
+
         os.environ["ANOMSTACK_GCP_PROJECT_ID"] = test_project_id
         os.environ["ANOMSTACK_MODEL_PATH"] = test_model_path
         os.environ["ANOMSTACK_TABLE_KEY"] = test_table_key
-        
+
         specs = get_specs()
-        
-        # Test that environment variables override defaults only when not specified in YAML
+
+        # Test that environment variables override all YAML values (as designed)
         for batch_name, spec in specs.items():
-            # gcp_project_id should be overridden since it's not in defaults.yaml
+            # All environment variables should override their respective YAML values
             assert spec["gcp_project_id"] == test_project_id
-            # model_path should keep its YAML value (either default or batch-specific)
-            assert "model_path" in spec
-            if batch_name in ["freq_example", "snowflake_example_simple", "bigquery_example_simple",
-                            "gtrends", "weather_forecast", "gsod"]:
-                assert spec["model_path"] == "gs://andrewm4894-tmp/models"
-            elif batch_name == "s3_example_simple":
-                assert spec["model_path"] == "s3://andrewm4894-tmp/models"
-            else:
-                assert spec["model_path"] == "local://./models"
-            # table_key should keep its YAML value (either default or batch-specific)
-            assert "table_key" in spec
-            if batch_name in ["gsod", "gtrends", "bigquery_example_simple", "freq_example"]:
-                assert spec["table_key"] == "andrewm4894.metrics.metrics"
-            elif batch_name in ["weather_forecast", "snowflake_example_simple"]:
-                assert spec["table_key"] == "ANDREWM4894.METRICS.METRICS"
-            elif batch_name == "hn_top_stories_scores":
-                assert spec["table_key"] == "metrics_hackernews"
-            else:
-                # table_key should either be "metrics" or "metrics_<batch_name>"
-                assert spec["table_key"] in ["metrics", f"metrics_{batch_name}"]
+            assert spec["model_path"] == test_model_path
+            assert spec["table_key"] == test_table_key
     finally:
         # Restore original environment variables
         for var, value in original_env.items():
@@ -126,12 +107,12 @@ def test_metrics_dir_parameter():
     # Test with default metrics directory
     specs_default = get_specs()
     assert len(specs_default) > 0
-    
+
     # Test with custom metrics directory
     custom_metrics_dir = "./metrics"
     specs_custom = get_specs(metrics_dir=custom_metrics_dir)
     assert len(specs_custom) > 0
-    
+
     # Test that specs are the same regardless of metrics_dir parameter
     assert specs_default == specs_custom
 

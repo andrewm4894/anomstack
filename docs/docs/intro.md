@@ -61,53 +61,53 @@ Anomstack is built with a modular architecture that separates concerns across mu
 graph TB
     subgraph "Data Sources"
         BQ[BigQuery]
-        SF[Snowflake] 
+        SF[Snowflake]
         CH[ClickHouse]
         DB[DuckDB]
         SQ[SQLite]
         PY[Python Functions]
     end
-    
+
     subgraph "Anomstack Core"
         subgraph "Orchestration Layer"
             DG[Dagster]
             JOBS[Jobs Pipeline]
         end
-        
+
         subgraph "Processing Layer"
             ING[Ingestion]
             PREP[Preprocessing]
             ML[ML Training]
             SCORE[Scoring]
         end
-        
+
         subgraph "Storage Layer"
             LOCAL[Local Storage]
             S3[Amazon S3]
             GCS[Google Cloud Storage]
         end
     end
-    
+
     subgraph "User Interfaces"
         DASH[FastHTML Dashboard]
         DGUI[Dagster UI]
         API[REST API]
     end
-    
+
     subgraph "Alerting System"
         EMAIL[Email Alerts]
         SLACK[Slack Alerts]
         LLM[LLM Agent Alerts]
         THRESH[Threshold Alerts]
     end
-    
+
     BQ --> ING
     SF --> ING
     CH --> ING
     DB --> ING
     SQ --> ING
     PY --> ING
-    
+
     ING --> PREP
     PREP --> ML
     ML --> SCORE
@@ -115,17 +115,17 @@ graph TB
     SCORE --> SLACK
     SCORE --> LLM
     ING --> THRESH
-    
+
     ML --> LOCAL
     ML --> S3
     ML --> GCS
-    
+
     DG --> JOBS
     JOBS --> ING
     JOBS --> PREP
     JOBS --> ML
     JOBS --> SCORE
-    
+
     DASH --> DG
     DGUI --> DG
     API --> DG

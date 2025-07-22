@@ -67,4 +67,4 @@ Check out the [Turso example](https://github.com/andrewm4894/anomstack/tree/main
 
 - [Turso Documentation](https://turso.tech/docs)
 - [Example Queries](https://github.com/andrewm4894/anomstack/tree/main/metrics/examples/turso)
-- [Default Configuration](https://github.com/andrewm4894/anomstack/tree/main/metrics/defaults/defaults.yaml) 
+- [Default Configuration](https://github.com/andrewm4894/anomstack/tree/main/metrics/defaults/defaults.yaml)

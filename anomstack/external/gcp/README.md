@@ -107,7 +107,7 @@ When using BigQuery, your SQL queries should:
 
 Example query structure:
 ```sql
-SELECT 
+SELECT
     timestamp_col as ds,
     metric_value as y
 FROM `project.dataset.table`
@@ -131,4 +131,4 @@ Enable debug logging:
 ```python
 import logging
 logging.getLogger('google.cloud').setLevel(logging.DEBUG)
-``` 
+```

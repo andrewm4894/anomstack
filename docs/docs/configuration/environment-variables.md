@@ -244,7 +244,7 @@ ANOMSTACK__<METRIC_BATCH>__<PARAMETER>=<VALUE>
 # Override database for python_ingest_simple metric batch
 ANOMSTACK__PYTHON_INGEST_SIMPLE__DB=bigquery
 
-# Override alert methods 
+# Override alert methods
 ANOMSTACK__PYTHON_INGEST_SIMPLE__ALERT_METHODS=email
 
 # Override schedule
@@ -323,4 +323,4 @@ ANOMSTACK_TABLE_KEY=your_dataset.metrics
 **Database connection issues?**
 - Verify credentials and network access
 - Test connections independently
-- Check firewall and VPN settings 
+- Check firewall and VPN settings

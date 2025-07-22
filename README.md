@@ -477,6 +477,7 @@ make fly-deploy               # Deploy with your environment variables
 - 🔐 **Configurable admin credentials**
 - 📊 **Public dashboard** + protected admin interface
 - 🌐 **Global edge deployment** with auto-scaling
+- 🗄️ **SQLite simplicity** - No separate database required!
 
 See [full deployment docs](docs/docs/deployment/fly.md) for detailed instructions.
 

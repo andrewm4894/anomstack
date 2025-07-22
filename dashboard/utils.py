@@ -9,11 +9,11 @@ This module contains utility functions for the dashboard.
 
 import logging
 import os
+
 import requests
 from dotenv import load_dotenv
 
 from anomstack.config import get_specs
-
 
 log = logging.getLogger("anomstack_dashboard")
 

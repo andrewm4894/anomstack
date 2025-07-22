@@ -67,4 +67,4 @@ Check out the [SQLite example](https://github.com/andrewm4894/anomstack/tree/mai
 
 - [SQLite Documentation](https://www.sqlite.org/docs.html)
 - [Example Queries](https://github.com/andrewm4894/anomstack/tree/main/metrics/examples/sqlite)
-- [Default Configuration](https://github.com/andrewm4894/anomstack/tree/main/metrics/defaults/defaults.yaml) 
+- [Default Configuration](https://github.com/andrewm4894/anomstack/tree/main/metrics/defaults/defaults.yaml)

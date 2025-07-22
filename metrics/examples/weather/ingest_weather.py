@@ -43,7 +43,7 @@ def ingest() -> pd.DataFrame:
             url=f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lng}&current={','.join(metrics)}",
             timeout=10,
         ).json()["current"]
-        
+
         for metric in metrics:
             data[f"{city}_{metric}"] = response[metric]
 

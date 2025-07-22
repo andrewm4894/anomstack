@@ -145,7 +145,7 @@ Create either a **SQL file** or **Python function**:
 
 **Option A: SQL** (`metrics/my_custom_metric/query.sql`):
 ```sql
-SELECT 
+SELECT
     CURRENT_TIMESTAMP as metric_timestamp,
     'my_metric' as metric_name,
     COUNT(*) as metric_value
@@ -264,4 +264,4 @@ Now that you're up and running:
 - **[GitHub Discussions](https://github.com/andrewm4894/anomstack/discussions)** - Ask questions and share ideas  
 - **[Scripts & Utilities](miscellaneous/scripts-utilities)** - Handy tools for maintenance and troubleshooting
 - **[DOCKER.md](https://github.com/andrewm4894/anomstack/blob/main/DOCKER.md)** - Comprehensive Docker documentation
-- **[Full Documentation](intro)** - Complete guide to all features 
+- **[Full Documentation](intro)** - Complete guide to all features

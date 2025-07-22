@@ -273,7 +273,7 @@ ANOMSTACK__<METRIC_BATCH>__<PARAMETER>=<VALUE>
 
 **Rules:**
 - `<METRIC_BATCH>`: Uppercase metric batch name with dashes replaced by underscores
-- `<PARAMETER>`: Uppercase parameter name 
+- `<PARAMETER>`: Uppercase parameter name
 - `<VALUE>`: The configuration value
 
 ### Common Parameters
@@ -389,4 +389,4 @@ vim profiles/tenant-b.env
 - **[Environment Variables](../configuration/environment-variables.md)** - Complete list of available environment variables
 - **[Metrics Configuration](../configuration/metrics.md)** - How to configure metric batches
 - **[Fly.io Deployment](fly.md)** - Fly.io-specific deployment details
-- **[Hot Reload](../configuration/hot-reload.md)** - Dynamic configuration updates 
+- **[Hot Reload](../configuration/hot-reload.md)** - Dynamic configuration updates

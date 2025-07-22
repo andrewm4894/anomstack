@@ -67,6 +67,12 @@ if [[ -f "dagster_fly.yaml" ]]; then
         echo "❌ Not using DefaultRunLauncher - this won't work on Fly.io"
         exit 1
     fi
+
+    if grep -q "sqlite:" dagster_fly.yaml; then
+        echo "✅ Using SQLite storage (simplified deployment)"
+    else
+        echo "⚠️  Warning: Not using SQLite storage - PostgreSQL dependency required"
+    fi
 else
     echo "❌ dagster_fly.yaml not found"
     exit 1
@@ -108,4 +114,4 @@ echo "  1. Run './scripts/deployment/deploy_fly.sh' to deploy"
 echo "  2. Or run './scripts/deployment/deploy_fly.sh my-custom-name' for custom app name"
 echo ""
 echo "Estimated deployment time: 5-10 minutes"
-echo "Estimated monthly cost: \$15-25 (for light usage)" 
+echo "Estimated monthly cost: \$15-25 (for light usage)"

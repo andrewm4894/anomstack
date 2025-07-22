@@ -38,7 +38,7 @@ The YAML file demonstrates:
 metric_batch: 'example_simple'
 # Uses default ingest_sql with inline query
 ingest_sql: >
-  SELECT 
+  SELECT
     NOW() as metric_timestamp,
     'dummy_metric_' || CAST(FLOOR(RANDOM() * 3) AS VARCHAR) as metric_name,
     RANDOM() * 100 as metric_value
@@ -66,7 +66,7 @@ Key aspects:
 
 2. **Customize the metrics**: Edit the SQL to generate your desired test data:
    ```sql
-   SELECT 
+   SELECT
      NOW() as metric_timestamp,
      'my_test_metric' as metric_name,
      RANDOM() * 50 + 25 as metric_value  -- Random values between 25-75
@@ -78,7 +78,7 @@ Key aspects:
 
 **Monitor a single metric**:
 ```sql
-SELECT 
+SELECT
   NOW() as metric_timestamp,
   'single_metric' as metric_name,
   RANDOM() * 100 as metric_value
@@ -86,7 +86,7 @@ SELECT
 
 **Create time-based patterns**:
 ```sql
-SELECT 
+SELECT
   NOW() as metric_timestamp,
   'time_based_metric' as metric_name,
   50 + 20 * SIN(EXTRACT(hour FROM NOW()) * 2 * PI() / 24) as metric_value
@@ -94,11 +94,11 @@ SELECT
 
 **Simulate business metrics**:
 ```sql
-SELECT 
+SELECT
   NOW() as metric_timestamp,
   metric_name,
   metric_value
-FROM VALUES 
+FROM VALUES
   ('daily_revenue', RANDOM() * 10000 + 5000),
   ('user_signups', RANDOM() * 100 + 50),
   ('page_views', RANDOM() * 50000 + 25000)
@@ -125,7 +125,7 @@ The ingest generates data like:
     },
     {
         'metric_timestamp': '2024-01-15 10:00:00',
-        'metric_name': 'dummy_metric_1', 
+        'metric_name': 'dummy_metric_1',
         'metric_value': 78.1
     }
 ]

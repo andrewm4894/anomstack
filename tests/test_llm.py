@@ -2,9 +2,9 @@
 Tests for LLM agent functionality.
 """
 
+from unittest.mock import Mock, patch
+
 import pandas as pd
-import pytest
-from unittest.mock import Mock, patch, MagicMock
 
 from anomstack.llm.agent import detect_anomalies
 
@@ -25,25 +25,25 @@ class TestDetectAnomalies:
         # Setup
         mock_agent_instance = Mock()
         mock_anomaly_agent.return_value = mock_agent_instance
-        
+
         # Mock the return values
         mock_anomalies = Mock()
         mock_agent_instance.detect_anomalies.return_value = mock_anomalies
         mock_df_result = pd.DataFrame({
-            'timestamp': ['2023-01-01'], 
-            'variable_name': ['var1'], 
-            'value': [3.279153], 
+            'timestamp': ['2023-01-01'],
+            'variable_name': ['var1'],
+            'value': [3.279153],
             'description': ['Abrupt spike in value, significantly higher than previous observations.']
         })
         mock_agent_instance.get_anomalies_df.return_value = mock_df_result
-        
+
         df = self.create_sample_df()
         detection_prompt = "Custom detection prompt"
         verification_prompt = "Custom verification prompt"
-        
+
         # Call function
         result = detect_anomalies(df, detection_prompt, verification_prompt)
-        
+
         # Assertions
         mock_anomaly_agent.assert_called_once_with(
             detection_prompt=detection_prompt,
@@ -61,23 +61,23 @@ class TestDetectAnomalies:
         # Setup
         mock_agent_instance = Mock()
         mock_anomaly_agent.return_value = mock_agent_instance
-        
+
         mock_anomalies = Mock()
         mock_agent_instance.detect_anomalies.return_value = mock_anomalies
         mock_df_result = pd.DataFrame({
-            'timestamp': ['2023-01-01'], 
-            'variable_name': ['var1'], 
-            'value': [3.279153], 
+            'timestamp': ['2023-01-01'],
+            'variable_name': ['var1'],
+            'value': [3.279153],
             'description': ['Abrupt spike in value, significantly higher than previous observations.']
         })
         mock_agent_instance.get_anomalies_df.return_value = mock_df_result
-        
+
         df = self.create_sample_df()
         detection_prompt = "Custom detection prompt"
-        
+
         # Call function
-        result = detect_anomalies(df, detection_prompt)
-        
+        detect_anomalies(df, detection_prompt)
+
         # Assertions
         mock_anomaly_agent.assert_called_once_with(detection_prompt=detection_prompt)
         mock_agent_instance.detect_anomalies.assert_called_once_with(
@@ -90,23 +90,23 @@ class TestDetectAnomalies:
         # Setup
         mock_agent_instance = Mock()
         mock_anomaly_agent.return_value = mock_agent_instance
-        
+
         mock_anomalies = Mock()
         mock_agent_instance.detect_anomalies.return_value = mock_anomalies
         mock_df_result = pd.DataFrame({
-            'timestamp': ['2023-01-01'], 
-            'variable_name': ['var1'], 
-            'value': [3.279153], 
+            'timestamp': ['2023-01-01'],
+            'variable_name': ['var1'],
+            'value': [3.279153],
             'description': ['Abrupt spike in value, significantly higher than previous observations.']
         })
         mock_agent_instance.get_anomalies_df.return_value = mock_df_result
-        
+
         df = self.create_sample_df()
         verification_prompt = "Custom verification prompt"
-        
+
         # Call function
-        result = detect_anomalies(df, verification_prompt=verification_prompt)
-        
+        detect_anomalies(df, verification_prompt=verification_prompt)
+
         # Assertions
         mock_anomaly_agent.assert_called_once_with(verification_prompt=verification_prompt)
 
@@ -116,22 +116,22 @@ class TestDetectAnomalies:
         # Setup
         mock_agent_instance = Mock()
         mock_anomaly_agent.return_value = mock_agent_instance
-        
+
         mock_anomalies = Mock()
         mock_agent_instance.detect_anomalies.return_value = mock_anomalies
         mock_df_result = pd.DataFrame({
-            'timestamp': ['2023-01-01'], 
-            'variable_name': ['var1'], 
-            'value': [3.279153], 
+            'timestamp': ['2023-01-01'],
+            'variable_name': ['var1'],
+            'value': [3.279153],
             'description': ['Abrupt spike in value, significantly higher than previous observations.']
         })
         mock_agent_instance.get_anomalies_df.return_value = mock_df_result
-        
+
         df = self.create_sample_df()
-        
+
         # Call function with no prompts
-        result = detect_anomalies(df)
-        
+        detect_anomalies(df)
+
         # Assertions - should be called with no arguments (uses defaults)
         mock_anomaly_agent.assert_called_once_with()
 
@@ -141,17 +141,17 @@ class TestDetectAnomalies:
         # Setup
         mock_agent_instance = Mock()
         mock_anomaly_agent.return_value = mock_agent_instance
-        
+
         mock_anomalies = Mock()
         mock_agent_instance.detect_anomalies.return_value = mock_anomalies
         mock_df_result = pd.DataFrame({'timestamp': ['2023-01-01'], 'anomaly': [True]})
         mock_agent_instance.get_anomalies_df.return_value = mock_df_result
-        
+
         df = self.create_sample_df()
-        
+
         # Call function with explicit None values
-        result = detect_anomalies(df, detection_prompt=None, verification_prompt=None)
-        
+        detect_anomalies(df, detection_prompt=None, verification_prompt=None)
+
         # Assertions - should be called with no arguments (None values filtered out)
         mock_anomaly_agent.assert_called_once_with()
 
@@ -164,14 +164,14 @@ class TestLLMAlertPromptExtraction:
         spec = {
             "llmalert_anomaly_agent_detection_prompt": "Custom detection prompt"
         }
-        
+
         # Simulate the extraction logic from llmalert.py
         detection_prompt = (
-            spec.get("llmalert_anomaly_agent_detection_prompt") or 
+            spec.get("llmalert_anomaly_agent_detection_prompt") or
             spec.get("llmalert_anomaly_agent_system_prompt")
         )
         verification_prompt = spec.get("llmalert_anomaly_agent_verification_prompt")
-        
+
         assert detection_prompt == "Custom detection prompt"
         assert verification_prompt is None
 
@@ -180,14 +180,14 @@ class TestLLMAlertPromptExtraction:
         spec = {
             "llmalert_anomaly_agent_system_prompt": "Legacy system prompt"
         }
-        
+
         # Simulate the extraction logic from llmalert.py
         detection_prompt = (
-            spec.get("llmalert_anomaly_agent_detection_prompt") or 
+            spec.get("llmalert_anomaly_agent_detection_prompt") or
             spec.get("llmalert_anomaly_agent_system_prompt")
         )
         verification_prompt = spec.get("llmalert_anomaly_agent_verification_prompt")
-        
+
         assert detection_prompt == "Legacy system prompt"
         assert verification_prompt is None
 
@@ -197,14 +197,14 @@ class TestLLMAlertPromptExtraction:
             "llmalert_anomaly_agent_detection_prompt": "New detection prompt",
             "llmalert_anomaly_agent_system_prompt": "Legacy system prompt"
         }
-        
+
         # Simulate the extraction logic from llmalert.py
         detection_prompt = (
-            spec.get("llmalert_anomaly_agent_detection_prompt") or 
+            spec.get("llmalert_anomaly_agent_detection_prompt") or
             spec.get("llmalert_anomaly_agent_system_prompt")
         )
         verification_prompt = spec.get("llmalert_anomaly_agent_verification_prompt")
-        
+
         assert detection_prompt == "New detection prompt"
         assert verification_prompt is None
 
@@ -213,14 +213,14 @@ class TestLLMAlertPromptExtraction:
         spec = {
             "llmalert_anomaly_agent_verification_prompt": "Custom verification prompt"
         }
-        
+
         # Simulate the extraction logic from llmalert.py
         detection_prompt = (
-            spec.get("llmalert_anomaly_agent_detection_prompt") or 
+            spec.get("llmalert_anomaly_agent_detection_prompt") or
             spec.get("llmalert_anomaly_agent_system_prompt")
         )
         verification_prompt = spec.get("llmalert_anomaly_agent_verification_prompt")
-        
+
         assert detection_prompt is None
         assert verification_prompt == "Custom verification prompt"
 
@@ -230,27 +230,27 @@ class TestLLMAlertPromptExtraction:
             "llmalert_anomaly_agent_detection_prompt": "Custom detection prompt",
             "llmalert_anomaly_agent_verification_prompt": "Custom verification prompt"
         }
-        
+
         # Simulate the extraction logic from llmalert.py
         detection_prompt = (
-            spec.get("llmalert_anomaly_agent_detection_prompt") or 
+            spec.get("llmalert_anomaly_agent_detection_prompt") or
             spec.get("llmalert_anomaly_agent_system_prompt")
         )
         verification_prompt = spec.get("llmalert_anomaly_agent_verification_prompt")
-        
+
         assert detection_prompt == "Custom detection prompt"
         assert verification_prompt == "Custom verification prompt"
 
     def test_no_prompts_extraction(self):
         """Test extraction when no prompts are configured."""
         spec = {}
-        
+
         # Simulate the extraction logic from llmalert.py
         detection_prompt = (
-            spec.get("llmalert_anomaly_agent_detection_prompt") or 
+            spec.get("llmalert_anomaly_agent_detection_prompt") or
             spec.get("llmalert_anomaly_agent_system_prompt")
         )
         verification_prompt = spec.get("llmalert_anomaly_agent_verification_prompt")
-        
+
         assert detection_prompt is None
-        assert verification_prompt is None 
+        assert verification_prompt is None

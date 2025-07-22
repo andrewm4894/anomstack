@@ -78,7 +78,7 @@ def ingest():
     """
     # Your custom logic here
     data = []
-    
+
     # Example: Generate some metrics
     for i in range(3):
         data.append({
@@ -86,7 +86,7 @@ def ingest():
             'metric_name': f'python_metric_{i}',
             'metric_value': some_calculation(i)
         })
-    
+
     return pd.DataFrame(data)
 
 def some_calculation(x):
@@ -104,7 +104,7 @@ import pandas as pd
 def ingest():
     response = requests.get('https://api.example.com/data')
     data = response.json()
-    
+
     metrics = []
     for item in data:
         metrics.append({
@@ -112,7 +112,7 @@ def ingest():
             'metric_name': f"api_metric_{item['type']}",
             'metric_value': item['value']
         })
-    
+
     return pd.DataFrame(metrics)
 ```
 
@@ -124,7 +124,7 @@ import os
 def ingest():
     # Process CSV files
     df = pd.read_csv('data/metrics.csv')
-    
+
     # Transform to required format
     return df.rename(columns={
         'timestamp': 'metric_timestamp',
@@ -141,20 +141,20 @@ import pandas as pd
 def ingest():
     # Complex statistical calculations
     data = fetch_raw_data()  # Your data source
-    
+
     metrics = []
     metrics.append({
         'metric_timestamp': datetime.now(),
         'metric_name': 'moving_average',
         'metric_value': np.mean(data[-30:])  # 30-day moving average
     })
-    
+
     metrics.append({
         'metric_timestamp': datetime.now(),
         'metric_name': 'volatility',
         'metric_value': np.std(data[-30:])  # 30-day volatility
     })
-    
+
     return pd.DataFrame(metrics)
 ```
 
@@ -181,7 +181,7 @@ import os
 def ingest():
     api_key = os.getenv('MY_API_KEY')
     endpoint = os.getenv('MY_API_ENDPOINT', 'https://default-api.com')
-    
+
     # Use in your function
     response = requests.get(endpoint, headers={'Authorization': f'Bearer {api_key}'})
 ```

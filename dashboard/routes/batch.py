@@ -7,17 +7,17 @@ This module contains the route for the batch view.
 
 """
 
-import pandas as pd
-from fasthtml.common import Div, Script, Safe, H4, P, Style, Table, Tr, Td, Th
-from monsterui.all import Card, DivLAligned, Button, ButtonT, UkIcon
-import urllib.parse
 
-from dashboard.app import app, rt, log
-from dashboard.components import create_controls
-from dashboard.charts import ChartManager
-from dashboard.data import get_data
-from dashboard.constants import DEFAULT_LAST_N, DEFAULT_LOAD_N_CHARTS
+import pandas as pd
+from fasthtml.common import H4, Div, P, Safe, Script, Style, Table, Td, Th, Tr
+from monsterui.all import Button, ButtonT, Card, DivLAligned, UkIcon
+
 from anomstack.df.wrangle import extract_metadata
+from dashboard.app import app, log, rt
+from dashboard.charts import ChartManager
+from dashboard.components import create_controls
+from dashboard.constants import DEFAULT_LAST_N, DEFAULT_LOAD_N_CHARTS
+from dashboard.data import get_data
 
 
 def get_batch_data(batch_name: str) -> pd.DataFrame:

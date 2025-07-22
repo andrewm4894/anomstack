@@ -48,7 +48,7 @@ llm_agent_params:
   api_key: "${ANOMALY_AGENT_API_KEY}"
   model: "gpt-4"
   temperature: 0.1
-  
+
 # Alert settings
 llm_alert_settings:
   include_context: true
@@ -210,4 +210,4 @@ import logging
 logging.getLogger('anomstack.llm').setLevel(logging.DEBUG)
 ```
 
-This will log all agent interactions for troubleshooting. 
+This will log all agent interactions for troubleshooting.

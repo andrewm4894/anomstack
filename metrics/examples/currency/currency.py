@@ -9,6 +9,7 @@ def ingest() -> pd.DataFrame:
     Returns a DataFrame with columns: metric_timestamp, metric_name, and metric_value.
     """
     from datetime import datetime
+
     import requests
     from dagster import get_dagster_logger
 

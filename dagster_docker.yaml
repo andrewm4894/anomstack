@@ -64,7 +64,7 @@ retention:
   sensor:
     purge_after_days:
       skipped: 1   # Keep only 1 day of skipped sensor runs
-      failure: 3   # Keep 3 days of failed runs for debugging  
+      failure: 3   # Keep 3 days of failed runs for debugging
       success: 1   # Keep only 1 day of successful sensor runs
 
 # Run monitoring to detect and clean up stuck runs

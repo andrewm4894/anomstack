@@ -19,26 +19,26 @@ graph TB
             USERS[👥 Users]
             ADMIN[🔐 Admins]
         end
-        
+
         subgraph "Application Layer"
             DASH[📊 FastHTML Dashboard<br/>Port 8080]
             DAGSTER[⚙️ Dagster UI<br/>Port 3000]
             CODE[📦 Code Server<br/>Port 4000]
         end
-        
+
         subgraph "Data Layer"
             DB[(🗄️ PostgreSQL<br/>Metadata)]
             DUCKDB[(🦆 DuckDB<br/>Metrics)]
             MODELS[📁 Model Storage<br/>Local/S3/GCS]
         end
-        
+
         subgraph "External Services"
             EMAIL[📧 Email Service]
             SLACK[💬 Slack API]
             SOURCES[📊 Data Sources]
         end
     end
-    
+
     USERS --> DASH
     ADMIN --> DAGSTER
     DAGSTER --> CODE
@@ -74,19 +74,19 @@ graph TB
             DAGSTER[⚙️ Dagster Engine]
             CODE[📦 Anomaly Detection Jobs]
         end
-        
+
         subgraph "Your Existing Infrastructure"
             YOUR_DB[(🏢 Your Database<br/>BigQuery/Snowflake/etc)]
             YOUR_DASH[📊 Your Dashboard<br/>Tableau/Looker/etc]
             YOUR_ALERTS[🔔 Your Alerting<br/>PagerDuty/OpsGenie/etc]
             YOUR_MODELS[📁 Your Storage<br/>S3/GCS/etc]
         end
-        
+
         subgraph "External Data"
             SOURCES[📊 Data Sources]
         end
     end
-    
+
     DAGSTER --> CODE
     CODE --> YOUR_DB
     CODE --> YOUR_MODELS
@@ -165,16 +165,16 @@ graph LR
     subgraph "Compute Layer"
         DAGSTER[Dagster Jobs<br/>Container/Serverless]
     end
-    
+
     subgraph "Storage Layer"
         DB[(Database<br/>Managed Service)]
         MODELS[(Model Storage<br/>Cloud Storage)]
     end
-    
+
     subgraph "Interface Layer"
         DASH[Dashboard<br/>Separate Deployment]
     end
-    
+
     DAGSTER --> DB
     DAGSTER --> MODELS
     DASH --> DB
@@ -190,21 +190,21 @@ graph TB
     subgraph "Data Processing"
         JOBS[Anomaly Detection Jobs<br/>Serverless Functions]
     end
-    
+
     subgraph "Orchestration"
         SCHEDULER[Job Scheduler<br/>Managed Service]
     end
-    
+
     subgraph "Storage"
         METRICS[(Metrics DB<br/>Data Warehouse)]
         MODELS[(Model Store<br/>Object Storage)]
     end
-    
+
     subgraph "Interfaces"
         API[REST API<br/>Serverless]
         DASH[Dashboard<br/>Static Hosting]
     end
-    
+
     SCHEDULER --> JOBS
     JOBS --> METRICS
     JOBS --> MODELS
@@ -222,18 +222,18 @@ graph TB
 ```mermaid
 flowchart TD
     START[👋 Welcome to Anomstack!] --> NEED{What do you need?}
-    
+
     NEED -->|Quick demo/POC| DEMO[🚀 Try Fly.io Demo<br/>anomstack-demo.fly.dev]
     NEED -->|Full experience| FULL{Infrastructure preference?}
     NEED -->|Just anomaly detection| HEADLESS{Integration needs?}
-    
+
     FULL -->|Cloud-native| CLOUD[☁️ Dagster Cloud<br/>or GCP deployment]
     FULL -->|Self-hosted| DOCKER[🐳 Docker Compose<br/>or Fly.io]
     FULL -->|Local development| LOCAL[🐍 Python venv<br/>or Docker locally]
-    
+
     HEADLESS -->|Existing data platform| PLATFORM[🏢 Headless + Your DB<br/>BigQuery/Snowflake/etc]
     HEADLESS -->|Simple integration| MINIMAL[🤖 Docker headless<br/>+ webhooks/API]
-    
+
     DEMO --> DEMO_LINK[<a href='https://anomstack-demo.fly.dev'>View Live Demo</a>]
     CLOUD --> CLOUD_DOCS[<a href='https://docs.dagster.io/dagster-cloud'>Dagster Cloud Setup</a>]
     DOCKER --> DOCKER_DOCS[<a href='./docker'>Docker Guide</a>]
@@ -297,4 +297,4 @@ ANOMSTACK_ALERT_WEBHOOK_URL=https://api.company.com/alerts
 - 📚 **Documentation**: Browse the sections in the left sidebar
 - 🎯 **Examples**: [Metric Examples](https://github.com/andrewm4894/anomstack/tree/main/metrics/examples)
 
-Choose your deployment path and get started with reliable, open-source anomaly detection! 🎉 
+Choose your deployment path and get started with reliable, open-source anomaly detection! 🎉

@@ -50,4 +50,4 @@ Check out the [BigQuery example](https://github.com/andrewm4894/anomstack/tree/m
 ## Related Links
 
 - [BigQuery Documentation](https://cloud.google.com/bigquery/docs)
-- [Example Queries](https://github.com/andrewm4894/anomstack/tree/main/metrics/examples/bigquery) 
+- [Example Queries](https://github.com/andrewm4894/anomstack/tree/main/metrics/examples/bigquery)

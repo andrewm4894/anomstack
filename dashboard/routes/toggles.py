@@ -10,6 +10,7 @@ This module contains the routes for handling toggle functionality.
 from fasthtml.common import Div, Script
 
 from dashboard.app import app, rt
+
 from .batch import get_batch_view
 
 

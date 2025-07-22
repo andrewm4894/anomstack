@@ -7,7 +7,7 @@ This module contains the components for the dashboard header.
 
 """
 
-from fasthtml.common import Div, H2, P, A
+from fasthtml.common import H2, A, Div, P
 from monsterui.all import DivLAligned, TextPresets, UkIcon
 
 
@@ -35,4 +35,4 @@ def create_header() -> Div:
         ),
         style="justify-content: space-between;",
         cls="mb-6",
-    ) 
+    )

@@ -64,27 +64,27 @@ import requests
 def ingest(top_n=10) -> pd.DataFrame:
     # Hacker News API endpoint for top stories
     url = "https://hacker-news.firebaseio.com/v0/topstories.json"
-    
+
     # Get top story IDs
     response = requests.get(url)
     story_ids = response.json()[:top_n]
-    
+
     # Calculate metrics
     min_score = float("inf")
     max_score = 0
     total_score = 0
-    
+
     for story_id in story_ids:
         story_url = f"https://hacker-news.firebaseio.com/v0/item/{story_id}.json"
         story = requests.get(story_url).json()
         score = story.get("score", 0)
-        
+
         min_score = min(min_score, score)
         max_score = max(max_score, score)
         total_score += score
-    
+
     avg_score = total_score / len(story_ids)
-    
+
     # Create DataFrame with metrics
     data = [
         [f"hn_top_{top_n}_min_score", min_score],
@@ -94,7 +94,7 @@ def ingest(top_n=10) -> pd.DataFrame:
     ]
     df = pd.DataFrame(data, columns=["metric_name", "metric_value"])
     df["metric_timestamp"] = pd.Timestamp.utcnow()
-    
+
     return df
 ```
 
@@ -111,7 +111,7 @@ def ingest(top_n=10) -> pd.DataFrame:
 
 2. **Function Definition**: The `ingest()` function takes a `top_n` parameter to specify how many top stories to analyze.
 
-3. **Data Collection**: 
+3. **Data Collection**:
    - Fetches top story IDs from HackerNews API
    - Retrieves details for each story
    - Calculates min, max, average, and total scores
@@ -150,4 +150,4 @@ Your Python function must return a pandas DataFrame with these columns:
 - [Pandas Documentation](https://pandas.pydata.org/docs/)
 - [Python Best Practices](https://docs.python-guide.org/)
 - [Default Configuration](https://github.com/andrewm4894/anomstack/tree/main/metrics/defaults/defaults.yaml)
-- [Default Templates](https://github.com/andrewm4894/anomstack/tree/main/metrics/defaults) 
+- [Default Templates](https://github.com/andrewm4894/anomstack/tree/main/metrics/defaults)

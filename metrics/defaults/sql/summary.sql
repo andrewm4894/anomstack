@@ -16,4 +16,3 @@ where
 group by metric_batch, metric_name
 order by n_alert desc
 ;
-

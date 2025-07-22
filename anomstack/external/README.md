@@ -38,4 +38,4 @@ To add support for a new data platform:
 3. Add configuration support in the main config system
 4. Update the main README with the new integration
 
-See existing integrations as reference implementations. 
+See existing integrations as reference implementations.

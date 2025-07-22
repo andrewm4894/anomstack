@@ -12,7 +12,6 @@ import logging
 from anomstack.config import get_specs
 from dashboard.utils import get_metric_batches
 
-
 log = logging.getLogger("anomstack")
 
 
@@ -25,7 +24,7 @@ class AppState:
         """Get database connection with MotherDuck fallback"""
         import os
         duckdb_path = os.getenv('ANOMSTACK_DUCKDB_PATH', 'tmpdata/anomstack-duckdb.db')
-        
+
         if duckdb_path.startswith('md:'):
             motherduck_token = os.getenv('ANOMSTACK_MOTHERDUCK_TOKEN')
             if motherduck_token:
@@ -72,14 +71,14 @@ class AppState:
         self.show_legend = False
         self.search_term = {}
         self.anomaly_feedback = {}  # Store feedback for anomalies
-        
+
         # Lazy initialization flags
         self._specs_loaded = False
         self._metric_batches_loaded = False
         self._specs = None
         self._metric_batches = None
         self._specs_enabled = None
-        
+
         print("AppState initialized with lazy loading")
 
     @property
@@ -102,7 +101,7 @@ class AppState:
             self._ensure_metric_batches_loaded()
         return self._metric_batches
 
-    @metric_batches.setter 
+    @metric_batches.setter
     def metric_batches(self, value):
         """Setter for metric_batches"""
         self._metric_batches = value
@@ -118,7 +117,7 @@ class AppState:
     def specs_enabled(self, value):
         """Setter for specs_enabled"""
         self._specs_enabled = value
-    
+
     def _ensure_specs_loaded(self):
         """Lazy load specs and metric batches"""
         if not self._specs_loaded:
@@ -129,7 +128,7 @@ class AppState:
             except Exception as e:
                 log.error(f"Error loading specs: {e}")
                 self._specs = {}
-                
+
     def _ensure_metric_batches_loaded(self):
         """Lazy load metric batches"""
         if not self._metric_batches_loaded:
@@ -137,17 +136,17 @@ class AppState:
                 # Ensure specs are loaded first
                 if not self._specs_loaded:
                     self._ensure_specs_loaded()
-                    
+
                 self._metric_batches = get_metric_batches(source="all")
                 if not self._metric_batches:
                     log.warning("No metric batches found.")
                     self._metric_batches = []
-                
+
                 if self._specs and self._metric_batches:
                     self._specs_enabled = {batch: self._specs[batch] for batch in self._metric_batches if batch in self._specs}
                 else:
                     self._specs_enabled = {}
-                
+
                 self._metric_batches_loaded = True
                 print("Metric batches loaded successfully")
             except Exception as e:

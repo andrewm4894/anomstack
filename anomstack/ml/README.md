@@ -16,7 +16,7 @@ Anomstack uses [PyOD (Python Outlier Detection)](https://pyod.readthedocs.io/en/
   - Handling missing values
   - Data transformation for ML algorithms
 
-### `train.py` 
+### `train.py`
 - **Purpose**: Model training pipeline
 - **Functions**:
   - Trains anomaly detection models on historical metric data
@@ -62,4 +62,4 @@ ml_params:
 
 ## Custom Preprocessing
 
-You can override the default preprocessing by creating custom preprocessing functions in your metric batch configuration. See the main documentation for examples of custom preprocessing pipelines. 
+You can override the default preprocessing by creating custom preprocessing functions in your metric batch configuration. See the main documentation for examples of custom preprocessing pipelines.

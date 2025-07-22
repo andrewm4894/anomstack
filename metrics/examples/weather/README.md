@@ -89,7 +89,7 @@ The ingest function returns temperature data for each city:
         'metric_value': 12.5
     },
     {
-        'metric_timestamp': datetime.now(), 
+        'metric_timestamp': datetime.now(),
         'metric_name': 'temperature_london',
         'metric_value': 15.2
     }

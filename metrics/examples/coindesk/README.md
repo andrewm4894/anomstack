@@ -200,7 +200,7 @@ https://data-api.coindesk.com/index/cc/v1/latest/tick?market=cadli&instruments=B
       "timestamp": "2024-01-15T10:30:00Z"
     },
     {
-      "instrument": "ETH-USD", 
+      "instrument": "ETH-USD",
       "price": "2650.75",
       "change_24h": "-1.23",
       "timestamp": "2024-01-15T10:30:00Z"
@@ -222,16 +222,16 @@ https://data-api.coindesk.com/index/cc/v1/latest/tick?market=cadli&instruments=B
 def get_cross_exchange_data():
     markets = ['cadli', 'coinbase', 'kraken']
     prices = {}
-    
+
     for market in markets:
         data = get_coindesk_data(market, 'BTC-USD')
         prices[market] = data['price']
-    
+
     # Calculate price spreads and arbitrage opportunities
     max_price = max(prices.values())
     min_price = min(prices.values())
     spread = (max_price - min_price) / min_price * 100
-    
+
     return {
         'metric_timestamp': datetime.now(),
         'metric_name': 'BTC_USD_cross_exchange_spread',
@@ -244,13 +244,13 @@ def get_cross_exchange_data():
 # Calculate rolling volatility metrics
 def calculate_crypto_volatility(price_history, window=24):
     import numpy as np
-    
+
     # Calculate percentage returns
     returns = np.diff(price_history) / price_history[:-1] * 100
-    
+
     # Rolling volatility (standard deviation of returns)
     volatility = np.std(returns[-window:]) if len(returns) >= window else 0
-    
+
     return {
         'metric_timestamp': datetime.now(),
         'metric_name': 'BTC_USD_volatility_24h',
@@ -264,7 +264,7 @@ def calculate_crypto_volatility(price_history, window=24):
 def calculate_market_metrics(btc_price, eth_price, total_market_cap):
     btc_dominance = (btc_price * btc_supply) / total_market_cap * 100
     eth_btc_ratio = eth_price / btc_price
-    
+
     return [
         {
             'metric_timestamp': datetime.now(),

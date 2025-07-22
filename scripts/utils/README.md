@@ -98,7 +98,7 @@ make reset-interactive
 4) 💥 Full Nuclear - Nuclear + full Docker cleanup
 5) ❌ Cancel
 
-Choose option [1-5]: 
+Choose option [1-5]:
 ```
 
 #### What's Always Preserved
@@ -155,4 +155,4 @@ The script provides colorful, informative output:
 - 🟡 **Warning**: Important notices and confirmations  
 - 🔴 **Error**: Critical warnings about data loss
 
-This makes it easy to understand what's happening at each step of the reset process. 
+This makes it easy to understand what's happening at each step of the reset process.

@@ -181,7 +181,7 @@ If you need to update the coverage manually for any reason:
 4. Update the coverage percentage in `tests/README.md` as well
 5. Use appropriate colors:
    - Red: < 30%
-   - Orange: 30-49% 
+   - Orange: 30-49%
    - Yellow: 50-69%
    - Green: 70-89%
    - Bright Green: ≥ 90%

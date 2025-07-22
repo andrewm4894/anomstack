@@ -164,12 +164,12 @@ def test_new_feature():
     """Test description."""
     # Arrange - setup test data
     test_data = create_test_data()
-    
+
     # Act - call function
     result = function_under_test(test_data)
-    
+
     # Assert - verify results
     assert result.meets_expectation()
 ```
 
-The test suite provides comprehensive coverage while maintaining fast execution suitable for development workflows. 
+The test suite provides comprehensive coverage while maintaining fast execution suitable for development workflows.

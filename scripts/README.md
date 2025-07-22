@@ -83,7 +83,7 @@ python list_tables.py     # Inspect database structure
 ### 🚀 **Deployment Scripts**
 Handle deployment to cloud platforms with proper validation, configuration management, and error handling. These scripts ensure reliable deployment processes and provide comprehensive validation before deployment.
 
-### ⚙️ **Configuration Scripts** 
+### ⚙️ **Configuration Scripts**
 Enable hot-reloading of configurations without service restarts. Essential for development workflows and production configuration updates without downtime.
 
 ### 🔧 **Maintenance Scripts**

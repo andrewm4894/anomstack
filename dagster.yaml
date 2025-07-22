@@ -38,7 +38,7 @@ retention:
     purge_after_days: 3  # Reduced from 7 to prevent disk buildup
   sensor:
     purge_after_days:
-      skipped: 1   # Keep only 1 day of skipped runs  
+      skipped: 1   # Keep only 1 day of skipped runs
       failure: 3   # Keep 3 days of failures for debugging
       success: 1   # Keep only 1 day of successful runs
 

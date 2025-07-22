@@ -4,7 +4,7 @@ Template for generating the input data for the dashboard charts.
 Written for DuckDB but will be translated to target dialect based on `db` param via sqlglot.
 */
 
-with 
+with
 
 aggregated as (
   select
@@ -19,9 +19,9 @@ aggregated as (
     sum(case when metric_type = 'thumbsup' then metric_value end) as thumbsup_sum,
     sum(case when metric_type = 'thumbsdown' then metric_value end) as thumbsdown_sum,
     array_agg(distinct metadata) as metadata
-  from 
+  from
     {{ table_key }}
-  where 
+  where
     metric_batch = '{{ metric_batch }}'
     {% if cutoff_time is defined %}
     and metric_timestamp >= '{{ cutoff_time }}'
@@ -30,16 +30,16 @@ aggregated as (
 ),
 
 max_metric_timestamp_filter as (
-select 
+select
   metric_name,
   metric_batch
-from 
+from
   (
-  select 
+  select
     metric_name,
     metric_batch,
     max(metric_timestamp) as metric_timestamp_max
-  from 
+  from
     aggregated
   group by 1,2
 )
@@ -52,13 +52,13 @@ ranked as (
   select
     aggregated.*,
     row_number() over (partition by aggregated.metric_name order by aggregated.metric_timestamp desc) as recency_rank
-  from 
+  from
     aggregated
   inner join
     max_metric_timestamp_filter
-  on 
+  on
     aggregated.metric_name = max_metric_timestamp_filter.metric_name
-    and 
+    and
     aggregated.metric_batch = max_metric_timestamp_filter.metric_batch
 )
 
@@ -74,10 +74,10 @@ select
   thumbsup_sum,
   thumbsdown_sum,
   metadata
-from 
+from
   ranked
 {% if cutoff_time is not defined %}
-where 
+where
   recency_rank <= {{ last_n }}
 {% endif %}
 order by 1,2,3

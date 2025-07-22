@@ -139,12 +139,12 @@ def main():
     try:
         load_dotenv(override=True)
         pd.set_option("display.max_columns", None)
-        
+
         # Your integration logic here
         result = ingest_function()
         print(f"✅ Integration successful: {len(result)} records")
         print(result.head())
-        
+
     except Exception as e:
         print(f"❌ Integration failed: {e}")
         print("Check your configuration and credentials")
@@ -186,4 +186,4 @@ Example scripts can be integrated into automated testing workflows:
 - Verify all required environment variables are set
 - Check .env file loading and variable precedence
 - Validate configuration file syntax
-- Ensure proper service configuration in metrics/ 
+- Ensure proper service configuration in metrics/

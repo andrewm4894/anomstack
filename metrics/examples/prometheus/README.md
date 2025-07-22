@@ -74,7 +74,7 @@ This example uses the [Prometheus Labs Demo Server](https://demo.promlabs.com) b
    ```python
    queries = [
        'node_cpu_seconds_total',
-       'node_memory_MemAvailable_bytes', 
+       'node_memory_MemAvailable_bytes',
        'prometheus_http_requests_total',
        'your_custom_metric_name'
    ]
@@ -239,12 +239,12 @@ def process_prometheus_response(response):
     for result in response['data']['result']:
         labels = result['metric']
         value = float(result['value'][1])
-        
+
         # Create metric name from labels
         metric_name = f"{labels.get('__name__', 'unknown')}"
         if 'instance' in labels:
             metric_name += f"_{labels['instance'].replace('.', '_').replace(':', '_')}"
-            
+
         metrics.append({
             'metric_timestamp': datetime.now(),
             'metric_name': metric_name,
@@ -261,7 +261,7 @@ from requests.auth import HTTPBasicAuth
 
 def query_prometheus(query, auth=None):
     headers = {'Accept': 'application/json'}
-    
+
     if auth:
         response = requests.get(
             f"{PROMETHEUS_URL}/api/v1/query",
@@ -275,7 +275,7 @@ def query_prometheus(query, auth=None):
             params={'query': query},
             headers=headers
         )
-    
+
     return response.json()
 ```
 

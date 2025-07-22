@@ -93,4 +93,4 @@ You can extend the alert system by:
 3. Adding configuration support
 4. Registering the new channel in `send.py`
 
-See existing implementations as reference for creating custom alert channels. 
+See existing implementations as reference for creating custom alert channels.

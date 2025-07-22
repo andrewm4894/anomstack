@@ -72,4 +72,3 @@ left join metric_alert_data a
   and m.metric_batch = a.metric_batch
   and m.metric_name = a.metric_name
 ;
-

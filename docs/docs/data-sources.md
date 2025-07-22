@@ -43,5 +43,5 @@ All data sources work with the same core concepts:
 ## Need Help?
 
 - Check the [environment variables guide](configuration/environment-variables) for connection setup
-- Review metric configuration examples in the [metrics directory](https://github.com/andrewm4894/anomstack/tree/main/metrics/examples) 
-- Join our [GitHub Discussions](https://github.com/andrewm4894/anomstack/discussions) for community support 
+- Review metric configuration examples in the [metrics directory](https://github.com/andrewm4894/anomstack/tree/main/metrics/examples)
+- Join our [GitHub Discussions](https://github.com/andrewm4894/anomstack/discussions) for community support

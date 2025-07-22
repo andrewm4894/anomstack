@@ -8,7 +8,8 @@ This module contains the components for the toolbar.
 """
 
 from fasthtml.common import Div
-from monsterui.all import DivLAligned, UkIcon, ButtonT, Button
+from monsterui.all import Button, ButtonT, DivLAligned, UkIcon
+
 from .batch import create_batches_dropdown
 from .settings import create_settings_dropdown
 
@@ -58,6 +59,6 @@ def create_toolbar_buttons(batch_name: str) -> Div:
             cls=ButtonT.secondary,
             uk_tooltip="View anomaly list",
         ),
-        
+
         cls="flex items-center space-x-2 flex-wrap",
     )

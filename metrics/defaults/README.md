@@ -89,4 +89,4 @@ The SQL templates use Jinja2 syntax and support Anomstack's multi-platform archi
 - **Modern UI**: FastHTML dashboard with MonsterUI components
 - **Production Ready**: Configurable retention, snoozing, and feedback systems
 
-For more details on setting up metric batches and customizing Anomstack, see the main project documentation and examples in the [`metrics/examples/`](../examples/) directory. 
+For more details on setting up metric batches and customizing Anomstack, see the main project documentation and examples in the [`metrics/examples/`](../examples/) directory.
