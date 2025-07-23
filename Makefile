@@ -162,10 +162,19 @@ docker-prune:
 # =============================================================================
 # FLY.IO DEPLOYMENT
 # =============================================================================
+#
+# Docker Caching Notes:
+# - Standard deploy targets use --no-cache but may still use cached Docker layers
+# - Use *-fresh targets if you encounter caching issues (cleans local cache first)  
+# - Use fly-build-test to test builds locally before deploying
+# - Use fly-docker-clean if you need to clear Docker cache manually
+#
 
 .PHONY: fly-validate fly-preview fly-deploy fly-status fly-logs fly-ssh
 .PHONY: fly-preview-demo fly-preview-production fly-preview-development
 .PHONY: fly-deploy-demo fly-deploy-production fly-deploy-development
+.PHONY: fly-deploy-demo-fresh fly-deploy-production-fresh fly-deploy-development-fresh
+.PHONY: fly-build-test fly-docker-clean
 
 # validate fly.io configuration
 fly-validate:
@@ -202,6 +211,41 @@ fly-deploy-production:
 # deploy to fly.io with development profile (all examples enabled)
 fly-deploy-development:
 	./scripts/deployment/deploy_fly.sh --profile development
+
+# deploy with fresh build (clears local Docker cache first) - demo profile
+fly-deploy-demo-fresh:
+	@echo "🧹 Cleaning local Docker cache to ensure fresh build..."
+	docker system prune -f --filter "until=1h"
+	./scripts/deployment/deploy_fly.sh --profile demo --force-rebuild
+
+# deploy with fresh build (clears local Docker cache first) - production profile
+fly-deploy-production-fresh:
+	@echo "🧹 Cleaning local Docker cache to ensure fresh build..."
+	docker system prune -f --filter "until=1h"
+	./scripts/deployment/deploy_fly.sh --profile production --force-rebuild
+
+# deploy with fresh build (clears local Docker cache first) - development profile
+fly-deploy-development-fresh:
+	@echo "🧹 Cleaning local Docker cache to ensure fresh build..."
+	docker system prune -f --filter "until=1h"
+	./scripts/deployment/deploy_fly.sh --profile development --force-rebuild
+
+# test fly.io build locally before deploying (helps catch issues early)
+fly-build-test:
+	@echo "🧪 Testing Fly.io build locally..."
+	docker build --no-cache -f docker/Dockerfile.fly -t anomstack-fly-test .
+	@echo "✅ Build successful! Testing container startup..."
+	@echo "🚀 Starting container on port 3001 (http://localhost:3001)..."
+	@echo "Press Ctrl+C to stop the test container"
+	docker run --rm -p 3001:80 --name anomstack-fly-test anomstack-fly-test
+
+# clean Docker cache (useful when encountering caching issues)
+fly-docker-clean:
+	@echo "🧹 Cleaning Docker cache (keeps last 24h of images)..."
+	docker system prune -f --filter "until=24h"
+	@echo "🧹 Removing old anomstack images..."
+	docker images | grep anomstack | awk '{print $$3}' | xargs -r docker rmi -f 2>/dev/null || true
+	@echo "✅ Docker cache cleaned"
 
 # check fly.io app status (requires app name as FLY_APP env var)
 fly-status:

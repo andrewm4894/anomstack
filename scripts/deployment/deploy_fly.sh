@@ -8,6 +8,7 @@ echo "🚀 Deploying Anomstack to Fly.io..."
 # Parse command line arguments for profile support
 PROFILE=""
 APP_NAME=""
+FORCE_REBUILD=false
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -18,6 +19,10 @@ while [[ $# -gt 0 ]]; do
         -p)
             PROFILE="$2"
             shift 2
+            ;;
+        --force-rebuild)
+            FORCE_REBUILD=true
+            shift
             ;;
         *)
             if [[ -z "$APP_NAME" ]]; then
@@ -228,7 +233,13 @@ rm fly.toml.bak
 
 # Deploy the application (force rebuild to ensure latest files are included)
 echo "🚀 Deploying application..."
-fly deploy --no-cache -a "$APP_NAME"
+
+if [[ "$FORCE_REBUILD" == "true" ]]; then
+    echo "🔄 Force rebuild enabled - using aggressive cache busting..."
+    fly deploy --no-cache --build-arg CACHEBUST="$(date +%s)" -a "$APP_NAME"
+else
+    fly deploy --no-cache -a "$APP_NAME"
+fi
 
 # Show the status
 echo "📊 Deployment status:"
@@ -255,6 +266,10 @@ echo ""
 echo "Deploy with profiles:"
 echo "  ./scripts/deployment/deploy_fly.sh --profile demo    # Deploy demo config"
 echo "  ./scripts/deployment/deploy_fly.sh --profile production  # Deploy production config"
+echo ""
+echo "Force fresh rebuild (bypasses all caching):"
+echo "  ./scripts/deployment/deploy_fly.sh --profile demo --force-rebuild"
+echo "  make fly-deploy-demo-fresh                           # Same as above with local cache cleanup"
 echo ""
 echo "To set up alerting (if not configured in profile):"
 echo "  fly secrets set ANOMSTACK_ALERT_EMAIL_FROM='your-email@domain.com' -a $APP_NAME"

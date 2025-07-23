@@ -1,5 +1,8 @@
 FROM python:3.12-slim
 
+# Cache busting argument (set during build to force fresh layers)
+ARG CACHEBUST=1
+
 # Install system dependencies including nginx
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
@@ -27,6 +30,7 @@ COPY metrics ./metrics
 # Copy configuration files
 COPY dagster_fly.yaml ./dagster_home/dagster.yaml
 COPY dagster_home/workspace.yaml ./dagster_home/workspace.yaml
+# Copy startup scripts (use CACHEBUST arg above to ensure fresh copy when needed)
 COPY scripts/deployment/start.sh /opt/dagster/start.sh
 COPY scripts/deployment/debug_grpc.sh /opt/dagster/debug_grpc.sh
 
