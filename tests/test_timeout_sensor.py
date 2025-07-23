@@ -18,5 +18,5 @@ def test_get_kill_after_minutes_yaml(tmp_path, monkeypatch):
 
 def test_get_kill_after_minutes_default(tmp_path, monkeypatch):
     monkeypatch.setenv("DAGSTER_HOME", str(tmp_path))
-    assert get_kill_after_minutes() == 60
+    assert get_kill_after_minutes() == 15
     monkeypatch.delenv("DAGSTER_HOME")

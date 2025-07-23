@@ -12,7 +12,7 @@ from dagster import (
 )
 from dagster._core.errors import DagsterUserCodeUnreachableError
 
-DEFAULT_MINUTES = 60
+DEFAULT_MINUTES = 15
 
 def _load_config_timeout_minutes() -> int:
     env_val = os.getenv("ANOMSTACK_KILL_RUN_AFTER_MINUTES")

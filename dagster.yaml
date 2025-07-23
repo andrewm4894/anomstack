@@ -11,7 +11,7 @@ run_monitoring:
   enabled: true
   start_timeout_seconds: 300   # 5 minutes to start
   cancel_timeout_seconds: 180  # 3 minutes to cancel
-  max_runtime_seconds: 3600    # 1 hour max runtime per run
+  max_runtime_seconds: 900     # 15 minutes max runtime per run
   poll_interval_seconds: 60    # Check every minute
 
 storage:

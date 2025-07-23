@@ -17,6 +17,9 @@ COPY anomstack /opt/dagster/app/anomstack
 
 COPY metrics /opt/dagster/app/metrics
 
+# Copy maintenance scripts for operational use
+COPY scripts/maintenance /opt/dagster/app/scripts/maintenance
+
 COPY .example.env .env
 
 # Run dagster gRPC server on port 4000

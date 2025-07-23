@@ -60,7 +60,7 @@ run_monitoring:
   enabled: true
   start_timeout_seconds: 300
   cancel_timeout_seconds: 180
-  max_runtime_seconds: 3600
+  max_runtime_seconds: 900
   poll_interval_seconds: 60
 
 # Disabled telemetry to reduce disk writes
