@@ -165,7 +165,7 @@ docker-prune:
 #
 # Docker Caching Notes:
 # - Standard deploy targets use --no-cache but may still use cached Docker layers
-# - Use *-fresh targets if you encounter caching issues (cleans local cache first)  
+# - Use *-fresh targets if you encounter caching issues (cleans local cache first)
 # - Use fly-build-test to test builds locally before deploying
 # - Use fly-docker-clean if you need to clear Docker cache manually
 #

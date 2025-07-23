@@ -48,16 +48,16 @@ start_process_with_retry() {
     local logfile=$3
     local max_retries=3
     local retry=0
-    
+
     while [ $retry -lt $max_retries ]; do
         echo "🔧 Starting $name (attempt $((retry + 1))/$max_retries)..."
         nohup $command > $logfile 2>&1 &
         local pid=$!
         echo "$name PID: $pid"
-        
+
         # Give it a moment to crash if it's going to
         sleep 3
-        
+
         if kill -0 $pid 2>/dev/null; then
             echo "✅ $name started successfully"
             echo $pid
@@ -67,7 +67,7 @@ start_process_with_retry() {
             retry=$((retry + 1))
         fi
     done
-    
+
     echo "❌ Failed to start $name after $max_retries attempts"
     return 1
 }
@@ -113,7 +113,7 @@ echo "✅ Nginx started with PID: $NGINX_PID"
 
 echo "✅ All services started successfully!"
 echo "Code Server PID: $CODE_SERVER_PID"
-echo "Webserver PID: $WEBSERVER_PID" 
+echo "Webserver PID: $WEBSERVER_PID"
 echo "Daemon PID: $DAEMON_PID"
 echo "Dashboard PID: $DASHBOARD_PID"
 echo "Nginx PID: $NGINX_PID"
@@ -140,28 +140,28 @@ while true; do
         echo "❌ Code server crashed, restarting..."
         CODE_SERVER_PID=$(start_process_with_retry "Code Server" "dagster code-server start -h 0.0.0.0 -p 4000 -f anomstack/main.py" "/tmp/code_server.log")
     fi
-    
+
     if [ -n "$WEBSERVER_PID" ] && ! kill -0 $WEBSERVER_PID 2>/dev/null; then
         echo "❌ Webserver crashed, restarting..."
         WEBSERVER_PID=$(start_process_with_retry "Webserver" "dagster-webserver -h 0.0.0.0 -p 3000 -w /opt/dagster/dagster_home/workspace.yaml" "/tmp/webserver.log")
     fi
-    
+
     if [ -n "$DAEMON_PID" ] && ! kill -0 $DAEMON_PID 2>/dev/null; then
         echo "❌ Daemon crashed, restarting..."
         DAEMON_PID=$(start_process_with_retry "Daemon" "dagster-daemon run -w /opt/dagster/dagster_home/workspace.yaml" "/tmp/daemon.log")
     fi
-    
+
     if [ -n "$DASHBOARD_PID" ] && ! kill -0 $DASHBOARD_PID 2>/dev/null; then
         echo "❌ Dashboard crashed, restarting..."
         DASHBOARD_PID=$(start_process_with_retry "Dashboard" "uvicorn dashboard.app:app --host 0.0.0.0 --port 8080" "/tmp/dashboard.log")
     fi
-    
+
     if [ -n "$NGINX_PID" ] && ! kill -0 $NGINX_PID 2>/dev/null; then
         echo "❌ Nginx crashed, restarting..."
         nginx -t && nginx -g "daemon off;" &
         NGINX_PID=$!
         echo "✅ Nginx restarted with PID: $NGINX_PID"
     fi
-    
+
     sleep 30
 done

@@ -8,12 +8,7 @@ import os
 from pathlib import Path
 from typing import Optional
 
-from dagster import (
-    SensorEvaluationContext,
-    SkipReason,
-    get_dagster_logger,
-    sensor,
-)
+from dagster import SensorEvaluationContext, SkipReason, get_dagster_logger, sensor
 
 from anomstack.config import execute_config_reload
 

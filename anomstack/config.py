@@ -51,18 +51,18 @@ def get_specs(metrics_dir: str = "./metrics"):
             # Parameters where YAML takes precedence over global env vars
             # These are typically deployment-specific configs that should be defined per metric batch
             YAML_PRECEDENCE_PARAMS = ["table_key"]
-            
+
             # Apply global environment variable overrides
             # Environment variables override YAML values, except for YAML_PRECEDENCE_PARAMS
             for env_var in env_vars:
                 if env_var in os.environ:
                     param_key = env_var.replace("ANOMSTACK_", "").lower()
-                    
+
                     # Check if YAML should take precedence for this parameter
                     if param_key in YAML_PRECEDENCE_PARAMS and param_key in metric_specs:
                         logger.info(f"ENV SKIP: {env_var} skipped, YAML value takes precedence for {param_key} (YAML: {metric_specs[param_key]})")
                         continue
-                    
+
                     # Normal override behavior
                     yaml_value = merged_specs.get(param_key)
                     merged_specs[param_key] = os.getenv(env_var)

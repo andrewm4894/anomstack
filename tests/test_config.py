@@ -77,7 +77,7 @@ def test_environment_variable_override():
             # These environment variables should always override their respective YAML values
             assert spec["gcp_project_id"] == test_project_id
             assert spec["model_path"] == test_model_path
-            
+
             # table_key has YAML precedence - it should only be overridden if not defined in YAML
             # Check if this batch has a custom table_key in its YAML
             # If it does, YAML takes precedence; if not, env var should be used
