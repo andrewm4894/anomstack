@@ -181,8 +181,8 @@ Lightweight defaults to prevent disk space issues.
 
 | Variable | Required | Description | Default | Example |
 |----------|----------|-------------|---------|---------|
-| `ANOMSTACK_MAX_RUNTIME_SECONDS_TAG` | No | Max job runtime in seconds | `3600` | `7200` |
-| `ANOMSTACK_KILL_RUN_AFTER_MINUTES` | No | Kill long-running jobs after N minutes | `60` | `120` |
+| `ANOMSTACK_MAX_RUNTIME_SECONDS_TAG` | No | Max job runtime in seconds | `900` | `1800` |
+| `ANOMSTACK_KILL_RUN_AFTER_MINUTES` | No | Kill long-running jobs after N minutes | `15` | `30` |
 
 ## 🐳 Docker & Deployment
 
