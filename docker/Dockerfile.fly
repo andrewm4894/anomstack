@@ -8,6 +8,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     cmake \
     nginx \
     apache2-utils \
+    net-tools \
+    netcat-openbsd \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt/dagster/app
@@ -26,13 +28,15 @@ COPY metrics ./metrics
 COPY dagster_fly.yaml ./dagster_home/dagster.yaml
 COPY dagster_home/workspace.yaml ./dagster_home/workspace.yaml
 COPY scripts/deployment/start.sh /opt/dagster/start.sh
+COPY scripts/deployment/debug_grpc.sh /opt/dagster/debug_grpc.sh
 
 # Verify files were copied and create any missing directories
 RUN ls -la ./dagster_home/ && \
     mkdir -p /opt/dagster/dagster_home && \
     cp -r ./dagster_home/* /opt/dagster/dagster_home/ && \
     ls -la /opt/dagster/dagster_home/ && \
-    chmod +x /opt/dagster/start.sh
+    chmod +x /opt/dagster/start.sh && \
+    chmod +x /opt/dagster/debug_grpc.sh
 
 # Create necessary directories for SQLite storage and artifacts
 RUN mkdir -p /data/models /data/dagster_storage /data/artifacts /tmp/dagster/compute_logs
