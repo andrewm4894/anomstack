@@ -76,4 +76,3 @@ local_artifact_storage:
 # Enhanced logging for debugging
 code_servers:
   reload_timeout: 60  # Give code servers more time to reload
-  heartbeat_timeout: 60  # Longer heartbeat timeout for reliability

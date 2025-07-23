@@ -485,6 +485,42 @@ Typical monthly costs for different workloads:
 
 ### Common Issues
 
+#### Docker Build Caching Issues
+
+**Problem**: Deployment seems successful but uses old code/configuration (e.g., old startup scripts, configuration files).
+
+**Symptoms**:
+- App shows old behavior despite code changes
+- Logs show old version numbers or error messages
+- Configuration changes don't take effect
+
+**Solution**: Use cache-busting deployment options:
+
+```bash
+# Option 1: Use fresh deployment (recommended)
+make fly-deploy-demo-fresh
+
+# Option 2: Use force-rebuild flag directly  
+./scripts/deployment/deploy_fly.sh --profile demo --force-rebuild
+
+# Option 3: Clean local Docker cache first
+make fly-docker-clean
+make fly-deploy-demo
+
+# Option 4: Test build locally first
+make fly-build-test  # This will catch caching issues early
+```
+
+**Root Cause**: Docker layer caching can preserve old files even when using `--no-cache`. This happens because:
+- Multiple build contexts (local, Fly.io, docker-compose) create different cached layers
+- Large images (like ML/data platforms) are expensive to rebuild, so Docker aggressively caches them
+- Fly.io's remote builders may have cached layers from previous deployments
+
+**Prevention**:
+- Use `make fly-build-test` before deploying to catch issues locally
+- Use `make fly-deploy-*-fresh` for important deployments
+- Regularly clean Docker cache with `make fly-docker-clean`
+
 #### Services Not Starting
 
 ```bash
