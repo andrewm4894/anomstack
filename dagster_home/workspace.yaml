@@ -7,3 +7,14 @@ load_from:
         env: DAGSTER_CODE_SERVER_HOST
       port: 4000
       location_name: "anomstack_code"
+      # Enhanced connection settings for single container deployment
+      heartbeat_timeout: 60      # Allow 60 seconds for heartbeat
+      startup_timeout: 180       # Allow 3 minutes for startup
+      max_send_message_length: 52428800  # 50MB max message size
+      max_receive_message_length: 52428800  # 50MB max message size
+      # gRPC keepalive settings for better connection stability
+      grpc_keepalive_time_ms: 30000        # Send keepalive every 30 seconds
+      grpc_keepalive_timeout_ms: 10000     # Wait 10 seconds for keepalive response
+      grpc_keepalive_permit_without_calls: true  # Allow keepalive without active calls
+      grpc_http2_max_pings_without_data: 0      # No limit on pings without data
+      grpc_http2_min_ping_interval_without_data_ms: 300000  # 5 minutes between pings

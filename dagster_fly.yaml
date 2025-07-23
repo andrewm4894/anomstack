@@ -6,11 +6,11 @@ run_coordinator:
   module: dagster.core.run_coordinator
   class: QueuedRunCoordinator
   config:
-    max_concurrent_runs: 12  # Increased for 8GB RAM + 4 performance CPUs (prevents queue backup)
+    max_concurrent_runs: 8  # Reduced for better stability in single container
     tag_concurrency_limits:
       - key: "dagster/concurrency_key"
         value: "database"
-        limit: 2
+        limit: 1  # Reduced to prevent resource contention
       - key: "dagster/concurrency_key"
         value: "ml_training"
         limit: 1
@@ -27,7 +27,7 @@ storage:
 
 run_retries:
   enabled: true
-  max_retries: 1
+  max_retries: 2  # Increased for better reliability
 
 # Aggressive retention policies optimized for Fly.io disk usage
 retention:
@@ -39,25 +39,26 @@ retention:
       failure: 2
       success: 1
 
-# Run monitoring for Fly.io environment
+# Enhanced run monitoring for Fly.io environment
 run_monitoring:
   enabled: true
-  start_timeout_seconds: 180   # 3 minutes to start
-  cancel_timeout_seconds: 120  # 2 minutes to cancel
-  max_runtime_seconds: 2700    # 45 minutes max runtime per run (increased with better resources)
-  poll_interval_seconds: 60    # Check every minute
+  start_timeout_seconds: 300   # 5 minutes to start (increased for cold starts)
+  cancel_timeout_seconds: 180  # 3 minutes to cancel (increased)
+  max_runtime_seconds: 3600    # 1 hour max runtime per run
+  poll_interval_seconds: 30    # Check every 30 seconds (more frequent)
 
 # Disable telemetry
 telemetry:
   enabled: false
 
+# Optimized for single container environment
 schedules:
   use_threads: true
-  num_workers: 4  # Conservative for Fly.io
+  num_workers: 2  # Reduced for single container
 
 sensors:
   use_threads: true
-  num_workers: 2  # Conservative for Fly.io
+  num_workers: 1  # Reduced for single container
 
 compute_logs:
   module: dagster.core.storage.local_compute_log_manager
@@ -71,3 +72,8 @@ local_artifact_storage:
   class: LocalArtifactStorage
   config:
     base_dir: "/data/artifacts"
+
+# Enhanced logging for debugging
+code_servers:
+  reload_timeout: 60  # Give code servers more time to reload
+  heartbeat_timeout: 60  # Longer heartbeat timeout for reliability
