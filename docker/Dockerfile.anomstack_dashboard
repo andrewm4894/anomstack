@@ -26,6 +26,9 @@ COPY anomstack/sql /opt/dagster/app/anomstack/sql
 COPY anomstack/df /opt/dagster/app/anomstack/df
 COPY anomstack/validate /opt/dagster/app/anomstack/validate
 
+# Copy maintenance scripts for operational use
+COPY scripts/maintenance /opt/dagster/app/scripts/maintenance
+
 # Add current directory to Python path for anomstack imports
 ENV PYTHONPATH=/opt/dagster/app:$PYTHONPATH
 

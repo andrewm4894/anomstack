@@ -21,6 +21,9 @@ COPY dagster_docker.yaml $DAGSTER_HOME/dagster.yaml
 
 COPY workspace.yaml $DAGSTER_HOME
 
+# Copy maintenance scripts for operational use
+COPY scripts/maintenance /opt/dagster/scripts/maintenance
+
 COPY .example.env .env
 
 WORKDIR $DAGSTER_HOME
