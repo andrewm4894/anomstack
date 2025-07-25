@@ -1,5 +1,7 @@
 # Devcontainer Configurations
 
+[![Open Dev Codespace](https://img.shields.io/badge/Codespace-Dev-blue?logo=github)](https://github.com/codespaces/new/andrewm4894/anomstack?devcontainer_path=.devcontainer/devcontainer.dev.json)
+
 This directory contains multiple devcontainer configurations for different use cases.
 
 ## 📋 Available Configurations
@@ -27,7 +29,7 @@ This directory contains multiple devcontainer configurations for different use c
 ### GitHub Codespaces
 
 1. **Default (User/Demo)**: Just click "Create codespace" - uses `devcontainer.json`
-2. **Development**: When creating a codespace, click "..." → "Configure dev container" → select `devcontainer.dev.json`
+2. **Development**: Use the **Dev Codespace** link above or when creating a codespace click "..." → "Configure dev container" → select `devcontainer.dev.json`
 
 ### VS Code Dev Containers
 

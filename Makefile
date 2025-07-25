@@ -344,7 +344,17 @@ kill-dashboardd:
 # TESTING & QUALITY
 # =============================================================================
 
-.PHONY: tests coverage pre-commit
+.PHONY: tests coverage pre-commit fmt lint
+
+# run code formatters (black, isort, ruff)
+fmt:
+	black .
+	isort .
+	ruff --fix .
+
+# run ruff without modifying files
+lint:
+	ruff .
 
 # run pre-commit hooks on all files
 pre-commit:

@@ -1,6 +1,7 @@
 # Anomstack
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/andrewm4894/anomstack)
+[![Open Dev Codespace](https://img.shields.io/badge/Codespace-Dev-blue?logo=github)](https://github.com/codespaces/new/andrewm4894/anomstack?devcontainer_path=.devcontainer/devcontainer.dev.json)
 
 [![Run on Repl.it](https://replit.com/badge/github/andrewm4894/anomstack)](https://replit.com/new/github/andrewm4894/anomstack)
 
@@ -447,6 +448,8 @@ There are some more detailed instructions (WIP) in [`/docs/deployment/`](./docs/
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/andrewm4894/anomstack)
 
 You can run Anomstack using docker in a [GitHub Codespace](https://docs.github.com/en/codespaces). This is a great way to get started and familiar with Anomstack without having to install or run anything locally.
+
+If you want a full development environment that builds the Docker images from the local `Dockerfile`s, use the **Dev Codespace** link above or choose `devcontainer.dev.json` when configuring your codespace.
 
 You can see the [`.devcontainer`](./.devcontainer) folder for the config used to run Anomstack in a codespace and the post create script [`post_create_command.sh`](.devcontainer/post_create_command.sh) for the commands the devcontainer will run to get Anomstack up and running.
 
