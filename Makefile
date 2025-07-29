@@ -416,6 +416,26 @@ posthog-example:
 kill-long-runs:
 	python scripts/maintenance/kill_long_running_tasks.py
 
+# clean up disk space on fly instance (requires SSH access)
+fly-cleanup:
+	@echo "🧹 Running disk cleanup on Fly instance..."
+	@echo "This will SSH into your Fly instance and run cleanup"
+	@if [ -z "$$FLY_APP" ]; then echo "Set FLY_APP environment variable"; exit 1; fi
+	fly ssh console -a $$FLY_APP -C "cd /opt/dagster/app && python scripts/maintenance/cleanup_disk_space.py"
+
+# preview cleanup on fly instance (dry run)
+fly-cleanup-preview:
+	@echo "🔍 Previewing disk cleanup on Fly instance..."
+	@if [ -z "$$FLY_APP" ]; then echo "Set FLY_APP environment variable"; exit 1; fi
+	fly ssh console -a $$FLY_APP -C "cd /opt/dagster/app && python scripts/maintenance/cleanup_disk_space.py --dry-run"
+
+# aggressive cleanup for emergency situations
+fly-cleanup-aggressive:
+	@echo "⚡ Running AGGRESSIVE disk cleanup on Fly instance..."
+	@echo "This will remove more files - use only if disk is critically full"
+	@if [ -z "$$FLY_APP" ]; then echo "Set FLY_APP environment variable"; exit 1; fi
+	fly ssh console -a $$FLY_APP -C "cd /opt/dagster/app && python scripts/maintenance/cleanup_disk_space.py --aggressive"
+
 # run docker in dev mode with correct environment
 docker-dev-env:
 	docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d
