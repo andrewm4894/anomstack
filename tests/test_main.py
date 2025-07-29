@@ -9,19 +9,19 @@ logger = logging.getLogger(__name__)
 
 
 def test_jobs_len():
-    assert len(jobs) == 185
+    assert len(jobs) == 186  # Updated to include cleanup job
 
 
 def test_jobs_len_ingest():
-    assert len(ingest_jobs) == (len(jobs)-1) / 8
+    assert len(ingest_jobs) == (len(jobs)-2) / 8  # Updated to account for cleanup job (2 non-metric jobs total)
 
 
 def test_schedules_len():
-    assert len(schedules) == 185
+    assert len(schedules) == 186  # Updated to include cleanup schedule
 
 
 def test_schedules_len_ingest():
-    assert len(ingest_schedules) == (len(schedules)-1) / 8
+    assert len(ingest_schedules) == (len(schedules)-2) / 8  # Updated to account for cleanup schedule
 
 
 def test_jobs_schedules_len_match():
