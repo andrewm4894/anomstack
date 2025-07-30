@@ -10,4 +10,4 @@ plot_cron_schedule: "15 9 * * *"
 alert_methods: "email,slack"
 disable_llmalert: False
 ingest_fn: >
-  {% include "./examples/hackernews/hn_top_stories_scores.py" %}
+  {% include "./examples/hackernews/hackernews.py" %}
