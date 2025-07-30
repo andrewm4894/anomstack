@@ -20,7 +20,7 @@ exclude = [
 # Enable specific rule sets
 select = [
     "E",   # pycodestyle errors
-    "W",   # pycodestyle warnings  
+    "W",   # pycodestyle warnings
     "F",   # Pyflakes
     "I",   # isort
 ]
@@ -46,4 +46,4 @@ ignore = [
 [tool.ruff.lint.isort]
 # Configure import sorting to match current style
 combine-as-imports = true
-force-sort-within-sections = true 
+force-sort-within-sections = true
