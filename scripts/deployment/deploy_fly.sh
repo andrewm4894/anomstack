@@ -235,10 +235,23 @@ rm fly.toml.bak
 echo "🚀 Deploying application..."
 
 if [[ "$FORCE_REBUILD" == "true" ]]; then
+    # Generate unique cache busting value with timestamp + random
+    CACHEBUST_VALUE="$(date +%s)-$(openssl rand -hex 4 2>/dev/null || echo $RANDOM)"
     echo "🔄 Force rebuild enabled - using aggressive cache busting..."
-    fly deploy --no-cache --build-arg CACHEBUST="$(date +%s)" -a "$APP_NAME"
+    echo "🎯 Cache bust value: $CACHEBUST_VALUE"
+    
+    # Use multiple cache busting strategies:
+    # 1. --no-cache: Skip Docker layer cache
+    # 2. CACHEBUST build arg: Force rebuild of layers that use it  
+    # 3. --dockerfile: Explicit dockerfile path to avoid confusion
+    fly deploy \
+        --no-cache \
+        --build-arg CACHEBUST="$CACHEBUST_VALUE" \
+        --dockerfile docker/Dockerfile.fly \
+        -a "$APP_NAME"
 else
-    fly deploy --no-cache -a "$APP_NAME"
+    echo "⚡ Standard deployment (with caching)..."
+    fly deploy --dockerfile docker/Dockerfile.fly -a "$APP_NAME"
 fi
 
 # Show the status

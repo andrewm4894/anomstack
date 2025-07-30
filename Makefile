@@ -216,18 +216,24 @@ fly-deploy-development:
 fly-deploy-demo-fresh:
 	@echo "🧹 Cleaning local Docker cache to ensure fresh build..."
 	docker system prune -f --filter "until=1h"
+	@echo "🧹 Cleaning Docker builder cache..."
+	docker builder prune -f 2>/dev/null || true
 	./scripts/deployment/deploy_fly.sh --profile demo --force-rebuild
 
 # deploy with fresh build (clears local Docker cache first) - production profile
 fly-deploy-production-fresh:
 	@echo "🧹 Cleaning local Docker cache to ensure fresh build..."
 	docker system prune -f --filter "until=1h"
+	@echo "🧹 Cleaning Docker builder cache..."
+	docker builder prune -f 2>/dev/null || true
 	./scripts/deployment/deploy_fly.sh --profile production --force-rebuild
 
 # deploy with fresh build (clears local Docker cache first) - development profile
 fly-deploy-development-fresh:
 	@echo "🧹 Cleaning local Docker cache to ensure fresh build..."
 	docker system prune -f --filter "until=1h"
+	@echo "🧹 Cleaning Docker builder cache..."
+	docker builder prune -f 2>/dev/null || true
 	./scripts/deployment/deploy_fly.sh --profile development --force-rebuild
 
 # test fly.io build locally before deploying (helps catch issues early)
