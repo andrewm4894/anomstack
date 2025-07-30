@@ -1,0 +1,13 @@
+metric_batch: "earthquake"
+table_key: "metrics_earthquake"
+ingest_cron_schedule: "45 6 * * *"
+train_cron_schedule: "15 8 * * *"
+score_cron_schedule: "15 7 * * *"
+alert_cron_schedule: "30 7 * * *"
+change_cron_schedule: "45 7 * * *"
+llmalert_cron_schedule: "45 8 * * *"
+plot_cron_schedule: "15 9 * * *"
+alert_methods: "email,slack"
+disable_llmalert: False
+ingest_fn: >
+  {% include "./examples/earthquake/earthquake.py" %}
