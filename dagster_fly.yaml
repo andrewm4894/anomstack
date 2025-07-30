@@ -32,12 +32,12 @@ run_retries:
 # Aggressive retention policies optimized for Fly.io disk usage
 retention:
   schedule:
-    purge_after_days: 2  # Keep for 2 days
+    purge_after_days: 1  # Keep for 1 day only
   sensor:
     purge_after_days:
-      skipped: 1
-      failure: 2
-      success: 1
+      skipped: 1    # 1 day for skipped (minimum allowed by Dagster)
+      failure: 1    # 1 day for failures
+      success: 1    # 1 day for successful runs (minimum allowed by Dagster)
 
 # Enhanced run monitoring for Fly.io environment
 run_monitoring:

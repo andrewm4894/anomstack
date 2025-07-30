@@ -39,6 +39,50 @@ python kill_long_running_tasks.py
 - **Validation**: Checks job status before taking action
 - **Error Handling**: Handles unreachable user code servers gracefully
 
+### `cleanup_disk_space.py`
+Standalone script for managing disk space by cleaning up old artifacts, logs, and metrics.
+
+**Features:**
+- **Artifact Cleanup**: Removes old Dagster run artifacts
+- **Log Cleanup**: Removes old log files from multiple directories
+- **Database Cleanup**: Removes old metrics and vacuums database
+- **Disk Usage Reporting**: Shows before/after disk usage statistics
+- **Dry Run Mode**: Preview cleanup without making changes
+- **Aggressive Mode**: More thorough cleanup for emergency situations
+
+**Use Cases:**
+- **Emergency Cleanup**: Free disk space when volume is full
+- **Scheduled Maintenance**: Regular cleanup to prevent disk issues
+- **Deployment Optimization**: Optimize Fly.io volume usage
+- **Development**: Clean up after testing
+
+**Usage:**
+```bash
+# Preview what would be cleaned up
+python cleanup_disk_space.py --dry-run
+
+# Normal cleanup (6h artifacts, 24h logs)
+python cleanup_disk_space.py
+
+# Aggressive cleanup (1h artifacts, all logs)
+python cleanup_disk_space.py --aggressive
+
+# Emergency cleanup with preview
+python cleanup_disk_space.py --dry-run --aggressive
+```
+
+**Cleanup Targets:**
+- **Artifacts**: Dagster run artifacts older than 6 hours (1 hour in aggressive mode)
+- **Logs**: Log files older than 24 hours (all logs in aggressive mode)
+- **Database**: Metrics older than 90 days + VACUUM operation
+- **Locations**: `/data/artifacts`, `/tmp/dagster`, `/data/dagster_storage`
+
+**Safety Features:**
+- **Dry Run Mode**: Safe preview of cleanup actions
+- **Detailed Reporting**: Shows exactly what will be/was removed
+- **Error Handling**: Continues cleanup even if individual files fail
+- **Size Calculation**: Reports space freed by cleanup operations
+
 ## Common Maintenance Tasks
 
 ### Regular Cleanup Operations

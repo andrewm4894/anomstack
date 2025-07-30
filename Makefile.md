@@ -562,6 +562,43 @@ make posthog-example
 make kill-long-runs
 ```
 
+### Fly.io Disk Space Management
+
+#### `make fly-cleanup-preview`
+**Preview disk cleanup on Fly instance (dry run)**
+- Shows what files would be removed
+- Safe way to check cleanup impact
+- Requires `FLY_APP` environment variable
+
+```bash
+export FLY_APP=anomstack-demo
+make fly-cleanup-preview
+```
+
+#### `make fly-cleanup`
+**Clean up disk space on Fly instance**
+- Removes old artifacts (6+ hours)
+- Removes old logs (24+ hours)
+- Cleans database and runs VACUUM
+- Reports disk usage before/after
+
+```bash
+export FLY_APP=anomstack-demo
+make fly-cleanup
+```
+
+#### `make fly-cleanup-aggressive`
+**Emergency disk cleanup (aggressive mode)**
+- Removes artifacts older than 1 hour
+- Removes ALL log files
+- Use only when disk is critically full
+- More thorough than normal cleanup
+
+```bash
+export FLY_APP=anomstack-demo
+make fly-cleanup-aggressive
+```
+
 ### Legacy Targets
 
 #### `make docker-dev-env`
