@@ -6,17 +6,18 @@ This script helps users update configurations on the fly without restarting Dock
 """
 
 import os
-import sys
 from pathlib import Path
+import sys
 
 import requests
 
 
 def get_dagster_graphql_url():
     """Get Dagster GraphQL URL from environment or default."""
-    host = os.getenv('DAGSTER_HOST', 'localhost')
-    port = os.getenv('DAGSTER_PORT', '3000')
+    host = os.getenv("DAGSTER_HOST", "localhost")
+    port = os.getenv("DAGSTER_PORT", "3000")
     return f"http://{host}:{port}/graphql"
+
 
 def reload_code_location(location_name="anomstack_code"):
     """Reload a specific code location in Dagster."""
@@ -57,11 +58,7 @@ def reload_code_location(location_name="anomstack_code"):
 
     try:
         print(f"🔄 Attempting to reload code location '{location_name}'...")
-        response = requests.post(
-            url,
-            json={"query": mutation, "variables": variables},
-            timeout=30
-        )
+        response = requests.post(url, json={"query": mutation, "variables": variables}, timeout=30)
 
         if response.status_code != 200:
             print(f"❌ HTTP Error {response.status_code}: {response.text}")
@@ -112,6 +109,7 @@ def reload_code_location(location_name="anomstack_code"):
         print(f"❌ Unexpected error: {e}")
         return False
 
+
 def check_dagster_health():
     """Check if Dagster is accessible."""
     url = get_dagster_graphql_url().replace("/graphql", "/server_info")
@@ -126,6 +124,7 @@ def check_dagster_health():
     except Exception as e:
         print(f"❌ Cannot reach Dagster webserver: {e}")
         return False
+
 
 def validate_config():
     """Validate that configuration files are accessible."""
@@ -142,6 +141,7 @@ def validate_config():
 
     print(f"✅ Configuration files accessible at {metrics_dir.absolute()}")
     return True
+
 
 def main():
     """Main function to reload configuration."""
@@ -178,6 +178,7 @@ def main():
         print("   3. Restart containers if needed: docker compose restart")
 
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

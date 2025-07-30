@@ -10,8 +10,8 @@ def ingest() -> pd.DataFrame:
     """
     from datetime import datetime
 
-    import requests
     from dagster import get_dagster_logger
+    import requests
 
     logger = get_dagster_logger()
 
@@ -73,8 +73,6 @@ def ingest() -> pd.DataFrame:
                     }
                 )
 
-    df = pd.DataFrame(
-        all_rows, columns=["metric_timestamp", "metric_name", "metric_value"]
-    )
+    df = pd.DataFrame(all_rows, columns=["metric_timestamp", "metric_name", "metric_value"])
 
     return df

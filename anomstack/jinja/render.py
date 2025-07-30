@@ -6,9 +6,7 @@ import jinja2
 from jinja2 import FileSystemLoader
 
 
-def render(
-    spec_key: str, spec: dict, params: dict = None
-) -> str:
+def render(spec_key: str, spec: dict, params: dict = None) -> str:
     """
     Render from a templated spec key.
 

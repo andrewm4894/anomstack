@@ -41,18 +41,14 @@ def get_credentials():
     credentials_json = os.getenv("ANOMSTACK_GOOGLE_APPLICATION_CREDENTIALS_JSON")
 
     if credentials_json:
-        return service_account.Credentials.from_service_account_info(
-            json.loads(credentials_json)
-        )
+        return service_account.Credentials.from_service_account_info(json.loads(credentials_json))
     elif credentials_path:
         return service_account.Credentials.from_service_account_file(credentials_path)
     else:
         return None
 
 
-def save_models_gcs(
-    models, model_path, metric_batch
-) -> List[Tuple[str, BaseDetector, str]]:
+def save_models_gcs(models, model_path, metric_batch) -> List[Tuple[str, BaseDetector, str]]:
     """
     Save trained models to gcs bucket.
 

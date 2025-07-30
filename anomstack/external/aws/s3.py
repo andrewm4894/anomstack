@@ -78,9 +78,7 @@ def save_models_s3(
     return models
 
 
-def load_model_s3(
-    metric_name: str, model_path: str, metric_batch, model_tag: str
-) -> BaseDetector:
+def load_model_s3(metric_name: str, model_path: str, metric_batch, model_tag: str) -> BaseDetector:
     """
     Load a model from S3.
 
@@ -102,8 +100,7 @@ def load_model_s3(
     s3_client = get_s3_client()
 
     model_obj = s3_client.get_object(
-        Bucket=model_path_bucket,
-        Key=f"{model_path_prefix}/{metric_batch}/{model_name}"
+        Bucket=model_path_bucket, Key=f"{model_path_prefix}/{metric_batch}/{model_name}"
     )
 
     model_byte_stream = model_obj["Body"].read()

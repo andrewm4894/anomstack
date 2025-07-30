@@ -59,6 +59,5 @@ def create_toolbar_buttons(batch_name: str) -> Div:
             cls=ButtonT.secondary,
             uk_tooltip="View anomaly list",
         ),
-
         cls="flex items-center space-x-2 flex-wrap",
     )

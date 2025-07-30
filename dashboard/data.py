@@ -7,9 +7,9 @@ This module contains functions for getting data from the database for the dashbo
 
 """
 
+from datetime import datetime, timedelta
 import logging
 import re
-from datetime import datetime, timedelta
 
 import pandas as pd
 
@@ -69,9 +69,7 @@ def parse_time_spec(spec_str: str) -> dict:
         )
 
 
-def get_data(
-    spec: dict, last_n: str = "30n", ensure_timestamp: bool = False
-) -> pd.DataFrame:
+def get_data(spec: dict, last_n: str = "30n", ensure_timestamp: bool = False) -> pd.DataFrame:
     """
     Get data from the database for a given spec and time specification.
 
@@ -88,9 +86,7 @@ def get_data(
     if time_spec["type"] == "time":
         # For time-based queries, we'll need to modify the SQL
         cutoff_time = datetime.now() - time_spec["value"]
-        sql = render(
-            "dashboard_sql", spec, params={"cutoff_time": cutoff_time.isoformat()}
-        )
+        sql = render("dashboard_sql", spec, params={"cutoff_time": cutoff_time.isoformat()})
     else:
         # For N-based queries, use existing logic
         sql = render(

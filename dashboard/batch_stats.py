@@ -32,14 +32,10 @@ def calculate_batch_stats(df: pd.DataFrame, batch_name: str) -> Dict[str, Any]:
         }
 
     # Calculate core stats
-    avg_score = (df["metric_score"].fillna(0).mean()
-                 if "metric_score" in df.columns else 0)
-    alert_count = (df["metric_alert"].fillna(0).sum()
-                   if "metric_alert" in df.columns else 0)
-    llmalert_count = (df["metric_llmalert"].fillna(0).sum()
-                      if "metric_llmalert" in df.columns else 0)
-    change_count = (df["metric_change"].fillna(0).sum()
-                    if "metric_change" in df.columns else 0)
+    avg_score = df["metric_score"].fillna(0).mean() if "metric_score" in df.columns else 0
+    alert_count = df["metric_alert"].fillna(0).sum() if "metric_alert" in df.columns else 0
+    llmalert_count = df["metric_llmalert"].fillna(0).sum() if "metric_llmalert" in df.columns else 0
+    change_count = df["metric_change"].fillna(0).sum() if "metric_change" in df.columns else 0
     alert_count = alert_count + llmalert_count + change_count
 
     # Calculate time ago string

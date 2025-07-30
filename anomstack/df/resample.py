@@ -2,8 +2,8 @@
 Some helper functions for resampling data.
 """
 
-import pandas as pd
 from dagster import get_dagster_logger
+import pandas as pd
 
 
 def resample(df: pd.DataFrame, freq: str, freq_agg: str = "mean") -> pd.DataFrame:

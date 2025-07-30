@@ -9,9 +9,9 @@ This module contains the route for the index page.
 
 import logging
 
-import pandas as pd
 from fasthtml.common import H2, A, Div, P, Request, Safe, Script, Title
 from monsterui.all import Button, ButtonT, Card, DivLAligned, TextPresets, UkIcon
+import pandas as pd
 
 from dashboard.app import app, rt
 from dashboard.batch_stats import calculate_batch_stats
@@ -40,9 +40,7 @@ def get_batch_data(batch_name: str) -> pd.DataFrame:
             )
         except Exception as e:
             log.error(f"Error getting data for batch {batch_name}: {e}")
-            df = pd.DataFrame(
-                data=[], columns=["metric_name", "metric_timestamp", "metric_value"]
-            )
+            df = pd.DataFrame(data=[], columns=["metric_name", "metric_timestamp", "metric_value"])
         app.state.df_cache[batch_name] = df
     return app.state.df_cache[batch_name]
 
@@ -63,9 +61,7 @@ def get_sorted_batch_stats() -> tuple:
         batch_stats[batch_name] = calculate_batch_stats(df, batch_name)
 
     filtered_batches = {
-        name: stats
-        for name, stats in batch_stats.items()
-        if stats["latest_timestamp"] != "No Data"
+        name: stats for name, stats in batch_stats.items() if stats["latest_timestamp"] != "No Data"
     }
 
     sorted_batch_names = sorted(
@@ -134,10 +130,7 @@ def create_main_content(batch_stats: dict, sorted_batch_names: list) -> Div:
                 )
                 if not app.state.metric_batches
                 else Div(
-                    *[
-                        create_batch_card(name, batch_stats[name])
-                        for name in sorted_batch_names
-                    ],
+                    *[create_batch_card(name, batch_stats[name]) for name in sorted_batch_names],
                     cls="homepage-grid",
                 )
             ),

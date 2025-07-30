@@ -1,4 +1,3 @@
-
 import pandas as pd
 
 
@@ -34,7 +33,7 @@ def ingest() -> pd.DataFrame:
         "uv_index",
         "visibility",
         "precipitation_probability",
-        "uv_index"
+        "uv_index",
     ]
 
     data = {}

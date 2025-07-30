@@ -6,9 +6,9 @@ def ingest() -> pd.DataFrame:
     Ingest data from Netdata API.
     """
 
+    from dagster import get_dagster_logger
     import pandas as pd
     import requests
-    from dagster import get_dagster_logger
 
     logger = get_dagster_logger()
 

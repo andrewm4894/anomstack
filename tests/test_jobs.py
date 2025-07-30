@@ -2,8 +2,6 @@
 Integration tests for core Dagster jobs in anomstack.
 """
 
-
-
 from anomstack.jobs.alert import build_alert_job
 from anomstack.jobs.ingest import build_ingest_job
 from anomstack.jobs.score import build_score_job
@@ -20,7 +18,7 @@ class TestIngestJob:
             "table_key": "test_table",
             "db": "duckdb",
             "ingest_sql": "SELECT NOW() as metric_timestamp, 'test_metric' as metric_name, 42.0 as metric_value",
-            "ingest_metric_rounding": 4
+            "ingest_metric_rounding": 4,
         }
 
         job = build_ingest_job(spec)
@@ -28,7 +26,7 @@ class TestIngestJob:
         assert job.name == "test_batch_ingest"
         # Verify the job was created successfully
         assert job is not None
-        assert hasattr(job, 'execute_in_process')
+        assert hasattr(job, "execute_in_process")
 
     def test_build_ingest_job_python_based(self):
         """Test building ingest job with Python function configuration."""
@@ -37,7 +35,7 @@ class TestIngestJob:
             "table_key": "test_table",
             "db": "duckdb",
             "ingest_fn": "def ingest_fn(): return pd.DataFrame({'metric_timestamp': [pd.Timestamp.now()], 'metric_name': ['test'], 'metric_value': [1.0]})",
-            "ingest_metric_rounding": 4
+            "ingest_metric_rounding": 4,
         }
 
         job = build_ingest_job(spec)
@@ -47,10 +45,7 @@ class TestIngestJob:
 
     def test_build_ingest_job_disabled(self):
         """Test building disabled ingest job."""
-        spec = {
-            "metric_batch": "test_batch",
-            "disable_ingest": True
-        }
+        spec = {"metric_batch": "test_batch", "disable_ingest": True}
 
         job = build_ingest_job(spec)
 
@@ -82,8 +77,8 @@ class TestIngestJob:
             "disable_tholdalert": False,
             "tholdalert_thresholds": {
                 "cpu_usage": {"upper": 90, "lower": 10},
-                "memory_usage": {"upper": 80, "lower": 5}
-            }
+                "memory_usage": {"upper": 80, "lower": 5},
+            },
         }
 
         job = build_ingest_job(spec)
@@ -94,7 +89,7 @@ class TestIngestJob:
 
         # Job should be created successfully with threshold metadata functionality
         # The actual metadata addition is tested in test_df.py::TestAddThresholdMetadata
-        assert hasattr(job, 'execute_in_process')
+        assert hasattr(job, "execute_in_process")
 
 
 class TestTrainJob:
@@ -108,16 +103,16 @@ class TestTrainJob:
             "db": "duckdb",
             "model_path": "local://./models",
             "model_configs": [
-                {"model_name": "IForest", "model_tag": "iforest_test", "model_params": {"n_estimators": 50}},
-                {"model_name": "KNN", "model_tag": "knn_test", "model_params": {"n_neighbors": 5}}
+                {
+                    "model_name": "IForest",
+                    "model_tag": "iforest_test",
+                    "model_params": {"n_estimators": 50},
+                },
+                {"model_name": "KNN", "model_tag": "knn_test", "model_params": {"n_neighbors": 5}},
             ],
             "train_sql": "SELECT * FROM test_table",
             "preprocess_fn": "def preprocess_fn(df): return df",
-            "preprocess_params": {
-                "diff_n": 1,
-                "smooth_n": 3,
-                "lags_n": 5
-            }
+            "preprocess_params": {"diff_n": 1, "smooth_n": 3, "lags_n": 5},
         }
 
         job = build_train_job(spec)
@@ -126,10 +121,7 @@ class TestTrainJob:
 
     def test_build_train_job_disabled(self):
         """Test building disabled train job."""
-        spec = {
-            "metric_batch": "test_batch",
-            "disable_train": True
-        }
+        spec = {"metric_batch": "test_batch", "disable_train": True}
 
         job = build_train_job(spec)
 
@@ -143,17 +135,21 @@ class TestTrainJob:
             "db": "duckdb",
             "model_path": "local://./models",
             "model_configs": [
-                {"model_name": "IForest", "model_tag": "iforest_test", "model_params": {"n_estimators": 50}},
+                {
+                    "model_name": "IForest",
+                    "model_tag": "iforest_test",
+                    "model_params": {"n_estimators": 50},
+                },
                 {"model_name": "KNN", "model_tag": "knn_test", "model_params": {"n_neighbors": 5}},
-                {"model_name": "PCA", "model_tag": "pca_test", "model_params": {"contamination": 0.01}}
+                {
+                    "model_name": "PCA",
+                    "model_tag": "pca_test",
+                    "model_params": {"contamination": 0.01},
+                },
             ],
             "train_sql": "SELECT * FROM test_table",
             "preprocess_fn": "def preprocess_fn(df): return df",
-            "preprocess_params": {
-                "diff_n": 1,
-                "smooth_n": 3,
-                "lags_n": 5
-            }
+            "preprocess_params": {"diff_n": 1, "smooth_n": 3, "lags_n": 5},
         }
 
         job = build_train_job(spec)
@@ -178,11 +174,7 @@ class TestScoreJob:
             ],
             "score_sql": "SELECT * FROM test_table",
             "preprocess_fn": "def preprocess_fn(df): return df",
-            "preprocess_params": {
-                "diff_n": 1,
-                "smooth_n": 3,
-                "lags_n": 5
-            }
+            "preprocess_params": {"diff_n": 1, "smooth_n": 3, "lags_n": 5},
         }
 
         job = build_score_job(spec)
@@ -191,10 +183,7 @@ class TestScoreJob:
 
     def test_build_score_job_disabled(self):
         """Test building disabled score job."""
-        spec = {
-            "metric_batch": "test_batch",
-            "disable_score": True
-        }
+        spec = {"metric_batch": "test_batch", "disable_score": True}
 
         job = build_score_job(spec)
 
@@ -210,16 +199,12 @@ class TestScoreJob:
                 "model_path": "local://./models",
                 "model_configs": [
                     {"model_name": "IForest", "model_tag": "iforest_test", "model_params": {}},
-                    {"model_name": "KNN", "model_tag": "knn_test", "model_params": {}}
+                    {"model_name": "KNN", "model_tag": "knn_test", "model_params": {}},
                 ],
                 "score_sql": "SELECT * FROM test_table",
                 "preprocess_fn": "def preprocess_fn(df): return df",
                 "model_combination_method": method,
-                "preprocess_params": {
-                    "diff_n": 1,
-                    "smooth_n": 3,
-                    "lags_n": 5
-                }
+                "preprocess_params": {"diff_n": 1, "smooth_n": 3, "lags_n": 5},
             }
 
             job = build_score_job(spec)
@@ -240,7 +225,7 @@ class TestAlertJob:
             "db": "duckdb",
             "alert_methods": "email,slack",
             "alert_sql": "SELECT * FROM test_table",
-            "alert_threshold": 0.8
+            "alert_threshold": 0.8,
         }
 
         job = build_alert_job(spec)
@@ -249,10 +234,7 @@ class TestAlertJob:
 
     def test_build_alert_job_disabled(self):
         """Test building disabled alert job."""
-        spec = {
-            "metric_batch": "test_batch",
-            "disable_alerts": True
-        }
+        spec = {"metric_batch": "test_batch", "disable_alerts": True}
 
         job = build_alert_job(spec)
 
@@ -269,7 +251,7 @@ class TestAlertJob:
                 "db": "duckdb",
                 "alert_methods": method,
                 "alert_sql": "SELECT * FROM test_table",
-                "alert_threshold": 0.8
+                "alert_threshold": 0.8,
             }
 
             job = build_alert_job(spec)
@@ -289,7 +271,7 @@ class TestAlertJob:
                 "db": "duckdb",
                 "alert_methods": "email",
                 "alert_sql": "SELECT * FROM test_table",
-                "alert_threshold": threshold
+                "alert_threshold": threshold,
             }
 
             job = build_alert_job(spec)
@@ -310,8 +292,16 @@ class TestJobIntegration:
             "db": "duckdb",
             "model_path": "local://./models",
             "model_configs": [
-                {"model_name": "PCA", "model_tag": "pca_default", "model_params": {"contamination": 0.01}},
-                {"model_name": "KNN", "model_tag": "knn_default", "model_params": {"contamination": 0.01}}
+                {
+                    "model_name": "PCA",
+                    "model_tag": "pca_default",
+                    "model_params": {"contamination": 0.01},
+                },
+                {
+                    "model_name": "KNN",
+                    "model_tag": "knn_default",
+                    "model_params": {"contamination": 0.01},
+                },
             ],
             "model_combination_method": "mean",
             "alert_methods": "email,slack",
@@ -321,11 +311,7 @@ class TestJobIntegration:
             "score_sql": "SELECT * FROM metrics WHERE metric_batch = 'integration_test'",
             "alert_sql": "SELECT * FROM metrics WHERE metric_batch = 'integration_test'",
             "preprocess_fn": "def preprocess_fn(df): return df",
-            "preprocess_params": {
-                "diff_n": 1,
-                "smooth_n": 3,
-                "lags_n": 5
-            }
+            "preprocess_params": {"diff_n": 1, "smooth_n": 3, "lags_n": 5},
         }
 
         # Test that all core jobs can be built successfully
@@ -352,7 +338,7 @@ class TestJobIntegration:
             "disable_ingest": True,
             "disable_train": True,
             "disable_score": True,
-            "disable_alerts": True
+            "disable_alerts": True,
         }
 
         # Test that disabled jobs are created with appropriate names

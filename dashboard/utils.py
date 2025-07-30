@@ -10,8 +10,8 @@ This module contains utility functions for the dashboard.
 import logging
 import os
 
-import requests
 from dotenv import load_dotenv
+import requests
 
 from anomstack.config import get_specs
 
@@ -114,21 +114,13 @@ def get_metric_batches(source: str = "all"):
         list: A list of metric batches.
     """
     metric_batches = []
-    dagster_enabled_jobs = get_enabled_dagster_jobs(
-        host="http://localhost", port="3000"
-    )
-    dagster_ingest_jobs = [
-        job for job in dagster_enabled_jobs if job.endswith("_ingest")
-    ]
-    dagster_metric_batches = [
-        job[:-7] for job in dagster_ingest_jobs if job.endswith("_ingest")
-    ]
+    dagster_enabled_jobs = get_enabled_dagster_jobs(host="http://localhost", port="3000")
+    dagster_ingest_jobs = [job for job in dagster_enabled_jobs if job.endswith("_ingest")]
+    dagster_metric_batches = [job[:-7] for job in dagster_ingest_jobs if job.endswith("_ingest")]
     specs = get_specs()
     config_metric_batches = list(specs.keys())
     config_metric_batches = [
-        batch
-        for batch in config_metric_batches
-        if not specs[batch]["disable_dashboard"]
+        batch for batch in config_metric_batches if not specs[batch]["disable_dashboard"]
     ]
     config_metric_batches = [
         batch for batch in config_metric_batches if not specs[batch]["disable_batch"]

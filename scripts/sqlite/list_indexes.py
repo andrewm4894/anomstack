@@ -10,5 +10,6 @@ def list_indexes():
     df = run_sql_sqlite(query, return_df=True)
     print(df)
 
+
 if __name__ == "__main__":
     df = list_indexes()

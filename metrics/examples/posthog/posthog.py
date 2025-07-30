@@ -1,4 +1,3 @@
-
 import pandas as pd
 
 
@@ -6,8 +5,8 @@ def ingest() -> pd.DataFrame:
     """Ingest headline metrics from the PostHog query API for multiple projects/domains."""
     import os
 
-    import requests
     from dagster import get_dagster_logger
+    import requests
 
     logger = get_dagster_logger()
     api_key = os.getenv("POSTHOG_API_KEY")
@@ -40,7 +39,12 @@ def ingest() -> pd.DataFrame:
     for project_id, domain in project_domain_map.items():
         url = f"{host}/api/projects/{project_id}/query"
         try:
-            response = requests.post(url, headers=headers, json={"query": {"kind": "HogQLQuery", "query": query}}, timeout=10)
+            response = requests.post(
+                url,
+                headers=headers,
+                json={"query": {"kind": "HogQLQuery", "query": query}},
+                timeout=10,
+            )
             response.raise_for_status()
         except requests.RequestException as ex:
             logger.error(f"Failed to fetch PostHog data from {url}: {ex}")
@@ -56,23 +60,25 @@ def ingest() -> pd.DataFrame:
             metrics = {
                 "events_yday": first.get("events_yday"),
                 "users_yday": first.get("users_yday"),
-                "pageviews_yday": first.get("pageviews_yday")
+                "pageviews_yday": first.get("pageviews_yday"),
             }
         else:
             # Handle list response
             metrics = {
                 "events_yday": first[0] if len(first) > 0 else None,
                 "users_yday": first[1] if len(first) > 1 else None,
-                "pageviews_yday": first[2] if len(first) > 2 else None
+                "pageviews_yday": first[2] if len(first) > 2 else None,
             }
 
         for metric_key, value in metrics.items():
             if value is not None:
-                all_rows.append({
-                    "metric_timestamp": ts,
-                    "metric_name": f"ph.{domain}.{metric_key}",
-                    "metric_value": float(value)
-                })
+                all_rows.append(
+                    {
+                        "metric_timestamp": ts,
+                        "metric_name": f"ph.{domain}.{metric_key}",
+                        "metric_value": float(value),
+                    }
+                )
 
     df = pd.DataFrame(all_rows)
     return df[["metric_timestamp", "metric_name", "metric_value"]] if not df.empty else df

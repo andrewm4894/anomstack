@@ -91,9 +91,7 @@ class Pyasciigraph:
         else:
             self.graphsymbol = graphsymbol
         if self._len_noansi(self.graphsymbol) != 1:
-            raise Exception(
-                "Bad graphsymbol length, must be 1", self._len_noansi(self.graphsymbol)
-            )
+            raise Exception("Bad graphsymbol length, must be 1", self._len_noansi(self.graphsymbol))
         self.multivalue = multivalue
         self.hsymbols = [
             self._u(""),
@@ -181,9 +179,7 @@ class Pyasciigraph:
                     if self.multivalue:
                         totalvalue_len += len("," + self._trans_hr(ivalue))
                     else:
-                        totalvalue_len = max(
-                            totalvalue_len, len(self._trans_hr(ivalue))
-                        )
+                        totalvalue_len = max(totalvalue_len, len(self._trans_hr(ivalue)))
 
                 if self.multivalue:
                     # remove one comma if multivalues
@@ -214,17 +210,13 @@ class Pyasciigraph:
     ):
         """Generate the bar + its paddings (left and right)"""
 
-        def _gen_graph_string_part(
-            value, max_value, min_neg_value, graph_length, color
-        ):
+        def _gen_graph_string_part(value, max_value, min_neg_value, graph_length, color):
             all_width = max_value + abs(min_neg_value)
 
             if all_width == 0:
                 bar_width = 0
             else:
-                bar_width = int(
-                    abs(float(value)) * float(graph_length) / float(all_width)
-                )
+                bar_width = int(abs(float(value)) * float(graph_length) / float(all_width))
 
             return (
                 Pyasciigraph._color_string(self.graphsymbol * bar_width, color),
@@ -236,9 +228,7 @@ class Pyasciigraph:
         if all_width == 0:
             neg_width = 0
         else:
-            neg_width = int(
-                abs(float(min_neg_value)) * float(graph_length) / float(all_width)
-            )
+            neg_width = int(abs(float(min_neg_value)) * float(graph_length) / float(all_width))
             int(abs(max_value) * graph_length / all_width)
 
         if isinstance(value, Iterable):
@@ -264,9 +254,7 @@ class Pyasciigraph:
                 accuvalue += scaled_value
 
             # left padding
-            totalstring = (
-                Pyasciigraph._u(" ") * (neg_width - abs(totalsquares)) + totalstring
-            )
+            totalstring = Pyasciigraph._u(" ") * (neg_width - abs(totalsquares)) + totalstring
 
             # reset some counters
             accuvalue = 0
@@ -285,9 +273,7 @@ class Pyasciigraph:
                 accuvalue += scaled_value
 
             # right padding
-            totalstring += Pyasciigraph._u(" ") * (
-                start_value_pos - neg_width - abs(totalsquares)
-            )
+            totalstring += Pyasciigraph._u(" ") * (start_value_pos - neg_width - abs(totalsquares))
             return totalstring
         else:
             # handling for single value item
@@ -312,9 +298,7 @@ class Pyasciigraph:
         number_of_space = line_length - start_info_pos - self._len_noansi(info)
         return info + Pyasciigraph._u(" ") * number_of_space
 
-    def _gen_value_string(
-        self, value, min_neg_value, color, start_value_pos, start_info_pos
-    ):
+    def _gen_value_string(self, value, min_neg_value, color, start_value_pos, start_info_pos):
         """Generate the value string + padding"""
         icount = 0
         if isinstance(value, Iterable) and self.multivalue:
@@ -324,14 +308,10 @@ class Pyasciigraph:
                     # with the len() function even when they are not printed to
                     # the screen.
                     totalvalue_len = len(self._trans_hr(ivalue))
-                    totalvalue = Pyasciigraph._color_string(
-                        self._trans_hr(ivalue), icolor
-                    )
+                    totalvalue = Pyasciigraph._color_string(self._trans_hr(ivalue), icolor)
                 else:
                     totalvalue_len += len("," + self._trans_hr(ivalue))
-                    totalvalue += "," + Pyasciigraph._color_string(
-                        self._trans_hr(ivalue), icolor
-                    )
+                    totalvalue += "," + Pyasciigraph._color_string(self._trans_hr(ivalue), icolor)
                 icount += 1
         elif isinstance(value, Iterable):
             max_value = min_neg_value
@@ -347,9 +327,7 @@ class Pyasciigraph:
             totalvalue_len = len(self._trans_hr(value))
             totalvalue = Pyasciigraph._color_string(self._trans_hr(value), color)
 
-        number_space = (
-            start_info_pos - start_value_pos - totalvalue_len - self.separator_length
-        )
+        number_space = start_info_pos - start_value_pos - totalvalue_len - self.separator_length
 
         # This must not be negitive, this happens when the string length is
         # larger than the separator length
@@ -457,18 +435,14 @@ class Pyasciigraph:
             # calcul of where to start info
             start_info_pos = self.line_length - all_thre["info_max_length"]
             # calcul of where to start value
-            start_value_pos = (
-                start_info_pos - self.separator_length - all_thre["value_max_length"]
-            )
+            start_value_pos = start_info_pos - self.separator_length - all_thre["value_max_length"]
             # calcul of where to end graph
             graph_length = start_value_pos - self.separator_length
         else:
             # calcul of where to start value
             start_value_pos = self.min_graph_length + self.separator_length
             # calcul of where to start info
-            start_info_pos = (
-                start_value_pos + all_thre["value_max_length"] + self.separator_length
-            )
+            start_info_pos = start_value_pos + all_thre["value_max_length"] + self.separator_length
             # calcul of where to end graph
             graph_length = start_value_pos - self.separator_length
             # calcul of the real line length
@@ -514,32 +488,18 @@ def make_alert_message(
     score_col="metric_score_smooth",
     ascii_graph=False,
 ):
-    df_alert_metric = df_alert_metric.sort_values(
-        by="metric_timestamp", ascending=False
-    ).dropna()
-    df_alert_metric["metric_timestamp"] = pd.to_datetime(
-        df_alert_metric["metric_timestamp"]
-    )
+    df_alert_metric = df_alert_metric.sort_values(by="metric_timestamp", ascending=False).dropna()
+    df_alert_metric["metric_timestamp"] = pd.to_datetime(df_alert_metric["metric_timestamp"])
     x = df_alert_metric["metric_value"].round(2).values.tolist()
     metric_name = df_alert_metric["metric_name"].unique()[0]
-    metric_timestamp_from = (
-        df_alert_metric["metric_timestamp"].min().strftime("%Y-%m-%d %H:%M")
-    )
-    metric_timestamp_to = (
-        df_alert_metric["metric_timestamp"].max().strftime("%Y-%m-%d %H:%M")
-    )
+    metric_timestamp_from = df_alert_metric["metric_timestamp"].min().strftime("%Y-%m-%d %H:%M")
+    metric_timestamp_to = df_alert_metric["metric_timestamp"].max().strftime("%Y-%m-%d %H:%M")
     graph_title = f"{metric_name} ({metric_timestamp_from} to {metric_timestamp_to})"
     message = ""
     if ascii_graph:
         labels = (
-            np.where(
-                df_alert_metric["metric_alert"] == 1,
-                anomaly_symbol,
-                normal_symbol
-            )
-            + (df_alert_metric[score_col].round(2) * 100)
-            .astype("int")
-            .astype("str")
+            np.where(df_alert_metric["metric_alert"] == 1, anomaly_symbol, normal_symbol)
+            + (df_alert_metric[score_col].round(2) * 100).astype("int").astype("str")
             + "% "
         )
         data = zip(labels, x)

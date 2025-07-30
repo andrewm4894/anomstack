@@ -23,32 +23,37 @@ class AppState:
     def get_connection(self):
         """Get database connection with MotherDuck fallback"""
         import os
-        duckdb_path = os.getenv('ANOMSTACK_DUCKDB_PATH', 'tmpdata/anomstack-duckdb.db')
 
-        if duckdb_path.startswith('md:'):
-            motherduck_token = os.getenv('ANOMSTACK_MOTHERDUCK_TOKEN')
+        duckdb_path = os.getenv("ANOMSTACK_DUCKDB_PATH", "tmpdata/anomstack-duckdb.db")
+
+        if duckdb_path.startswith("md:"):
+            motherduck_token = os.getenv("ANOMSTACK_MOTHERDUCK_TOKEN")
             if motherduck_token:
                 try:
                     import duckdb
+
                     connection_string = f"{duckdb_path}?motherduck_token={motherduck_token}"
                     return duckdb.connect(connection_string)
                 except Exception as e:
                     print(f"MotherDuck connection failed: {e}, falling back to local DuckDB")
                     # Fall back to local DuckDB
-                    fallback_path = 'tmpdata/anomstack-duckdb.db'
+                    fallback_path = "tmpdata/anomstack-duckdb.db"
                     os.makedirs(os.path.dirname(fallback_path), exist_ok=True)
                     import duckdb
+
                     return duckdb.connect(fallback_path)
             else:
                 print("No MotherDuck token provided, using local DuckDB")
-                fallback_path = 'tmpdata/anomstack-duckdb.db'
+                fallback_path = "tmpdata/anomstack-duckdb.db"
                 os.makedirs(os.path.dirname(fallback_path), exist_ok=True)
                 import duckdb
+
                 return duckdb.connect(fallback_path)
         else:
             try:
                 os.makedirs(os.path.dirname(duckdb_path), exist_ok=True)
                 import duckdb
+
                 return duckdb.connect(duckdb_path)
             except Exception as e:
                 print(f"Failed to connect to DuckDB: {e}")
@@ -143,7 +148,11 @@ class AppState:
                     self._metric_batches = []
 
                 if self._specs and self._metric_batches:
-                    self._specs_enabled = {batch: self._specs[batch] for batch in self._metric_batches if batch in self._specs}
+                    self._specs_enabled = {
+                        batch: self._specs[batch]
+                        for batch in self._metric_batches
+                        if batch in self._specs
+                    }
                 else:
                     self._specs_enabled = {}
 

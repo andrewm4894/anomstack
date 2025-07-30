@@ -28,6 +28,7 @@ def get(batch_name: str, search: str = "") -> FT:
         FT: The search results container with out-of-band load more button.
     """
     import re
+
     app.state.search_term[batch_name] = search
 
     if batch_name not in app.state.stats_cache:
@@ -43,8 +44,7 @@ def get(batch_name: str, search: str = "") -> FT:
 
         if not filtered_stats_with_indices:
             return Div(
-                P("No matching metrics found",
-                  cls="text-muted-foreground p-4 text-center"),
+                P("No matching metrics found", cls="text-muted-foreground p-4 text-center"),
                 # Add out-of-band load more container
                 Div(
                     id="load-more-container",
@@ -59,9 +59,7 @@ def get(batch_name: str, search: str = "") -> FT:
 
         # Create chart placeholders
         chart_placeholders = [
-            ChartManager.create_chart_placeholder(stat["metric_name"],
-                                                original_index,
-                                                batch_name)
+            ChartManager.create_chart_placeholder(stat["metric_name"], original_index, batch_name)
             for original_index, stat in filtered_stats_with_indices[:DEFAULT_LOAD_N_CHARTS]
         ]
 
@@ -76,7 +74,9 @@ def get(batch_name: str, search: str = "") -> FT:
                 cls=ButtonT.secondary,
                 style="width: 100%; margin-top: 1rem;",
                 disabled=remaining_metrics <= 0,
-            ) if remaining_metrics > 0 else "",
+            )
+            if remaining_metrics > 0
+            else "",
             id="load-more-container",
             hx_swap_oob="true",
         )
@@ -118,16 +118,19 @@ def get(batch_name: str, start_index: int):
 
     return [
         *[
-            ChartManager.create_chart_placeholder(
-                stat["metric_name"], i, batch_name) for i, stat in enumerate(
-                    metric_stats[start_index:start_index + 10],
-                    start=start_index,
-                )
+            ChartManager.create_chart_placeholder(stat["metric_name"], i, batch_name)
+            for i, stat in enumerate(
+                metric_stats[start_index : start_index + 10],
+                start=start_index,
+            )
         ],
         Div(
             Button(
-                (f"Load next {load_next} of {remaining_metrics}"
-                 if remaining_metrics > 0 else "No more metrics"),
+                (
+                    f"Load next {load_next} of {remaining_metrics}"
+                    if remaining_metrics > 0
+                    else "No more metrics"
+                ),
                 hx_get=f"/batch/{batch_name}/load-more/{start_index + 10}",
                 hx_target="#charts-container",
                 hx_swap="beforeend",
@@ -140,6 +143,7 @@ def get(batch_name: str, start_index: int):
             hx_swap_oob="true",
         ),
     ]
+
 
 @rt("/batch/{batch_name}/update-n")
 def post(batch_name: str, last_n: str = "30n"):
@@ -158,9 +162,7 @@ def post(batch_name: str, last_n: str = "30n"):
 
         # Get fresh data with new time window
         app.state.df_cache[batch_name] = get_data(
-            app.state.specs_enabled[batch_name],
-            last_n=last_n,
-            ensure_timestamp=True
+            app.state.specs_enabled[batch_name], last_n=last_n, ensure_timestamp=True
         )
 
         # Recalculate stats with new data
@@ -174,9 +176,7 @@ def post(batch_name: str, last_n: str = "30n"):
         return [
             Div(
                 *[
-                    ChartManager.create_chart_placeholder(
-                        stat["metric_name"], i, batch_name
-                    )
+                    ChartManager.create_chart_placeholder(stat["metric_name"], i, batch_name)
                     for i, stat in enumerate(metric_stats[:DEFAULT_LOAD_N_CHARTS])
                 ],
                 id="charts-container",

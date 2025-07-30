@@ -18,9 +18,7 @@ from anomstack.config import get_specs
 from anomstack.jinja.render import render
 from anomstack.sql.read import read_sql
 
-ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv(
-    "ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600
-)
+ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv("ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600)
 
 
 def build_delete_job(spec: dict) -> JobDefinition:

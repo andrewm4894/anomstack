@@ -5,17 +5,13 @@ Functions for training models.
 import importlib
 import time
 
-import pandas as pd
 from dagster import get_dagster_logger
+import pandas as pd
 from pyod.models.base import BaseDetector
 
 
 def train_model(
-    X: pd.DataFrame,
-    metric: str,
-    model_name: str,
-    model_params: dict,
-    model_tag: str = ""
+    X: pd.DataFrame, metric: str, model_name: str, model_params: dict, model_tag: str = ""
 ) -> BaseDetector:
     """
     Train a model.
@@ -33,10 +29,7 @@ def train_model(
 
     logger = get_dagster_logger()
 
-    model_class = getattr(
-        importlib.import_module(f"pyod.models.{model_name.lower()}"),
-        model_name
-    )
+    model_class = getattr(importlib.import_module(f"pyod.models.{model_name.lower()}"), model_name)
     model = model_class(**model_params)
 
     time_start_train = time.time()

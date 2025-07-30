@@ -27,15 +27,20 @@ def add_indexes_to_metrics():
 
         # Create index on metric_batch if it exists
         if "metric_batch" in column_names:
-            index_query = f"CREATE INDEX IF NOT EXISTS idx_{table}_metric_batch ON {table} (metric_batch);"
+            index_query = (
+                f"CREATE INDEX IF NOT EXISTS idx_{table}_metric_batch ON {table} (metric_batch);"
+            )
             run_sql_sqlite(index_query)
             print(f"Index created for metric_batch in table: {table}")
 
         # Create index on metric_type if it exists
         if "metric_type" in column_names:
-            index_query = f"CREATE INDEX IF NOT EXISTS idx_{table}_metric_type ON {table} (metric_type);"
+            index_query = (
+                f"CREATE INDEX IF NOT EXISTS idx_{table}_metric_type ON {table} (metric_type);"
+            )
             run_sql_sqlite(index_query)
             print(f"Index created for metric_type in table: {table}")
+
 
 # Run the function
 add_indexes_to_metrics()

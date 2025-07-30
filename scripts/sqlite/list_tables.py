@@ -10,5 +10,6 @@ def list_tables():
     df = run_sql_sqlite(query, return_df=True)
     print(df)
 
+
 if __name__ == "__main__":
     list_tables()

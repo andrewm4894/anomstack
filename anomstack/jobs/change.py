@@ -4,7 +4,6 @@ Generate change detection jobs and schedules.
 
 import os
 
-import pandas as pd
 from dagster import (
     MAX_RUNTIME_SECONDS_TAG,
     DefaultScheduleStatus,
@@ -14,6 +13,7 @@ from dagster import (
     job,
     op,
 )
+import pandas as pd
 
 from anomstack.alerts.send import send_alert
 from anomstack.config import get_specs
@@ -24,9 +24,7 @@ from anomstack.ml.change import detect_change
 from anomstack.sql.read import read_sql
 from anomstack.validate.validate import validate_df
 
-ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv(
-    "ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600
-)
+ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv("ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600)
 
 
 def build_change_job(spec: dict) -> JobDefinition:
@@ -99,9 +97,9 @@ def build_change_job(spec: dict) -> JobDefinition:
             logger.info(f"running change detection on {len(df_change)} rows")
             df_change_alerts = pd.DataFrame()
             for metric_name in df_change["metric_name"].unique():
-                df_metric = df_change.query(
-                    f"metric_name=='{metric_name}'"
-                ).sort_values("metric_timestamp")
+                df_metric = df_change.query(f"metric_name=='{metric_name}'").sort_values(
+                    "metric_timestamp"
+                )
                 df_metric = detect_change(
                     df_metric,
                     threshold=change_threshold,
@@ -131,15 +129,11 @@ def build_change_job(spec: dict) -> JobDefinition:
                 for metric_name in df_change_alerts["metric_name"].unique():
                     logger.info(f"alerting on {metric_name}")
                     df_alert = df_change_alerts.query(f"metric_name=='{metric_name}'")
-                    df_alert["metric_timestamp"] = pd.to_datetime(
-                        df_alert["metric_timestamp"]
-                    )
+                    df_alert["metric_timestamp"] = pd.to_datetime(df_alert["metric_timestamp"])
                     metric_timestamp_max = (
                         df_alert["metric_timestamp"].max().strftime("%Y-%m-%d %H:%M")
                     )
-                    alert_title = (
-                        f"Δ [{metric_name}] looks changed ({metric_timestamp_max}) Δ"
-                    )
+                    alert_title = f"Δ [{metric_name}] looks changed ({metric_timestamp_max}) Δ"
                     tags = {
                         "metric_batch": metric_batch,
                         "metric_name": metric_name,
@@ -188,9 +182,7 @@ def build_change_job(spec: dict) -> JobDefinition:
 
             if len(df_change_alerts) > 0:
                 df_change_alerts["metric_type"] = "change"
-                df_change_alerts["metric_alert"] = df_change_alerts[
-                    "metric_alert"
-                ].astype(float)
+                df_change_alerts["metric_alert"] = df_change_alerts["metric_alert"].astype(float)
                 # Explicitly select columns to ensure DataFrame type
                 columns_to_keep = [
                     "metric_timestamp",
@@ -200,14 +192,10 @@ def build_change_job(spec: dict) -> JobDefinition:
                     "metric_alert",
                 ]
                 df_change_alerts = df_change_alerts.loc[:, columns_to_keep].copy()
-                df_change_alerts = df_change_alerts.rename(
-                    columns={"metric_alert": "metric_value"}
-                )
+                df_change_alerts = df_change_alerts.rename(columns={"metric_alert": "metric_value"})
                 df_change_alerts = wrangle_df(df_change_alerts)
                 df_change_alerts = validate_df(df_change_alerts)
-                logger.info(
-                    f"saving {len(df_change_alerts)} change alerts to {db} {table_key}"
-                )
+                logger.info(f"saving {len(df_change_alerts)} change alerts to {db} {table_key}")
                 df_change_alerts = save_df(df_change_alerts, db, table_key)
             else:
                 logger.info("no alerts to save")

@@ -4,9 +4,9 @@ Some helper functions for ClickHouse using clickhouse-connect.
 
 import os
 
-import pandas as pd
 from clickhouse_connect import get_client
 from dagster import get_dagster_logger
+import pandas as pd
 
 
 def map_dtype(dtype) -> str:
@@ -42,13 +42,7 @@ def get_clickhouse_client():
 
     logger.info(f"ClickHouse connection: {host}:{port}/{database}")
 
-    return get_client(
-        host=host,
-        port=port,
-        username=user,
-        password=password,
-        database=database
-    )
+    return get_client(host=host, port=port, username=user, password=password, database=database)
 
 
 def read_sql_clickhouse(sql: str) -> pd.DataFrame:
@@ -87,9 +81,7 @@ def save_df_clickhouse(df: pd.DataFrame, table_key: str) -> pd.DataFrame:
         client.insert(table=table_key, data=data, column_names=columns)
     except Exception as e:
         logger = get_dagster_logger()
-        logger.info(
-            f"Table {table_key} may not exist. Attempting to create table. Error: {e}"
-        )
+        logger.info(f"Table {table_key} may not exist. Attempting to create table. Error: {e}")
         # Construct a CREATE TABLE statement based on the DataFrame schema.
         columns_defs = []
         for col, dtype in df.dtypes.items():

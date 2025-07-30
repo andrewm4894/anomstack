@@ -16,16 +16,16 @@ from anomstack.external.duckdb.duckdb import (
 class TestDuckdbSimple:
     """Simple DuckDB tests."""
 
-    @patch('anomstack.external.duckdb.duckdb.get_dagster_logger')
-    @patch('anomstack.external.duckdb.duckdb.connect')
-    @patch('anomstack.external.duckdb.duckdb.query')
+    @patch("anomstack.external.duckdb.duckdb.get_dagster_logger")
+    @patch("anomstack.external.duckdb.duckdb.connect")
+    @patch("anomstack.external.duckdb.duckdb.query")
     def test_read_sql_basic(self, mock_query, mock_connect, mock_logger):
         """Test basic read_sql_duckdb functionality."""
         # Setup
         mock_logger.return_value = MagicMock()
         mock_conn = MagicMock()
         mock_connect.return_value = mock_conn
-        expected_df = pd.DataFrame({'col1': [1, 2], 'col2': ['a', 'b']})
+        expected_df = pd.DataFrame({"col1": [1, 2], "col2": ["a", "b"]})
         mock_query.return_value.df.return_value = expected_df
 
         # Call function
@@ -36,9 +36,9 @@ class TestDuckdbSimple:
         mock_query.assert_called_once_with(connection=mock_conn, query="SELECT * FROM test_table")
         pd.testing.assert_frame_equal(result, expected_df)
 
-    @patch('anomstack.external.duckdb.duckdb.get_dagster_logger')
-    @patch('anomstack.external.duckdb.duckdb.connect')
-    @patch('anomstack.external.duckdb.duckdb.query')
+    @patch("anomstack.external.duckdb.duckdb.get_dagster_logger")
+    @patch("anomstack.external.duckdb.duckdb.connect")
+    @patch("anomstack.external.duckdb.duckdb.query")
     def test_save_df_basic(self, mock_query, mock_connect, mock_logger):
         """Test basic save_df_duckdb functionality."""
         # Setup
@@ -47,19 +47,21 @@ class TestDuckdbSimple:
         mock_connect.return_value = mock_conn
         mock_query.return_value = None
 
-        df = pd.DataFrame({'col1': [1, 2], 'col2': ['a', 'b']})
+        df = pd.DataFrame({"col1": [1, 2], "col2": ["a", "b"]})
 
         # Call function
         result = save_df_duckdb(df, "test_table")
 
         # Assertions
         mock_connect.assert_called_once()
-        mock_query.assert_called_once_with(connection=mock_conn, query="INSERT INTO test_table SELECT * FROM df")
+        mock_query.assert_called_once_with(
+            connection=mock_conn, query="INSERT INTO test_table SELECT * FROM df"
+        )
         pd.testing.assert_frame_equal(result, df)
 
-    @patch('anomstack.external.duckdb.duckdb.get_dagster_logger')
-    @patch('anomstack.external.duckdb.duckdb.connect')
-    @patch('anomstack.external.duckdb.duckdb.query')
+    @patch("anomstack.external.duckdb.duckdb.get_dagster_logger")
+    @patch("anomstack.external.duckdb.duckdb.connect")
+    @patch("anomstack.external.duckdb.duckdb.query")
     def test_run_sql_basic(self, mock_query, mock_connect, mock_logger):
         """Test basic run_sql_duckdb functionality."""
         # Setup
@@ -73,20 +75,22 @@ class TestDuckdbSimple:
 
         # Assertions
         mock_connect.assert_called_once()
-        mock_query.assert_called_once_with(connection=mock_conn, query="CREATE TABLE test AS SELECT 1 as col")
+        mock_query.assert_called_once_with(
+            connection=mock_conn, query="CREATE TABLE test AS SELECT 1 as col"
+        )
         mock_conn.close.assert_called_once()
         assert result is None
 
-    @patch('anomstack.external.duckdb.duckdb.get_dagster_logger')
-    @patch('anomstack.external.duckdb.duckdb.connect')
-    @patch('anomstack.external.duckdb.duckdb.query')
+    @patch("anomstack.external.duckdb.duckdb.get_dagster_logger")
+    @patch("anomstack.external.duckdb.duckdb.connect")
+    @patch("anomstack.external.duckdb.duckdb.query")
     def test_run_sql_with_return(self, mock_query, mock_connect, mock_logger):
         """Test run_sql_duckdb with DataFrame return."""
         # Setup
         mock_logger.return_value = MagicMock()
         mock_conn = MagicMock()
         mock_connect.return_value = mock_conn
-        expected_df = pd.DataFrame({'result': [1, 2, 3]})
+        expected_df = pd.DataFrame({"result": [1, 2, 3]})
         mock_query.return_value.df.return_value = expected_df
 
         # Call function

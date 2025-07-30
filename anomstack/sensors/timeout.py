@@ -1,8 +1,7 @@
-import os
 from datetime import datetime, timedelta, timezone
+import os
 from pathlib import Path
 
-import yaml
 from dagster import (
     DagsterRunStatus,
     RunsFilter,
@@ -11,8 +10,10 @@ from dagster import (
     sensor,
 )
 from dagster._core.errors import DagsterUserCodeUnreachableError
+import yaml
 
 DEFAULT_MINUTES = 15
+
 
 def _load_config_timeout_minutes() -> int:
     env_val = os.getenv("ANOMSTACK_KILL_RUN_AFTER_MINUTES")
@@ -48,9 +49,7 @@ def kill_long_running_runs(context: SensorEvaluationContext):
     kill_after = get_kill_after_minutes()
     instance = context.instance
     cutoff = datetime.now(timezone.utc) - timedelta(minutes=kill_after)
-    running_runs = instance.get_runs(
-        filters=RunsFilter(statuses=[DagsterRunStatus.STARTED])
-    )
+    running_runs = instance.get_runs(filters=RunsFilter(statuses=[DagsterRunStatus.STARTED]))
     killed = 0
     for run in running_runs:
         run_stats = instance.get_run_stats(run.run_id)
@@ -60,26 +59,18 @@ def kill_long_running_runs(context: SensorEvaluationContext):
         duration = datetime.now(timezone.utc) - started_at
         if started_at < cutoff:
             try:
-                context.log.info(
-                    f"Terminating run {run.run_id} running for {duration}"
-                )
+                context.log.info(f"Terminating run {run.run_id} running for {duration}")
                 instance.report_run_canceling(run)
                 instance.run_launcher.terminate(run.run_id)
                 killed += 1
             except DagsterUserCodeUnreachableError as exc:
                 context.log.warning(
-                    (
-                        f"Could not terminate run {run.run_id}: {exc}. "
-                        "Marking as failed."
-                    )
+                    (f"Could not terminate run {run.run_id}: {exc}. " "Marking as failed.")
                 )
                 instance.report_run_failed(run)
             except Exception as exc:
                 context.log.error(
-                    (
-                        f"Unexpected error terminating run {run.run_id}: {exc}. "
-                        "Marking as failed."
-                    )
+                    (f"Unexpected error terminating run {run.run_id}: {exc}. " "Marking as failed.")
                 )
                 instance.report_run_failed(run)
     if killed == 0:

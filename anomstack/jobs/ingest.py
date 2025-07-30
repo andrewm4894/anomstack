@@ -5,7 +5,6 @@ Generate ingest jobs and schedules.
 import os
 from typing import Dict
 
-import pandas as pd
 from dagster import (
     MAX_RUNTIME_SECONDS_TAG,
     DefaultScheduleStatus,
@@ -15,6 +14,7 @@ from dagster import (
     job,
     op,
 )
+import pandas as pd
 
 from anomstack.alerts.send import send_alert
 from anomstack.config import get_specs
@@ -71,8 +71,6 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
     tholdalert_exclude_metrics = spec.get("tholdalert_exclude_metrics", [])
     metric_tags = spec.get("metric_tags", {})
 
-
-
     @job(
         name=f"{metric_batch}_ingest",
         tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
@@ -95,16 +93,16 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
             elif ingest_fn:
                 df = run_df_fn("ingest", render("ingest_fn", spec))
             else:
-                raise ValueError(
-                    f"No ingest_sql or ingest_fn specified for {metric_batch}."
-                )
+                raise ValueError(f"No ingest_sql or ingest_fn specified for {metric_batch}.")
             logger.debug(f"df: \n{df}")
             df["metric_batch"] = metric_batch
             df["metric_type"] = "metric"
 
             # Add threshold configuration to metadata for metrics with thresholds
             if tholdalert_thresholds:
-                df['metadata'] = df.apply(lambda row: add_threshold_metadata_to_row(row, tholdalert_thresholds), axis=1)
+                df["metadata"] = df.apply(
+                    lambda row: add_threshold_metadata_to_row(row, tholdalert_thresholds), axis=1
+                )
 
             df = wrangle_df(df, rounding=ingest_metric_rounding)
             df = validate_df(df)
@@ -145,15 +143,12 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
 
             # Filter out excluded metrics
             if tholdalert_exclude_metrics:
-                df_filtered = df[~df['metric_name'].isin(tholdalert_exclude_metrics)].copy()
+                df_filtered = df[~df["metric_name"].isin(tholdalert_exclude_metrics)].copy()
             else:
                 df_filtered = df.copy()
 
             df_threshold_alerts = detect_threshold_alerts(
-                df_filtered,
-                tholdalert_thresholds,
-                tholdalert_recent_n,
-                tholdalert_snooze_n
+                df_filtered, tholdalert_thresholds, tholdalert_recent_n, tholdalert_snooze_n
             )
 
             return df_threshold_alerts
@@ -173,7 +168,7 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
                 logger.info("No threshold alerts to send")
                 return df_threshold_alerts
 
-            alerts_to_send = df_threshold_alerts[df_threshold_alerts['threshold_alert'] == 1]
+            alerts_to_send = df_threshold_alerts[df_threshold_alerts["threshold_alert"] == 1]
 
             if len(alerts_to_send) == 0:
                 logger.info("No threshold alerts to send")
@@ -181,20 +176,22 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
                 # Convert to proper DataFrame to ensure type consistency
                 alerts_to_send = pd.DataFrame(alerts_to_send)
 
-                for metric_name in alerts_to_send['metric_name'].unique():
+                for metric_name in alerts_to_send["metric_name"].unique():
                     logger.info(f"sending threshold alert for {metric_name}")
-                    df_alert = alerts_to_send[alerts_to_send['metric_name'] == metric_name].copy()
+                    df_alert = alerts_to_send[alerts_to_send["metric_name"] == metric_name].copy()
 
                     # Ensure df_alert is a proper DataFrame
                     if not isinstance(df_alert, pd.DataFrame):
                         df_alert = pd.DataFrame(df_alert)
 
-                    df_alert['metric_timestamp'] = pd.to_datetime(df_alert['metric_timestamp'])
+                    df_alert["metric_timestamp"] = pd.to_datetime(df_alert["metric_timestamp"])
 
-                    metric_timestamp_max = df_alert['metric_timestamp'].max().strftime("%Y-%m-%d %H:%M")
-                    threshold_type = df_alert['threshold_type'].iloc[0]
-                    threshold_value = df_alert['threshold_value'].iloc[0]
-                    metric_value = df_alert['metric_value'].iloc[0]
+                    metric_timestamp_max = (
+                        df_alert["metric_timestamp"].max().strftime("%Y-%m-%d %H:%M")
+                    )
+                    threshold_type = df_alert["threshold_type"].iloc[0]
+                    threshold_value = df_alert["threshold_value"].iloc[0]
+                    metric_value = df_alert["metric_value"].iloc[0]
 
                     alert_title = f"⚠️ [{metric_name}] threshold {threshold_type} bound breached ({metric_timestamp_max}) ⚠️"
 
@@ -219,7 +216,7 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
                             threshold=threshold_value,
                             alert_methods=tholdalert_methods,
                             tags=tags,
-                            metric_timestamp=metric_timestamp_max
+                            metric_timestamp=metric_timestamp_max,
                         )
                         logger.info(f"successfully sent threshold alert for {metric_name}")
                     except Exception as e:
@@ -243,16 +240,18 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
                 logger.info("No threshold alerts to save")
                 return df_threshold_alerts
 
-            df_alerts = df_threshold_alerts[df_threshold_alerts['threshold_alert'] == 1].copy()
+            df_alerts = df_threshold_alerts[df_threshold_alerts["threshold_alert"] == 1].copy()
 
             if len(df_alerts) > 0:
                 df_alerts["metric_type"] = "tholdalert"
                 df_alerts["metric_alert"] = df_alerts["threshold_alert"].astype(float)
 
                 # Add threshold metadata to alert records (including breach details)
-                df_alerts['metadata'] = df_alerts.apply(
-                    lambda row: add_threshold_metadata_to_row(row, tholdalert_thresholds, include_breach_details=True),
-                    axis=1
+                df_alerts["metadata"] = df_alerts.apply(
+                    lambda row: add_threshold_metadata_to_row(
+                        row, tholdalert_thresholds, include_breach_details=True
+                    ),
+                    axis=1,
                 )
 
                 # Explicitly select columns to ensure DataFrame type

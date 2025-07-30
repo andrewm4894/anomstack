@@ -3,10 +3,9 @@ Generate plot jobs and schedules.
 """
 
 import base64
-import os
 from io import BytesIO
+import os
 
-import pandas as pd
 from dagster import (
     MAX_RUNTIME_SECONDS_TAG,
     DefaultScheduleStatus,
@@ -18,6 +17,7 @@ from dagster import (
     job,
     op,
 )
+import pandas as pd
 
 from anomstack.config import get_specs
 from anomstack.df.resample import resample
@@ -25,9 +25,7 @@ from anomstack.jinja.render import render
 from anomstack.plots.plot import make_batch_plot
 from anomstack.sql.read import read_sql
 
-ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv(
-    "ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600
-)
+ANOMSTACK_MAX_RUNTIME_SECONDS_TAG = os.getenv("ANOMSTACK_MAX_RUNTIME_SECONDS_TAG", 3600)
 
 
 def build_plot_job(spec: dict) -> JobDefinition:
@@ -99,7 +97,6 @@ def build_plot_job(spec: dict) -> JobDefinition:
             """
 
             if len(df) > 0:
-
                 fig = make_batch_plot(df)
 
                 buffer = BytesIO()
@@ -110,7 +107,6 @@ def build_plot_job(spec: dict) -> JobDefinition:
                 context.add_output_metadata({"plot": MetadataValue.md(md_content)})
 
             else:
-
                 logger.info("no data to plot")
 
         make_plot(get_plot_data())

@@ -2,7 +2,6 @@
 Tests for anomstack.alerts.asciiart module - ASCII art functionality.
 """
 
-
 import pandas as pd
 
 from anomstack.alerts.asciiart import Pyasciigraph, make_alert_message
@@ -14,13 +13,15 @@ class TestMakeAlertMessage:
     def test_make_alert_message_basic(self):
         """Test basic make_alert_message functionality."""
         # Create test data
-        df = pd.DataFrame({
-            'metric_name': ['cpu_usage'] * 5,
-            'metric_timestamp': pd.date_range('2023-01-01 10:00:00', periods=5, freq='h'),
-            'metric_value': [75.5, 82.3, 89.1, 76.2, 78.8],
-            'metric_score_smooth': [0.2, 0.5, 0.9, 0.3, 0.4],
-            'metric_alert': [0, 0, 1, 0, 0]
-        })
+        df = pd.DataFrame(
+            {
+                "metric_name": ["cpu_usage"] * 5,
+                "metric_timestamp": pd.date_range("2023-01-01 10:00:00", periods=5, freq="h"),
+                "metric_value": [75.5, 82.3, 89.1, 76.2, 78.8],
+                "metric_score_smooth": [0.2, 0.5, 0.9, 0.3, 0.4],
+                "metric_alert": [0, 0, 1, 0, 0],
+            }
+        )
 
         # Call function
         result = make_alert_message(df, description="Test alert")
@@ -33,13 +34,15 @@ class TestMakeAlertMessage:
     def test_make_alert_message_with_ascii_graph(self):
         """Test make_alert_message with ASCII graph enabled."""
         # Create test data
-        df = pd.DataFrame({
-            'metric_name': ['memory_usage'] * 3,
-            'metric_timestamp': pd.date_range('2023-01-01 12:00:00', periods=3, freq='30min'),
-            'metric_value': [65.2, 78.9, 85.1],
-            'metric_score_smooth': [0.1, 0.6, 0.8],
-            'metric_alert': [0, 1, 1]
-        })
+        df = pd.DataFrame(
+            {
+                "metric_name": ["memory_usage"] * 3,
+                "metric_timestamp": pd.date_range("2023-01-01 12:00:00", periods=3, freq="30min"),
+                "metric_value": [65.2, 78.9, 85.1],
+                "metric_score_smooth": [0.1, 0.6, 0.8],
+                "metric_alert": [0, 1, 1],
+            }
+        )
 
         # Call function
         result = make_alert_message(
@@ -49,7 +52,7 @@ class TestMakeAlertMessage:
             graph_symbol="=",
             anomaly_symbol="! ",
             normal_symbol="  ",
-            alert_float_format="{:.1f}"
+            alert_float_format="{:.1f}",
         )
 
         # Assertions
@@ -62,22 +65,20 @@ class TestMakeAlertMessage:
     def test_make_alert_message_with_tags(self):
         """Test make_alert_message with tags."""
         # Create test data
-        df = pd.DataFrame({
-            'metric_name': ['disk_usage'] * 2,
-            'metric_timestamp': pd.date_range('2023-01-01 15:00:00', periods=2, freq='h'),
-            'metric_value': [88.5, 92.3],
-            'metric_score_smooth': [0.7, 0.9],
-            'metric_alert': [1, 1]
-        })
+        df = pd.DataFrame(
+            {
+                "metric_name": ["disk_usage"] * 2,
+                "metric_timestamp": pd.date_range("2023-01-01 15:00:00", periods=2, freq="h"),
+                "metric_value": [88.5, 92.3],
+                "metric_score_smooth": [0.7, 0.9],
+                "metric_alert": [1, 1],
+            }
+        )
 
-        tags = {'environment': 'production', 'service': 'web-server'}
+        tags = {"environment": "production", "service": "web-server"}
 
         # Call function
-        result = make_alert_message(
-            df,
-            description="Disk space alert",
-            tags=tags
-        )
+        result = make_alert_message(df, description="Disk space alert", tags=tags)
 
         # Assertions
         assert isinstance(result, str)
@@ -87,20 +88,18 @@ class TestMakeAlertMessage:
     def test_make_alert_message_custom_score_col(self):
         """Test make_alert_message with custom score column."""
         # Create test data
-        df = pd.DataFrame({
-            'metric_name': ['network_latency'] * 3,
-            'metric_timestamp': pd.date_range('2023-01-01 09:00:00', periods=3, freq='15min'),
-            'metric_value': [45.2, 78.9, 123.5],
-            'custom_score': [0.2, 0.5, 0.9],
-            'metric_alert': [0, 0, 1]
-        })
+        df = pd.DataFrame(
+            {
+                "metric_name": ["network_latency"] * 3,
+                "metric_timestamp": pd.date_range("2023-01-01 09:00:00", periods=3, freq="15min"),
+                "metric_value": [45.2, 78.9, 123.5],
+                "custom_score": [0.2, 0.5, 0.9],
+                "metric_alert": [0, 0, 1],
+            }
+        )
 
         # Call function
-        result = make_alert_message(
-            df,
-            score_col='custom_score',
-            ascii_graph=True
-        )
+        result = make_alert_message(df, score_col="custom_score", ascii_graph=True)
 
         # Assertions
         assert isinstance(result, str)
@@ -109,13 +108,15 @@ class TestMakeAlertMessage:
     def test_make_alert_message_empty_description(self):
         """Test make_alert_message with empty description."""
         # Create test data
-        df = pd.DataFrame({
-            'metric_name': ['test_metric'] * 2,
-            'metric_timestamp': pd.date_range('2023-01-01', periods=2, freq='D'),
-            'metric_value': [100.0, 200.0],
-            'metric_score_smooth': [0.3, 0.7],
-            'metric_alert': [0, 1]
-        })
+        df = pd.DataFrame(
+            {
+                "metric_name": ["test_metric"] * 2,
+                "metric_timestamp": pd.date_range("2023-01-01", periods=2, freq="D"),
+                "metric_value": [100.0, 200.0],
+                "metric_score_smooth": [0.3, 0.7],
+                "metric_alert": [0, 1],
+            }
+        )
 
         # Call function
         result = make_alert_message(df, description="", ascii_graph=True)
@@ -149,7 +150,7 @@ class TestPyasciigraph:
             graphsymbol="*",
             multivalue=False,
             float_format="{:.2f}",
-            titlebar="="
+            titlebar="=",
         )
 
         # Check custom values
@@ -164,15 +165,15 @@ class TestPyasciigraph:
     def test_pyasciigraph_simple_graph(self):
         """Test creating a simple ASCII graph."""
         graph = Pyasciigraph()
-        data = [('Item A', 10), ('Item B', 20), ('Item C', 15)]
+        data = [("Item A", 10), ("Item B", 20), ("Item C", 15)]
 
-        result = graph.graph('Test Graph', data)
+        result = graph.graph("Test Graph", data)
 
         # Assertions
         assert isinstance(result, list)
         assert len(result) > 0
-        assert 'Test Graph' in result[0]
-        assert result[1] == '#' * 79  # Title bar
+        assert "Test Graph" in result[0]
+        assert result[1] == "#" * 79  # Title bar
 
     def test_pyasciigraph_len_noansi(self):
         """Test the _len_noansi static method."""

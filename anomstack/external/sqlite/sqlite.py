@@ -2,13 +2,13 @@
 Helper functions for SQLite (or Turso) with retry logic.
 """
 
+from contextlib import contextmanager
 import os
 import time
-from contextlib import contextmanager
 
+from dagster import get_dagster_logger
 import libsql_experimental as libsql
 import pandas as pd
-from dagster import get_dagster_logger
 
 from anomstack.df.utils import generate_insert_sql
 from anomstack.sql.utils import get_columns_from_sql
@@ -141,10 +141,7 @@ def generate_create_table_sql(df: pd.DataFrame, table_name: str) -> str:
     Returns:
         str: The CREATE TABLE SQL statement.
     """
-    column_defs = [
-        f"{col} {infer_sqlite_type(dtype)}"
-        for col, dtype in zip(df.columns, df.dtypes)
-    ]
+    column_defs = [f"{col} {infer_sqlite_type(dtype)}" for col, dtype in zip(df.columns, df.dtypes)]
     return f"CREATE TABLE IF NOT EXISTS {table_name} ({', '.join(column_defs)});"
 
 

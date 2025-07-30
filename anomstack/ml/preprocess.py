@@ -2,8 +2,8 @@
 Some functions for preprocessing data for model training and scoring.
 """
 
-import pandas as pd
 from dagster import get_dagster_logger
+import pandas as pd
 
 
 def make_x(
@@ -34,11 +34,7 @@ def make_x(
 
     logger = get_dagster_logger()
 
-    X = (
-        df.sort_values(by=["metric_timestamp"])
-        .reset_index(drop=True)
-        .set_index("metric_timestamp")
-    )
+    X = df.sort_values(by=["metric_timestamp"]).reset_index(drop=True).set_index("metric_timestamp")
     X = df[["metric_value"]]
 
     if diff_n > 0:

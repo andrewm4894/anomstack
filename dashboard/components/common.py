@@ -35,8 +35,10 @@ def create_controls(batch_name: str) -> Card:
                             cls="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4 mt-4",
                         ),
                         cls="flex flex-col w-full",
-                    ), ),
+                    ),
+                ),
                 cls="w-full",
-            ), ),
+            ),
+        ),
         cls="mb-4 uk-padding-small py-2 shadow-sm",
     )

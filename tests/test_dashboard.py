@@ -1,6 +1,6 @@
-import sys  # ruff: noqa: E402
-import types
 from datetime import datetime, timedelta, timezone
+import sys  # noqa: E402
+import types
 
 import pandas as pd
 import pytest
@@ -62,13 +62,15 @@ def test_chart_manager_config_and_colors():
 def test_app_state_cache_management_and_stats():
     state = AppState()
     batch = "b1"
-    df = pd.DataFrame({
-        "metric_name": ["m1", "m1", "m2", "m2"],
-        "metric_alert": [1, 0, 0, 1],
-        "metric_score": [0.5, 0.7, 0.3, 0.2],
-        "thumbsup_sum": [1, 2, 3, 4],
-        "thumbsdown_sum": [0, 1, 2, 3],
-    })
+    df = pd.DataFrame(
+        {
+            "metric_name": ["m1", "m1", "m2", "m2"],
+            "metric_alert": [1, 0, 0, 1],
+            "metric_score": [0.5, 0.7, 0.3, 0.2],
+            "thumbsup_sum": [1, 2, 3, 4],
+            "thumbsdown_sum": [0, 1, 2, 3],
+        }
+    )
     state.df_cache[batch] = df
 
     state.calculate_metric_stats(batch)

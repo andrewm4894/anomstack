@@ -24,11 +24,7 @@ def preprocess(
         freq_agg (str): The aggregation method for resampling.
     """
 
-    X = (
-        df.sort_values(by=["metric_timestamp"])
-        .reset_index(drop=True)
-        .set_index("metric_timestamp")
-    )
+    X = df.sort_values(by=["metric_timestamp"]).reset_index(drop=True).set_index("metric_timestamp")
     X = X[["metric_value"]]
 
     if freq is not None:

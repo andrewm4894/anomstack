@@ -6,11 +6,11 @@ import os
 import random
 import time
 
-import pandas as pd
 from dagster import get_dagster_logger
 from google.api_core.exceptions import Forbidden
 from google.cloud import bigquery
 from google.cloud.exceptions import TooManyRequests
+import pandas as pd
 
 from anomstack.external.gcp.credentials import get_google_credentials
 
@@ -55,21 +55,14 @@ def pandas_save_df_bigquery(
 
     if len(table_key_parts) == 2:
         project_id = os.getenv("ANOMSTACK_GCP_PROJECT_ID")
-        assert (
-            project_id is not None
-        ), (
+        assert project_id is not None, (
             f"ANOMSTACK_GCP_PROJECT_ID must be set in environment if table_key "
             f"is not fully qualified: {table_key}"
         )
         table_key_parts = [project_id] + table_key_parts
 
-    assert (
-        len(table_key_parts) == 3
-    ), (
-        (
-            f"Invalid table_key: {table_key}, should be "
-            f"<project_id>.<dataset_id>.<table_id>"
-        )
+    assert len(table_key_parts) == 3, (
+        f"Invalid table_key: {table_key}, should be " f"<project_id>.<dataset_id>.<table_id>"
     )
 
     project_id = table_key_parts[0]
@@ -89,10 +82,7 @@ def pandas_save_df_bigquery(
 
 
 def save_df_bigquery(
-    df: pd.DataFrame,
-    table_key: str,
-    if_exists: str = "append",
-    max_retries: int = 5
+    df: pd.DataFrame, table_key: str, if_exists: str = "append", max_retries: int = 5
 ) -> pd.DataFrame:
     """
     Save df to db, with exponential backoff retry for handling rate limit
@@ -145,9 +135,7 @@ def save_df_bigquery(
             job.result()  # Wait for the job to complete
             break  # Success, exit the retry loop
         except (TooManyRequests, Forbidden):
-            wait_time = 2**attempt + random.uniform(
-                0, 1
-            )  # Exponential backoff with jitter
+            wait_time = 2**attempt + random.uniform(0, 1)  # Exponential backoff with jitter
             get_dagster_logger().warning(
                 (
                     f"Exceeded rate limits on attempt {attempt+1}. "
@@ -156,8 +144,6 @@ def save_df_bigquery(
             )
             time.sleep(wait_time)
     else:
-        raise RuntimeError(
-            f"Failed to save data to BigQuery after {max_retries} attempts."
-        )
+        raise RuntimeError(f"Failed to save data to BigQuery after {max_retries} attempts.")
 
     return df

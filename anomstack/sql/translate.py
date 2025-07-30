@@ -22,9 +22,7 @@ def db_translate(sql: str, db: str) -> str:
     elif db == "bigquery":
         sql = sql.replace("GET_CURRENT_TIMESTAMP()", "CURRENT_TIMESTAMP()")
         sql = re.sub(
-            r"DATE\('now', '(-?\d+) day'\)",
-            "DATE_ADD(CURRENT_DATE(), INTERVAL \\1 DAY)",
-            sql
+            r"DATE\('now', '(-?\d+) day'\)", "DATE_ADD(CURRENT_DATE(), INTERVAL \\1 DAY)", sql
         )
 
     return sql

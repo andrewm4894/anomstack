@@ -41,8 +41,8 @@ be found here: https://api.slack.com/reference/manifests#creating_apps
 import os
 import tempfile
 
-import matplotlib.pyplot as plt
 from dagster import get_dagster_logger
+import matplotlib.pyplot as plt
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
@@ -73,10 +73,7 @@ def send_alert_slack(
     slack_token = os.environ.get("ANOMSTACK_SLACK_BOT_TOKEN")
     if not slack_token:
         raise ValueError(
-            (
-                "Slack bot token not found in environment variable "
-                "ANOMSTACK_SLACK_BOT_TOKEN"
-            )
+            ("Slack bot token not found in environment variable " "ANOMSTACK_SLACK_BOT_TOKEN")
         )
 
     client = WebClient(token=slack_token)
@@ -119,9 +116,7 @@ def send_alert_slack(
                     filename=os.path.basename(image_file_path),
                 )
         else:
-            response = client.chat_postMessage(
-                channel=channel_id, text=f"*{title}*\n{message}"
-            )
+            response = client.chat_postMessage(channel=channel_id, text=f"*{title}*\n{message}")
     except SlackApiError as e:
         logger.error(f"Error sending message to Slack channel {channel_name, channel_id}: {e}")
 
@@ -146,13 +141,9 @@ def send_alert_slack_with_plot(
         channel_name = os.environ.get("ANOMSTACK_SLACK_CHANNEL")
 
     with tempfile.NamedTemporaryFile(
-        prefix=f"{metric_name}_{metric_timestamp}_",
-        suffix=".png",
-        delete=False
+        prefix=f"{metric_name}_{metric_timestamp}_", suffix=".png", delete=False
     ) as temp:
-        fig = make_alert_plot(
-            df, metric_name, threshold, score_col, score_title, tags=tags
-        )
+        fig = make_alert_plot(df, metric_name, threshold, score_col, score_title, tags=tags)
         fig.savefig(temp.name)
         plt.close(fig)
 
