@@ -14,20 +14,10 @@ repos:
       #   args: ["--branch", "main"]
       - id: trailing-whitespace
         args: ["--markdown-linebreak-ext=md"]
-  - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
-    hooks:
-      - id: isort
-        args:
-          - "--profile"
-          - "black"
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.0.241
+# isort removed - ruff handles import sorting now
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.4
     hooks:
       - id: ruff
-        args:
-          - "--fix"
-          - "--exclude"
-          - "metrics/defaults/python/prompt.py"
-          - "--exclude"
-          - "anomstack/llm/completion.py"
+        args: ["--fix"]
+      - id: ruff-format

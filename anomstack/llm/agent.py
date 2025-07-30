@@ -1,11 +1,9 @@
-import pandas as pd
 from anomaly_agent import AnomalyAgent
+import pandas as pd
 
 
 def detect_anomalies(
-    df: pd.DataFrame,
-    detection_prompt: str | None = None,
-    verification_prompt: str | None = None
+    df: pd.DataFrame, detection_prompt: str | None = None, verification_prompt: str | None = None
 ) -> pd.DataFrame:
     """
     Detect anomalies using the AnomalyAgent.

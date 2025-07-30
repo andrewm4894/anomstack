@@ -11,9 +11,7 @@ from anomstack.external.snowflake.snowflake import save_df_snowflake
 from anomstack.external.sqlite.sqlite import save_df_sqlite
 
 
-def save_df(
-    df: pd.DataFrame, db: str, table_key: str, if_exists: str = "append"
-) -> pd.DataFrame:
+def save_df(df: pd.DataFrame, db: str, table_key: str, if_exists: str = "append") -> pd.DataFrame:
     """
     Save a Pandas DataFrame to a database.
 

@@ -239,10 +239,10 @@ if [[ "$FORCE_REBUILD" == "true" ]]; then
     CACHEBUST_VALUE="$(date +%s)-$(openssl rand -hex 4 2>/dev/null || echo $RANDOM)"
     echo "🔄 Force rebuild enabled - using aggressive cache busting..."
     echo "🎯 Cache bust value: $CACHEBUST_VALUE"
-    
+
     # Use multiple cache busting strategies:
     # 1. --no-cache: Skip Docker layer cache
-    # 2. CACHEBUST build arg: Force rebuild of layers that use it  
+    # 2. CACHEBUST build arg: Force rebuild of layers that use it
     # 3. --dockerfile: Explicit dockerfile path to avoid confusion
     fly deploy \
         --no-cache \

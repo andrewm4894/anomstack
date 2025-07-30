@@ -2,8 +2,8 @@
 Helper functions to send alerts.
 """
 
-import pandas as pd
 from dagster import get_dagster_logger
+import pandas as pd
 
 from anomstack.alerts.asciiart import make_alert_message
 from anomstack.alerts.email import send_email, send_email_with_plot
@@ -46,9 +46,7 @@ def send_alert(
     """
     logger = get_dagster_logger()
     logger.debug(f"alerts to send: \n{df}")
-    message = make_alert_message(
-        df, description=description, tags=tags, score_col=score_col
-    )
+    message = make_alert_message(df, description=description, tags=tags, score_col=score_col)
     if "slack" in alert_methods:
         send_alert_slack_with_plot(
             df=df,

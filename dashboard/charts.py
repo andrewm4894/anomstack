@@ -7,10 +7,10 @@ This module contains the ChartManager class, which is responsible for creating c
 
 """
 
-import pandas as pd
-import plotly.graph_objects as go
 from fasthtml.common import Div, P
 from monsterui.all import Card, DivLAligned, Loading, LoadingT, TextPresets
+import pandas as pd
+import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from dashboard.app import app
@@ -140,9 +140,13 @@ class ChartManager:
 
         # Add marker for the specific anomaly point if provided
         if anomaly_timestamp is not None:
-            anomaly_point = df_metric[df_metric['metric_timestamp'] == anomaly_timestamp]
+            anomaly_point = df_metric[df_metric["metric_timestamp"] == anomaly_timestamp]
             if not anomaly_point.empty:
-                alert_color = colors["llmalert"] if df_metric["metric_llmalert"].iloc[-1] == 1 else colors["alert"]
+                alert_color = (
+                    colors["llmalert"]
+                    if df_metric["metric_llmalert"].iloc[-1] == 1
+                    else colors["alert"]
+                )
                 fig.add_trace(
                     go.Scatter(
                         x=[anomaly_point["metric_timestamp"].iloc[0]],
@@ -181,7 +185,18 @@ class ChartManager:
             ),
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            modebar=dict(remove=["zoom", "pan", "select", "lasso", "zoomIn", "zoomOut", "autoScale", "resetScale"]),
+            modebar=dict(
+                remove=[
+                    "zoom",
+                    "pan",
+                    "select",
+                    "lasso",
+                    "zoomIn",
+                    "zoomOut",
+                    "autoScale",
+                    "resetScale",
+                ]
+            ),
         )
 
         return fig.to_html(
@@ -358,9 +373,7 @@ def _add_condition_traces(fig, df, colors, line_width, show_legend):
                     y=condition_df[condition],
                     mode="markers",
                     name=props["name"],
-                    marker=dict(
-                        color=props["color"], size=line_width + 4, symbol="circle"
-                    ),
+                    marker=dict(color=props["color"], size=line_width + 4, symbol="circle"),
                     showlegend=show_legend,
                     customdata=condition_df["anomaly_explanation"],
                     hovertemplate=props["hovertemplate"],

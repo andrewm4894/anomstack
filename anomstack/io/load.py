@@ -30,17 +30,11 @@ def load_model(
     """
 
     if model_path.startswith("gs://"):
-        model = load_model_gcs(
-            metric_name, model_path, metric_batch, model_tag
-        )
+        model = load_model_gcs(metric_name, model_path, metric_batch, model_tag)
     elif model_path.startswith("s3://"):
-        model = load_model_s3(
-            metric_name, model_path, metric_batch, model_tag
-        )
+        model = load_model_s3(metric_name, model_path, metric_batch, model_tag)
     elif model_path.startswith("local://"):
-        model = load_model_local(
-            metric_name, model_path, metric_batch, model_tag
-        )
+        model = load_model_local(metric_name, model_path, metric_batch, model_tag)
     else:
         raise ValueError(f"model_path {model_path} not supported")
 

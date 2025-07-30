@@ -4,9 +4,9 @@ Some helper functions for wrangling data.
 
 import json
 
+from dagster import get_dagster_logger
 import numpy as np
 import pandas as pd
-from dagster import get_dagster_logger
 
 
 def wrangle_df(df: pd.DataFrame, rounding: int = 4) -> pd.DataFrame:
@@ -49,9 +49,7 @@ def wrangle_df(df: pd.DataFrame, rounding: int = 4) -> pd.DataFrame:
     # if we have any nan metric_values then drop them and log how many
     # nan rows we dropped
     if df["metric_value"].isnull().sum() > 0:
-        logger.warning(
-            f"dropping {df['metric_value'].isnull().sum()} nan " "metric_value rows"
-        )
+        logger.warning(f"dropping {df['metric_value'].isnull().sum()} nan " "metric_value rows")
         df = df[~df["metric_value"].isnull()]
 
     # round metric_value
@@ -60,7 +58,9 @@ def wrangle_df(df: pd.DataFrame, rounding: int = 4) -> pd.DataFrame:
     return df
 
 
-def add_threshold_metadata_to_row(row, thresholds: dict, include_breach_details: bool = False) -> str:
+def add_threshold_metadata_to_row(
+    row, thresholds: dict, include_breach_details: bool = False
+) -> str:
     """
     Add threshold configuration to metadata for a given row.
 
@@ -75,25 +75,25 @@ def add_threshold_metadata_to_row(row, thresholds: dict, include_breach_details:
     metadata = {}
 
     # Parse existing metadata if it exists
-    if 'metadata' in row and pd.notna(row.get('metadata')) and row.get('metadata'):
+    if "metadata" in row and pd.notna(row.get("metadata")) and row.get("metadata"):
         try:
-            metadata = json.loads(row['metadata']) if isinstance(row['metadata'], str) else {}
+            metadata = json.loads(row["metadata"]) if isinstance(row["metadata"], str) else {}
         except (json.JSONDecodeError, TypeError):
             metadata = {}
 
     # Add threshold configuration if metric has thresholds
-    metric_name = row.get('metric_name')
+    metric_name = row.get("metric_name")
     if metric_name and metric_name in thresholds:
-        metadata['thresholds'] = thresholds[metric_name]
+        metadata["thresholds"] = thresholds[metric_name]
 
         # Add breach details if requested (for threshold alerts)
         if include_breach_details:
-            if pd.notna(row.get('threshold_type')):
-                metadata['breached_threshold_type'] = row['threshold_type']
-            if pd.notna(row.get('threshold_value')):
-                metadata['breached_threshold_value'] = row['threshold_value']
-            if pd.notna(row.get('metric_value')):
-                metadata['metric_value_at_breach'] = row['metric_value']
+            if pd.notna(row.get("threshold_type")):
+                metadata["breached_threshold_type"] = row["threshold_type"]
+            if pd.notna(row.get("threshold_value")):
+                metadata["breached_threshold_value"] = row["threshold_value"]
+            if pd.notna(row.get("metric_value")):
+                metadata["metric_value_at_breach"] = row["metric_value"]
 
     return json.dumps(metadata) if metadata else ""
 
@@ -114,7 +114,7 @@ def extract_metadata(df: pd.DataFrame, key_name: str) -> pd.DataFrame:
                 x = filtered[0]
 
             # Now handle the single value
-            if pd.isna(x) or x is None or x == '':
+            if pd.isna(x) or x is None or x == "":
                 return None
 
             # Skip empty strings or whitespace
@@ -131,6 +131,6 @@ def extract_metadata(df: pd.DataFrame, key_name: str) -> pd.DataFrame:
     df[key_name] = df["metadata"].apply(safe_extract)
 
     # Convert any 'None' strings to None
-    df[key_name] = df[key_name].apply(lambda x: None if x == 'None' else x)
+    df[key_name] = df[key_name].apply(lambda x: None if x == "None" else x)
 
     return df

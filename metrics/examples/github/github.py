@@ -17,8 +17,8 @@ def ingest() -> pd.DataFrame:
         - subscribers_count
         - size
     """
-    import requests
     from dagster import get_dagster_logger
+    import requests
 
     logger = get_dagster_logger()
 
@@ -39,7 +39,7 @@ def ingest() -> pd.DataFrame:
         "forks_count",
         "open_issues_count",
         "subscribers_count",
-        "size"
+        "size",
     ]
 
     all_rows = []
@@ -66,11 +66,9 @@ def ingest() -> pd.DataFrame:
             # Build a metric name in the format: github.<owner>.<repo>.<metric>
             # Replace the "/" in repo names with "."
             metric_name = f"github.{repo.replace('/', '.')}.{key}"
-            all_rows.append({
-                "metric_timestamp": ts,
-                "metric_name": metric_name,
-                "metric_value": metric_value
-            })
+            all_rows.append(
+                {"metric_timestamp": ts, "metric_name": metric_name, "metric_value": metric_value}
+            )
 
     df = pd.DataFrame(all_rows)
 

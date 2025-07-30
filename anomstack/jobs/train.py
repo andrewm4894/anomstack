@@ -5,7 +5,6 @@ Generate train jobs and schedules.
 import os
 from typing import List, Tuple
 
-import pandas as pd
 from dagster import (
     MAX_RUNTIME_SECONDS_TAG,
     DefaultScheduleStatus,
@@ -15,6 +14,7 @@ from dagster import (
     job,
     op,
 )
+import pandas as pd
 from pyod.models.base import BaseDetector
 
 from anomstack.config import get_specs
@@ -97,9 +97,7 @@ def build_train_job(spec: dict) -> JobDefinition:
                     the metric name and the trained model.
             """
 
-            preprocess = define_fn(
-                fn_name="preprocess", fn=render("preprocess_fn", spec)
-            )
+            preprocess = define_fn(fn_name="preprocess", fn=render("preprocess_fn", spec))
 
             models = []
 
@@ -111,15 +109,9 @@ def build_train_job(spec: dict) -> JobDefinition:
             else:
                 for metric_name in df["metric_name"].unique():
                     df_metric = df[df["metric_name"] == metric_name]
-                    logger.debug(
-                        f"preprocess {metric_name} in {metric_batch} train job."
-                    )
+                    logger.debug(f"preprocess {metric_name} in {metric_batch} train job.")
                     logger.debug(f"df_metric:\n{df_metric.head()}")
-                    X = preprocess(
-                        df_metric,
-                        shuffle=True,
-                        **preprocess_params
-                    )
+                    X = preprocess(df_metric, shuffle=True, **preprocess_params)
                     logger.debug(f"X:\n{X.head()}")
                     if len(X) > 0:
                         logger.info(
@@ -132,18 +124,10 @@ def build_train_job(spec: dict) -> JobDefinition:
                             model_name = model_config["model_name"]
                             model_params = model_config["model_params"]
                             model_tag = model_config.get("model_tag", "")
-                            model = train_model(
-                                X,
-                                metric_name,
-                                model_name,
-                                model_params,
-                                model_tag
-                            )
+                            model = train_model(X, metric_name, model_name, model_params, model_tag)
                             models.append((metric_name, model, model_tag))
                     else:
-                        logger.info(
-                            f"no data for {metric_name} in {metric_batch} train job."
-                        )
+                        logger.info(f"no data for {metric_name} in {metric_batch} train job.")
 
                 return models
 

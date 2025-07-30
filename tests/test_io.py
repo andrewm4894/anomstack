@@ -7,9 +7,9 @@ import tempfile
 from unittest.mock import Mock, patch
 
 import numpy as np
-import pytest
 from pyod.models.iforest import IForest
 from pyod.models.knn import KNN
+import pytest
 
 from anomstack.io.load import load_model, load_model_local
 from anomstack.io.save import save_models, save_models_local
@@ -29,10 +29,7 @@ class TestSaveModels:
         model1.fit(X)
         model2.fit(X)
 
-        models = [
-            ("metric1", model1, "iforest_tag"),
-            ("metric2", model2, "knn_tag")
-        ]
+        models = [("metric1", model1, "iforest_tag"), ("metric2", model2, "knn_tag")]
 
         with tempfile.TemporaryDirectory() as temp_dir:
             model_path = f"local://{temp_dir}"
@@ -46,7 +43,7 @@ class TestSaveModels:
             assert os.path.exists(f"{temp_dir}/test_batch/metric1_iforest_tag.pkl")
             assert os.path.exists(f"{temp_dir}/test_batch/metric2_knn_tag.pkl")
 
-    @patch('anomstack.io.save.save_models_gcs')
+    @patch("anomstack.io.save.save_models_gcs")
     def test_save_models_gcs_path(self, mock_save_gcs):
         """Test that GCS path triggers GCS save function."""
         models = [("test_metric", Mock(), "test_tag")]
@@ -101,7 +98,7 @@ class TestLoadModel:
             with pytest.raises(FileNotFoundError):
                 load_model_local("nonexistent_metric", model_path, "test_batch", "test_tag")
 
-    @patch('anomstack.io.load.load_model_gcs')
+    @patch("anomstack.io.load.load_model_gcs")
     def test_load_model_gcs_path(self, mock_load_gcs):
         """Test that GCS path triggers GCS load function."""
         mock_model = Mock()
@@ -109,7 +106,9 @@ class TestLoadModel:
 
         result = load_model("test_metric", "gs://test-bucket/models", "test_batch", "test_tag")
 
-        mock_load_gcs.assert_called_once_with("test_metric", "gs://test-bucket/models", "test_batch", "test_tag")
+        mock_load_gcs.assert_called_once_with(
+            "test_metric", "gs://test-bucket/models", "test_batch", "test_tag"
+        )
         assert result == mock_model
 
     def test_load_model_invalid_path(self):

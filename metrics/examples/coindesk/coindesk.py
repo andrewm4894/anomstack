@@ -8,17 +8,13 @@ def ingest() -> pd.DataFrame:
     metric_timestamp, metric_name, metric_value.
     The timestamp is derived from VALUE_LAST_UPDATE_TS, aggregated to the second, and duplicates are removed.
     """
-    import requests
     from dagster import get_dagster_logger
+    import requests
 
     logger = get_dagster_logger()
 
     url = "https://data-api.coindesk.com/index/cc/v1/latest/tick"
-    params = {
-        "market": "cadli",
-        "instruments": "BTC-USD,ETH-USD",
-        "apply_mapping": "true"
-    }
+    params = {"market": "cadli", "instruments": "BTC-USD,ETH-USD", "apply_mapping": "true"}
 
     try:
         response = requests.get(url, params=params, timeout=10)
@@ -39,7 +35,11 @@ def ingest() -> pd.DataFrame:
         # Use VALUE_LAST_UPDATE_TS as the base timestamp; if missing, use current UTC time.
         ts_value = instrument_data.get("VALUE_LAST_UPDATE_TS")
         try:
-            ts = pd.to_datetime(float(ts_value), unit="s").floor("S") if ts_value is not None else pd.Timestamp.utcnow().floor("S")
+            ts = (
+                pd.to_datetime(float(ts_value), unit="s").floor("S")
+                if ts_value is not None
+                else pd.Timestamp.utcnow().floor("S")
+            )
         except Exception as ex:
             logger.error(f"Error converting timestamp for instrument {instrument}: {ex}")
             ts = pd.Timestamp.utcnow().floor("S")
@@ -56,11 +56,9 @@ def ingest() -> pd.DataFrame:
 
             # Build a metric name in the format: coindesk.<instrument>.<key>
             metric_name = f"coindesk.{instrument}.{key}"
-            all_rows.append({
-                "metric_timestamp": ts,
-                "metric_name": metric_name,
-                "metric_value": metric_value
-            })
+            all_rows.append(
+                {"metric_timestamp": ts, "metric_name": metric_name, "metric_value": metric_value}
+            )
 
     df = pd.DataFrame(all_rows)
 

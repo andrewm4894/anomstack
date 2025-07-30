@@ -1,7 +1,7 @@
-import os
-import sys
 from datetime import datetime, timedelta, timezone
+import os
 from pathlib import Path
+import sys
 
 from dagster import DagsterInstance, DagsterRunStatus, RunsFilter
 
@@ -35,6 +35,7 @@ def format_duration(duration):
     else:
         return f"{seconds}s"
 
+
 def list_all_runs():
     """List all runs with their status and duration"""
     print("=" * 80)
@@ -48,7 +49,7 @@ def list_all_runs():
         DagsterRunStatus.STARTED,
         DagsterRunStatus.STARTING,
         DagsterRunStatus.QUEUED,
-        DagsterRunStatus.CANCELING
+        DagsterRunStatus.CANCELING,
     ]
 
     active_runs = instance.get_runs(filters=RunsFilter(statuses=active_statuses))
@@ -75,7 +76,7 @@ def list_all_runs():
             DagsterRunStatus.STARTED: "🏃",
             DagsterRunStatus.STARTING: "🔄",
             DagsterRunStatus.QUEUED: "⏳",
-            DagsterRunStatus.CANCELING: "🛑"
+            DagsterRunStatus.CANCELING: "🛑",
         }.get(run.status, "❓")
 
         print(f"\n{i}. {status_emoji} Run ID: {run.run_id[:12]}...")
@@ -90,7 +91,9 @@ def list_all_runs():
             print(f"   Duration: {format_duration(duration)}")
 
             if started_at < cutoff_time:
-                print(f"   ⚠️  LONG RUNNING (>{kill_after_minutes}m) - Would be terminated by cleanup script")
+                print(
+                    f"   ⚠️  LONG RUNNING (>{kill_after_minutes}m) - Would be terminated by cleanup script"
+                )
                 long_running_count += 1
             else:
                 print("   ✅ Within timeout threshold")
@@ -99,8 +102,11 @@ def list_all_runs():
 
         # Add tags if any
         if run.tags:
-            relevant_tags = {k: v for k, v in run.tags.items()
-                           if k in ['dagster/schedule_name', 'dagster/sensor_name', 'dagster/partition']}
+            relevant_tags = {
+                k: v
+                for k, v in run.tags.items()
+                if k in ["dagster/schedule_name", "dagster/sensor_name", "dagster/partition"]
+            }
             if relevant_tags:
                 print(f"   Tags: {relevant_tags}")
 
@@ -114,6 +120,7 @@ def list_all_runs():
         print("   python scripts/maintenance/kill_long_running_tasks.py")
 
     print("=" * 80)
+
 
 if __name__ == "__main__":
     try:

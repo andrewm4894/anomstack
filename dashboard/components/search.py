@@ -7,7 +7,7 @@ This module contains the components for the search and filtering functionality.
 
 """
 
-#from fasthtml.common import Input
+# from fasthtml.common import Input
 from monsterui.all import DivLAligned, Form, Input
 
 from dashboard.app import app

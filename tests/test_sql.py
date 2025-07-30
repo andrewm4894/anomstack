@@ -13,16 +13,18 @@ from anomstack.sql.read import read_sql
 class TestReadSQL:
     """Test the read_sql function."""
 
-    @patch('anomstack.sql.read.get_dagster_logger')
-    @patch('anomstack.sql.read.log_df_info')
-    @patch('anomstack.sql.read.db_translate')
-    @patch('anomstack.sql.read.read_sql_bigquery')
-    def test_read_sql_bigquery_returns_df(self, mock_read_bigquery, mock_translate, mock_log_df_info, mock_logger):
+    @patch("anomstack.sql.read.get_dagster_logger")
+    @patch("anomstack.sql.read.log_df_info")
+    @patch("anomstack.sql.read.db_translate")
+    @patch("anomstack.sql.read.read_sql_bigquery")
+    def test_read_sql_bigquery_returns_df(
+        self, mock_read_bigquery, mock_translate, mock_log_df_info, mock_logger
+    ):
         """Test read_sql with BigQuery when returns_df=True."""
         # Setup mocks
         mock_logger.return_value = MagicMock()
         mock_translate.return_value = "SELECT * FROM table"
-        test_df = pd.DataFrame({'col1': [1, 2], 'col2': ['a', 'b']})
+        test_df = pd.DataFrame({"col1": [1, 2], "col2": ["a", "b"]})
         mock_read_bigquery.return_value = test_df
 
         # Call function
@@ -34,24 +36,28 @@ class TestReadSQL:
         mock_log_df_info.assert_called_once()
         pd.testing.assert_frame_equal(result, test_df)
 
-    @patch('anomstack.sql.read.get_dagster_logger')
+    @patch("anomstack.sql.read.get_dagster_logger")
     def test_read_sql_bigquery_no_returns_df_raises_error(self, mock_logger):
         """Test read_sql with BigQuery when returns_df=False raises NotImplementedError."""
         mock_logger.return_value = MagicMock()
 
-        with pytest.raises(NotImplementedError, match="BigQuery not yet implemented for non-returns_df queries"):
+        with pytest.raises(
+            NotImplementedError, match="BigQuery not yet implemented for non-returns_df queries"
+        ):
             read_sql("SELECT * FROM table", "bigquery", returns_df=False)
 
-    @patch('anomstack.sql.read.get_dagster_logger')
-    @patch('anomstack.sql.read.log_df_info')
-    @patch('anomstack.sql.read.db_translate')
-    @patch('anomstack.sql.read.read_sql_snowflake')
-    def test_read_sql_snowflake_returns_df(self, mock_read_snowflake, mock_translate, mock_log_df_info, mock_logger):
+    @patch("anomstack.sql.read.get_dagster_logger")
+    @patch("anomstack.sql.read.log_df_info")
+    @patch("anomstack.sql.read.db_translate")
+    @patch("anomstack.sql.read.read_sql_snowflake")
+    def test_read_sql_snowflake_returns_df(
+        self, mock_read_snowflake, mock_translate, mock_log_df_info, mock_logger
+    ):
         """Test read_sql with Snowflake when returns_df=True."""
         # Setup mocks
         mock_logger.return_value = MagicMock()
         mock_translate.return_value = "SELECT * FROM table"
-        test_df = pd.DataFrame({'col1': [1, 2], 'col2': ['a', 'b']})
+        test_df = pd.DataFrame({"col1": [1, 2], "col2": ["a", "b"]})
         mock_read_snowflake.return_value = test_df
 
         # Call function
@@ -63,24 +69,28 @@ class TestReadSQL:
         mock_log_df_info.assert_called_once()
         pd.testing.assert_frame_equal(result, test_df)
 
-    @patch('anomstack.sql.read.get_dagster_logger')
+    @patch("anomstack.sql.read.get_dagster_logger")
     def test_read_sql_snowflake_no_returns_df_raises_error(self, mock_logger):
         """Test read_sql with Snowflake when returns_df=False raises NotImplementedError."""
         mock_logger.return_value = MagicMock()
 
-        with pytest.raises(NotImplementedError, match="Snowflake not yet implemented for non-returns_df queries"):
+        with pytest.raises(
+            NotImplementedError, match="Snowflake not yet implemented for non-returns_df queries"
+        ):
             read_sql("SELECT * FROM table", "snowflake", returns_df=False)
 
-    @patch('anomstack.sql.read.get_dagster_logger')
-    @patch('anomstack.sql.read.log_df_info')
-    @patch('anomstack.sql.read.db_translate')
-    @patch('anomstack.sql.read.read_sql_duckdb')
-    def test_read_sql_duckdb_returns_df(self, mock_read_duckdb, mock_translate, mock_log_df_info, mock_logger):
+    @patch("anomstack.sql.read.get_dagster_logger")
+    @patch("anomstack.sql.read.log_df_info")
+    @patch("anomstack.sql.read.db_translate")
+    @patch("anomstack.sql.read.read_sql_duckdb")
+    def test_read_sql_duckdb_returns_df(
+        self, mock_read_duckdb, mock_translate, mock_log_df_info, mock_logger
+    ):
         """Test read_sql with DuckDB when returns_df=True."""
         # Setup mocks
         mock_logger.return_value = MagicMock()
         mock_translate.return_value = "SELECT * FROM table"
-        test_df = pd.DataFrame({'col1': [1, 2], 'col2': ['a', 'b']})
+        test_df = pd.DataFrame({"col1": [1, 2], "col2": ["a", "b"]})
         mock_read_duckdb.return_value = test_df
 
         # Call function
@@ -92,11 +102,13 @@ class TestReadSQL:
         mock_log_df_info.assert_called_once()
         pd.testing.assert_frame_equal(result, test_df)
 
-    @patch('anomstack.sql.read.get_dagster_logger')
-    @patch('anomstack.sql.read.log_df_info')
-    @patch('anomstack.sql.read.db_translate')
-    @patch('anomstack.sql.read.run_sql_duckdb')
-    def test_read_sql_duckdb_no_returns_df(self, mock_run_duckdb, mock_translate, mock_log_df_info, mock_logger):
+    @patch("anomstack.sql.read.get_dagster_logger")
+    @patch("anomstack.sql.read.log_df_info")
+    @patch("anomstack.sql.read.db_translate")
+    @patch("anomstack.sql.read.run_sql_duckdb")
+    def test_read_sql_duckdb_no_returns_df(
+        self, mock_run_duckdb, mock_translate, mock_log_df_info, mock_logger
+    ):
         """Test read_sql with DuckDB when returns_df=False."""
         # Setup mocks
         mock_logger.return_value = MagicMock()
@@ -112,16 +124,18 @@ class TestReadSQL:
         assert isinstance(result, pd.DataFrame)
         assert len(result) == 0  # Should return empty DataFrame
 
-    @patch('anomstack.sql.read.get_dagster_logger')
-    @patch('anomstack.sql.read.log_df_info')
-    @patch('anomstack.sql.read.db_translate')
-    @patch('anomstack.sql.read.read_sql_sqlite')
-    def test_read_sql_sqlite_returns_df(self, mock_read_sqlite, mock_translate, mock_log_df_info, mock_logger):
+    @patch("anomstack.sql.read.get_dagster_logger")
+    @patch("anomstack.sql.read.log_df_info")
+    @patch("anomstack.sql.read.db_translate")
+    @patch("anomstack.sql.read.read_sql_sqlite")
+    def test_read_sql_sqlite_returns_df(
+        self, mock_read_sqlite, mock_translate, mock_log_df_info, mock_logger
+    ):
         """Test read_sql with SQLite when returns_df=True."""
         # Setup mocks
         mock_logger.return_value = MagicMock()
         mock_translate.return_value = "SELECT * FROM table"
-        test_df = pd.DataFrame({'col1': [1, 2], 'col2': ['a', 'b']})
+        test_df = pd.DataFrame({"col1": [1, 2], "col2": ["a", "b"]})
         mock_read_sqlite.return_value = test_df
 
         # Call function
@@ -133,11 +147,13 @@ class TestReadSQL:
         mock_log_df_info.assert_called_once()
         pd.testing.assert_frame_equal(result, test_df)
 
-    @patch('anomstack.sql.read.get_dagster_logger')
-    @patch('anomstack.sql.read.log_df_info')
-    @patch('anomstack.sql.read.db_translate')
-    @patch('anomstack.sql.read.run_sql_sqlite')
-    def test_read_sql_sqlite_no_returns_df(self, mock_run_sqlite, mock_translate, mock_log_df_info, mock_logger):
+    @patch("anomstack.sql.read.get_dagster_logger")
+    @patch("anomstack.sql.read.log_df_info")
+    @patch("anomstack.sql.read.db_translate")
+    @patch("anomstack.sql.read.run_sql_sqlite")
+    def test_read_sql_sqlite_no_returns_df(
+        self, mock_run_sqlite, mock_translate, mock_log_df_info, mock_logger
+    ):
         """Test read_sql with SQLite when returns_df=False."""
         # Setup mocks
         mock_logger.return_value = MagicMock()
@@ -153,16 +169,18 @@ class TestReadSQL:
         assert isinstance(result, pd.DataFrame)
         assert len(result) == 0  # Should return empty DataFrame
 
-    @patch('anomstack.sql.read.get_dagster_logger')
-    @patch('anomstack.sql.read.log_df_info')
-    @patch('anomstack.sql.read.db_translate')
-    @patch('anomstack.sql.read.read_sql_clickhouse')
-    def test_read_sql_clickhouse_returns_df(self, mock_read_clickhouse, mock_translate, mock_log_df_info, mock_logger):
+    @patch("anomstack.sql.read.get_dagster_logger")
+    @patch("anomstack.sql.read.log_df_info")
+    @patch("anomstack.sql.read.db_translate")
+    @patch("anomstack.sql.read.read_sql_clickhouse")
+    def test_read_sql_clickhouse_returns_df(
+        self, mock_read_clickhouse, mock_translate, mock_log_df_info, mock_logger
+    ):
         """Test read_sql with ClickHouse when returns_df=True."""
         # Setup mocks
         mock_logger.return_value = MagicMock()
         mock_translate.return_value = "SELECT * FROM table"
-        test_df = pd.DataFrame({'col1': [1, 2], 'col2': ['a', 'b']})
+        test_df = pd.DataFrame({"col1": [1, 2], "col2": ["a", "b"]})
         mock_read_clickhouse.return_value = test_df
 
         # Call function
@@ -174,11 +192,13 @@ class TestReadSQL:
         mock_log_df_info.assert_called_once()
         pd.testing.assert_frame_equal(result, test_df)
 
-    @patch('anomstack.sql.read.get_dagster_logger')
-    @patch('anomstack.sql.read.log_df_info')
-    @patch('anomstack.sql.read.db_translate')
-    @patch('anomstack.sql.read.run_sql_clickhouse')
-    def test_read_sql_clickhouse_no_returns_df(self, mock_run_clickhouse, mock_translate, mock_log_df_info, mock_logger):
+    @patch("anomstack.sql.read.get_dagster_logger")
+    @patch("anomstack.sql.read.log_df_info")
+    @patch("anomstack.sql.read.db_translate")
+    @patch("anomstack.sql.read.run_sql_clickhouse")
+    def test_read_sql_clickhouse_no_returns_df(
+        self, mock_run_clickhouse, mock_translate, mock_log_df_info, mock_logger
+    ):
         """Test read_sql with ClickHouse when returns_df=False."""
         # Setup mocks
         mock_logger.return_value = MagicMock()
@@ -194,7 +214,7 @@ class TestReadSQL:
         assert isinstance(result, pd.DataFrame)
         assert len(result) == 0  # Should return empty DataFrame
 
-    @patch('anomstack.sql.read.get_dagster_logger')
+    @patch("anomstack.sql.read.get_dagster_logger")
     def test_read_sql_unknown_database_raises_error(self, mock_logger):
         """Test read_sql with unknown database raises ValueError."""
         mock_logger.return_value = MagicMock()
@@ -203,17 +223,19 @@ class TestReadSQL:
         with pytest.raises(ValueError, match="Unknown dialect 'unknown_db'"):
             read_sql("SELECT * FROM table", "unknown_db")
 
-    @patch('anomstack.sql.read.get_dagster_logger')
-    @patch('anomstack.sql.read.log_df_info')
-    @patch('anomstack.sql.read.db_translate')
-    @patch('anomstack.sql.read.read_sql_duckdb')
-    def test_read_sql_logging_behavior(self, mock_read_duckdb, mock_translate, mock_log_df_info, mock_logger):
+    @patch("anomstack.sql.read.get_dagster_logger")
+    @patch("anomstack.sql.read.log_df_info")
+    @patch("anomstack.sql.read.db_translate")
+    @patch("anomstack.sql.read.read_sql_duckdb")
+    def test_read_sql_logging_behavior(
+        self, mock_read_duckdb, mock_translate, mock_log_df_info, mock_logger
+    ):
         """Test that read_sql logs the correct information."""
         # Setup mocks
         logger_mock = MagicMock()
         mock_logger.return_value = logger_mock
         mock_translate.return_value = "SELECT * FROM table"
-        test_df = pd.DataFrame({'col1': [1, 2], 'col2': ['a', 'b']})
+        test_df = pd.DataFrame({"col1": [1, 2], "col2": ["a", "b"]})
         mock_read_duckdb.return_value = test_df
 
         # Call function
@@ -233,16 +255,18 @@ class TestReadSQL:
         assert "df.head():" in head_call
         assert "df.tail():" in tail_call
 
-    @patch('anomstack.sql.read.get_dagster_logger')
-    @patch('anomstack.sql.read.log_df_info')
-    @patch('anomstack.sql.read.db_translate')
-    @patch('anomstack.sql.read.read_sql_duckdb')
-    def test_read_sql_integration_with_db_translate(self, mock_read_duckdb, mock_translate, mock_log_df_info, mock_logger):
+    @patch("anomstack.sql.read.get_dagster_logger")
+    @patch("anomstack.sql.read.log_df_info")
+    @patch("anomstack.sql.read.db_translate")
+    @patch("anomstack.sql.read.read_sql_duckdb")
+    def test_read_sql_integration_with_db_translate(
+        self, mock_read_duckdb, mock_translate, mock_log_df_info, mock_logger
+    ):
         """Test that read_sql properly integrates with db_translate."""
         # Setup mocks
         mock_logger.return_value = MagicMock()
         mock_translate.return_value = "SELECT * FROM translated_table"
-        test_df = pd.DataFrame({'col1': [1, 2]})
+        test_df = pd.DataFrame({"col1": [1, 2]})
         mock_read_duckdb.return_value = test_df
 
         # Call function with original SQL
@@ -270,7 +294,7 @@ try:
             sql = "SELECT * FROM table WHERE col = 'value'"
 
             # Test with different database types
-            for db in ['duckdb', 'sqlite', 'bigquery', 'snowflake', 'clickhouse']:
+            for db in ["duckdb", "sqlite", "bigquery", "snowflake", "clickhouse"]:
                 result = db_translate(sql, db)
                 # For most cases, it should return the SQL as-is or with minimal changes
                 assert isinstance(result, str)

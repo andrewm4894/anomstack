@@ -4,8 +4,8 @@ Functions to read data from a python function.
 
 import ast
 
-import pandas as pd
 from dagster import get_dagster_logger
+import pandas as pd
 
 
 def validate_function_definition(code_str: str, function_name: str) -> bool:

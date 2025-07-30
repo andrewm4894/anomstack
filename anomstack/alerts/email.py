@@ -2,14 +2,14 @@
 Helper functions for sending alerts via email.
 """
 
-import os
-import smtplib
-import ssl
-import tempfile
 from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import os
+import smtplib
+import ssl
+import tempfile
 
 from dagster import get_dagster_logger
 
@@ -55,12 +55,8 @@ def send_email_with_plot(
     host = os.getenv("ANOMSTACK_ALERT_EMAIL_SMTP_HOST")
     port = os.getenv("ANOMSTACK_ALERT_EMAIL_SMTP_PORT")
 
-    with tempfile.NamedTemporaryFile(
-        prefix=attachment_name, suffix=".png", delete=False
-    ) as temp:
-        fig = make_alert_plot(
-            df, metric_name, threshold, score_col, score_title, tags=tags
-        )
+    with tempfile.NamedTemporaryFile(prefix=attachment_name, suffix=".png", delete=False) as temp:
+        fig = make_alert_plot(df, metric_name, threshold, score_col, score_title, tags=tags)
         fig.savefig(temp.name)
 
         msg = MIMEMultipart()
@@ -70,14 +66,10 @@ def send_email_with_plot(
 
         msg.attach(MIMEText(body, "html"))
         binary_file = open(temp.name, "rb")
-        payload = MIMEBase(
-            "application", "octate-stream", Name=f"{attachment_name}.png"
-        )
+        payload = MIMEBase("application", "octate-stream", Name=f"{attachment_name}.png")
         payload.set_payload((binary_file).read())
         encoders.encode_base64(payload)
-        payload.add_header(
-            "Content-Decomposition", "attachment", filename=f"{attachment_name}.png"
-        )
+        payload.add_header("Content-Decomposition", "attachment", filename=f"{attachment_name}.png")
         msg.attach(payload)
 
         context = ssl.create_default_context()
@@ -126,7 +118,7 @@ def send_email(
     with smtplib.SMTP(host, port) as server:
         server.connect(host, port)
         server.starttls(context=context)
-        server.login(sender, password) # type: ignore
+        server.login(sender, password)  # type: ignore
         text = msg.as_string()
         server.sendmail(sender, to, text)
         server.quit()

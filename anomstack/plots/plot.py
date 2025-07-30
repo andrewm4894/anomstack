@@ -3,11 +3,11 @@ Some helper functions for plotting.
 """
 
 import matplotlib.dates as mdates
+from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 import pandas as pd
 import seaborn as sns
-from matplotlib.figure import Figure
-from matplotlib.ticker import MaxNLocator
 
 
 def make_alert_plot(
@@ -53,10 +53,7 @@ def make_alert_plot(
     )
     if "metric_value_smooth" in df_plot.columns:
         df_plot["metric_value_smooth"].plot(
-            ax=axes[0],
-            style="--",
-            color="darkorange",
-            label="metric_value_smooth"
+            ax=axes[0], style="--", color="darkorange", label="metric_value_smooth"
         )
     ax1.axes.get_xaxis().set_visible(False)
     ax1.grid(True, which="both", linestyle="--", linewidth=0.5)
@@ -79,10 +76,7 @@ def make_alert_plot(
         label=alert_type,
         s=5,
     )
-    ax2.axhline(
-        threshold, color="lightgrey", linestyle="-.",
-        label=f"threshold ({threshold})"
-    )
+    ax2.axhline(threshold, color="lightgrey", linestyle="-.", label=f"threshold ({threshold})")
     ax2.xaxis.set_major_locator(plt.MaxNLocator(n))
     ax2.set_xticklabels(
         [f'{item.strftime("%Y-%m-%d %H:%M")}' for item in df_plot.index.tolist()],
@@ -117,13 +111,11 @@ def make_batch_plot(df: pd.DataFrame) -> plt.Figure:
     Returns:
         plt.Figure: The generated batch plot figure.
     """
-    df['metric_timestamp'] = pd.to_datetime(df['metric_timestamp'])
+    df["metric_timestamp"] = pd.to_datetime(df["metric_timestamp"])
     unique_metrics = df["metric_name"].unique()
     colors = sns.color_palette("viridis", len(unique_metrics))
 
-    fig, axs = plt.subplots(
-        len(unique_metrics), 1, figsize=(10, 3 * len(unique_metrics))
-    )
+    fig, axs = plt.subplots(len(unique_metrics), 1, figsize=(10, 3 * len(unique_metrics)))
 
     if len(unique_metrics) == 1:
         axs = [axs]

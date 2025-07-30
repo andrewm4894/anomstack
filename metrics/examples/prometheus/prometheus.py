@@ -8,15 +8,18 @@ def ingest() -> pd.DataFrame:
     metric_timestamp, metric_name, metric_value.
     The metric_timestamp is aggregated to the second level and duplicates are removed.
     """
-    import requests
     from dagster import get_dagster_logger
+    import requests
 
     logger = get_dagster_logger()
 
     # Define 10 queries with a friendly label and corresponding PromQL query.
     queries = [
         ("demo_api_http_requests_in_progress", "demo_api_http_requests_in_progress"),
-        ("avg_api_request_duration", "rate(demo_api_request_duration_seconds_sum[5m]) / rate(demo_api_request_duration_seconds_count[5m])"),
+        (
+            "avg_api_request_duration",
+            "rate(demo_api_request_duration_seconds_sum[5m]) / rate(demo_api_request_duration_seconds_count[5m])",
+        ),
         ("cpu_usage_rate", "rate(demo_cpu_usage_seconds_total[5m])"),
         ("demo_memory_usage_bytes", "demo_memory_usage_bytes"),
         ("demo_batch_last_run_duration_seconds", "demo_batch_last_run_duration_seconds"),
@@ -55,10 +58,10 @@ def ingest() -> pd.DataFrame:
             try:
                 # Convert the Prometheus timestamp (seconds since epoch) to a datetime,
                 # and floor it to the nearest second.
-                ts = pd.to_datetime(float(timestamp_str), unit='s').floor('S')
+                ts = pd.to_datetime(float(timestamp_str), unit="s").floor("S")
             except Exception as ex:
                 logger.error(f"Error converting timestamp {timestamp_str}: {ex}")
-                ts = pd.Timestamp.utcnow().floor('S')
+                ts = pd.Timestamp.utcnow().floor("S")
 
             try:
                 metric_value = float(value_str)
@@ -72,11 +75,9 @@ def ingest() -> pd.DataFrame:
                 # Replace colon with underscore to ensure a clean metric name.
                 metric_name = f"{label}.{instance.replace(':', '_')}"
 
-            all_rows.append({
-                "metric_timestamp": ts,
-                "metric_name": metric_name,
-                "metric_value": metric_value
-            })
+            all_rows.append(
+                {"metric_timestamp": ts, "metric_name": metric_name, "metric_value": metric_value}
+            )
 
     # Create a DataFrame from the collected rows.
     df = pd.DataFrame(all_rows)

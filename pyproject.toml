@@ -1,0 +1,49 @@
+[tool.ruff]
+# Increase line length limit to be more practical for this codebase
+line-length = 100
+
+# Exclude files that should not be linted
+exclude = [
+    "metrics/defaults/python/prompt.py",
+    "anomstack/llm/completion.py",
+    "*.ipynb",  # Exclude Jupyter notebooks - they have different formatting requirements
+    "venv",
+    ".venv",
+    "__pycache__",
+    ".git",
+    "build",
+    "dist",
+    "*.egg-info",
+]
+
+[tool.ruff.lint]
+# Enable specific rule sets
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # Pyflakes
+    "I",   # isort
+]
+
+# Ignore specific rules that are problematic for this codebase
+ignore = [
+    "E501",  # Line too long - handled by line-length setting above
+    "F403",  # Star imports - common pattern in dashboard module
+    "F405",  # Undefined names from star imports - related to F403
+]
+
+# Per-file ignores for specific cases
+[tool.ruff.lint.per-file-ignores]
+# Allow star imports in dashboard initialization files
+"dashboard/app.py" = ["F403", "F405", "F811", "E402"]
+"dashboard/routes/__init__.py" = ["F403"]
+"dashboard/routes/toggles.py" = ["F811"]  # Multiple route handlers with same name
+"dashboard/routes/search.py" = ["F811"]   # Multiple route handlers with same name
+
+# Allow imports not at top in maintenance scripts (they have conditional imports)
+"scripts/maintenance/*.py" = ["E402"]
+
+[tool.ruff.lint.isort]
+# Configure import sorting to match current style
+combine-as-imports = true
+force-sort-within-sections = true

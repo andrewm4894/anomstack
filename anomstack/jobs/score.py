@@ -4,7 +4,6 @@ Generate score jobs and schedules.
 
 import os
 
-import pandas as pd
 from dagster import (
     MAX_RUNTIME_SECONDS_TAG,
     DefaultScheduleStatus,
@@ -15,6 +14,7 @@ from dagster import (
     op,
 )
 from google.api_core.exceptions import NotFound
+import pandas as pd
 
 from anomstack.config import get_specs
 from anomstack.df.save import save_df
@@ -99,9 +99,7 @@ def build_score_job(spec: dict) -> JobDefinition:
                 pd.DataFrame: A pandas dataframe containing the scored data.
             """
 
-            preprocess = define_fn(
-                fn_name="preprocess", fn=render("preprocess_fn", spec)
-            )
+            preprocess = define_fn(fn_name="preprocess", fn=render("preprocess_fn", spec))
 
             df_scores = pd.DataFrame()
 
@@ -111,7 +109,7 @@ def build_score_job(spec: dict) -> JobDefinition:
                 logger.debug(f"preprocess {metric_name} in {metric_batch} score job.")
                 logger.debug(f"df_metric:\n{df_metric.head()}")
 
-                X = preprocess(df_metric[['metric_timestamp','metric_value']], **preprocess_params)
+                X = preprocess(df_metric[["metric_timestamp", "metric_value"]], **preprocess_params)
 
                 if len(X) == 0:
                     logger.debug(
@@ -123,28 +121,23 @@ def build_score_job(spec: dict) -> JobDefinition:
 
                 scores = {}
                 for model_config in model_configs:
-
                     model_tag = model_config.get("model_tag", "")
 
                     try:
-                        model = load_model(
-                            metric_name, model_path, metric_batch, model_tag
-                        )
+                        model = load_model(metric_name, model_path, metric_batch, model_tag)
                         scores_tmp = model.predict_proba(X)
                         scores_tmp = scores_tmp[:, 1]  # probability of anomaly
-                        scores[f'{metric_name}_{model_tag}'] = scores_tmp
+                        scores[f"{metric_name}_{model_tag}"] = scores_tmp
                     except NotFound as e:
                         logger.warning(e)
                         logger.warning(
-                            f"model not found for {metric_name} in "
-                            f"{metric_batch} score job."
+                            f"model not found for {metric_name} in " f"{metric_batch} score job."
                         )
                         continue
                     except Exception as e:
                         logger.warning(e)
                         logger.warning(
-                            f"model failed for {metric_name} in "
-                            f"{metric_batch} score job."
+                            f"model failed for {metric_name} in " f"{metric_batch} score job."
                         )
                         continue
 
@@ -156,8 +149,7 @@ def build_score_job(spec: dict) -> JobDefinition:
                     scores = pd.DataFrame(scores).min(axis=1).values
                 else:
                     raise ValueError(
-                        f"model_combination_method {model_combination_method} "
-                        f"not supported."
+                        f"model_combination_method {model_combination_method} " f"not supported."
                     )
 
                 # create initial df_score
@@ -170,9 +162,7 @@ def build_score_job(spec: dict) -> JobDefinition:
                 # limit to timestamps where metric_score is null to begin with
                 # in df_metric or its not in df_metric
                 df_score = df_score[
-                    df_score.index.isin(
-                        df_metric[df_metric["metric_score"].isnull()].index
-                    )
+                    df_score.index.isin(df_metric[df_metric["metric_score"].isnull()].index)
                     | ~df_score.index.isin(df_metric.index)
                 ].reset_index()
 
@@ -223,9 +213,7 @@ def build_score_job(spec: dict) -> JobDefinition:
             if len(df) > 0:
                 df = save_df(df, db, table_key)
             else:
-                logger.debug(
-                    f"no scores to save, df is empty for {metric_batch} score job."
-                )
+                logger.debug(f"no scores to save, df is empty for {metric_batch} score job.")
 
             return df
 

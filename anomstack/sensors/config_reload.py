@@ -44,7 +44,7 @@ def calculate_directory_hash(directory: Path) -> str:
                 hash_md5.update(str(mtime).encode())
 
                 # Include file content
-                with open(yaml_file, 'rb') as f:
+                with open(yaml_file, "rb") as f:
                     hash_md5.update(f.read())
 
             except (OSError, IOError) as e:
@@ -116,6 +116,7 @@ SENSOR_ENABLED = should_enable_config_watcher()
 SENSOR_INTERVAL = int(os.getenv("ANOMSTACK_CONFIG_WATCHER_INTERVAL", "30"))  # seconds
 
 if SENSOR_ENABLED:
+
     @sensor(
         name="config_file_watcher",
         minimum_interval_seconds=SENSOR_INTERVAL,
@@ -176,4 +177,6 @@ else:
     )
     def config_file_watcher(context: SensorEvaluationContext):
         """Disabled config file watcher."""
-        return SkipReason("Config file watcher is disabled (set ANOMSTACK_CONFIG_WATCHER=true to enable)")
+        return SkipReason(
+            "Config file watcher is disabled (set ANOMSTACK_CONFIG_WATCHER=true to enable)"
+        )

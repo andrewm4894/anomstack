@@ -1,7 +1,7 @@
-import os
-import sys
 from datetime import datetime, timedelta, timezone
+import os
 from pathlib import Path
+import sys
 
 from dagster import DagsterInstance, DagsterRunStatus, RunsFilter
 from dagster._core.errors import DagsterUserCodeUnreachableError
@@ -41,13 +41,17 @@ for run in running_runs:
 
         if started_at < cutoff_time:
             try:
-                print(f"Terminating run: {run.run_id} (started at {started_at}, duration {duration})")
+                print(
+                    f"Terminating run: {run.run_id} (started at {started_at}, duration {duration})"
+                )
                 instance.report_run_canceling(run)
                 instance.run_launcher.terminate(run.run_id)
                 print(f"✅ Successfully terminated run {run.run_id}")
             except DagsterUserCodeUnreachableError as e:
                 print(f"⚠️ Could not terminate run {run.run_id}: {e}")
-                print(f"🔄 Marking run {run.run_id} as failed since user code server is unreachable")
+                print(
+                    f"🔄 Marking run {run.run_id} as failed since user code server is unreachable"
+                )
                 # Mark the run as failed since we can't reach the user code server
                 instance.report_run_failed(run)
                 print(f"✅ Marked run {run.run_id} as failed")

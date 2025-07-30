@@ -5,8 +5,8 @@ Handle configuration for the jobs.
 import os
 from pathlib import Path
 
-import yaml
 from dagster import get_dagster_logger
+import yaml
 
 # environment variables that can be used to override the configuration.
 env_vars = ["ANOMSTACK_GCP_PROJECT_ID", "ANOMSTACK_MODEL_PATH", "ANOMSTACK_TABLE_KEY"]
@@ -60,13 +60,17 @@ def get_specs(metrics_dir: str = "./metrics"):
 
                     # Check if YAML should take precedence for this parameter
                     if param_key in YAML_PRECEDENCE_PARAMS and param_key in metric_specs:
-                        logger.info(f"ENV SKIP: {env_var} skipped, YAML value takes precedence for {param_key} (YAML: {metric_specs[param_key]})")
+                        logger.info(
+                            f"ENV SKIP: {env_var} skipped, YAML value takes precedence for {param_key} (YAML: {metric_specs[param_key]})"
+                        )
                         continue
 
                     # Normal override behavior
                     yaml_value = merged_specs.get(param_key)
                     merged_specs[param_key] = os.getenv(env_var)
-                    logger.info(f"ENV OVERRIDE: {env_var} replaces {param_key} (was: {yaml_value}, now: {merged_specs[param_key]})")
+                    logger.info(
+                        f"ENV OVERRIDE: {env_var} replaces {param_key} (was: {yaml_value}, now: {merged_specs[param_key]})"
+                    )
 
             # Apply metric batch-specific environment variable overrides
             # Pattern: ANOMSTACK__<METRIC_BATCH>__<PARAM>
@@ -78,17 +82,16 @@ def get_specs(metrics_dir: str = "./metrics"):
                     param_key = env_var.replace(f"ANOMSTACK__{metric_batch_upper}__", "").lower()
                     old_value = merged_specs.get(param_key, None)
                     merged_specs[param_key] = value
-                    logger.info(f"ENV BATCH OVERRIDE: {env_var} replaces {param_key} (was: {old_value}, now: {value})")
+                    logger.info(
+                        f"ENV BATCH OVERRIDE: {env_var} replaces {param_key} (was: {old_value}, now: {value})"
+                    )
 
             specs[metric_batch] = merged_specs
 
     # Walk through the metrics directory and process YAML files
     for root, dirs, files in os.walk(str(metrics_dir_path)):
         # Skip the examples directory if the environment variable is set
-        if (
-            os.getenv("ANOMSTACK_IGNORE_EXAMPLES") == "yes"
-            and examples_dir in Path(root).parents
-        ):
+        if os.getenv("ANOMSTACK_IGNORE_EXAMPLES") == "yes" and examples_dir in Path(root).parents:
             continue
         for yaml_file in files:
             if yaml_file == "defaults.yaml":
@@ -106,8 +109,8 @@ def reload_code_location(location_name="anomstack_code"):
     import requests
 
     logger = get_dagster_logger()
-    host = os.getenv('DAGSTER_HOST', 'localhost')
-    port = os.getenv('DAGSTER_PORT', '3000')
+    host = os.getenv("DAGSTER_HOST", "localhost")
+    port = os.getenv("DAGSTER_PORT", "3000")
     url = f"http://{host}:{port}/graphql"
 
     # GraphQL mutation to reload code location
@@ -145,11 +148,7 @@ def reload_code_location(location_name="anomstack_code"):
 
     try:
         logger.info(f"🔄 Attempting to reload code location '{location_name}'...")
-        response = requests.post(
-            url,
-            json={"query": mutation, "variables": variables},
-            timeout=30
-        )
+        response = requests.post(url, json={"query": mutation, "variables": variables}, timeout=30)
 
         if response.status_code != 200:
             logger.error(f"❌ HTTP Error {response.status_code}: {response.text}")
@@ -208,8 +207,8 @@ def execute_config_reload():
 
     try:
         # Check if Dagster is accessible
-        host = os.getenv('DAGSTER_HOST', 'localhost')
-        port = os.getenv('DAGSTER_PORT', '3000')
+        host = os.getenv("DAGSTER_HOST", "localhost")
+        port = os.getenv("DAGSTER_PORT", "3000")
         url = f"http://{host}:{port}/server_info"
 
         response = requests.get(url, timeout=5)

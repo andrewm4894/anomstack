@@ -3,9 +3,8 @@ This module provides functions for reading data from SQL databases using
 different database connectors.
 """
 
-
-import pandas as pd
 from dagster import get_dagster_logger
+import pandas as pd
 
 from anomstack.df.utils import log_df_info
 from anomstack.external.clickhouse.clickhouse import (
@@ -44,16 +43,12 @@ def read_sql(sql: str, db: str, returns_df: bool = True) -> pd.DataFrame:
         if returns_df:
             df = read_sql_bigquery(sql)
         elif not returns_df:
-            raise NotImplementedError(
-                "BigQuery not yet implemented for non-returns_df queries."
-            )
+            raise NotImplementedError("BigQuery not yet implemented for non-returns_df queries.")
     elif db == "snowflake":
         if returns_df:
             df = read_sql_snowflake(sql)
         elif not returns_df:
-            raise NotImplementedError(
-                "Snowflake not yet implemented for non-returns_df queries."
-            )
+            raise NotImplementedError("Snowflake not yet implemented for non-returns_df queries.")
     elif db == "duckdb":
         if returns_df:
             df = read_sql_duckdb(sql)

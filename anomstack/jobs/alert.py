@@ -4,7 +4,6 @@ Generate alert jobs and schedules.
 
 import os
 
-import pandas as pd
 from dagster import (
     MAX_RUNTIME_SECONDS_TAG,
     DefaultScheduleStatus,
@@ -14,6 +13,7 @@ from dagster import (
     job,
     op,
 )
+import pandas as pd
 
 from anomstack.alerts.send import send_alert
 from anomstack.config import get_specs
@@ -102,15 +102,11 @@ def build_alert_job(spec: dict) -> JobDefinition:
                 for metric_name in df_alerts["metric_name"].unique():
                     logger.info(f"alerting on {metric_name}")
                     df_alert = df_alerts.query(f"metric_name=='{metric_name}'")
-                    df_alert["metric_timestamp"] = pd.to_datetime(
-                        df_alert["metric_timestamp"]
-                    )
+                    df_alert["metric_timestamp"] = pd.to_datetime(df_alert["metric_timestamp"])
                     metric_timestamp_max = (
                         df_alert["metric_timestamp"].max().strftime("%Y-%m-%d %H:%M")
                     )
-                    alert_title = (
-                        f"🔥 [{metric_name}] looks anomalous ({metric_timestamp_max}) 🔥"
-                    )
+                    alert_title = f"🔥 [{metric_name}] looks anomalous ({metric_timestamp_max}) 🔥"
                     tags = {
                         "metric_batch": metric_batch,
                         "metric_name": metric_name,
@@ -129,7 +125,7 @@ def build_alert_job(spec: dict) -> JobDefinition:
                             threshold=threshold,
                             alert_methods=alert_methods,
                             tags=tags,
-                            metric_timestamp=metric_timestamp_max
+                            metric_timestamp=metric_timestamp_max,
                         )
                         logger.info(f"successfully sent alert for {metric_name}")
                     except Exception as e:

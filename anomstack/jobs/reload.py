@@ -48,6 +48,7 @@ def build_config_reload_job() -> JobDefinition:
                 str: Result of the reload operation.
             """
             import os
+
             logger = get_dagster_logger()
 
             logger.info("🔄 Starting configuration reload via Dagster job...")
@@ -62,7 +63,9 @@ def build_config_reload_job() -> JobDefinition:
                 os.environ["DAGSTER_PORT"] = "3000"
                 logger.info("🔧 Set DAGSTER_PORT=3000 for job execution")
 
-            logger.info(f"🌐 Using Dagster host: {os.getenv('DAGSTER_HOST')}:{os.getenv('DAGSTER_PORT')}")
+            logger.info(
+                f"🌐 Using Dagster host: {os.getenv('DAGSTER_HOST')}:{os.getenv('DAGSTER_PORT')}"
+            )
 
             # Execute the reload using the internal function
             success = execute_config_reload()
@@ -123,7 +126,9 @@ if should_enable_config_reload_job():
     )
     reload_schedules.append(config_reload_schedule)
 
-    logger.info(f"📅 Config reload scheduled: {reload_cron_schedule} (status: {reload_default_status})")
+    logger.info(
+        f"📅 Config reload scheduled: {reload_cron_schedule} (status: {reload_default_status})"
+    )
 else:
     logger = get_dagster_logger()
     logger.info("⏸️ Config reload job is disabled (set ANOMSTACK_AUTO_CONFIG_RELOAD=true to enable)")

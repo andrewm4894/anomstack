@@ -4,7 +4,6 @@ Generate summary job and schedule.
 
 import os
 
-import pandas as pd
 from dagster import (
     MAX_RUNTIME_SECONDS_TAG,
     DefaultScheduleStatus,
@@ -14,6 +13,7 @@ from dagster import (
     job,
     op,
 )
+import pandas as pd
 
 from anomstack.alerts.send import send_df
 from anomstack.config import get_specs

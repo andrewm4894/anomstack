@@ -30,8 +30,7 @@ def get_google_credentials():
 
     if credentials_path:
         try:
-            credentials = service_account.Credentials.\
-                from_service_account_file(credentials_path)
+            credentials = service_account.Credentials.from_service_account_file(credentials_path)
             logger.info(f"Loaded credentials from file path: {credentials_path}")
         except Exception as e:
             logger.info(

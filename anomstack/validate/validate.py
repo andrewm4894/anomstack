@@ -4,8 +4,8 @@ Some helper functions to validate dataframes.
 
 from io import StringIO
 
-import pandas as pd
 from dagster import get_dagster_logger
+import pandas as pd
 
 
 def validate_df(df: pd.DataFrame) -> pd.DataFrame:
@@ -32,18 +32,14 @@ def validate_df(df: pd.DataFrame) -> pd.DataFrame:
     assert "metric_name" in df.columns.str.lower(), "metric_name column missing"
     assert "metric_value" in df.columns.str.lower(), "metric_value column missing"
     assert "metadata" in df.columns.str.lower(), "metadata column missing"
-    assert (
-        "metric_timestamp" in df.columns.str.lower()
-    ), "metric_timestamp column missing"
+    assert "metric_timestamp" in df.columns.str.lower(), "metric_timestamp column missing"
     assert len(df.columns) == 6, f"expected 6 columns, got {len(df.columns)}"
     assert len(df) > 0, "no data returned"
 
     # metric_name is string
     assert df["metric_name"].dtype == "object", "metric_name is not string"
     # metric_value is numeric
-    assert pd.api.types.is_numeric_dtype(
-        df["metric_value"]
-    ), "metric_value is not numeric"
+    assert pd.api.types.is_numeric_dtype(df["metric_value"]), "metric_value is not numeric"
     # metric_timestamp is timestamp
     assert pd.api.types.is_datetime64_any_dtype(
         df["metric_timestamp"]
