@@ -35,9 +35,9 @@ retention:
     purge_after_days: 1  # Keep for 1 day only
   sensor:
     purge_after_days:
-      skipped: 0.5  # 12 hours for skipped
+      skipped: 1    # 1 day for skipped (minimum allowed by Dagster)
       failure: 1    # 1 day for failures
-      success: 0.25 # 6 hours for successful runs
+      success: 1    # 1 day for successful runs (minimum allowed by Dagster)
 
 # Enhanced run monitoring for Fly.io environment
 run_monitoring:
