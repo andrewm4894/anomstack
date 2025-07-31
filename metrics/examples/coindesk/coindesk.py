@@ -1,13 +1,11 @@
-import pandas as pd
-
-
-def ingest() -> pd.DataFrame:
+def ingest():
     """
     Ingest data from the Coindesk API.
     Retrieves tick data for BTC-USD and ETH-USD and returns a DataFrame with columns:
     metric_timestamp, metric_name, metric_value.
     The timestamp is derived from VALUE_LAST_UPDATE_TS, aggregated to the second, and duplicates are removed.
     """
+    import pandas as pd
     from dagster import get_dagster_logger
     import requests
 

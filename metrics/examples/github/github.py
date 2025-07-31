@@ -1,7 +1,4 @@
-import pandas as pd
-
-
-def ingest() -> pd.DataFrame:
+def ingest():
     """
     Ingest headline metrics from GitHub for a list of repositories.
     For each repo, the script retrieves key metrics from the GitHub API and
@@ -17,6 +14,7 @@ def ingest() -> pd.DataFrame:
         - subscribers_count
         - size
     """
+    import pandas as pd
     from dagster import get_dagster_logger
     import requests
 

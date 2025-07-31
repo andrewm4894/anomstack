@@ -1,10 +1,8 @@
-from dotenv import load_dotenv
-import pandas as pd
-import requests
-
-
-def ingest() -> pd.DataFrame:
+def ingest():
     """Fetch the current Bitcoin price in USD from the Coindesk API."""
+    import pandas as pd
+    import requests
+
     url = "https://api.coindesk.com/v1/bpi/currentprice.json"
     res = requests.get(url, timeout=10).json()
     price = float(res["bpi"]["USD"]["rate_float"])
@@ -15,6 +13,9 @@ def ingest() -> pd.DataFrame:
 
 
 if __name__ == "__main__":
+    from dotenv import load_dotenv
+    import pandas as pd
+
     load_dotenv(override=True)
     pd.set_option("display.max_columns", None)
     print(ingest())

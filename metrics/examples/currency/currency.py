@@ -1,13 +1,11 @@
-import pandas as pd
-
-
-def ingest() -> pd.DataFrame:
+def ingest():
     """
     Ingest currency conversion data from the currency API for multiple base currencies.
     For each base currency in base_currencies, constructs the URL using the current UTC date and retrieves data.
     Filters the response to include only a subset of target currencies (e.g. USD, GBP, JPY, CHF, AUD, CAD).
     Returns a DataFrame with columns: metric_timestamp, metric_name, and metric_value.
     """
+    import pandas as pd
     from datetime import datetime
 
     from dagster import get_dagster_logger

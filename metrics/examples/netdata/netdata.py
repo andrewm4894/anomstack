@@ -1,7 +1,4 @@
-import pandas as pd
-
-
-def ingest() -> pd.DataFrame:
+def ingest():
     """
     Ingest data from Netdata API.
     """
