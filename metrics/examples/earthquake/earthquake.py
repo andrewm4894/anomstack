@@ -1,10 +1,8 @@
-from dotenv import load_dotenv
-import pandas as pd
-import requests
-
-
-def ingest() -> pd.DataFrame:
+def ingest():
     """Summarise earthquake activity from the USGS last day feed."""
+    import pandas as pd
+    import requests
+
     url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
     res = requests.get(url, timeout=10).json()
     mags = [
@@ -26,6 +24,9 @@ def ingest() -> pd.DataFrame:
 
 
 if __name__ == "__main__":
+    from dotenv import load_dotenv
+    import pandas as pd
+
     load_dotenv(override=True)
     pd.set_option("display.max_columns", None)
     print(ingest())

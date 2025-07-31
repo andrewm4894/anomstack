@@ -1,7 +1,4 @@
-import pandas as pd
-
-
-def ingest() -> pd.DataFrame:
+def ingest():
     """
     Credit to: https://stackoverflow.com/a/76580610/1919374
     """

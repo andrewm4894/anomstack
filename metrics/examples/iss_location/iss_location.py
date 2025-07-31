@@ -1,10 +1,8 @@
-from dotenv import load_dotenv
-import pandas as pd
-import requests
-
-
-def ingest() -> pd.DataFrame:
+def ingest():
     """Get the current ISS location from the Open Notify API."""
+    import pandas as pd
+    import requests
+
     url = "http://api.open-notify.org/iss-now.json"
     res = requests.get(url, timeout=10).json()
     ts = pd.to_datetime(int(res["timestamp"]), unit="s")
@@ -19,6 +17,9 @@ def ingest() -> pd.DataFrame:
 
 
 if __name__ == "__main__":
+    from dotenv import load_dotenv
+    import pandas as pd
+
     load_dotenv(override=True)
     pd.set_option("display.max_columns", None)
     print(ingest())

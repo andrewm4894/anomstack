@@ -4,37 +4,118 @@ This directory contains example scripts and testing utilities to help you valida
 
 ## Scripts
 
-### `posthog_example.py`
-Example script for testing PostHog integration and validating credentials.
+### `run_example.py` (Unified Example Runner)
+**Minimal wrapper around existing Anomstack infrastructure** to run any example with a clean command-line interface.
 
 **Purpose:**
-- Validates PostHog API credentials and configuration
-- Tests the PostHog metrics ingestion pipeline
-- Provides sample output to verify data collection
-- Demonstrates proper PostHog integration setup
+- Single script to run all Anomstack examples using existing infrastructure
+- Uses the same execution path as production Dagster jobs (`get_specs()`, `render()`, `run_df_fn()`)
+- Automatic discovery of all examples from metrics directory
+- Consistent interface and error handling
+- Easy discoverability of available examples
 
-**Features:**
-- Loads environment variables from .env file
-- Executes PostHog ingest function
-- Displays collected metrics in formatted output
-- Error handling for common configuration issues
+**Available Examples (26 total):**
+
+**🐍 Python Examples (16 - ingest_fn):**
+- 🔥 **hackernews** - HackerNews top stories metrics
+- ₿ **bitcoin_price** - Current Bitcoin price from Coindesk API
+- 📊 **posthog** - PostHog analytics (requires credentials)
+- 🌍 **earthquake** - USGS earthquake activity data
+- 🚀 **iss_location** - Real-time International Space Station coordinates
+- 💱 **currency** - Currency exchange rates
+- ⚡ **eirgrid** - Irish electricity grid data
+- 🐙 **github** - GitHub repository metrics
+- 🌡️ **weather** - Weather data
+- 📈 **yfinance** - Financial market data
+- 🖥️ **netdata** - System monitoring metrics
+- 🔍 **prometheus** - Prometheus metrics
+- 🗺️ **tomtom** - Traffic and navigation data
+- And more...
+
+**🗄️ SQL Examples (10 - ingest_sql):**
+- Various database and data warehouse examples
 
 **Usage:**
 ```bash
-cd scripts/examples/
-python posthog_example.py
+# List all available examples
+python scripts/examples/run_example.py --list
+make list-examples
+
+# Run a specific example
+python scripts/examples/run_example.py hackernews
+python scripts/examples/run_example.py bitcoin_price
+python scripts/examples/run_example.py posthog
+python scripts/examples/run_example.py earthquake
+python scripts/examples/run_example.py iss_location
+
+# Using Makefile (new unified approach)
+make run-example EXAMPLE=hackernews
+make run-example EXAMPLE=bitcoin_price
+make run-example EXAMPLE=posthog
+make run-example EXAMPLE=earthquake
+make run-example EXAMPLE=iss_location
+
+# Legacy Makefile commands (still work)
+make hackernews-example  # → run-example EXAMPLE=hackernews
+make bitcoin-example     # → run-example EXAMPLE=bitcoin_price  
+make posthog-example     # → run-example EXAMPLE=posthog
 ```
 
-**Prerequisites:**
-- PostHog credentials configured in environment variables
-- `.env` file with PostHog configuration
-- PostHog integration enabled in metrics configuration
+**Help and Options:**
+```bash
+# Show help
+python scripts/examples/run_example.py --help
 
+# List examples
+python scripts/examples/run_example.py --list
+```
 
-**Environment Variables Required:**
+**Architecture & How It Works:**
+
+This script is a minimal wrapper around Anomstack's existing infrastructure:
+
+1. **Uses `get_specs("./metrics")`** - Same config loading as production
+2. **Uses `render("ingest_fn", spec)`** - Same Jinja template rendering as production  
+3. **Uses `run_df_fn("ingest", rendered_fn)`** - Same function execution as production Dagster jobs
+
+This ensures the script executes examples **exactly** like they run in production, providing reliable testing.
+
+**Sample Output:**
+```
+📊 Running earthquake example...
+==================================================
+✅ Example completed successfully!
+
+📊 Results from earthquake:
+------------------------------
+🔸 earthquake_count_last_day: 338.0
+🔸 earthquake_max_magnitude_last_day: 6.2
+🔸 earthquake_avg_magnitude_last_day: 2.30
+
+⏱️  Timestamp: 2025-07-31 17:12:22.077753+00:00
+📈 Total metrics collected: 3
+```
+
+**Environment Variables for PostHog:**
 - `POSTHOG_API_KEY` - Your PostHog API key
 - `POSTHOG_PROJECT_ID` - Your PostHog project ID
 - Other PostHog-specific configuration variables
+
+**Note on Example Import Pattern:**
+Examples must have imports **inside** the ingest function (not at module level) to work with `exec()` execution:
+
+```python
+# ✅ Correct pattern
+def ingest():
+    import pandas as pd
+    import requests
+    # function code...
+
+# ❌ Won't work with run_example.py
+import requests
+def ingest():
+    # function code...
+```
 
 
 ## Purpose of Example Scripts
@@ -66,13 +147,22 @@ Example scripts serve several important purposes:
 
 ## Common Use Cases
 
-### **Credential Validation**
+### **Example Validation**
 ```bash
-# Test PostHog integration
-python posthog_example.py
+# List all available examples (26 total)
+make list-examples
 
-# Check for common issues
-python posthog_example.py --debug
+# Test individual examples (new unified approach)
+make run-example EXAMPLE=hackernews     # HackerNews stories (no credentials)
+make run-example EXAMPLE=bitcoin_price  # Bitcoin price (no credentials)
+make run-example EXAMPLE=earthquake     # USGS earthquake data (no credentials)
+make run-example EXAMPLE=iss_location   # Space station location (no credentials)
+make run-example EXAMPLE=posthog        # Analytics data (requires credentials)
+
+# Legacy commands (still work)
+make hackernews-example
+make bitcoin-example
+make posthog-example
 ```
 
 ### **Development Workflow**

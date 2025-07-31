@@ -1,11 +1,9 @@
-import pandas as pd
-
-
-def ingest() -> pd.DataFrame:
+def ingest():
     """
     Ingest weather data from open-meteo.com.
     """
 
+    import pandas as pd
     import requests
 
     # Define cities and their coordinates
