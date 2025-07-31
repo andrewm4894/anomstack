@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 def test_jobs_len():
-    assert len(jobs) == 185  # Temporarily back to original (cleanup job disabled)
+    assert len(jobs) == 209  # Updated for new example metric batches
 
 
 def test_jobs_len_ingest():
@@ -17,7 +17,7 @@ def test_jobs_len_ingest():
 
 
 def test_schedules_len():
-    assert len(schedules) == 185  # Temporarily back to original (cleanup schedule disabled)
+    assert len(schedules) == 209  # Updated for new example metric batches
 
 
 def test_schedules_len_ingest():

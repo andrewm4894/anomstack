@@ -1,0 +1,13 @@
+metric_batch: "iss_location"
+table_key: "metrics_iss_location"
+ingest_cron_schedule: "45 10 * * *"
+train_cron_schedule: "15 11 * * *"
+score_cron_schedule: "15 10 * * *"
+alert_cron_schedule: "30 10 * * *"
+change_cron_schedule: "45 10 * * *"
+llmalert_cron_schedule: "45 11 * * *"
+plot_cron_schedule: "15 12 * * *"
+alert_methods: "email,slack"
+disable_llmalert: False
+ingest_fn: >
+  {% include "./examples/iss_location/iss_location.py" %}

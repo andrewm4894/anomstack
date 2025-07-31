@@ -30,10 +30,12 @@ python posthog_example.py
 - `.env` file with PostHog configuration
 - PostHog integration enabled in metrics configuration
 
+
 **Environment Variables Required:**
 - `POSTHOG_API_KEY` - Your PostHog API key
 - `POSTHOG_PROJECT_ID` - Your PostHog project ID
 - Other PostHog-specific configuration variables
+
 
 ## Purpose of Example Scripts
 
