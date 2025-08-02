@@ -27,6 +27,43 @@ dev:
 	pre-commit install
 
 # =============================================================================
+# PROMETHEUS TESTING
+# =============================================================================
+
+.PHONY: prometheus-up prometheus-down prometheus-logs prometheus-test
+
+# start prometheus testing stack
+prometheus-up:
+	@echo "🚀 Starting Prometheus testing stack..."
+	docker network create anomstack_network 2>/dev/null || true
+	docker compose -f docker-compose.prometheus.yaml up -d
+	@echo "✅ Prometheus stack started!"
+	@echo "📊 Prometheus UI: http://localhost:9090"
+	@echo "📈 Grafana UI: http://localhost:3001 (admin/admin)"
+	@echo "🔧 Node Exporter: http://localhost:9100"
+
+# stop prometheus testing stack
+prometheus-down:
+	@echo "🛑 Stopping Prometheus testing stack..."
+	docker compose -f docker-compose.prometheus.yaml down -v
+	@echo "✅ Prometheus stack stopped!"
+
+# show prometheus logs
+prometheus-logs:
+	docker compose -f docker-compose.prometheus.yaml logs -f
+
+# run prometheus integration tests
+prometheus-test: prometheus-up
+	@echo "🧪 Testing Prometheus integration..."
+	@echo "⏰ Waiting for services to start..."
+	@sleep 10
+	@echo "🔍 Testing Prometheus API..."
+	@curl -s http://localhost:9090/api/v1/label/__name__/values | grep -q "prometheus_build_info" && echo "✅ Prometheus API working" || echo "❌ Prometheus API failed"
+	@echo "🔍 Testing Node Exporter metrics..."
+	@curl -s http://localhost:9100/metrics | grep -q "node_cpu_seconds_total" && echo "✅ Node Exporter working" || echo "❌ Node Exporter failed"
+	@echo "🎉 Prometheus integration test complete!"
+
+# =============================================================================
 # DOCKER OPERATIONS
 # =============================================================================
 

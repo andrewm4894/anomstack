@@ -1,0 +1,51 @@
+metric_batch: "prometheus_parameterized"
+table_key: "metrics_prometheus_parameterized"
+db: "prometheus"  # Use Prometheus as the database destination
+
+# Schedule configuration
+ingest_cron_schedule: "*/5 * * * *"
+train_cron_schedule: "*/180 * * * *"
+score_cron_schedule: "*/10 * * * *"
+alert_cron_schedule: "*/15 * * * *"
+change_cron_schedule: "*/15 * * * *"
+llmalert_cron_schedule: "*/60 * * * *"
+plot_cron_schedule: "*/30 * * * *"
+
+# Alert configuration
+alert_always: False
+alert_metric_timestamp_max_days_ago: 3
+disable_llmalert: False
+alert_methods: "email,slack"
+
+# Prometheus-specific configuration
+prometheus_query_type: "query_range"  # "query" for instant, "query_range" for time series
+prometheus_start: "now-1h"           # Start time for range queries
+prometheus_end: "now"                # End time for range queries
+prometheus_step: "60s"               # Step size for range queries
+
+# Configure PromQL queries
+prometheus_queries:
+  - name: "http_requests_in_progress"
+    query: "demo_api_http_requests_in_progress"
+
+  - name: "avg_request_duration"
+    query: "rate(demo_api_request_duration_seconds_sum[5m]) / rate(demo_api_request_duration_seconds_count[5m])"
+
+  - name: "cpu_usage_rate"
+    query: "rate(demo_cpu_usage_seconds_total[5m])"
+
+  - name: "memory_usage"
+    query: "demo_memory_usage_bytes"
+
+  - name: "disk_usage"
+    query: "demo_disk_usage_bytes"
+
+  - name: "disk_total"
+    query: "demo_disk_total_bytes"
+
+  - name: "items_shipped_rate"
+    query: "rate(demo_items_shipped_total[5m])"
+
+# Use the parameterized ingest function
+ingest_fn: >
+  {% include "./examples/prometheus/prometheus_parameterized.py" %}

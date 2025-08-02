@@ -31,3 +31,7 @@ slack_sdk
 snowflake-connector-python[pandas]
 sqlglot
 streamlit
+protobuf
+python-snappy
+requests
+prometheus-client

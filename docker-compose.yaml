@@ -55,7 +55,7 @@ services:
       DAGSTER_POSTGRES_PASSWORD: "${ANOMSTACK_POSTGRES_PASSWORD:-postgres_password}"
       DAGSTER_POSTGRES_DB: "${ANOMSTACK_POSTGRES_DB:-postgres_db}"
       DAGSTER_CODE_SERVER_HOST: "${DAGSTER_CODE_SERVER_HOST:-anomstack_code}"
-      DAGSTER_CURRENT_IMAGE: "andrewm4894/anomstack_code:latest"
+      DAGSTER_CURRENT_IMAGE: "anomstack_code_image:latest"
       ANOMSTACK_DUCKDB_PATH: "/data/anomstack.db"
       DAGSTER_HOME: "/opt/dagster/dagster_home"
     networks:
@@ -79,7 +79,7 @@ services:
   # Since our instance uses the QueuedRunCoordinator, any runs submitted from the webserver will be put on
   # a queue and later dequeued and launched by dagster-daemon.
   anomstack_webserver:
-    image: andrewm4894/anomstack_dagster:latest
+    image: anomstack_dagster_image:latest
     entrypoint:
       - dagster-webserver
       - -h
@@ -132,7 +132,7 @@ services:
   # This service runs the dagster-daemon process, which is responsible for taking runs
   # off of the queue and launching them, as well as creating runs from schedules or sensors.
   anomstack_daemon:
-    image: andrewm4894/anomstack_dagster:latest
+    image: anomstack_dagster_image:latest
     entrypoint:
       - dagster-daemon
       - run
@@ -175,7 +175,7 @@ services:
 
   # This service runs the dashboard
   anomstack_dashboard:
-    image: andrewm4894/anomstack_dashboard:latest
+    image: anomstack_dashboard_image:latest
     container_name: anomstack_dashboard
     restart: on-failure
     ports:

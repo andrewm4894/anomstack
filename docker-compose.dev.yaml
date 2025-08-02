@@ -24,12 +24,16 @@ services:
       context: .
       dockerfile: docker/Dockerfile.dagster
     image: anomstack_dagster_image
+    volumes:
+      - ./dagster_local.yaml:/opt/dagster/dagster_home/dagster.yaml
 
   anomstack_daemon:
     build:
       context: .
       dockerfile: docker/Dockerfile.dagster
     image: anomstack_dagster_image
+    volumes:
+      - ./dagster_local.yaml:/opt/dagster/dagster_home/dagster.yaml
 
   anomstack_dashboard:
     build:

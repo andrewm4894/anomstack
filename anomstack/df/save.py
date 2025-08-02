@@ -7,6 +7,7 @@ import pandas as pd
 from anomstack.external.clickhouse.clickhouse import save_df_clickhouse
 from anomstack.external.duckdb.duckdb import save_df_duckdb
 from anomstack.external.gcp.bigquery import save_df_bigquery
+from anomstack.external.prometheus.prometheus import save_df_prometheus
 from anomstack.external.snowflake.snowflake import save_df_snowflake
 from anomstack.external.sqlite.sqlite import save_df_sqlite
 
@@ -36,6 +37,8 @@ def save_df(df: pd.DataFrame, db: str, table_key: str, if_exists: str = "append"
         df = save_df_sqlite(df, table_key)
     elif db == "clickhouse":
         df = save_df_clickhouse(df, table_key)
+    elif db == "prometheus":
+        df = save_df_prometheus(df, table_key)
     else:
         raise ValueError(f"Unknown db: {db}")
 
