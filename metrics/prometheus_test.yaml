@@ -1,0 +1,51 @@
+metric_batch: "prometheus_test"
+table_key: "metrics_prometheus_test"
+db: "prometheus"  # Use Prometheus as the database destination
+
+# Schedule configuration
+ingest_cron_schedule: "*/5 * * * *"
+train_cron_schedule: "*/180 * * * *"
+score_cron_schedule: "*/10 * * * *"
+alert_cron_schedule: "*/15 * * * *"
+change_cron_schedule: "*/15 * * * *"
+llmalert_cron_schedule: "*/60 * * * *"
+plot_cron_schedule: "*/30 * * * *"
+
+# Alert configuration
+alert_always: False
+alert_metric_timestamp_max_days_ago: 3
+disable_llmalert: False
+alert_methods: "email,slack"
+
+# Prometheus-specific configuration
+prometheus_query_type: "query_range"  # "query" for instant, "query_range" for time series
+prometheus_start: "now-1h"           # Start time for range queries
+prometheus_end: "now"                # End time for range queries
+prometheus_step: "60s"               # Step size for range queries
+
+# Configure PromQL queries (using node_exporter metrics)
+prometheus_queries:
+  - name: "cpu_usage_percent"
+    query: "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)"
+
+  - name: "memory_usage_percent"
+    query: "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100"
+
+  - name: "memory_total_bytes"
+    query: "node_memory_MemTotal_bytes"
+
+  - name: "memory_available_bytes"
+    query: "node_memory_MemAvailable_bytes"
+
+  - name: "load_1m"
+    query: "node_load1"
+
+  - name: "load_5m"
+    query: "node_load5"
+
+  - name: "prometheus_up"
+    query: "up"
+
+# Use the parameterized ingest function
+ingest_fn: >
+  {% include "./prometheus_test.py" %}

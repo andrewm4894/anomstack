@@ -14,8 +14,8 @@ def ingest():
         - subscribers_count
         - size
     """
-    import pandas as pd
     from dagster import get_dagster_logger
+    import pandas as pd
     import requests
 
     logger = get_dagster_logger()

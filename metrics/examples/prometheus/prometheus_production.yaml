@@ -1,0 +1,88 @@
+metric_batch: "prometheus_production"
+table_key: "metrics_prometheus_production"
+db: "prometheus"  # Use Prometheus as the database destination
+
+# Production schedule configuration
+ingest_cron_schedule: "*/1 * * * *"   # Every minute for real-time monitoring
+train_cron_schedule: "0 */4 * * *"    # Every 4 hours
+score_cron_schedule: "*/5 * * * *"    # Every 5 minutes
+alert_cron_schedule: "*/5 * * * *"    # Every 5 minutes
+change_cron_schedule: "*/10 * * * *"  # Every 10 minutes
+llmalert_cron_schedule: "*/30 * * * *" # Every 30 minutes
+plot_cron_schedule: "*/15 * * * *"    # Every 15 minutes
+
+# Alert configuration
+alert_always: False
+alert_metric_timestamp_max_days_ago: 1
+disable_llmalert: False
+alert_methods: "email,slack"
+
+# Prometheus configuration for production monitoring
+prometheus_query_type: "query_range"  # Use range queries for better ML training
+prometheus_start: "now-10m"          # 10 minutes of recent data
+prometheus_end: "now"
+prometheus_step: "30s"               # 30-second resolution
+
+# Production-ready PromQL queries for system monitoring
+prometheus_queries:
+  # CPU Metrics
+  - name: "cpu_usage_percent"
+    query: "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)"
+
+  - name: "cpu_load_1m"
+    query: "node_load1"
+
+  - name: "cpu_load_5m"
+    query: "node_load5"
+
+  # Memory Metrics
+  - name: "memory_usage_percent"
+    query: "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100"
+
+  - name: "memory_usage_bytes"
+    query: "node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes"
+
+  # Disk Metrics
+  - name: "disk_usage_percent_root"
+    query: "100 - (node_filesystem_avail_bytes{mountpoint=\"/\"} / node_filesystem_size_bytes{mountpoint=\"/\"}) * 100"
+
+  - name: "disk_io_read_bytes"
+    query: "rate(node_disk_read_bytes_total[5m])"
+
+  - name: "disk_io_write_bytes"
+    query: "rate(node_disk_written_bytes_total[5m])"
+
+  # Network Metrics
+  - name: "network_receive_bytes"
+    query: "rate(node_network_receive_bytes_total{device!=\"lo\"}[5m])"
+
+  - name: "network_transmit_bytes"
+    query: "rate(node_network_transmit_bytes_total{device!=\"lo\"}[5m])"
+
+  # Application Metrics (if available)
+  - name: "http_requests_per_second"
+    query: "rate(http_requests_total[5m])"
+
+  - name: "http_request_duration_95th"
+    query: "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))"
+
+  - name: "http_error_rate_percent"
+    query: "rate(http_requests_total{status=~\"5..\"}[5m]) / rate(http_requests_total[5m]) * 100"
+
+  # Database Metrics (if available)
+  - name: "mysql_connections_active"
+    query: "mysql_global_status_threads_connected"
+
+  - name: "mysql_queries_per_second"
+    query: "rate(mysql_global_status_queries[5m])"
+
+  # Container Metrics (if using Docker/Kubernetes)
+  - name: "container_cpu_usage_percent"
+    query: "rate(container_cpu_usage_seconds_total{name!=\"\"}[5m]) * 100"
+
+  - name: "container_memory_usage_bytes"
+    query: "container_memory_usage_bytes{name!=\"\"}"
+
+# Use the parameterized ingest function
+ingest_fn: >
+  {% include "./examples/prometheus/prometheus_parameterized.py" %}

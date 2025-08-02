@@ -15,34 +15,10 @@ run_coordinator:
         value: "ml_training"
         limit: 1
 
+# Use DefaultRunLauncher instead of DockerRunLauncher for simplicity
 run_launcher:
-  module: dagster_docker
-  class: DockerRunLauncher
-  config:
-    image: anomstack_code_image:latest
-    env_vars:
-      - DAGSTER_POSTGRES_USER
-      - DAGSTER_POSTGRES_PASSWORD
-      - DAGSTER_POSTGRES_DB
-      - ANOMSTACK_DUCKDB_PATH
-      - ANOMSTACK_TABLE_KEY
-      - ANOMSTACK_MODEL_PATH
-      - ANOMSTACK_IGNORE_EXAMPLES
-      - DAGSTER_HOME
-      - ANOMSTACK_HOME
-      - ANOMSTACK_PROMETHEUS_HOST
-      - ANOMSTACK_PROMETHEUS_PORT
-      - ANOMSTACK_PROMETHEUS_PROTOCOL
-      - ANOMSTACK_PROMETHEUS_REMOTE_WRITE_URL
-    network: anomstack_network
-    container_kwargs:
-      volumes: # Make docker client accessible to any launched containers as well
-        - /var/run/docker.sock:/var/run/docker.sock
-        - /tmp/io_manager_storage:/tmp/io_manager_storage
-        - /Users/andrewmaguire/Documents/GitHub/anomstack/tmp:/opt/dagster/app/tmp
-        - /Users/andrewmaguire/Documents/GitHub/anomstack/dagster_home:/opt/dagster/dagster_home
-        - /Users/andrewmaguire/Documents/GitHub/anomstack/metrics:/opt/dagster/app/metrics
-        - anomstack_metrics_duckdb:/data
+  module: dagster.core.launcher.default_run_launcher
+  class: DefaultRunLauncher
 
 # Keep PostgreSQL storage since we have it running
 run_storage:

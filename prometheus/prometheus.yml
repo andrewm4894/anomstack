@@ -1,0 +1,33 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "rules.yml"
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Node Exporter for system metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+  # Demo application - removed for now
+  # - job_name: 'demo-app'
+  #   static_configs:
+  #     - targets: ['demo-app:8080']
+
+  # Add more targets as needed
+  # - job_name: 'your-app'
+  #   static_configs:
+  #     - targets: ['your-app:8080']
+
+# Remote write configuration (for testing Anomstack writes)
+remote_write:
+  - url: "http://localhost:9090/api/v1/write"
+    # This allows Prometheus to receive data via remote write
+    # In production, you'd use a different endpoint like VictoriaMetrics or Cortex

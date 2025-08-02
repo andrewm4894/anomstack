@@ -6,14 +6,14 @@ run_coordinator:
   module: dagster.core.run_coordinator
   class: QueuedRunCoordinator
   config:
-    max_concurrent_runs: 10
+    max_concurrent_runs: 10  # Reduced from 25 to prevent excessive storage
     tag_concurrency_limits:
       - key: "dagster/concurrency_key"
         value: "database"
-        limit: 2
+        limit: 2  # Reduced from 3
       - key: "dagster/concurrency_key"
         value: "ml_training"
-        limit: 1
+        limit: 1  # Reduced from 2
 
 run_launcher:
   module: dagster_docker
@@ -39,12 +39,11 @@ run_launcher:
       volumes: # Make docker client accessible to any launched containers as well
         - /var/run/docker.sock:/var/run/docker.sock
         - /tmp/io_manager_storage:/tmp/io_manager_storage
-        - /Users/andrewmaguire/Documents/GitHub/anomstack/tmp:/opt/dagster/app/tmp
-        - /Users/andrewmaguire/Documents/GitHub/anomstack/dagster_home:/opt/dagster/dagster_home
-        - /Users/andrewmaguire/Documents/GitHub/anomstack/metrics:/opt/dagster/app/metrics
+        - ${ANOMSTACK_HOME}/tmp:/opt/dagster/app/tmp
+        - ${ANOMSTACK_HOME}/dagster_home:/opt/dagster/dagster_home
+        - ${ANOMSTACK_HOME}/metrics:/opt/dagster/app/metrics
         - anomstack_metrics_duckdb:/data
 
-# Keep PostgreSQL storage since we have it running
 run_storage:
   module: dagster_postgres.run_storage
   class: PostgresRunStorage
@@ -63,25 +62,26 @@ run_retries:
   enabled: true
   max_retries: 1
 
-# Retention policies
+# Aggressive retention policies to prevent disk space issues
 retention:
   schedule:
-    purge_after_days: 3
+    purge_after_days: 3  # Keep schedule runs for 3 days
   sensor:
     purge_after_days:
-      skipped: 1
-      failure: 3
-      success: 1
+      skipped: 1   # Keep only 1 day of skipped sensor runs
+      failure: 3   # Keep 3 days of failed runs for debugging
+      success: 1   # Keep only 1 day of successful sensor runs
 
-# Run monitoring
+# Run monitoring to detect and clean up stuck runs
 run_monitoring:
   enabled: true
-  start_timeout_seconds: 300
-  cancel_timeout_seconds: 180
-  max_runtime_seconds: 900
-  poll_interval_seconds: 60
+  start_timeout_seconds: 300   # 5 minutes to start
+  cancel_timeout_seconds: 180  # 3 minutes to cancel
+  max_runtime_seconds: 900     # 15 minutes max runtime per run
+  max_resume_run_attempts: 2   # Resume runs after worker crashes (DockerRunLauncher only)
+  poll_interval_seconds: 60    # Check every minute
 
-# Disable telemetry
+# Disable telemetry to reduce disk writes
 telemetry:
   enabled: false
 
