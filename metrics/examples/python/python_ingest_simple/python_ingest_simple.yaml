@@ -2,7 +2,7 @@ metric_batch: "python_ingest_simple"
 table_key: "metrics_python_ingest_simple"
 alert_methods: "email,slack"
 ingest_cron_schedule: "*/10 * * * *"
-train_cron_schedule: "*/15 * * * *"
+train_cron_schedule: "*/180 * * * *"  # Changed from */15 to */180 (every 3 hours)
 score_cron_schedule: "*/11 * * * *"
 alert_cron_schedule: "*/12 * * * *"
 change_cron_schedule: "*/15 * * * *"
