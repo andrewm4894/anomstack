@@ -76,7 +76,9 @@ class TestDuckdbSimple:
 
         # Assertions
         mock_connect.assert_called_once()
-        mock_query.assert_called_once_with(connection=mock_conn, query="CREATE TABLE test AS SELECT 1 as col")
+        mock_query.assert_called_once_with(
+            connection=mock_conn, query="CREATE TABLE test AS SELECT 1 as col"
+        )
         assert result is None
 
     @patch("anomstack.external.duckdb.duckdb.os.makedirs")
