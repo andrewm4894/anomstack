@@ -142,9 +142,10 @@ class ChartManager:
         if anomaly_timestamp is not None:
             anomaly_point = df_metric[df_metric["metric_timestamp"] == anomaly_timestamp]
             if not anomaly_point.empty:
+                # Determine alert type from the specific anomaly point (not the last row)
                 alert_color = (
                     colors["llmalert"]
-                    if df_metric["metric_llmalert"].iloc[-1] == 1
+                    if anomaly_point["metric_llmalert"].iloc[0] == 1
                     else colors["alert"]
                 )
                 fig.add_trace(
