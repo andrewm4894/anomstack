@@ -15,7 +15,7 @@
 <a href="https://github.com/andrewm4894/anomstack/blob/main/LICENSE">![License](https://img.shields.io/badge/License-MIT-yellow.svg)</a>
 <a href="https://github.com/andrewm4894/anomstack/actions/workflows/pytest.yaml">![GitHub PyTest Workflow Status](https://img.shields.io/github/actions/workflow/status/andrewm4894/anomstack/pytest.yaml?label=Tests)</a>
 <a href="https://github.com/andrewm4894/anomstack/actions/workflows/pre-commit.yaml">![GitHub Pre-Commit Workflow Status](https://img.shields.io/github/actions/workflow/status/andrewm4894/anomstack/pre-commit.yaml?label=Pre-Commit)</a>
-<a href="./tests/README.md#coverage-report">![Coverage](https://img.shields.io/badge/Coverage-59%25-yellow?logo=pytest)</a>
+<a href="./tests/README.md#coverage-report">![Coverage](https://img.shields.io/badge/Coverage-56%25-yellow?logo=pytest)</a>
 
 </div>
 
