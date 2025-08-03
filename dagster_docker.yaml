@@ -6,58 +6,30 @@ run_coordinator:
   module: dagster.core.run_coordinator
   class: QueuedRunCoordinator
   config:
-    max_concurrent_runs: 10  # Reduced from 25 to prevent excessive storage
+    max_concurrent_runs: 8  # Reduced for better stability in single container
     tag_concurrency_limits:
       - key: "dagster/concurrency_key"
         value: "database"
-        limit: 2  # Reduced from 3
+        limit: 1  # Reduced to prevent resource contention
       - key: "dagster/concurrency_key"
         value: "ml_training"
-        limit: 1  # Reduced from 2
+        limit: 1
 
+# Use DefaultRunLauncher instead of DockerRunLauncher for simpler Docker setup
 run_launcher:
-  module: dagster_docker
-  class: DockerRunLauncher
-  config:
-    env_vars:
-      - DAGSTER_POSTGRES_USER
-      - DAGSTER_POSTGRES_PASSWORD
-      - DAGSTER_POSTGRES_DB
-      - ANOMSTACK_DUCKDB_PATH
-      - ANOMSTACK_TABLE_KEY
-      - ANOMSTACK_MODEL_PATH
-      - ANOMSTACK_IGNORE_EXAMPLES
-      - DAGSTER_HOME
-      - ANOMSTACK_HOME
-    network: anomstack_network
-    container_kwargs:
-      volumes: # Make docker client accessible to any launched containers as well
-        - /var/run/docker.sock:/var/run/docker.sock
-        - /tmp/io_manager_storage:/tmp/io_manager_storage
-        - ${ANOMSTACK_HOME}/tmp:/opt/dagster/app/tmp
-        - ${ANOMSTACK_HOME}/dagster_home:/opt/dagster/dagster_home
-        - ${ANOMSTACK_HOME}/metrics:/opt/dagster/app/metrics
-        - anomstack_metrics_duckdb:/data
+  module: dagster.core.launcher.default_run_launcher
+  class: DefaultRunLauncher
 
-run_storage:
-  module: dagster_postgres.run_storage
-  class: PostgresRunStorage
-  config:
-    postgres_db:
-      hostname: anomstack_postgresql
-      username:
-        env: DAGSTER_POSTGRES_USER
-      password:
-        env: DAGSTER_POSTGRES_PASSWORD
-      db_name:
-        env: DAGSTER_POSTGRES_DB
-      port: 5432
+# Use SQLite storage instead of PostgreSQL for simpler deployment
+storage:
+  sqlite:
+    base_dir: "/opt/dagster/dagster_home/storage"
 
 run_retries:
   enabled: true
-  max_retries: 1
+  max_retries: 2  # Increased for better reliability
 
-# Aggressive retention policies to prevent disk space issues
+# Retention policies to prevent disk space issues
 retention:
   schedule:
     purge_after_days: 3  # Keep schedule runs for 3 days
@@ -73,45 +45,34 @@ run_monitoring:
   start_timeout_seconds: 300   # 5 minutes to start
   cancel_timeout_seconds: 180  # 3 minutes to cancel
   max_runtime_seconds: 900     # 15 minutes max runtime per run
-  max_resume_run_attempts: 2   # Resume runs after worker crashes (DockerRunLauncher only)
   poll_interval_seconds: 60    # Check every minute
 
 # Disable telemetry to reduce disk writes
 telemetry:
   enabled: false
 
+# Optimized for container environment
 schedules:
   use_threads: true
-  num_workers: 8
+  num_workers: 4  # Reasonable for Docker container
 
 sensors:
-  use_threads: true
-  num_workers: 4
+  use_threads: true 
+  num_workers: 2  # Reasonable for Docker container
 
-schedule_storage:
-  module: dagster_postgres.schedule_storage
-  class: PostgresScheduleStorage
+compute_logs:
+  module: dagster.core.storage.local_compute_log_manager
+  class: LocalComputeLogManager
   config:
-    postgres_db:
-      hostname: anomstack_postgresql
-      username:
-        env: DAGSTER_POSTGRES_USER
-      password:
-        env: DAGSTER_POSTGRES_PASSWORD
-      db_name:
-        env: DAGSTER_POSTGRES_DB
-      port: 5432
+    base_dir: "/opt/dagster/dagster_home/compute_logs"
 
-event_log_storage:
-  module: dagster_postgres.event_log
-  class: PostgresEventLogStorage
+# Local artifact storage
+local_artifact_storage:
+  module: dagster.core.storage.root
+  class: LocalArtifactStorage
   config:
-    postgres_db:
-      hostname: anomstack_postgresql
-      username:
-        env: DAGSTER_POSTGRES_USER
-      password:
-        env: DAGSTER_POSTGRES_PASSWORD
-      db_name:
-        env: DAGSTER_POSTGRES_DB
-      port: 5432
+    base_dir: "/opt/dagster/dagster_home/artifacts"
+
+# Enhanced logging for debugging
+code_servers:
+  reload_timeout: 60  # Give code servers more time to reload

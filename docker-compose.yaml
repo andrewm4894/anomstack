@@ -1,33 +1,5 @@
 services:
-  # This service runs the postgres DB used by dagster for run storage, schedule storage,
-  # and event log storage.
-  anomstack_postgresql:
-    image: postgres:15
-    container_name: anomstack_postgresql
-    environment:
-      POSTGRES_USER: "${ANOMSTACK_POSTGRES_USER:-postgres_user}"
-      POSTGRES_PASSWORD: "${ANOMSTACK_POSTGRES_PASSWORD:-postgres_password}"
-      POSTGRES_DB: "${ANOMSTACK_POSTGRES_DB:-postgres_db}"
-    ports:
-      - "${ANOMSTACK_POSTGRES_FORWARD_PORT:-}:5432"
-    volumes:
-      - anomstack_postgresql_data:/var/lib/postgresql/data
-    networks:
-      - anomstack_network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${ANOMSTACK_POSTGRES_USER:-postgres_user} -d ${ANOMSTACK_POSTGRES_DB:-postgres_db}"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    deploy:
-      resources:
-        limits:
-          memory: 1G
-          cpus: '0.5'
-        reservations:
-          memory: 256M
-          cpus: '0.1'
+  # PostgreSQL service removed - now using SQLite for simpler deployment
 
   # This service runs the gRPC server that loads your user code, in both the webserver
   # and dagster-daemon. By setting DAGSTER_CURRENT_IMAGE to its own image, we tell the
@@ -38,6 +10,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.anomstack_code
+    image: anomstack_code_image
     container_name: anomstack_code
     restart: always
     expose:
@@ -51,11 +24,7 @@ services:
     env_file:
       - .env
     environment:
-      DAGSTER_POSTGRES_USER: "${ANOMSTACK_POSTGRES_USER:-postgres_user}"
-      DAGSTER_POSTGRES_PASSWORD: "${ANOMSTACK_POSTGRES_PASSWORD:-postgres_password}"
-      DAGSTER_POSTGRES_DB: "${ANOMSTACK_POSTGRES_DB:-postgres_db}"
       DAGSTER_CODE_SERVER_HOST: "${DAGSTER_CODE_SERVER_HOST:-anomstack_code}"
-      DAGSTER_CURRENT_IMAGE: "andrewm4894/anomstack_code:latest"
       ANOMSTACK_DUCKDB_PATH: "/data/anomstack.db"
       DAGSTER_HOME: "/opt/dagster/dagster_home"
     networks:
@@ -79,7 +48,10 @@ services:
   # Since our instance uses the QueuedRunCoordinator, any runs submitted from the webserver will be put on
   # a queue and later dequeued and launched by dagster-daemon.
   anomstack_webserver:
-    image: andrewm4894/anomstack_dagster:latest
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dagster
+    image: anomstack_dagster_image
     entrypoint:
       - dagster-webserver
       - -h
@@ -97,13 +69,8 @@ services:
     env_file:
       - .env
     environment:
-      DAGSTER_POSTGRES_USER: "${ANOMSTACK_POSTGRES_USER:-postgres_user}"
-      DAGSTER_POSTGRES_PASSWORD: "${ANOMSTACK_POSTGRES_PASSWORD:-postgres_password}"
-      DAGSTER_POSTGRES_DB: "${ANOMSTACK_POSTGRES_DB:-postgres_db}"
       DAGSTER_HOME: "/opt/dagster/dagster_home"
-    volumes: # Make docker client accessible so we can terminate containers from the webserver
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /tmp/io_manager_storage:/tmp/io_manager_storage
+    volumes:
       - ./tmp:/opt/dagster/app/tmp
       - anomstack_metrics_duckdb:/data
       - ./dagster_home:/opt/dagster/dagster_home
@@ -112,7 +79,6 @@ services:
     networks:
       - anomstack_network
     depends_on:
-      - anomstack_postgresql
       - anomstack_code
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/server_info"]
@@ -132,7 +98,10 @@ services:
   # This service runs the dagster-daemon process, which is responsible for taking runs
   # off of the queue and launching them, as well as creating runs from schedules or sensors.
   anomstack_daemon:
-    image: andrewm4894/anomstack_dagster:latest
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dagster
+    image: anomstack_dagster_image
     entrypoint:
       - dagster-daemon
       - run
@@ -141,13 +110,8 @@ services:
     env_file:
       - .env
     environment:
-      DAGSTER_POSTGRES_USER: "${ANOMSTACK_POSTGRES_USER:-postgres_user}"
-      DAGSTER_POSTGRES_PASSWORD: "${ANOMSTACK_POSTGRES_PASSWORD:-postgres_password}"
-      DAGSTER_POSTGRES_DB: "${ANOMSTACK_POSTGRES_DB:-postgres_db}"
       DAGSTER_HOME: "/opt/dagster/dagster_home"
-    volumes: # Make docker client accessible so we can launch containers using host docker
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /tmp/io_manager_storage:/tmp/io_manager_storage
+    volumes:
       - ./tmp:/opt/dagster/app/tmp
       - anomstack_metrics_duckdb:/data
       - ./dagster_home:/opt/dagster/dagster_home
@@ -156,7 +120,6 @@ services:
     networks:
       - anomstack_network
     depends_on:
-      - anomstack_postgresql
       - anomstack_code
     healthcheck:
       test: ["CMD", "dagster-daemon", "liveness-check"]
@@ -175,7 +138,10 @@ services:
 
   # This service runs the dashboard
   anomstack_dashboard:
-    image: andrewm4894/anomstack_dashboard:latest
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.anomstack_dashboard
+    image: anomstack_dashboard_image
     container_name: anomstack_dashboard
     restart: on-failure
     ports:
@@ -211,5 +177,3 @@ networks:
 volumes:
   anomstack_metrics_duckdb:
     name: anomstack_metrics_duckdb
-  anomstack_postgresql_data:
-    name: anomstack_postgresql_data

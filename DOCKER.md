@@ -4,14 +4,20 @@ This document provides comprehensive information about the Docker setup for the 
 
 ## Overview
 
-Anomstack uses Docker to containerize all components for easy deployment and development. The setup includes:
+Anomstack uses a **simplified Docker architecture** with local image building and SQLite storage for easy deployment and development. The setup includes:
 
 - **Dagster Code Server**: Runs your data pipelines
-- **Dagster UI (Dagit)**: Web interface for pipeline management
-- **Dagster Daemon**: Background process for scheduling and execution
+- **Dagster UI**: Web interface for pipeline management  
+- **Dagster Daemon**: Background process for scheduling and execution (uses DefaultRunLauncher)
 - **Dashboard**: FastHTML-based metrics dashboard
-- **PostgreSQL**: Database for Dagster metadata
+- **SQLite Storage**: All Dagster metadata stored in SQLite files (no separate database)
 - **DuckDB Volume**: Persistent storage for metrics data
+
+### Key Simplifications
+- ✅ **No PostgreSQL**: Uses SQLite for simpler deployment
+- ✅ **No Docker Socket**: DefaultRunLauncher runs jobs in same container
+- ✅ **Local Builds**: All images built locally (no Docker Hub dependency)
+- ✅ **Fewer Resources**: Reduced memory and complexity
 
 ## Quick Start
 
@@ -27,39 +33,32 @@ make docker
 
 ## Services
 
-### 1. PostgreSQL Database (`anomstack_postgresql`)
-- **Image**: `postgres:11`
-- **Purpose**: Stores Dagster run history, schedules, and metadata
-- **Port**: 5432 (configurable via `ANOMSTACK_POSTGRES_FORWARD_PORT`)
-- **Environment Variables**:
-  - `ANOMSTACK_POSTGRES_USER` (default: postgres_user)
-  - `ANOMSTACK_POSTGRES_PASSWORD` (default: postgres_password)
-  - `ANOMSTACK_POSTGRES_DB` (default: postgres_db)
-
-### 2. Code Server (`anomstack_code`)
-- **Image**: `andrewm4894/anomstack_code:latest`
+### 1. Code Server (`anomstack_code`)
+- **Image**: Built locally from `docker/Dockerfile.anomstack_code`
 - **Purpose**: Runs Dagster user code via gRPC
 - **Port**: 4000 (internal)
 - **Restart Policy**: `always`
 - **Volumes**:
   - `./tmp:/opt/dagster/app/tmp` (temporary files)
   - `anomstack_metrics_duckdb:/data` (DuckDB data)
+  - `./dagster_home:/opt/dagster/dagster_home` (Dagster storage - includes SQLite)
 
-### 3. Dagster UI (`anomstack_dagit`)
-- **Image**: `andrewm4894/anomstack_dagster:latest`
-- **Purpose**: Web interface for pipeline management
+### 2. Dagster UI (`anomstack_webserver`)
+- **Image**: Built locally from `docker/Dockerfile.dagster`
+- **Purpose**: Web interface for pipeline management  
 - **Port**: 3000 (external)
 - **Restart Policy**: `on-failure`
 - **Access**: http://localhost:3000
+- **Storage**: Uses SQLite files in mounted dagster_home volume
 
-### 4. Dagster Daemon (`anomstack_daemon`)
-- **Image**: `andrewm4894/anomstack_dagster:latest`
+### 3. Dagster Daemon (`anomstack_daemon`) 
+- **Image**: Built locally from `docker/Dockerfile.dagster`
 - **Purpose**: Background process for scheduling and run execution
 - **Restart Policy**: `on-failure`
-- **Volumes**: Same as dagit (for Docker socket access)
+- **Run Launcher**: DefaultRunLauncher (runs jobs in same container process)
 
-### 5. Dashboard (`anomstack_dashboard`)
-- **Image**: `andrewm4894/anomstack_dashboard:latest`
+### 4. Dashboard (`anomstack_dashboard`)
+- **Image**: Built locally from `docker/Dockerfile.anomstack_dashboard`
 - **Purpose**: FastHTML-based metrics dashboard
 - **Port**: 5001 (external) → 8080 (internal)
 - **Restart Policy**: `on-failure`
@@ -76,8 +75,13 @@ make docker
 
 ### Bind Mounts
 - **`./tmp`**: Temporary files and local artifacts
-- **`/var/run/docker.sock`**: Docker socket for container management
-- **`/tmp/io_manager_storage`**: Dagster I/O manager storage
+- **`./dagster_home`**: Dagster configuration, SQLite storage, and logs  
+- **`./metrics`**: Hot-reloadable metric configurations
+
+### Storage Simplification
+- **SQLite Storage**: All Dagster metadata (runs, schedules, events) stored in SQLite files
+- **No PostgreSQL**: Eliminated separate database container for simpler deployment
+- **No Docker Socket**: DefaultRunLauncher removes need for Docker socket access
 
 ## Environment Configuration
 
@@ -87,15 +91,8 @@ Create a `.env` file based on `.example.env`:
 ```bash
 # Database paths
 ANOMSTACK_DUCKDB_PATH=/data/anomstack.db
-ANOMSTACK_SQLITE_PATH=tmpdata/anomstack-sqlite.db
 
-# PostgreSQL
-ANOMSTACK_POSTGRES_USER=postgres_user
-ANOMSTACK_POSTGRES_PASSWORD=postgres_password
-ANOMSTACK_POSTGRES_DB=postgres_db
-ANOMSTACK_POSTGRES_FORWARD_PORT=5432
-
-# Dagster
+# Dagster (uses SQLite for metadata storage)
 DAGSTER_HOME=
 DAGSTER_LOG_LEVEL=DEBUG
 DAGSTER_CONCURRENCY=4
@@ -117,10 +114,7 @@ make docker-prune             # Remove everything including volumes (⚠️ dele
 ### Image Management
 ```bash
 make docker-build             # Build all images locally
-make docker-tag               # Tag images for Docker Hub
-make docker-push              # Push images to Docker Hub
-make docker-build-push        # Build, tag, and push in one command
-make docker-pull              # Pull latest images from Docker Hub
+make docker-smart             # Build and start services (recommended)
 ```
 
 ### Debugging
@@ -300,17 +294,21 @@ make docker-clean
 - Set up log aggregation
 - Monitor volume usage
 
-## Docker Hub Images
+## Building Images
 
-All images are available on Docker Hub:
-- `andrewm4894/anomstack_code:latest`
-- `andrewm4894/anomstack_dagster:latest`
-- `andrewm4894/anomstack_dashboard:latest`
+All images are built locally from their respective Dockerfiles:
+- `anomstack_code_image` - Built from `docker/Dockerfile.anomstack_code`
+- `anomstack_dagster_image` - Built from `docker/Dockerfile.dagster`  
+- `anomstack_dashboard_image` - Built from `docker/Dockerfile.anomstack_dashboard`
 
-### Building and Pushing
-Images are automatically tagged and pushed using the Makefile:
+### Building Images
+Images are built automatically when using Docker Compose:
 ```bash
-make docker-build-push
+# Build and start all services
+make docker-smart
+
+# Or build manually
+docker compose build --no-cache
 ```
 
-This ensures consistent deployments across environments.
+This ensures you're always running the latest code and dependencies.

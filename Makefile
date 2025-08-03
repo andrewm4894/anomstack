@@ -30,8 +30,8 @@ dev:
 # DOCKER OPERATIONS
 # =============================================================================
 
-.PHONY: docker docker-dev docker-smart docker-build docker-dev-build docker-tag docker-push docker-build-push
-.PHONY: docker-pull docker-clean docker-logs docker-logs-code docker-logs-dagit docker-logs-daemon docker-logs-dashboard
+.PHONY: docker docker-dev docker-smart docker-build docker-dev-build docker-clean 
+.PHONY: docker-logs docker-logs-code docker-logs-dagit docker-logs-daemon docker-logs-dashboard
 .PHONY: docker-shell-code docker-shell-dagit docker-shell-dashboard docker-restart-dashboard docker-restart-code docker-restart reload-config enable-auto-reload enable-config-watcher
 .PHONY: docker-stop docker-down docker-rm docker-prune
 
@@ -39,16 +39,11 @@ dev:
 docker:
 	docker compose up -d
 
-# smart docker start: try to pull, fallback to build if images don't exist
+# smart docker start: build images locally and start containers
 docker-smart:
-	@echo "🔄 Attempting to pull pre-built images..."
-	@if docker compose pull 2>/dev/null; then \
-		echo "✅ Successfully pulled images, starting containers..."; \
-		docker compose up -d; \
-	else \
-		echo "⚠️  Pull failed, building images locally..."; \
-		make docker-dev-build && make docker-dev; \
-	fi
+	@echo "🔄 Building images locally and starting containers..."
+	docker compose build --no-cache
+	docker compose up -d
 
 # start docker containers with local development images
 docker-dev:
@@ -64,26 +59,29 @@ docker-build:
 docker-dev-build:
 	docker compose -f docker-compose.yaml -f docker-compose.dev.yaml build --no-cache
 
+# The following commands are commented out as we no longer publish to Docker Hub
+# Users should build images locally instead
+
 # tag docker images for Docker Hub
-docker-tag:
-	docker tag anomstack_code_image andrewm4894/anomstack_code:latest
-	docker tag anomstack_dagster_image andrewm4894/anomstack_dagster:latest
-	docker tag anomstack_dashboard_image andrewm4894/anomstack_dashboard:latest
+# docker-tag:
+# 	docker tag anomstack_code_image andrewm4894/anomstack_code:latest
+# 	docker tag anomstack_dagster_image andrewm4894/anomstack_dagster:latest
+# 	docker tag anomstack_dashboard_image andrewm4894/anomstack_dashboard:latest
 
 # push docker images to Docker Hub
-docker-push:
-	docker push andrewm4894/anomstack_code:latest
-	docker push andrewm4894/anomstack_dagster:latest
-	docker push andrewm4894/anomstack_dashboard:latest
+# docker-push:
+# 	docker push andrewm4894/anomstack_code:latest
+# 	docker push andrewm4894/anomstack_dagster:latest
+# 	docker push andrewm4894/anomstack_dashboard:latest
 
 # build, tag, and push all images in one command
-docker-build-push: docker-build docker-tag docker-push
+# docker-build-push: docker-build docker-tag docker-push
 
 # pull latest images from Docker Hub
-docker-pull:
-	docker pull andrewm4894/anomstack_code:latest
-	docker pull andrewm4894/anomstack_dagster:latest
-	docker pull andrewm4894/anomstack_dashboard:latest
+# docker-pull:
+# 	docker pull andrewm4894/anomstack_code:latest
+# 	docker pull andrewm4894/anomstack_dagster:latest
+# 	docker pull andrewm4894/anomstack_dashboard:latest
 
 # clean up unused docker resources
 docker-clean:
