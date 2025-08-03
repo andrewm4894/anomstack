@@ -18,7 +18,6 @@ This directory contains example scripts and testing utilities to help you valida
 
 **🐍 Python Examples (16 - ingest_fn):**
 - 🔥 **hackernews** - HackerNews top stories metrics
-- ₿ **bitcoin_price** - Current Bitcoin price from Coindesk API
 - 📊 **posthog** - PostHog analytics (requires credentials)
 - 🌍 **earthquake** - USGS earthquake activity data
 - 🚀 **iss_location** - Real-time International Space Station coordinates
@@ -43,21 +42,18 @@ make list-examples
 
 # Run a specific example
 python scripts/examples/run_example.py hackernews
-python scripts/examples/run_example.py bitcoin_price
 python scripts/examples/run_example.py posthog
 python scripts/examples/run_example.py earthquake
 python scripts/examples/run_example.py iss_location
 
 # Using Makefile (new unified approach)
 make run-example EXAMPLE=hackernews
-make run-example EXAMPLE=bitcoin_price
 make run-example EXAMPLE=posthog
 make run-example EXAMPLE=earthquake
 make run-example EXAMPLE=iss_location
 
 # Legacy Makefile commands (still work)
 make hackernews-example  # → run-example EXAMPLE=hackernews
-make bitcoin-example     # → run-example EXAMPLE=bitcoin_price  
 make posthog-example     # → run-example EXAMPLE=posthog
 ```
 
@@ -154,14 +150,12 @@ make list-examples
 
 # Test individual examples (new unified approach)
 make run-example EXAMPLE=hackernews     # HackerNews stories (no credentials)
-make run-example EXAMPLE=bitcoin_price  # Bitcoin price (no credentials)
 make run-example EXAMPLE=earthquake     # USGS earthquake data (no credentials)
 make run-example EXAMPLE=iss_location   # Space station location (no credentials)
 make run-example EXAMPLE=posthog        # Analytics data (requires credentials)
 
 # Legacy commands (still work)
 make hackernews-example
-make bitcoin-example
 make posthog-example
 ```
 

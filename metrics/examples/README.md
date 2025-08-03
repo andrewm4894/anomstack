@@ -92,7 +92,6 @@ See [`.example.env`](../../.example.env) for a complete list of available enviro
 ## Complete Example List
 
 - [bigquery](bigquery/): Example of a BigQuery metric batch.
-- [bitcoin_price](bitcoin_price/): Example of fetching Bitcoin price metrics from the Coindesk API.
 - [coindesk](coindesk/): Example of a CoinDesk metric batch.
 - [earthquake](earthquake/): Example of summarizing earthquake activity using the USGS API.
 - [eirgrid](eirgrid/): Example of a metric batch that uses a custom python `ingest_fn` parameter to just use python to create an `ingest()` function that returns a pandas df.

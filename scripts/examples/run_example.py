@@ -28,9 +28,7 @@ def run_example(example_name: str) -> int:
     # Map common example names to their actual metric_batch names
     example_mapping = {
         "hackernews": "hackernews",
-        "bitcoin": "bitcoin_price",
         "posthog": "posthog",
-        "bitcoin_price": "bitcoin_price",  # Allow both names
     }
 
     if example_name in example_mapping:
@@ -147,7 +145,6 @@ def main():
         epilog="""
 Examples:
   python run_example.py hackernews
-  python run_example.py bitcoin
   python run_example.py posthog
   python run_example.py --list
         """,

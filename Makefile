@@ -416,7 +416,7 @@ requirements-install:
 # UTILITIES
 # =============================================================================
 
-.PHONY: posthog-example hackernews-example bitcoin-example run-example list-examples kill-long-runs
+.PHONY: posthog-example hackernews-example run-example list-examples kill-long-runs
 
 # run the PostHog example ingest function (legacy)
 posthog-example:
@@ -426,10 +426,6 @@ posthog-example:
 hackernews-example:
 	python scripts/examples/run_example.py hackernews
 
-# run the Bitcoin price example ingest function (legacy)
-bitcoin-example:
-	python scripts/examples/run_example.py bitcoin_price
-
 # run any example using unified script
 run-example:
 	@if [ -z "$(EXAMPLE)" ]; then \
@@ -437,7 +433,6 @@ run-example:
 		echo ""; \
 		echo "Popular examples:"; \
 		echo "  • hackernews     - HackerNews stories"; \
-		echo "  • bitcoin_price  - Bitcoin price"; \
 		echo "  • earthquake     - USGS earthquake data"; \
 		echo "  • iss_location   - Space station location"; \
 		echo "  • posthog        - Analytics (requires credentials)"; \

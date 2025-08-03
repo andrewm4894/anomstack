@@ -61,21 +61,6 @@ class TestExampleIngests:
             null_count = df[col].isnull().sum()
             assert null_count == 0, f"{example_name}: Column '{col}' has {null_count} null values"
 
-    @patch("requests.get")
-    def test_bitcoin_price_ingest_mocked(self, mock_get):
-        """Test bitcoin_price with mocked API call."""
-        # Mock the API response
-        mock_response = MagicMock()
-        mock_response.json.return_value = {
-            "bpi": {"USD": {"rate_float": 45000.0}},
-            "time": {"updatedISO": "2024-01-01T12:00:00+00:00"},
-        }
-        mock_get.return_value = mock_response
-
-        ingest_fn = self.load_ingest_function("metrics/examples/bitcoin_price/bitcoin_price.py")
-        df = ingest_fn()
-        self.validate_dataframe(df, "bitcoin_price_mocked")
-
     @pytest.mark.skipif("CI" in os.environ, reason="Requires internet access")
     def test_hackernews_ingest(self):
         """Test hackernews example ingest function."""
@@ -275,7 +260,6 @@ class TestExampleIntegration:
         """Test the list_examples function with mocked specs."""
         # Mock some example specs
         mock_specs = {
-            "bitcoin_price": {"ingest_fn": "def ingest(): pass"},
             "hackernews": {"ingest_fn": "def ingest(): pass"},
             "example_sql": {"ingest_sql": "SELECT 1 as value"},
         }
