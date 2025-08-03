@@ -6,13 +6,19 @@ from dagster import Definitions
 
 from anomstack.jobs.alert import alert_jobs, alert_schedules
 from anomstack.jobs.change import change_jobs, change_schedules
-
-# from anomstack.jobs.cleanup import cleanup_jobs, cleanup_schedules  # Temporarily disabled
+from anomstack.jobs.cleanup import (  # Re-enabled for disk space management
+    cleanup_jobs,
+    cleanup_schedules,
+)
 from anomstack.jobs.delete import delete_jobs, delete_schedules
 from anomstack.jobs.ingest import ingest_jobs, ingest_schedules
 from anomstack.jobs.llmalert import llmalert_jobs, llmalert_schedules
 from anomstack.jobs.plot import plot_jobs, plot_schedules
 from anomstack.jobs.reload import reload_jobs, reload_schedules
+from anomstack.jobs.retention import (  # Custom retention for SQLite
+    retention_jobs,
+    retention_schedules,
+)
 from anomstack.jobs.score import score_jobs, score_schedules
 from anomstack.jobs.summary import summary_jobs, summary_schedules
 from anomstack.jobs.train import train_jobs, train_schedules
@@ -31,7 +37,8 @@ jobs = (
     + summary_jobs
     + delete_jobs
     + reload_jobs
-    # + cleanup_jobs  # Temporarily disabled
+    + cleanup_jobs  # Re-enabled for disk space management
+    + retention_jobs  # Custom retention for SQLite
 )
 sensors = [email_on_run_failure, kill_long_running_runs, config_file_watcher]
 schedules = (
@@ -45,7 +52,8 @@ schedules = (
     + summary_schedules
     + delete_schedules
     + reload_schedules
-    # + cleanup_schedules  # Temporarily disabled
+    + cleanup_schedules  # Re-enabled for disk space management
+    + retention_schedules  # Custom retention for SQLite
 )
 
 defs = Definitions(

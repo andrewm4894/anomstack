@@ -5,10 +5,10 @@ def ingest():
     Filters the response to include only a subset of target currencies (e.g. USD, GBP, JPY, CHF, AUD, CAD).
     Returns a DataFrame with columns: metric_timestamp, metric_name, and metric_value.
     """
-    import pandas as pd
     from datetime import datetime
 
     from dagster import get_dagster_logger
+    import pandas as pd
     import requests
 
     logger = get_dagster_logger()

@@ -6,6 +6,9 @@ alwaysApply: true
 
 # Anomstack Development Workflow
 
+## ⚡ Key Development Rule
+**ALWAYS check the Makefile first** when working on Anomstack! The project includes comprehensive Make commands for all common development tasks. Before running manual commands or asking for help, review the Makefile commands below.
+
 ## Makefile Commands
 The **Makefile contains many common development commands** organized by category:
 
