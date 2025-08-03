@@ -146,7 +146,7 @@ def get(batch_name: str, start_index: int):
 
 
 @rt("/batch/{batch_name}/update-n")
-def post(batch_name: str, last_n: str = "30n"):
+def post(batch_name: str, last_n: str = "90n"):
     """Update time window."""
     try:
         # Update the last_n value

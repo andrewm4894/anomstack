@@ -57,7 +57,7 @@ def create_last_n_form(batch_name: str) -> Form:
     Returns:
         Form: The last n number form.
     """
-    current_last_n = app.state.last_n.get(batch_name, "30n")
+    current_last_n = app.state.last_n.get(batch_name, "90n")
 
     return Form(
         DivLAligned(
@@ -66,9 +66,9 @@ def create_last_n_form(batch_name: str) -> Form:
                 name="last_n",
                 value=current_last_n,
                 pattern=r"^\d+[nNhmd]$",
-                title="Use format: 30n (observations), 24h (hours), 45m (minutes), 7d (days)",
+                title="Use format: 90n (observations), 24h (hours), 45m (minutes), 7d (days)",
                 cls="uk-input uk-form-small rounded-md border-gray-200 w-full md:w-[110px]",
-                uk_tooltip="Filter by last N observations or time period (e.g., 30n, 24h, 45m, 7d)",
+                uk_tooltip="Filter by last N observations or time period (e.g., 90n, 24h, 45m, 7d)",
                 hx_trigger="change delay:500ms",
                 hx_post=f"/batch/{batch_name}/update-n",
                 hx_target="#charts-container",

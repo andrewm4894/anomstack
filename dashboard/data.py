@@ -24,7 +24,7 @@ def parse_time_spec(spec_str: str) -> dict:
     """
     Parse a time specification string into a dictionary with type and value.
     Supports formats:
-    - "30N" or "30n" for last N observations
+    - "90n" or "90n" for last N observations
     - "24h" for last 24 hours
     - "45m" for last 45 minutes
     - "7d" for last 7 days
@@ -65,17 +65,17 @@ def parse_time_spec(spec_str: str) -> dict:
     except ValueError:
         raise ValueError(
             f"Invalid time specification: {spec_str}. "
-            "Use format: 30n (observations), 24h (hours), 45m (minutes), 7d (days)"
+            "Use format: 90n (observations), 24h (hours), 45m (minutes), 7d (days)"
         )
 
 
-def get_data(spec: dict, last_n: str = "30n", ensure_timestamp: bool = False) -> pd.DataFrame:
+def get_data(spec: dict, last_n: str = "90n", ensure_timestamp: bool = False) -> pd.DataFrame:
     """
     Get data from the database for a given spec and time specification.
 
     Args:
         spec: The spec to get data for.
-        last_n: Time specification (e.g., "30n", "24h", "45m", "7d")
+        last_n: Time specification (e.g., "90n", "24h", "45m", "7d")
         ensure_timestamp: Whether to ensure timestamp column exists
 
     Returns:
