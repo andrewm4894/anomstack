@@ -19,7 +19,7 @@ from dashboard.state import AppState  # noqa: E402
 
 
 def test_parse_time_spec_variants():
-    assert parse_time_spec("90n") == {"type": "n", "value": 30}
+    assert parse_time_spec("90n") == {"type": "n", "value": 90}
     assert parse_time_spec(15) == {"type": "n", "value": 15}
     assert parse_time_spec("24h") == {"type": "time", "value": timedelta(hours=24)}
     assert parse_time_spec("45m") == {"type": "time", "value": timedelta(minutes=45)}

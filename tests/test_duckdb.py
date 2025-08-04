@@ -198,7 +198,7 @@ class TestSaveDfDuckdb:
             mock_connect.assert_called_once()
             assert mock_query.call_count == 2
             mock_query.assert_any_call(
-                connection=mock_conn, query="INSERT INTO test_table SELECT * FROM df"
+                connection=mock_conn, query="INSERT INTO test_table (col1, col2) SELECT col1, col2 FROM df"
             )
             mock_query.assert_any_call(
                 connection=mock_conn, query="CREATE TABLE test_table AS SELECT * FROM df"
@@ -228,7 +228,7 @@ class TestSaveDfDuckdb:
             # Assertions
             mock_connect.assert_called_once()
             mock_query.assert_called_once_with(
-                connection=mock_conn, query="INSERT INTO existing_table SELECT * FROM df"
+                connection=mock_conn, query="INSERT INTO existing_table (col1, col2) SELECT col1, col2 FROM df"
             )
             pd.testing.assert_frame_equal(result, df)
 
@@ -258,7 +258,7 @@ class TestSaveDfDuckdb:
                 connection=mock_conn, query="CREATE SCHEMA IF NOT EXISTS my_schema"
             )
             mock_query.assert_any_call(
-                connection=mock_conn, query="INSERT INTO my_schema.test_table SELECT * FROM df"
+                connection=mock_conn, query="INSERT INTO my_schema.test_table (col1, col2) SELECT col1, col2 FROM df"
             )
             mock_query.assert_any_call(
                 connection=mock_conn, query="CREATE TABLE my_schema.test_table AS SELECT * FROM df"

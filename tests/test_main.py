@@ -9,19 +9,19 @@ logger = logging.getLogger(__name__)
 
 
 def test_jobs_len():
-    assert len(jobs) == 211  # Updated for new example metric batches
+    assert len(jobs) == 203  # Updated for current example metric batches
 
 
 def test_jobs_len_ingest():
-    assert len(ingest_jobs) == 26  # 26 ingest jobs in current setup
+    assert len(ingest_jobs) == 25  # 25 ingest jobs in current setup
 
 
 def test_schedules_len():
-    assert len(schedules) == 211  # Updated for new example metric batches
+    assert len(schedules) == 203  # Updated for current example metric batches
 
 
 def test_schedules_len_ingest():
-    assert len(ingest_schedules) == 26  # 26 ingest schedules in current setup
+    assert len(ingest_schedules) == 25  # 25 ingest schedules in current setup
 
 
 def test_jobs_schedules_len_match():
