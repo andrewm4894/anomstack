@@ -148,11 +148,23 @@ def get(batch_name: str, chart_index: int):
                     align-items: center;
                     justify-content: center;
                     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                    min-width: 44px;
+                    min-height: 44px;
                 }
                 .chart-expand-btn:hover {
                     background: rgba(255, 255, 255, 1);
                     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
                     transform: scale(1.05);
+                }
+                /* Mobile optimizations */
+                @media (max-width: 768px) {
+                    .chart-expand-btn {
+                        top: 0.5rem;
+                        right: 0.5rem;
+                        min-width: 48px;
+                        min-height: 48px;
+                        padding: 0.5rem;
+                    }
                 }
                 .dark .chart-expand-btn {
                     background: rgba(17, 24, 39, 0.95);

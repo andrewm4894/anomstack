@@ -77,6 +77,8 @@ class ChartManager:
             "scrollZoom": True,
             "staticPlot": False,
             "fillFrame": True,
+            "displaylogo": False,
+            "modeBarButtonsToAdd": [],
             "toImageButtonOptions": {
                 "format": "png",
                 "filename": f"metric_chart_{chart_index}",
