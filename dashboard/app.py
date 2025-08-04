@@ -20,8 +20,28 @@ from monsterui.all import *
 from dashboard.constants import POSTHOG_SCRIPT
 from dashboard.state import AppState
 
-# load the environment variables
-load_dotenv(override=True)
+# load the environment variables with custom env file support
+def load_env_with_custom_path():
+    """Load environment variables from custom path or default .env file."""
+    from pathlib import Path
+    
+    env_file_path = os.getenv("ANOMSTACK_ENV_FILE_PATH")
+    
+    if env_file_path:
+        env_path = Path(env_file_path)
+        if env_path.exists():
+            print(f"🎯 Using custom environment file: {env_file_path}")
+            load_dotenv(env_path, override=True)
+            print("✅ Custom environment file loaded")
+        else:
+            print(f"❌ Custom environment file not found: {env_file_path}")
+            print("📄 Falling back to default .env file")
+            load_dotenv(override=True)
+    else:
+        # Standard .env loading
+        load_dotenv(override=True)
+
+load_env_with_custom_path()
 
 log = logging.getLogger("anomstack_dashboard")
 
