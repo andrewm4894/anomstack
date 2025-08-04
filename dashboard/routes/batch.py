@@ -17,6 +17,7 @@ from dashboard.charts import ChartManager
 from dashboard.components import create_controls
 from dashboard.constants import DEFAULT_LAST_N, DEFAULT_LOAD_N_CHARTS
 from dashboard.data import get_data
+from monsterui.all import Modal, ModalTitle
 
 
 def get_batch_data(batch_name: str) -> pd.DataFrame:
@@ -123,27 +124,125 @@ def get(batch_name: str, chart_index: int):
         fig = ChartManager.create_chart(df_metric, chart_index)
         app.state.chart_cache[batch_name][chart_index] = fig
 
-    return Card(
-        Style(
+    modal_id = f"modal-{batch_name}-{chart_index}"
+    
+    return Div(
+        Card(
+            Style(
+                """
+                .uk-card-header { padding: 1rem; }
+                .uk-card-body { padding: 1rem; }
+                .chart-card-container { position: relative; }
+                .chart-expand-btn {
+                    position: absolute;
+                    top: 0.75rem;
+                    right: 0.75rem;
+                    z-index: 20;
+                    background: rgba(255, 255, 255, 0.95);
+                    border: 1px solid #e5e7eb;
+                    border-radius: 0.375rem;
+                    padding: 0.375rem;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                }
+                .chart-expand-btn:hover {
+                    background: rgba(255, 255, 255, 1);
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                    transform: scale(1.05);
+                }
+                .dark .chart-expand-btn {
+                    background: rgba(17, 24, 39, 0.95);
+                    border-color: #374151;
+                    color: #e5e7eb;
+                }
+                .dark .chart-expand-btn:hover {
+                    background: rgba(17, 24, 39, 1);
+                }
             """
-            .uk-card-header { padding: 1rem; }
-            .uk-card-body { padding: 1rem; }
-        """
-        ),
-        Safe(app.state.chart_cache[batch_name][chart_index]),
-        header=Div(
-            H4(metric_name, cls="mb-1"),
-            DivLAligned(
-                P(
-                    f"Anomaly Rate: {anomaly_rate:.1%}",
-                    cls="text-sm text-muted-foreground",
-                ),
-                P(f"Avg Score: {avg_score:.1%}", cls="text-sm text-muted-foreground"),
-                style="gap: 1rem;",
             ),
+            Safe(app.state.chart_cache[batch_name][chart_index]),
+            # Expand button overlay positioned on entire card
+            Button(
+                UkIcon("expand", height=16, width=16),
+                cls="chart-expand-btn",
+                uk_toggle=f"target: #{modal_id}",
+                title="Click to expand chart",
+                type="button"
+            ),
+            header=Div(
+                H4(metric_name, cls="mb-1"),
+                DivLAligned(
+                    P(
+                        f"Anomaly Rate: {anomaly_rate:.1%}",
+                        cls="text-sm text-muted-foreground",
+                    ),
+                    P(f"Avg Score: {avg_score:.1%}", cls="text-sm text-muted-foreground"),
+                    style="gap: 1rem;",
+                ),
+            ),
+            id=f"chart-{chart_index}",
+            cls="mb-1 chart-card-container",
         ),
-        id=f"chart-{chart_index}",
-        cls="mb-1",
+        # Modal for expanded chart view
+        Modal(
+            ModalTitle(f"{metric_name} - Expanded View"),
+            Div(
+                # Expanded chart will be loaded here
+                Div(
+                    id=f"expanded-chart-{chart_index}",
+                    hx_get=f"/batch/{batch_name}/chart/{chart_index}/expanded",
+                    hx_trigger="load",
+                    cls="min-h-96"
+                ),
+                # Chart statistics
+                Div(
+                    DivLAligned(
+                        P(
+                            f"Anomaly Rate: {anomaly_rate:.1%}",
+                            cls="text-sm text-muted-foreground",
+                        ),
+                        P(f"Avg Score: {avg_score:.1%}", cls="text-sm text-muted-foreground"),
+                        style="gap: 1rem;",
+                    ),
+                    cls="mt-4 p-4 bg-muted rounded-lg"
+                ),
+                cls="space-y-4"
+            ),
+            id=modal_id,
+            cls="uk-modal-full"
+        )
+    )
+
+
+@rt("/batch/{batch_name}/chart/{chart_index}/expanded")
+def get_expanded_chart(batch_name: str, chart_index: int):
+    """Get expanded chart for modal display.
+
+    Args:
+        batch_name (str): The name of the batch.
+        chart_index (int): The index of the chart.
+
+    Returns:
+        Div: The expanded chart.
+    """
+    df = app.state.df_cache[batch_name]
+    metric_stats = app.state.stats_cache[batch_name]
+    metric_name = metric_stats[chart_index]["metric_name"]
+
+    # Generate expanded chart (larger and with more interactive features)
+    df_metric = df[df["metric_name"] == metric_name]
+    df_metric = extract_metadata(df_metric, "anomaly_explanation")
+    
+    # Create expanded chart with enhanced configuration
+    expanded_fig = ChartManager.create_expanded_chart(df_metric, chart_index)
+    
+    return Div(
+        Safe(expanded_fig),
+        cls="w-full"
     )
 
 
