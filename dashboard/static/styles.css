@@ -75,6 +75,44 @@ body {
     }
 }
 
+/* Mobile modal optimizations */
+@media (max-width: 768px) {
+    .uk-modal-full .uk-modal-dialog {
+        padding: 1rem;
+    }
+    
+    .uk-modal-title {
+        font-size: 1.25rem;
+        line-height: 1.3;
+        margin-bottom: 1rem;
+    }
+    
+    /* Ensure charts are touch-friendly on mobile */
+    .plotly .modebar {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+    
+    .plotly .modebar-btn {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .chart-expand-btn {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    
+    .chart-expand-btn:active {
+        transform: scale(0.95);
+        background: rgba(59, 130, 246, 0.1);
+    }
+}
+
 .loading-indicator {
     display: none;
     position: fixed;

@@ -322,7 +322,7 @@ dagster-cleanup-menu:
 # DASHBOARD OPERATIONS
 # =============================================================================
 
-.PHONY: dashboard dashboardd dashboard-uvicorn dashboardd-uvicorn kill-dashboardd
+.PHONY: dashboard dashboardd dashboard-uvicorn dashboardd-uvicorn dashboard-local-dev kill-dashboardd seed-local-db
 
 # start dashboard locally
 dashboard:
@@ -339,6 +339,46 @@ dashboardd:
 # start dashboard with uvicorn as a daemon
 dashboardd-uvicorn:
 	nohup uvicorn dashboard.app:app --host 0.0.0.0 --port 5003 --reload > /dev/null 2>&1 &
+
+# seed local development database with dummy data
+seed-local-db:
+	@echo "🌱 Seeding local development database (python_ingest_simple only)..."
+	source venv/bin/activate && python scripts/development/seed_local_db.py --metric-batches "python_ingest_simple" --db-path tmpdata/anomstack-local-dev.db --hours 72 --interval 10 --force
+
+seed-local-db-all:
+	@echo "🌱 Seeding database with ALL metric batches (python_ingest_simple, netdata, posthog, yfinance, currency)..."
+	source venv/bin/activate && python scripts/development/seed_local_db.py --metric-batches "python_ingest_simple,netdata,posthog,yfinance,currency" --db-path tmpdata/anomstack-all.db --hours 72 --interval 10 --force
+
+seed-local-db-custom:
+	@echo "🌱 Use: make seed-local-db-custom BATCHES='python_ingest_simple,netdata' DB_PATH='tmpdata/my.db'"
+	@echo "   Default BATCHES: python_ingest_simple"
+	@echo "   Default DB_PATH: tmpdata/anomstack-custom.db"
+	source venv/bin/activate && python scripts/development/seed_local_db.py --metric-batches "$(or $(BATCHES),python_ingest_simple)" --db-path "$(or $(DB_PATH),tmpdata/anomstack-custom.db)" --hours 72 --interval 10 --force
+
+# start dashboard in local development mode with seeded database
+dashboard-local-dev:
+	@echo "🚀 Starting dashboard in local development mode..."
+	@echo "📊 Using local development environment with seeded dummy data"
+	@if [ ! -f "tmpdata/anomstack-local-dev.db" ]; then \
+		echo "⚠️  Local dev database not found. Creating it first..."; \
+		$(MAKE) seed-local-db; \
+	fi
+	source venv/bin/activate && ANOMSTACK_ENV_FILE_PATH=profiles/local-dev.env uvicorn dashboard.app:app --host 0.0.0.0 --port 5003 --reload
+
+dashboard-local-dev-all:
+	@echo "🚀 Starting dashboard in local development mode (ALL batches)..."
+	@echo "📊 Using comprehensive database with python_ingest_simple, netdata, posthog, yfinance, AND currency metrics"
+	@if [ ! -f "tmpdata/anomstack-all.db" ]; then \
+		echo "⚠️  All-batches database not found. Creating it first..."; \
+		$(MAKE) seed-local-db-all; \
+	fi
+	source venv/bin/activate && ANOMSTACK_ENV_FILE_PATH=profiles/local-dev-all.env uvicorn dashboard.app:app --host 0.0.0.0 --port 5003 --reload
+
+dashboard-local-dev-custom:
+	@echo "🚀 Starting dashboard in local development mode (custom database)..."
+	@echo "💡 Use: make dashboard-local-dev-custom DB_PATH='tmpdata/my.db'"
+	@echo "   Default DB_PATH: tmpdata/anomstack-custom.db"
+	source venv/bin/activate && ANOMSTACK_DUCKDB_PATH="$(or $(DB_PATH),tmpdata/anomstack-custom.db)" uvicorn dashboard.app:app --host 0.0.0.0 --port 5003 --reload
 
 # kill any running dashboard process
 kill-dashboardd:

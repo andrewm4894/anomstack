@@ -62,6 +62,55 @@ class ChartManager:
         )
 
     @staticmethod
+    def create_expanded_chart(df_metric, chart_index):
+        """
+        Create an expanded chart for modal display with enhanced interactivity.
+        """
+        # Enhanced config for expanded view
+        enhanced_config = {
+            "displayModeBar": True,
+            "modeBarButtonsToRemove": [
+                "select2d",
+                "lasso2d",
+            ],
+            "responsive": True,
+            "scrollZoom": True,
+            "staticPlot": False,
+            "fillFrame": True,
+            "displaylogo": False,
+            "modeBarButtonsToAdd": [],
+            "toImageButtonOptions": {
+                "format": "png",
+                "filename": f"metric_chart_{chart_index}",
+                "height": 600,
+                "scale": 1
+            }
+        }
+        
+        fig = plot_time_series(
+            df_metric,
+            small_charts=False,  # Always use large size for expanded view
+            dark_mode=app.state.dark_mode,
+            show_markers=app.state.show_markers,
+            line_width=app.state.line_width,
+            show_legend=True,  # Always show legend in expanded view
+        )
+        
+        # Update layout for expanded view with larger height and full width
+        fig.update_layout(
+            height=600,
+            autosize=True,
+            margin=dict(l=40, r=40, t=40, b=40)
+        )
+        
+        return fig.to_html(
+            div_id=f"plotly-chart-expanded-{chart_index}",
+            include_plotlyjs=False,
+            full_html=False,
+            config=enhanced_config,
+        )
+
+    @staticmethod
     def create_chart_placeholder(metric_name, index, batch_name) -> Card:
         """
         Create a placeholder for a chart.

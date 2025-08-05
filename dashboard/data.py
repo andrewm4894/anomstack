@@ -10,6 +10,7 @@ This module contains functions for getting data from the database for the dashbo
 from datetime import datetime, timedelta
 import logging
 import re
+from typing import Union
 
 import pandas as pd
 
@@ -20,7 +21,7 @@ from dashboard.constants import DEFAULT_LAST_N
 log = logging.getLogger("anomstack_dashboard")
 
 
-def parse_time_spec(spec_str: str) -> dict:
+def parse_time_spec(spec_str: Union[str, int, None]) -> dict:
     """
     Parse a time specification string into a dictionary with type and value.
     Supports formats:
