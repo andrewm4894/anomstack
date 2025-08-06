@@ -7,7 +7,7 @@ This module contains the route for the batch view.
 
 """
 
-from fasthtml.common import H4, Div, P, Safe, Script, Style, Table, Td, Th, Tr
+from fasthtml.common import H4, Div, P, Request, Safe, Script, Style, Table, Td, Th, Tr
 from monsterui.all import Button, ButtonT, Card, DivLAligned, UkIcon
 import pandas as pd
 
@@ -67,6 +67,22 @@ def get_batch_view(batch_name: str, initial_load: int = DEFAULT_LOAD_N_CHARTS):
             }}
         }});
         window.scrollTo({{ top: 0, behavior: 'smooth' }});
+        
+        // Force scrollbar to always be visible to prevent layout shifts
+        function forceScrollbar() {{
+            document.documentElement.style.overflowY = 'scroll';
+            document.body.style.overflowY = 'scroll';
+        }}
+        
+        // Apply immediately and after any dynamic content loads
+        forceScrollbar();
+        document.addEventListener('htmx:afterSwap', forceScrollbar);
+        document.addEventListener('htmx:afterSettle', forceScrollbar);
+        
+        // Also apply after a short delay to catch any late-loading content
+        setTimeout(forceScrollbar, 100);
+        setTimeout(forceScrollbar, 500);
+        setTimeout(forceScrollbar, 1000);
     """
     )
 
@@ -138,32 +154,34 @@ def get(batch_name: str, chart_index: int):
                     top: 0.75rem;
                     right: 0.75rem;
                     z-index: 20;
-                    background: rgba(255, 255, 255, 0.95);
-                    border: 1px solid #e5e7eb;
+                    background: rgba(255, 255, 255, 0.9);
+                    border: 1px solid #d1d5db;
                     border-radius: 0.375rem;
-                    padding: 0.375rem;
+                    padding: 0.5rem;
                     cursor: pointer;
-                    transition: all 0.2s;
+                    transition: all 0.2s ease;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-                    min-width: 44px;
-                    min-height: 44px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    min-width: 36px;
+                    min-height: 36px;
+                    backdrop-filter: blur(4px);
                 }
                 .chart-expand-btn:hover {
                     background: rgba(255, 255, 255, 1);
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                    transform: scale(1.05);
+                    border-color: #9ca3af;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                    transform: translateY(-1px);
                 }
                 /* Mobile optimizations */
                 @media (max-width: 768px) {
                     .chart-expand-btn {
                         top: 0.5rem;
                         right: 0.5rem;
-                        min-width: 48px;
-                        min-height: 48px;
-                        padding: 0.5rem;
+                        min-width: 40px;
+                        min-height: 40px;
+                        padding: 0.625rem;
                     }
                 }
                 .dark .chart-expand-btn {
@@ -201,7 +219,20 @@ def get(batch_name: str, chart_index: int):
         ),
         # Modal for expanded chart view
         Modal(
-            ModalTitle(f"{metric_name} - Expanded View"),
+            # Custom header with title and close button
+            Div(
+                ModalTitle(f"{metric_name} - Expanded View", cls="mb-0"),
+                Button(
+                    UkIcon("x", height=20, width=20),
+                    cls="uk-modal-close-default uk-button-default",
+                    type="button",
+                    uk_close="",
+                    title="Close expanded view",
+                    style="position: absolute; top: 15px; right: 15px; border: none; background: rgba(255,255,255,0.9); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"
+                ),
+                cls="uk-modal-header",
+                style="position: relative; padding: 20px 60px 20px 20px;"
+            ),
             Div(
                 # Expanded chart will be loaded here
                 Div(
@@ -222,7 +253,8 @@ def get(batch_name: str, chart_index: int):
                     ),
                     cls="mt-4 p-4 bg-muted rounded-lg"
                 ),
-                cls="space-y-4"
+                cls="space-y-4 uk-modal-body",
+                style="overflow-y: auto; max-height: calc(100vh - 140px);"
             ),
             id=modal_id,
             cls="uk-modal-full"
@@ -241,7 +273,13 @@ def get_expanded_chart(batch_name: str, chart_index: int):
     Returns:
         Div: The expanded chart.
     """
-    df = app.state.df_cache[batch_name]
+    # Use proper data loading instead of direct cache access
+    df = get_batch_data(batch_name)
+    
+    # Ensure stats are calculated
+    if batch_name not in app.state.stats_cache:
+        app.state.calculate_metric_stats(batch_name)
+    
     metric_stats = app.state.stats_cache[batch_name]
     metric_name = metric_stats[chart_index]["metric_name"]
 
@@ -319,8 +357,9 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 50):
     # Get the current page of anomalies
     df_page = df_anomalies.iloc[start_idx:end_idx]
 
-    # Create table rows
+    # Create table rows and modals
     rows = []
+    modals = []
     for _, row in df_page.iterrows():
         metric_name = row["metric_name"]
         timestamp = row["metric_timestamp"]
@@ -367,6 +406,9 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 50):
 
         log.info(f"Creating feedback buttons for key: {feedback_key}, current feedback: {feedback}")
 
+        # Create unique modal ID for this anomaly
+        anomaly_modal_id = f"anomaly-modal-{feedback_key}"
+        
         rows.append(
             Tr(
                 Td(
@@ -416,11 +458,99 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 50):
                     ),
                     cls="w-[120px] text-center",
                 ),
+                Td(
+                    Button(
+                        UkIcon("expand", height=16, width=16),
+                        cls="bg-white/90 border border-gray-300 rounded-md p-2 hover:bg-white hover:shadow-md hover:border-gray-400 transition-all duration-200",
+                        uk_toggle=f"target: #{anomaly_modal_id}",
+                        title="Expand chart",
+                        type="button",
+                        style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"
+                    ),
+                    cls="w-[60px] text-center align-middle",
+                    style="vertical-align: middle; padding: 8px;"
+                ),
                 cls="hover:bg-muted/50 transition-colors",
             )
         )
+        
+        # Create modal for this anomaly
+        modals.append(
+            Modal(
+                # Custom header with title, feedback buttons, and close button
+                Div(
+                    ModalTitle(f"{metric_name} - Anomaly at {timestamp.strftime('%Y-%m-%d %H:%M:%S')}", cls="mb-0"),
+                    # Feedback buttons in header
+                    DivLAligned(
+                        Button(
+                            UkIcon("thumbs-up", cls="w-4 h-4"),
+                            hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-up",
+                            hx_target=f"#modal-feedback-{feedback_key}",
+                            hx_swap="outerHTML",
+                            cls=(ButtonT.primary if feedback == "positive" else ButtonT.secondary) + " p-2",
+                            id=f"modal-feedback-{feedback_key}-positive",
+                            title="Good catch",
+                        ),
+                        Button(
+                            UkIcon("thumbs-down", cls="w-4 h-4"),
+                            hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-down",
+                            hx_target=f"#modal-feedback-{feedback_key}",
+                            hx_swap="outerHTML",
+                            cls=(ButtonT.primary if feedback == "negative" else ButtonT.secondary) + " p-2",
+                            id=f"modal-feedback-{feedback_key}-negative",
+                            title="False alarm",
+                        ),
+                        cls="space-x-2",
+                        id=f"modal-feedback-{feedback_key}",
+                        style="position: absolute; top: 15px; right: 80px;"
+                    ),
+                    Button(
+                        "×",
+                        cls="uk-modal-close-default uk-button-default",
+                        type="button",
+                        uk_close="",
+                        title="Close expanded view",
+                        style="position: absolute; top: 15px; right: 15px; border: none; background: rgba(255,255,255,0.9); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); font-size: 24px; font-weight: bold; color: #666; line-height: 1;"
+                    ),
+                    cls="uk-modal-header",
+                    style="position: relative; padding: 20px 160px 20px 20px;"
+                ),
+                Div(
+                    # Expanded chart will be loaded here
+                    Div(
+                        id=f"expanded-anomaly-chart-{feedback_key}",
+                        hx_get=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/expanded",
+                        hx_trigger="load",
+                        cls="min-h-96"
+                    ),
+                    # Anomaly information
+                    Div(
+                        DivLAligned(
+                            P(
+                                f"Metric: {metric_name}",
+                                cls="text-sm text-muted-foreground",
+                            ),
+                            P(
+                                f"Timestamp: {timestamp.strftime('%Y-%m-%d %H:%M:%S')}",
+                                cls="text-sm text-muted-foreground",
+                            ),
+                            P(
+                                f"Value: {row['metric_value']:.2f}" if pd.notna(row['metric_value']) else "Value: N/A",
+                                cls="text-sm text-muted-foreground",
+                            ),
+                            style="gap: 1rem;",
+                        ),
+                        cls="mt-4 p-4 bg-muted rounded-lg"
+                    ),
+                    cls="space-y-4 uk-modal-body",
+                    style="overflow-y: auto; max-height: calc(100vh - 140px);"
+                ),
+                id=anomaly_modal_id,
+                cls="uk-modal-full"
+            )
+        )
 
-    log.info(f"Created {len(rows)} table rows for page {page}")
+    log.info(f"Created {len(rows)} table rows and {len(modals)} modals for page {page}")
 
     # Create pagination controls
     pagination = Div(
@@ -460,6 +590,7 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 50):
                         ),
                         Th("Trend", cls="sm:w-[300px] w-[140px] text-center"),
                         Th("Feedback", cls="sm:w-[120px] w-[80px] font-medium text-center"),
+                        Th("Expand", cls="w-[60px] font-medium text-center"),
                         cls="border-b",
                     ),
                     *rows,
@@ -477,12 +608,14 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 50):
             cls="mb-4",
         ),
         pagination,
+        # Add all the modals
+        *modals,
         id="anomaly-list",
     )
 
 
 @rt("/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-up", methods=["POST"])
-def submit_thumbs_up(batch_name: str, metric_name: str, timestamp: str):
+def submit_thumbs_up(request: Request, batch_name: str, metric_name: str, timestamp: str):
     """Submit positive feedback for an anomaly.
 
     Args:
@@ -540,31 +673,91 @@ def submit_thumbs_up(batch_name: str, metric_name: str, timestamp: str):
 
     log.info(f"Saved positive feedback to {db} {table_key}")
 
-    # Return both buttons with updated states
-    return DivLAligned(
-        Button(
-            UkIcon("thumbs-up", cls="sm:w-5 sm:h-5 w-4 h-4"),
-            hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-up",
-            hx_target=f"#feedback-{feedback_key}",
-            hx_swap="outerHTML",
-            cls=ButtonT.primary + " sm:p-2 p-1",
-            id=f"feedback-{feedback_key}-positive",
-        ),
-        Button(
-            UkIcon("thumbs-down", cls="sm:w-5 sm:h-5 w-4 h-4"),
-            hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-down",
-            hx_target=f"#feedback-{feedback_key}",
-            hx_swap="outerHTML",
-            cls=ButtonT.secondary + " sm:p-2 p-1",
-            id=f"feedback-{feedback_key}-negative",
-        ),
-        cls="space-x-1 sm:space-x-2 justify-center",
-        id=f"feedback-{feedback_key}",
-    )
+    # Check if this is being called from modal or table
+    hx_target = request.headers.get("HX-Target", "")
+    is_modal = "modal-feedback" in hx_target
+    
+    if is_modal:
+        # Get current feedback state from app.state
+        current_feedback = None
+        if hasattr(app.state, "anomaly_feedback") and feedback_key in app.state.anomaly_feedback:
+            current_feedback = app.state.anomaly_feedback[feedback_key]
+        
+        # Return both modal buttons AND table row buttons (out-of-band update)
+        return [
+            # Modal header buttons
+            DivLAligned(
+                Button(
+                    UkIcon("thumbs-up", cls="w-4 h-4"),
+                    hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-up",
+                    hx_target=f"#modal-feedback-{feedback_key}",
+                    hx_swap="outerHTML",
+                    cls=(ButtonT.primary if current_feedback == "positive" else ButtonT.secondary) + " p-2",
+                    id=f"modal-feedback-{feedback_key}-positive",
+                    title="Good catch",
+                ),
+                Button(
+                    UkIcon("thumbs-down", cls="w-4 h-4"),
+                    hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-down",
+                    hx_target=f"#modal-feedback-{feedback_key}",
+                    hx_swap="outerHTML",
+                    cls=(ButtonT.primary if current_feedback == "negative" else ButtonT.secondary) + " p-2",
+                    id=f"modal-feedback-{feedback_key}-negative",
+                    title="False alarm",
+                ),
+                cls="space-x-2",
+                id=f"modal-feedback-{feedback_key}",
+                style="position: absolute; top: 15px; right: 80px;"
+            ),
+            # Table row buttons (out-of-band update)
+            DivLAligned(
+                Button(
+                    UkIcon("thumbs-up", cls="sm:w-5 sm:h-5 w-4 h-4"),
+                    hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-up",
+                    hx_target=f"#feedback-{feedback_key}",
+                    hx_swap="outerHTML",
+                    cls=(ButtonT.primary if current_feedback == "positive" else ButtonT.secondary) + " sm:p-2 p-1",
+                    id=f"feedback-{feedback_key}-positive",
+                ),
+                Button(
+                    UkIcon("thumbs-down", cls="sm:w-5 sm:h-5 w-4 h-4"),
+                    hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-down",
+                    hx_target=f"#feedback-{feedback_key}",
+                    hx_swap="outerHTML",
+                    cls=(ButtonT.primary if current_feedback == "negative" else ButtonT.secondary) + " sm:p-2 p-1",
+                    id=f"feedback-{feedback_key}-negative",
+                ),
+                cls="space-x-1 sm:space-x-2 justify-center",
+                id=f"feedback-{feedback_key}",
+                hx_swap_oob="true"
+            )
+        ]
+    else:
+        # Return table-style buttons
+        return DivLAligned(
+            Button(
+                UkIcon("thumbs-up", cls="sm:w-5 sm:h-5 w-4 h-4"),
+                hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-up",
+                hx_target=f"#feedback-{feedback_key}",
+                hx_swap="outerHTML",
+                cls=ButtonT.primary + " sm:p-2 p-1",
+                id=f"feedback-{feedback_key}-positive",
+            ),
+            Button(
+                UkIcon("thumbs-down", cls="sm:w-5 sm:h-5 w-4 h-4"),
+                hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-down",
+                hx_target=f"#feedback-{feedback_key}",
+                hx_swap="outerHTML",
+                cls=ButtonT.secondary + " sm:p-2 p-1",
+                id=f"feedback-{feedback_key}-negative",
+            ),
+            cls="space-x-1 sm:space-x-2 justify-center",
+            id=f"feedback-{feedback_key}",
+        )
 
 
 @rt("/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-down", methods=["POST"])
-def submit_thumbs_down(batch_name: str, metric_name: str, timestamp: str):
+def submit_thumbs_down(request: Request, batch_name: str, metric_name: str, timestamp: str):
     """Submit negative feedback for an anomaly.
 
     Args:
@@ -622,24 +815,129 @@ def submit_thumbs_down(batch_name: str, metric_name: str, timestamp: str):
 
     log.info(f"Saved negative feedback to {db} {table_key}")
 
-    # Return both buttons with updated states
-    return DivLAligned(
-        Button(
-            UkIcon("thumbs-up", cls="sm:w-5 sm:h-5 w-4 h-4"),
-            hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-up",
-            hx_target=f"#feedback-{feedback_key}",
-            hx_swap="outerHTML",
-            cls=ButtonT.secondary + " sm:p-2 p-1",
-            id=f"feedback-{feedback_key}-positive",
-        ),
-        Button(
-            UkIcon("thumbs-down", cls="sm:w-5 sm:h-5 w-4 h-4"),
-            hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-down",
-            hx_target=f"#feedback-{feedback_key}",
-            hx_swap="outerHTML",
-            cls=ButtonT.primary + " sm:p-2 p-1",
-            id=f"feedback-{feedback_key}-negative",
-        ),
-        cls="space-x-1 sm:space-x-2 justify-center",
-        id=f"feedback-{feedback_key}",
+    # Check if this is being called from modal or table
+    hx_target = request.headers.get("HX-Target", "")
+    is_modal = "modal-feedback" in hx_target
+    
+    if is_modal:
+        # Get current feedback state from app.state
+        current_feedback = None
+        if hasattr(app.state, "anomaly_feedback") and feedback_key in app.state.anomaly_feedback:
+            current_feedback = app.state.anomaly_feedback[feedback_key]
+        
+        # Return both modal buttons AND table row buttons (out-of-band update)
+        return [
+            # Modal header buttons
+            DivLAligned(
+                Button(
+                    UkIcon("thumbs-up", cls="w-4 h-4"),
+                    hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-up",
+                    hx_target=f"#modal-feedback-{feedback_key}",
+                    hx_swap="outerHTML",
+                    cls=(ButtonT.secondary if current_feedback == "negative" else ButtonT.secondary) + " p-2",
+                    id=f"modal-feedback-{feedback_key}-positive",
+                    title="Good catch",
+                ),
+                Button(
+                    UkIcon("thumbs-down", cls="w-4 h-4"),
+                    hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-down",
+                    hx_target=f"#modal-feedback-{feedback_key}",
+                    hx_swap="outerHTML",
+                    cls=(ButtonT.primary if current_feedback == "negative" else ButtonT.secondary) + " p-2",
+                    id=f"modal-feedback-{feedback_key}-negative",
+                    title="False alarm",
+                ),
+                cls="space-x-2",
+                id=f"modal-feedback-{feedback_key}",
+                style="position: absolute; top: 15px; right: 80px;"
+            ),
+            # Table row buttons (out-of-band update)
+            DivLAligned(
+                Button(
+                    UkIcon("thumbs-up", cls="sm:w-5 sm:h-5 w-4 h-4"),
+                    hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-up",
+                    hx_target=f"#feedback-{feedback_key}",
+                    hx_swap="outerHTML",
+                    cls=(ButtonT.secondary if current_feedback == "negative" else ButtonT.secondary) + " sm:p-2 p-1",
+                    id=f"feedback-{feedback_key}-positive",
+                ),
+                Button(
+                    UkIcon("thumbs-down", cls="sm:w-5 sm:h-5 w-4 h-4"),
+                    hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-down",
+                    hx_target=f"#feedback-{feedback_key}",
+                    hx_swap="outerHTML",
+                    cls=(ButtonT.primary if current_feedback == "negative" else ButtonT.secondary) + " sm:p-2 p-1",
+                    id=f"feedback-{feedback_key}-negative",
+                ),
+                cls="space-x-1 sm:space-x-2 justify-center",
+                id=f"feedback-{feedback_key}",
+                hx_swap_oob="true"
+            )
+        ]
+    else:
+        # Return table-style buttons
+        return DivLAligned(
+            Button(
+                UkIcon("thumbs-up", cls="sm:w-5 sm:h-5 w-4 h-4"),
+                hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-up",
+                hx_target=f"#feedback-{feedback_key}",
+                hx_swap="outerHTML",
+                cls=ButtonT.secondary + " sm:p-2 p-1",
+                id=f"feedback-{feedback_key}-positive",
+            ),
+            Button(
+                UkIcon("thumbs-down", cls="sm:w-5 sm:h-5 w-4 h-4"),
+                hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-down",
+                hx_target=f"#feedback-{feedback_key}",
+                hx_swap="outerHTML",
+                cls=ButtonT.primary + " sm:p-2 p-1",
+                id=f"feedback-{feedback_key}-negative",
+            ),
+            cls="space-x-1 sm:space-x-2 justify-center",
+            id=f"feedback-{feedback_key}",
+        )
+
+
+@rt("/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/expanded")
+def get_expanded_anomaly_chart(batch_name: str, metric_name: str, timestamp: str):
+    """Get expanded chart for a specific anomaly.
+
+    Args:
+        batch_name (str): The name of the batch.
+        metric_name (str): The name of the metric.
+        timestamp (str): The timestamp of the anomaly.
+
+    Returns:
+        Div: The expanded chart for the anomaly.
+    """
+    # Use proper data loading instead of direct cache access
+    df = get_batch_data(batch_name)
+    
+    # Ensure stats are calculated
+    if batch_name not in app.state.stats_cache:
+        app.state.calculate_metric_stats(batch_name)
+    
+    # Parse the timestamp first
+    try:
+        # Handle URL-encoded timestamp
+        import urllib.parse
+        decoded_timestamp = urllib.parse.unquote(timestamp)
+        anomaly_timestamp = pd.to_datetime(decoded_timestamp)
+    except:
+        try:
+            anomaly_timestamp = pd.to_datetime(timestamp)
+        except:
+            anomaly_timestamp = None
+    
+    # Get the metric data for this specific metric (full time series)
+    df_metric = df[df["metric_name"] == metric_name].copy()
+    df_metric = df_metric.sort_values("metric_timestamp")
+    df_metric = extract_metadata(df_metric, "anomaly_explanation")
+    
+    # Create expanded view with full time series but only highlight the single clicked anomaly
+    expanded_fig = ChartManager.create_single_anomaly_expanded_chart(df_metric, anomaly_timestamp)
+    
+    return Div(
+        Safe(expanded_fig),
+        cls="w-full"
     )

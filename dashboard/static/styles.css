@@ -6,6 +6,11 @@
 }
 
 /* Light mode defaults */
+html {
+    overflow-y: scroll !important; /* Force scrollbar on html element */
+    height: 100%;
+}
+
 body {
     background-color: #ffffff;
     color: #1a1a1a;
@@ -14,6 +19,8 @@ body {
     width: 100%;
     overflow-x: hidden;
     min-height: 100vh;
+    /* Force scrollbar to always be present to prevent layout shift */
+    overflow-y: scroll !important;
 }
 
 /* Responsive container */
@@ -339,4 +346,17 @@ body.dark-mode .uk-toggle-switch::before {
     width: 100%;
     height: 100%;
     margin-bottom: 0;
+}
+
+/* Chart placeholder styling to reduce layout shift */
+#charts-container .uk-card {
+    min-height: 400px; /* Minimum height for chart cards */
+}
+
+/* Loading placeholder styling */
+.uk-card:has([hx-trigger="load"]) {
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
