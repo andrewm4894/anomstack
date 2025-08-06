@@ -255,6 +255,332 @@ class ChartManager:
             config=dict(displayModeBar=False),
         )
 
+    @staticmethod
+    def create_expanded_sparkline(df_metric: pd.DataFrame, anomaly_timestamp: pd.Timestamp = None) -> str:
+        """Create an expanded sparkline chart for a specific anomaly.
+
+        Args:
+            df_metric (pd.DataFrame): The metric data.
+            anomaly_timestamp (pd.Timestamp): The specific timestamp of the anomaly to highlight.
+
+        Returns:
+            str: The HTML for the expanded sparkline.
+        """
+        colors = ChartStyle.get_colors(app.state.dark_mode)
+        fig = make_subplots(specs=[[{"secondary_y": True}]])
+
+        # Add the main line
+        fig.add_trace(
+            go.Scatter(
+                x=df_metric["metric_timestamp"],
+                y=df_metric["metric_value"],
+                name="Value",
+                mode="lines+markers",
+                line=dict(
+                    color=colors["primary"],
+                    width=3,
+                ),
+                marker=dict(
+                    size=4,
+                    color=colors["primary"],
+                ),
+                showlegend=True,
+                connectgaps=True,
+            ),
+            secondary_y=False,
+        )
+
+        # Add the score line
+        fig.add_trace(
+            go.Scatter(
+                x=df_metric["metric_timestamp"],
+                y=df_metric["metric_score"],
+                name="Score",
+                mode="lines",
+                line=dict(
+                    color=colors["secondary"],
+                    width=2,
+                    dash="dot",
+                ),
+                showlegend=True,
+                connectgaps=True,
+            ),
+            secondary_y=True,
+        )
+
+        # Add marker for the specific anomaly point if provided
+        if anomaly_timestamp is not None:
+            # Find the data point closest to the anomaly timestamp
+            anomaly_row = df_metric[df_metric["metric_timestamp"] == anomaly_timestamp]
+            if not anomaly_row.empty:
+                fig.add_trace(
+                    go.Scatter(
+                        x=[anomaly_timestamp],
+                        y=[anomaly_row["metric_value"].iloc[0]],
+                        name="Anomaly",
+                        mode="markers",
+                        marker=dict(
+                            size=12,
+                            color="red",
+                            symbol="circle",
+                            line=dict(width=2, color="white"),
+                        ),
+                        showlegend=True,
+                    ),
+                    secondary_y=False,
+                )
+
+        # Add alert markers for all anomalies
+        alert_data = df_metric[df_metric["metric_alert"] == 1]
+        if not alert_data.empty:
+            fig.add_trace(
+                go.Scatter(
+                    x=alert_data["metric_timestamp"],
+                    y=alert_data["metric_value"],
+                    name="Alert",
+                    mode="markers",
+                    marker=dict(
+                        size=8,
+                        color="orange",
+                        symbol="diamond",
+                    ),
+                    showlegend=True,
+                ),
+                secondary_y=False,
+            )
+
+        # Add LLM alert markers
+        llm_alert_data = df_metric[df_metric["metric_llmalert"] == 1]
+        if not llm_alert_data.empty:
+            fig.add_trace(
+                go.Scatter(
+                    x=llm_alert_data["metric_timestamp"],
+                    y=llm_alert_data["metric_value"],
+                    name="LLM Alert",
+                    mode="markers",
+                    marker=dict(
+                        size=8,
+                        color="purple",
+                        symbol="star",
+                    ),
+                    showlegend=True,
+                ),
+                secondary_y=False,
+            )
+
+        fig.update_layout(
+            height=500,
+            margin=dict(l=60, r=60, t=60, b=60),
+            xaxis=dict(
+                showgrid=True,
+                showticklabels=True,
+                title="Time",
+            ),
+            yaxis=dict(
+                showgrid=True,
+                showticklabels=True,
+                title="Value",
+            ),
+            yaxis2=dict(
+                showgrid=False,
+                showticklabels=True,
+                title="Score",
+                range=[0, 1.05],
+                side="right",
+            ),
+            paper_bgcolor=colors["background"],
+            plot_bgcolor=colors["background"],
+            font=dict(color=colors["text"]),
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1
+            ),
+            title=dict(
+                text="Anomaly Detail View",
+                x=0.5,
+                font=dict(size=16)
+            )
+        )
+
+        # Enhanced config for expanded view
+        enhanced_config = {
+            "displayModeBar": True,
+            "modeBarButtonsToRemove": [
+                "select2d",
+                "lasso2d",
+            ],
+            "responsive": True,
+            "scrollZoom": True,
+            "staticPlot": False,
+            "fillFrame": True,
+            "displaylogo": False,
+            "toImageButtonOptions": {
+                "format": "png",
+                "filename": "anomaly_chart",
+                "height": 500,
+                "scale": 1
+            }
+        }
+
+        return fig.to_html(
+            full_html=False,
+            include_plotlyjs=False,
+            config=enhanced_config,
+        )
+
+    @staticmethod
+    def create_single_anomaly_expanded_chart(df_metric: pd.DataFrame, anomaly_timestamp: pd.Timestamp = None) -> str:
+        """Create an expanded chart showing full time series but highlighting only one specific anomaly.
+
+        Args:
+            df_metric (pd.DataFrame): The metric data.
+            anomaly_timestamp (pd.Timestamp): The specific timestamp of the anomaly to highlight.
+
+        Returns:
+            str: The HTML for the expanded chart.
+        """
+        colors = ChartStyle.get_colors(app.state.dark_mode)
+        fig = make_subplots(specs=[[{"secondary_y": True}]])
+
+        # Add the main line (full time series)
+        fig.add_trace(
+            go.Scatter(
+                x=df_metric["metric_timestamp"],
+                y=df_metric["metric_value"],
+                name="Value",
+                mode="lines+markers",
+                line=dict(
+                    color=colors["primary"],
+                    width=3,
+                ),
+                marker=dict(
+                    size=4,
+                    color=colors["primary"],
+                ),
+                showlegend=True,
+                connectgaps=True,
+            ),
+            secondary_y=False,
+        )
+
+        # Add the score line (full time series)
+        fig.add_trace(
+            go.Scatter(
+                x=df_metric["metric_timestamp"],
+                y=df_metric["metric_score"],
+                name="Score",
+                mode="lines",
+                line=dict(
+                    color=colors["secondary"],
+                    width=2,
+                    dash="dot",
+                ),
+                showlegend=True,
+                connectgaps=True,
+            ),
+            secondary_y=True,
+        )
+
+        # Add marker for ONLY the specific anomaly point clicked
+        if anomaly_timestamp is not None:
+            # Find the data point closest to the anomaly timestamp
+            anomaly_row = df_metric[df_metric["metric_timestamp"] == anomaly_timestamp]
+            if not anomaly_row.empty:
+                # Use the EXACT same color logic as the sparkline (lines 195-199 in create_sparkline)
+                alert_color = (
+                    colors["llmalert"]
+                    if anomaly_row["metric_llmalert"].iloc[0] == 1
+                    else colors["alert"]
+                )
+                
+                # Use same symbol as sparkline (diamond)
+                marker_color = alert_color
+                marker_symbol = "diamond"
+                alert_name = "Selected Alert"
+                
+                fig.add_trace(
+                    go.Scatter(
+                        x=[anomaly_timestamp],
+                        y=[anomaly_row["metric_value"].iloc[0]],
+                        name=alert_name,
+                        mode="markers",
+                        marker=dict(
+                            size=15,
+                            color=marker_color,
+                            symbol=marker_symbol,
+                            line=dict(width=3, color="white"),
+                        ),
+                        showlegend=True,
+                    ),
+                    secondary_y=False,
+                )
+
+        fig.update_layout(
+            height=500,
+            margin=dict(l=60, r=60, t=60, b=60),
+            xaxis=dict(
+                showgrid=True,
+                showticklabels=True,
+                title="Time",
+            ),
+            yaxis=dict(
+                showgrid=True,
+                showticklabels=True,
+                title="Value",
+            ),
+            yaxis2=dict(
+                showgrid=False,
+                showticklabels=True,
+                title="Score",
+                range=[0, 1.05],
+                side="right",
+            ),
+            paper_bgcolor=colors["background"],
+            plot_bgcolor=colors["background"],
+            font=dict(color=colors["text"]),
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1
+            ),
+            title=dict(
+                text="Single Anomaly Detail View",
+                x=0.5,
+                font=dict(size=16)
+            )
+        )
+
+        # Enhanced config for expanded view
+        enhanced_config = {
+            "displayModeBar": True,
+            "modeBarButtonsToRemove": [
+                "select2d",
+                "lasso2d",
+            ],
+            "responsive": True,
+            "scrollZoom": True,
+            "staticPlot": False,
+            "fillFrame": True,
+            "displaylogo": False,
+            "toImageButtonOptions": {
+                "format": "png",
+                "filename": "single_anomaly_chart",
+                "height": 500,
+                "scale": 1
+            }
+        }
+
+        return fig.to_html(
+            full_html=False,
+            include_plotlyjs=False,
+            config=enhanced_config,
+        )
+
 
 class ChartStyle:
     """Handle chart styling and theme-related configurations."""
