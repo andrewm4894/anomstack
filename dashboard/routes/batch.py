@@ -8,6 +8,7 @@ This module contains the route for the batch view.
 """
 
 from fasthtml.common import H4, Div, P, Request, Safe, Script, Style, Table, Td, Th, Tr
+from fastcore.xml import to_xml
 from monsterui.all import Button, ButtonT, Card, DivLAligned, UkIcon
 import pandas as pd
 
@@ -137,7 +138,15 @@ def get(batch_name: str, chart_index: int):
     if chart_index not in app.state.chart_cache[batch_name]:
         df_metric = df[df["metric_name"] == metric_name]
         df_metric = extract_metadata(df_metric, "anomaly_explanation")
-        fig = ChartManager.create_chart(df_metric, chart_index)
+        fig = ChartManager.create_chart(
+            df_metric, 
+            chart_index,
+            small_charts=app.state.small_charts,
+            dark_mode=app.state.dark_mode,
+            show_markers=app.state.show_markers,
+            line_width=app.state.line_width,
+            show_legend=app.state.show_legend
+        )
         app.state.chart_cache[batch_name][chart_index] = fig
 
     modal_id = f"modal-{batch_name}-{chart_index}"
@@ -194,7 +203,7 @@ def get(batch_name: str, chart_index: int):
                 }
             """
             ),
-            Safe(app.state.chart_cache[batch_name][chart_index]),
+            Safe(to_xml(app.state.chart_cache[batch_name][chart_index], indent=False)),
             # Expand button overlay positioned on entire card
             Button(
                 UkIcon("expand", height=16, width=16),
@@ -288,10 +297,16 @@ def get_expanded_chart(batch_name: str, chart_index: int):
     df_metric = extract_metadata(df_metric, "anomaly_explanation")
     
     # Create expanded chart with enhanced configuration
-    expanded_fig = ChartManager.create_expanded_chart(df_metric, chart_index)
+    expanded_fig = ChartManager.create_expanded_chart(
+        df_metric, 
+        chart_index,
+        dark_mode=app.state.dark_mode,
+        show_markers=app.state.show_markers,
+        line_width=app.state.line_width
+    )
     
     return Div(
-        Safe(expanded_fig),
+        Safe(to_xml(expanded_fig, indent=False)),
         cls="w-full"
     )
 
@@ -367,7 +382,7 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 50):
         # Get the metric data for this anomaly
         df_metric = df[df["metric_name"] == metric_name].copy()
         df_metric = df_metric.sort_values("metric_timestamp")
-        fig = ChartManager.create_sparkline(df_metric, anomaly_timestamp=timestamp)
+        fig = ChartManager.create_sparkline(df_metric, anomaly_timestamp=timestamp, dark_mode=app.state.dark_mode)
 
         # Create safe feedback key by replacing problematic characters
         safe_metric = (
@@ -425,7 +440,7 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 50):
                 ),
                 Td(
                     Div(
-                        Safe(fig),
+                        Safe(to_xml(fig, indent=False)),
                         Style(
                             "svg { display: block; margin: auto; height: 100% !important; width: 100% !important; }"
                         ),
@@ -935,9 +950,9 @@ def get_expanded_anomaly_chart(batch_name: str, metric_name: str, timestamp: str
     df_metric = extract_metadata(df_metric, "anomaly_explanation")
     
     # Create expanded view with full time series but only highlight the single clicked anomaly
-    expanded_fig = ChartManager.create_single_anomaly_expanded_chart(df_metric, anomaly_timestamp)
+    expanded_fig = ChartManager.create_single_anomaly_expanded_chart(df_metric, anomaly_timestamp, dark_mode=app.state.dark_mode)
     
     return Div(
-        Safe(expanded_fig),
+        Safe(to_xml(expanded_fig, indent=False)),
         cls="w-full"
     )

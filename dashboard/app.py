@@ -14,7 +14,7 @@ import logging
 import os
 
 from dotenv import load_dotenv
-from fasthtml.common import Link, Script, fast_app, serve
+from fasthtml.common import Link, Script, Style, fast_app, serve
 from monsterui.all import *
 
 from dashboard.constants import POSTHOG_SCRIPT
@@ -56,7 +56,74 @@ if posthog_api_key:
 app, rt = fast_app(
     hdrs=(
         Theme.blue.headers(),
-        Script(src="https://cdn.plot.ly/plotly-2.32.0.min.js"),
+        Script(src="https://cdn.jsdelivr.net/npm/apexcharts@latest"),
+        Style("""
+uk-chart {
+    display: block !important;
+    width: 100% !important;
+    min-height: 300px !important;
+    height: auto !important;
+}
+uk-chart .apexcharts-canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+        """),
+        Script("""
+function initializeCharts() {
+    const elements = document.querySelectorAll('uk-chart:not([data-chart-initialized])');
+    
+    elements.forEach(function(element) {
+        const script = element.querySelector('script[type="application/json"]');
+        if (script) {
+            try {
+                const config = JSON.parse(script.textContent);
+                
+                // Add percentage formatting to score axis (second y-axis)
+                if (config.yaxis && config.yaxis[1]) {
+                    config.yaxis[1].labels = config.yaxis[1].labels || {};
+                    config.yaxis[1].labels.formatter = function(val) {
+                        return Math.round(val * 100) + '%';
+                    };
+                }
+                
+                // Ensure chart has dimensions
+                element.style.minHeight = '300px';
+                element.style.width = '100%';
+                element.style.display = 'block';
+                
+                const chart = new ApexCharts(element, config);
+                chart.render().then(() => {
+                    element.setAttribute('data-chart-initialized', 'true');
+                });
+            } catch (e) {
+                console.error('Error initializing chart:', e, element);
+            }
+        }
+    });
+}
+
+// Wait for both DOM and ApexCharts to be ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if ApexCharts is loaded
+    if (typeof ApexCharts !== 'undefined') {
+        initializeCharts();
+    } else {
+        // Wait a bit more for ApexCharts to load
+        setTimeout(() => {
+            if (typeof ApexCharts !== 'undefined') {
+                initializeCharts();
+            } else {
+                console.error('ApexCharts library not loaded');
+            }
+        }, 1000);
+    }
+});
+
+// Re-initialize charts after HTMX requests
+document.addEventListener('htmx:afterSwap', initializeCharts);
+document.addEventListener('htmx:afterSettle', initializeCharts);
+        """),
         Script(POSTHOG_SCRIPT) if posthog_api_key else None,
         Link(
             rel="icon",
