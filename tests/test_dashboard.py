@@ -41,16 +41,15 @@ def test_format_time_ago_outputs():
 def test_chart_manager_config_and_colors():
     config = ChartManager.get_chart_config()
     expected_keys = [
-        "displayModeBar",
-        "displaylogo",
-        "modeBarButtonsToRemove",
+        "chart",
+        "theme",
         "responsive",
-        "scrollZoom",
-        "staticPlot",
     ]
     for key in expected_keys:
         assert key in config
-    assert config["displaylogo"] is False
+    assert config["chart"]["type"] == "line"
+    assert config["chart"]["toolbar"]["show"] is False
+    assert config["theme"]["mode"] == "light"
 
     light = ChartStyle.get_colors(False)
     dark = ChartStyle.get_colors(True)
