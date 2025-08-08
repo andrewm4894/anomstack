@@ -278,7 +278,7 @@ class ChartManager:
 
     @staticmethod
     def create_sparkline(df_metric: pd.DataFrame, anomaly_timestamp: pd.Timestamp = None, dark_mode=False):
-        """Create a sparkline chart for a metric.
+        """Create an interactive ApexChart sparkline for a metric.
 
         Args:
             df_metric (pd.DataFrame): The metric data.
@@ -290,13 +290,14 @@ class ChartManager:
         """
         colors = ChartStyle.get_colors(dark_mode)
         
-        # Convert timestamps to milliseconds
+        # Convert timestamps to milliseconds for ApexCharts
         timestamps = [int(pd.to_datetime(ts).timestamp() * 1000) for ts in df_metric["metric_timestamp"]]
         
-        # Prepare data (ensure native Python types for JSON serialization)
+        # Prepare main metric data (ensure native Python types for JSON serialization)
         value_data = [[int(ts), float(val)] for ts, val in zip(timestamps, df_metric["metric_value"])]
         score_data = [[int(ts), float(val)] for ts, val in zip(timestamps, df_metric["metric_score"])]
         
+        # Build series array
         series = [
             {
                 "name": "Value",
@@ -306,89 +307,117 @@ class ChartManager:
                 "color": colors["primary"]
             },
             {
-                "name": "Score",
-                "type": "line", 
+                "name": "Score", 
+                "type": "line",
                 "data": score_data,
                 "yAxisIndex": 1,
                 "color": colors["secondary"]
             }
         ]
         
-        # Add specific anomaly marker if provided
+        # Add alert markers if they exist (on value axis)
+        alert_data = df_metric[df_metric["metric_alert"] == 1]
+        if not alert_data.empty:
+            alert_timestamps = [int(pd.to_datetime(ts).timestamp() * 1000) for ts in alert_data["metric_timestamp"]]
+            alert_values = [[int(ts), float(val)] for ts, val in zip(alert_timestamps, alert_data["metric_value"])]
+            series.append({
+                "name": "Alert",
+                "type": "scatter",
+                "data": alert_values,
+                "yAxisIndex": 0,  # Value axis
+                "color": colors["alert"]
+            })
+        
+        # Add LLM alert markers if they exist (on value axis)
+        llm_alert_data = df_metric[df_metric["metric_llmalert"] == 1]
+        if not llm_alert_data.empty:
+            llm_timestamps = [int(pd.to_datetime(ts).timestamp() * 1000) for ts in llm_alert_data["metric_timestamp"]]
+            llm_values = [[int(ts), float(val)] for ts, val in zip(llm_timestamps, llm_alert_data["metric_value"])]
+            series.append({
+                "name": "LLM Alert",
+                "type": "scatter", 
+                "data": llm_values,
+                "yAxisIndex": 0,  # Value axis
+                "color": colors["llmalert"]
+            })
+        
+        # Add specific anomaly marker for this particular timestamp if provided
         if anomaly_timestamp is not None:
             anomaly_point = df_metric[df_metric["metric_timestamp"] == anomaly_timestamp]
             if not anomaly_point.empty:
-                alert_color = (
-                    colors["llmalert"]
-                    if anomaly_point["metric_llmalert"].iloc[0] == 1
+                anomaly_ts = int(pd.to_datetime(anomaly_timestamp).timestamp() * 1000)
+                anomaly_value = float(anomaly_point["metric_value"].iloc[0])
+                
+                # Choose color based on alert type for this specific anomaly
+                specific_color = (
+                    colors["llmalert"] 
+                    if anomaly_point["metric_llmalert"].iloc[0] == 1 
                     else colors["alert"]
                 )
-                anomaly_ts = int(pd.to_datetime(anomaly_timestamp).timestamp() * 1000)
+                
                 series.append({
-                    "name": "Alert",
+                    "name": "This Anomaly",
                     "type": "scatter",
-                    "data": [[int(anomaly_ts), float(anomaly_point["metric_value"].iloc[0])]],
+                    "data": [[anomaly_ts, anomaly_value]],
                     "yAxisIndex": 0,
-                    "color": alert_color
+                    "color": specific_color
                 })
         
+        # Sparkline specific configuration
         chart_opts = {
             "chart": {
                 "type": "line",
-                "height": 50,
-                "width": 200,
-                "sparkline": {
-                    "enabled": True
-                },
-                "toolbar": {
-                    "show": False
-                },
-                "animations": {
-                    "enabled": False
-                }
+                "height": 32,
+                "toolbar": {"show": False},
+                "animations": {"enabled": False},
+                "sparkline": {"enabled": True}
             },
             "series": series,
-            "stroke": {
-                "width": [1, 1, 0],
-                "dashArray": [0, 3, 0]
-            },
-            "markers": {
-                "size": [0, 0, 6]
-            },
-            "yaxis": [
-                {
-                    "show": False
-                },
-                {
-                    "show": False,
-                    "min": 0,
-                    "max": 1.05
-                }
-            ],
             "xaxis": {
                 "type": "datetime",
-                "labels": {
-                    "show": False
-                },
-                "axisBorder": {
-                    "show": False
-                },
-                "axisTicks": {
-                    "show": False
+                "labels": {"show": False},
+                "axisBorder": {"show": False},
+                "axisTicks": {"show": False}
+            },
+            "yaxis": [
+                {"show": False},
+                {"show": False, "opposite": True, "min": 0, "max": 1}
+            ],
+            "stroke": {
+                "width": [2, 1, 0, 0, 0],  # Line widths for each series
+                "dashArray": [0, 5, 0, 0, 0]  # Score line dashed
+            },
+            "markers": {
+                "size": [0, 0, 6, 6, 10],  # Larger markers for better visibility
+                "colors": [colors["primary"], colors["secondary"], colors["alert"], colors["llmalert"], "inherit"],
+                "strokeWidth": [0, 0, 2, 2, 3],  # Thicker stroke for better visibility
+                "strokeColors": ["#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff"]
+            },
+            "grid": {"show": False},
+            "tooltip": {
+                "theme": "dark" if dark_mode else "light",
+                "enabled": True,
+                "x": {"format": "dd MMM yyyy HH:mm"},
+                "y": {
+                    "formatter": "function(val, opts) { return opts.seriesIndex === 1 ? (val * 100).toFixed(1) + '%' : val.toFixed(2); }"
                 }
             },
-            "grid": {
-                "show": False
-            },
-            "tooltip": {
-                "enabled": False
-            },
-            "legend": {
-                "show": False
-            }
+            "legend": {"show": False},
+            "colors": [colors["primary"], colors["secondary"], colors["alert"], colors["llmalert"], "inherit"]
         }
         
-        return ApexChart(opts=chart_opts)
+        # Generate unique ID for sparkline using metric name + timestamp to avoid collisions
+        try:
+            metric_name = str(df_metric["metric_name"].iloc[0])
+        except Exception:
+            metric_name = "metric"
+        safe_metric = metric_name.replace(":", "-").replace(" ", "-").replace(".", "-").replace("/", "-")
+        safe_ts = (
+            str(anomaly_timestamp).replace(":", "-").replace(" ", "-").replace(".", "-")
+            if anomaly_timestamp is not None else "default"
+        )
+        sparkline_id = f"sparkline-{safe_metric}-{safe_ts}"
+        return ApexChart(opts=chart_opts, id=sparkline_id)
 
     @staticmethod
     def create_expanded_sparkline(df_metric: pd.DataFrame, anomaly_timestamp: pd.Timestamp = None, dark_mode=False):
