@@ -52,16 +52,16 @@ primary_region = "ord"  # Chicago - you can change this to your preferred region
   destination = "/data"
   source = "anomstack_data"
 
-# VM configuration - Scaled up for Dagster ML workloads with anti-hanging protection
+# VM configuration - Cost-optimized for demo usage
 [vm]
-  memory = "8192"  # 8GB RAM (doubled from 4GB) - prevents resource exhaustion
-  cpu_kind = "performance"  # Better CPU for compute-intensive jobs
-  cpus = 4  # 4 dedicated CPUs for better concurrent job handling (prevents queue backup)
+  memory = "4096"  # 4GB RAM to reduce cost
+  cpu_kind = "performance"  # Keep performance CPU class for stability
+  cpus = 2  # 2 CPUs for a bit more headroom
 
 # Auto-scaling
 [scaling]
   min_machines_running = 1
-  max_machines_running = 2
+  max_machines_running = 1  # Prevent scaling out to additional machines to control cost
 
 # Health checks
 [checks]
