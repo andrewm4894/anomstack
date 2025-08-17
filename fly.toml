@@ -53,7 +53,7 @@ primary_region = "ord"  # Chicago - you can change this to your preferred region
   source = "anomstack_data"
 
 # VM configuration - Cost-optimized for demo usage
-[vm]
+[[vm]]
   memory = "8192"  # 8GB RAM to prevent OOM crashes
   cpu_kind = "shared"  # Shared CPUs are cheaper and more available
   cpus = 4  # 4 shared vCPUs required to allow 8GB memory per Fly sizing rules
