@@ -55,8 +55,8 @@ primary_region = "ord"  # Chicago - you can change this to your preferred region
 # VM configuration - Cost-optimized for demo usage
 [vm]
   memory = "4096"  # 4GB RAM to reduce cost
-  cpu_kind = "performance"  # Keep performance CPU class for stability
-  cpus = 2  # 2 CPUs for a bit more headroom
+  cpu_kind = "shared"  # Shared CPUs are cheaper and more available
+  cpus = 2  # 2 shared vCPUs for extra headroom
 
 # Auto-scaling
 [scaling]
