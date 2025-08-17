@@ -54,9 +54,9 @@ primary_region = "ord"  # Chicago - you can change this to your preferred region
 
 # VM configuration - Cost-optimized for demo usage
 [vm]
-  memory = "4096"  # 4GB RAM to reduce cost
+  memory = "8192"  # 8GB RAM to prevent OOM crashes
   cpu_kind = "shared"  # Shared CPUs are cheaper and more available
-  cpus = 2  # 2 shared vCPUs for extra headroom
+  cpus = 4  # 4 shared vCPUs required to allow 8GB memory per Fly sizing rules
 
 # Auto-scaling
 [scaling]
