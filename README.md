@@ -214,6 +214,16 @@ Here is a list of features of Anomstack (emoji alert warning!)
 
 ### Architecture
 
+Anomstack uses a simplified 3-container architecture with direct Python module loading for improved reliability and reduced complexity.
+
+#### Container Architecture
+
+- **Dagster Webserver + User Code** (consolidated): Runs both the Dagster web UI and user code in a single container using direct Python module loading (no gRPC server needed)
+- **Dagster Daemon**: Handles job scheduling, execution, and sensor management
+- **Dashboard**: FastHTML-based web dashboard for metrics visualization
+
+This consolidated approach eliminates the previous gRPC code server, reducing network overhead and improving reliability.
+
 #### The Moving Parts
 
 ```mermaid
@@ -265,23 +275,16 @@ flowchart LR;
     metric_batch
     end
 
-    subgraph anomstack
-    dagster_jobs
-    datasources
-    model_store
-    alerts
-    llmalert
-    dashboard
+    subgraph anomstack_containers["Anomstack (3 containers)"]
+    consolidated_webserver["Webserver + User Code<br/>(consolidated)"]
+    daemon_container["Daemon"]
+    dashboard_container["Dashboard"]
     end
 
     subgraph model_store
     local
     gcs
     s3
-    end
-
-    subgraph dashboard
-    dashboardpy
     end
 
     ingest --> train
@@ -302,7 +305,7 @@ flowchart LR;
     datasources <--> dagster_jobs
     train --> model_store
     model_store --> score
-    datasources --> dashboard
+    datasources --> dashboard_container
 
 ```
 
@@ -485,7 +488,7 @@ See [full deployment docs](docs/docs/deployment/fly.md) for detailed instruction
 
 ### Docker
 
-To get started with Anomstack, you can run it via docker compose.
+To get started with Anomstack, you can run it via docker compose. The Docker setup uses a simplified 3-container architecture with a consolidated Dagster image that includes both the webserver and user code (no separate gRPC server needed).
 
 ```bash
 # clone repo
@@ -500,6 +503,11 @@ cp .example.env .env
 docker compose up -d
 # anomstack should now be running on port 3000
 ```
+
+The Docker setup creates three containers:
+- **anomstack_webserver**: Consolidated Dagster webserver with embedded user code
+- **anomstack_daemon**: Dagster daemon for job scheduling and execution  
+- **anomstack_dashboard**: FastHTML dashboard for metrics visualization
 
 To update and rebuild after adding metrics or changing code, you can run:
 
