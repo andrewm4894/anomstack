@@ -1,6 +1,5 @@
 load_from:
-  # Each entry here corresponds to a service in the docker-compose file that exposes user code.
-  - grpc_server:
-      host: anomstack_code
-      port: 4000
-      location_name: "anomstack_code"
+  # Load user code directly as a Python module (no gRPC server needed)
+  - python_module:
+      module_name: anomstack.main
+      location_name: "anomstack"
