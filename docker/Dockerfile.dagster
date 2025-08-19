@@ -45,6 +45,12 @@ COPY .example.env .env
 # Set Python path to include user code
 ENV PYTHONPATH=/opt/dagster/app:$PYTHONPATH
 
+# Add build information
+ARG ANOMSTACK_BUILD_HASH="unknown"
+ARG ANOMSTACK_BUILD_TIME="unknown"
+ENV ANOMSTACK_BUILD_HASH=$ANOMSTACK_BUILD_HASH
+ENV ANOMSTACK_BUILD_TIME=$ANOMSTACK_BUILD_TIME
+
 # Health check that works for both webserver and daemon
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD pgrep -f "dagster" > /dev/null || exit 1

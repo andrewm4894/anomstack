@@ -80,6 +80,17 @@ def health_check():
     return {"status": "ok", "service": "anomstack-dashboard"}
 
 
+# Add version information endpoint
+@rt("/version")
+def version_info():
+    """Version information endpoint."""
+    try:
+        from anomstack.version import get_version_info
+        return get_version_info()
+    except Exception as e:
+        return {"error": str(e), "service": "anomstack-dashboard"}
+
+
 # Add lightweight root handler for deployment health checks
 @rt("/")
 def root_health_check(request):

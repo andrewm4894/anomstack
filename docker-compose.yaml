@@ -7,6 +7,9 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.dagster
+      args:
+        ANOMSTACK_BUILD_HASH: ${ANOMSTACK_BUILD_HASH:-unknown}
+        ANOMSTACK_BUILD_TIME: ${ANOMSTACK_BUILD_TIME:-unknown}
     image: anomstack_dagster_image
     entrypoint:
       - dagster-webserver
@@ -56,6 +59,9 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.dagster
+      args:
+        ANOMSTACK_BUILD_HASH: ${ANOMSTACK_BUILD_HASH:-unknown}
+        ANOMSTACK_BUILD_TIME: ${ANOMSTACK_BUILD_TIME:-unknown}
     image: anomstack_dagster_image
     entrypoint:
       - dagster-daemon
@@ -95,6 +101,9 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.anomstack_dashboard
+      args:
+        ANOMSTACK_BUILD_HASH: ${ANOMSTACK_BUILD_HASH:-unknown}
+        ANOMSTACK_BUILD_TIME: ${ANOMSTACK_BUILD_TIME:-unknown}
     image: anomstack_dashboard_image
     container_name: anomstack_dashboard
     restart: on-failure
