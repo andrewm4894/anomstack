@@ -33,7 +33,7 @@ make docker
 ## Services
 
 ### 1. Dagster Webserver + User Code (`anomstack_webserver`)
-- **Image**: Built locally from `docker/Dockerfile.dagster_consolidated`
+- **Image**: Built locally from `docker/Dockerfile.dagster`
 - **Purpose**: Web interface and user code execution using direct Python module loading (no gRPC server needed)
 - **Port**: 3000 (external)
 - **Restart Policy**: `on-failure`
@@ -45,7 +45,7 @@ make docker
   - `./dagster_home:/opt/dagster/dagster_home` (Dagster storage - includes SQLite)
 
 ### 2. Dagster Daemon (`anomstack_daemon`) 
-- **Image**: Built locally from `docker/Dockerfile.dagster_consolidated`
+- **Image**: Built locally from `docker/Dockerfile.dagster`
 - **Purpose**: Background process for scheduling and run execution
 - **Restart Policy**: `on-failure`
 - **Run Launcher**: DefaultRunLauncher (runs jobs in same container process)
@@ -286,7 +286,7 @@ make docker-clean
 ## Building Images
 
 All images are built locally from their respective Dockerfiles:
-- `anomstack_consolidated_image` - Built from `docker/Dockerfile.dagster_consolidated` (includes both webserver and user code)
+- `anomstack_dagster_image` - Built from `docker/Dockerfile.dagster` (includes both webserver and user code)
 - `anomstack_dashboard_image` - Built from `docker/Dockerfile.anomstack_dashboard`
 
 ### Building Images

@@ -6,8 +6,8 @@ services:
   anomstack_webserver:
     build:
       context: .
-      dockerfile: docker/Dockerfile.dagster_consolidated
-    image: anomstack_consolidated_image
+      dockerfile: docker/Dockerfile.dagster
+    image: anomstack_dagster_image
     entrypoint:
       - dagster-webserver
       - -h
@@ -55,8 +55,8 @@ services:
   anomstack_daemon:
     build:
       context: .
-      dockerfile: docker/Dockerfile.dagster_consolidated
-    image: anomstack_consolidated_image
+      dockerfile: docker/Dockerfile.dagster
+    image: anomstack_dagster_image
     entrypoint:
       - dagster-daemon
       - run
