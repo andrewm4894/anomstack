@@ -73,6 +73,4 @@ local_artifact_storage:
   config:
     base_dir: "/data/artifacts"
 
-# Enhanced logging for debugging
-code_servers:
-  reload_timeout: 60  # Give code servers more time to reload
+# No code servers needed - using direct Python module loading
