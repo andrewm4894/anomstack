@@ -1,7 +1,7 @@
 FROM python:3.12-slim
 
 # Cache busting argument (set during build to force fresh layers)
-ARG CACHEBUST=3
+ARG CACHEBUST=4
 
 # Use CACHEBUST to invalidate cache when needed (this layer changes when CACHEBUST changes)
 RUN echo "Cache bust: $CACHEBUST" > /tmp/cachebust
