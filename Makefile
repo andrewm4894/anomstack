@@ -397,7 +397,7 @@ coverage:
 # DOCUMENTATION
 # =============================================================================
 
-.PHONY: docs docs-start docs-build docs-serve docs-clear docs-install
+.PHONY: docs docs-start docs-build docs-serve docs-clear docs-install docs-test
 
 # start documentation development server (alias for docs-start)
 docs:
@@ -411,9 +411,16 @@ docs-install:
 docs-start:
 	cd docs && npm start
 
-# build static documentation site
+# build static documentation site (includes broken link checking)
 docs-build:
 	cd docs && npm run build
+
+# test documentation for broken links (uses Docusaurus native link checking)
+docs-test:
+	@echo "🔍 Testing documentation for broken links..."
+	@echo "Using Docusaurus native broken link detection (onBrokenLinks: 'throw')"
+	@$(MAKE) docs-build
+	@echo "✅ Documentation build succeeded - no broken links found!"
 
 # serve built documentation locally
 docs-serve:
