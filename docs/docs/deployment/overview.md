@@ -9,7 +9,7 @@ Anomstack offers flexible deployment options to fit different organizational nee
 :::info Architecture Simplification
 🎉 **Anomstack now uses gRPC-free architecture by default!** This means simpler deployment, better reliability, and no separate code server needed. User code is loaded directly as Python modules within the Dagster webserver.
 
-For advanced use cases requiring separate gRPC code servers, see our [Architecture documentation](../../../ARCHITECTURE.md#advanced-grpc-code-server-optional) for optional configuration.
+For advanced use cases requiring separate gRPC code servers, see our [Architecture documentation](https://github.com/andrewm4894/anomstack/blob/main/ARCHITECTURE.md#advanced-grpc-code-server-optional) for optional configuration.
 :::
 
 ## Deployment Modes
