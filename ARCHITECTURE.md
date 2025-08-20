@@ -440,6 +440,61 @@ graph TB
     JOBS --> EMAIL
 ```
 
+### Advanced: gRPC Code Server (Optional)
+
+By default, Anomstack uses direct Python module loading for simplicity and reliability. However, users can optionally configure separate gRPC code servers for advanced deployment scenarios such as:
+
+- **Multi-language environments**: When integrating with non-Python services
+- **Container isolation**: When user code needs strict separation from Dagster services  
+- **High-security environments**: When code execution requires additional sandboxing
+- **Distributed deployments**: When code servers need to run on separate machines
+
+#### Enabling gRPC Setup
+
+To enable gRPC code servers, modify your `workspace.yaml`:
+
+```yaml
+load_from:
+  - grpc_server:
+      host: localhost
+      port: 4000
+      location_name: "anomstack_code"
+```
+
+And update your deployment to include a separate code server:
+
+```yaml
+# docker-compose.yaml example
+services:
+  code_server:
+    image: anomstack_code:latest
+    command: dagster code-server start -h 0.0.0.0 -p 4000 -f anomstack/main.py
+    ports:
+      - "4000:4000"
+  
+  dagster_webserver:
+    image: anomstack_dagster:latest
+    depends_on:
+      - code_server
+    ports:
+      - "3000:3000"
+```
+
+#### Trade-offs
+
+**Benefits of gRPC approach:**
+- Stronger isolation between user code and Dagster services
+- Support for non-Python user code
+- Better resource allocation control
+
+**Benefits of direct module loading (default):**
+- Simpler deployment and configuration
+- Eliminates network overhead and potential connectivity issues
+- Faster startup times and more reliable execution
+- Easier debugging and development workflow
+
+For most use cases, the default direct Python module loading is recommended.
+
 ## Security Architecture
 
 ### Authentication & Authorization
