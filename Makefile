@@ -381,9 +381,12 @@ kill-dashboardd:
 pre-commit:
 	pre-commit run --all-files --config .pre-commit-config.yaml
 
-# run tests
+# run tests (includes documentation link checking)
 tests:
 	source venv/bin/activate && pytest -v
+	@echo ""
+	@echo "🔍 Running documentation link tests..."
+	@$(MAKE) docs-test
 
 # run only example ingest function tests
 test-examples:
