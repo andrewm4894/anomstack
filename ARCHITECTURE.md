@@ -13,6 +13,7 @@ Anomstack is a distributed anomaly detection platform built on modern data stack
 - **Flexibility**: Support for multiple data sources, ML algorithms, and deployment patterns
 - **Observability**: Built-in monitoring, logging, and visualization
 - **Simplicity**: Minimal configuration required to get started
+- **Reliability**: Direct Python module loading eliminates gRPC network overhead and improves system stability
 
 ## High-Level Architecture
 
@@ -379,29 +380,34 @@ graph LR
 
 ### Docker Containerized
 
+Simplified 3-container architecture with direct Python module loading (no gRPC server):
+
 ```mermaid
 graph TB
     subgraph "Docker Environment"
-        subgraph "Dagster Container"
-            DG[Dagster]
+        subgraph "Consolidated Container"
+            DGW[Dagster Webserver + User Code<br/>(Direct Python Module Loading)]
+        end
+
+        subgraph "Daemon Container"
+            DGD[Dagster Daemon]
         end
 
         subgraph "Dashboard Container"
             DASH[FastHTML Dashboard]
         end
 
-        subgraph "Database Container"
-            PG[(PostgreSQL)]
-        end
-
         subgraph "Storage"
-            VOL[Docker Volumes]
+            SQLITE[(SQLite Files)]
+            DUCKDB[(DuckDB Volume)]
         end
     end
 
-    DG --> PG
-    DG --> VOL
-    DASH --> DG
+    DGW --> SQLITE
+    DGW --> DUCKDB
+    DGD --> SQLITE
+    DGD --> DUCKDB
+    DASH --> DUCKDB
 ```
 
 ### Cloud Native (Dagster Cloud)
@@ -433,6 +439,61 @@ graph TB
     JOBS --> SLACK
     JOBS --> EMAIL
 ```
+
+### Advanced: gRPC Code Server (Optional)
+
+By default, Anomstack uses direct Python module loading for simplicity and reliability. However, users can optionally configure separate gRPC code servers for advanced deployment scenarios such as:
+
+- **Multi-language environments**: When integrating with non-Python services
+- **Container isolation**: When user code needs strict separation from Dagster services  
+- **High-security environments**: When code execution requires additional sandboxing
+- **Distributed deployments**: When code servers need to run on separate machines
+
+#### Enabling gRPC Setup
+
+To enable gRPC code servers, modify your `workspace.yaml`:
+
+```yaml
+load_from:
+  - grpc_server:
+      host: localhost
+      port: 4000
+      location_name: "anomstack_code"
+```
+
+And update your deployment to include a separate code server:
+
+```yaml
+# docker-compose.yaml example
+services:
+  code_server:
+    image: anomstack_code:latest
+    command: dagster code-server start -h 0.0.0.0 -p 4000 -f anomstack/main.py
+    ports:
+      - "4000:4000"
+  
+  dagster_webserver:
+    image: anomstack_dagster:latest
+    depends_on:
+      - code_server
+    ports:
+      - "3000:3000"
+```
+
+#### Trade-offs
+
+**Benefits of gRPC approach:**
+- Stronger isolation between user code and Dagster services
+- Support for non-Python user code
+- Better resource allocation control
+
+**Benefits of direct module loading (default):**
+- Simpler deployment and configuration
+- Eliminates network overhead and potential connectivity issues
+- Faster startup times and more reliable execution
+- Easier debugging and development workflow
+
+For most use cases, the default direct Python module loading is recommended.
 
 ## Security Architecture
 
@@ -553,14 +614,14 @@ Anomstack provides APIs for external integration:
 
 | Layer | Technology | Purpose |
 |-------|------------|---------|
-| Orchestration | Dagster | Pipeline orchestration and scheduling |
+| Orchestration | Dagster | Pipeline orchestration and scheduling (consolidated architecture) |
 | Web Framework | FastHTML | Dashboard and API development |
 | ML Library | PyOD | Anomaly detection algorithms |
 | Data Processing | Pandas, NumPy | Data manipulation and analysis |
 | Visualization | Plotly, Matplotlib | Chart generation and visualization |
-| Database | PostgreSQL, SQLite | Metadata and configuration storage |
+| Database | SQLite, DuckDB | Metadata and metrics storage (simplified deployment) |
 | Cloud Storage | S3, GCS | Model and data storage |
-| Containerization | Docker | Application packaging and deployment |
-| Monitoring | Prometheus, Grafana | System monitoring and alerting |
+| Containerization | Docker | Application packaging and deployment (3-container architecture) |
+| Code Loading | Direct Python Modules | User code integration (no gRPC server needed) |
 
 This architecture enables Anomstack to provide a robust, scalable, and maintainable anomaly detection platform that can adapt to various deployment scenarios and organizational requirements.

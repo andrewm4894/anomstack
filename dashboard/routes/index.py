@@ -19,6 +19,12 @@ from dashboard.components import create_batch_card
 from dashboard.constants import DEFAULT_LAST_N
 from dashboard.data import get_data
 
+try:
+    from anomstack.version import get_version_string
+except ImportError:
+    def get_version_string():
+        return "version unknown"
+
 log = logging.getLogger("anomstack_dashboard")
 
 
@@ -89,7 +95,13 @@ def create_main_content(batch_stats: dict, sorted_batch_names: list) -> Div:
         Card(
             DivLAligned(
                 Div(
-                    H2("Anomstack", cls="text-2xl font-bold pl-2"),
+                    Div(
+                        H2("Anomstack", cls="text-2xl font-bold pl-2"),
+                        P(
+                            get_version_string(),
+                            cls="text-xs text-muted-foreground pl-2",
+                        ),
+                    ),
                     P(
                         "Painless open source anomaly detection for your metrics 📈📉🚀",
                         cls="text-muted-foreground pl-2",

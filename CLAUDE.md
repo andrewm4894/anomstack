@@ -13,13 +13,18 @@ Anomstack is an open-source anomaly detection system built on Dagster and FastHT
 - `make dashboard` - Start FastHTML dashboard locally (port 5003)
 - `make dashboard-uvicorn` - Start dashboard with uvicorn (hot reload)
 - `make dashboard-local-dev` - Start dashboard with seeded test data
+- `make dev` - Setup local development environment and install dependencies
 
 ### Docker Operations
 - `make docker` - Start all services with Docker Compose
-- `make docker-dev` - Start with local development images
+- `make docker-dev` - Start with local development images  
 - `make docker-smart` - Build fresh images and start containers
+- `make docker-build` - Build all images locally
 - `make docker-logs` - View logs for all containers
+- `make docker-logs-<service>` - View logs for specific service (code, dagit, dashboard, daemon)
+- `make docker-shell-<service>` - Get shell access to running containers
 - `make docker-restart` - Restart all containers (useful for .env changes)
+- `make docker-stop` - Stop all containers
 
 ### Testing & Quality
 - `pytest` or `make tests` - Run test suite
@@ -30,6 +35,17 @@ Anomstack is an open-source anomaly detection system built on Dagster and FastHT
 - `make seed-local-db` - Seed local DB with python_ingest_simple data
 - `make seed-local-db-all` - Seed with all example metric batches
 - `make seed-local-db-custom BATCHES='batch1,batch2' DB_PATH='path/to/db'`
+
+### Configuration & Hot Reload
+- `make reload-config` - Reload configuration without restarting containers
+- `make enable-auto-reload` - Enable automatic config reloading
+- `make enable-config-watcher` - Enable smart config file watcher
+
+### Reset & Cleanup Operations
+- `make reset-interactive` - Interactive reset with guided options
+- `make reset-gentle` - Rebuild containers (safest reset)
+- `make reset-nuclear` - Remove everything including data
+- `make dagster-cleanup-standard` - Clean up old Dagster runs
 
 ## Architecture
 
@@ -99,14 +115,19 @@ ANOMSTACK__PYTHON_INGEST_SIMPLE__ALERT_METHODS=email
 
 ## Development Notes
 
+### Important Development Rule
+**ALWAYS check the Makefile first** when working on Anomstack! The project includes comprehensive Make commands for all common development tasks. Before running manual commands, review the available Makefile commands.
+
 ### Code Style
 - Uses ruff for linting (line length: 100)
-- Star imports allowed in dashboard modules
+- Star imports allowed in dashboard modules (F403/F405 rules ignored)
 - Pre-commit hooks enforce code quality
+- Per-file lint ignores configured for dashboard routes and maintenance scripts
 
 ### Testing
 - Tests in `tests/` directory
-- Use pytest for running tests
+- Use `pytest` or `make tests` for running tests
+- `make test-examples` - Run only example ingest function tests
 - Test coverage tracking with badges in README
 
 ### Deployment Options

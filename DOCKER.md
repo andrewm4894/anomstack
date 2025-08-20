@@ -4,20 +4,20 @@ This document provides comprehensive information about the Docker setup for the 
 
 ## Overview
 
-Anomstack uses a **simplified Docker architecture** with local image building and SQLite storage for easy deployment and development. The setup includes:
+Anomstack uses a **simplified 3-container Docker architecture** with direct Python module loading and SQLite storage for improved reliability and easy deployment. The setup includes:
 
-- **Dagster Code Server**: Runs your data pipelines
-- **Dagster UI**: Web interface for pipeline management  
+- **Dagster Webserver + User Code** (consolidated): Web interface and data pipelines in a single container using direct Python module loading
 - **Dagster Daemon**: Background process for scheduling and execution (uses DefaultRunLauncher)
 - **Dashboard**: FastHTML-based metrics dashboard
 - **SQLite Storage**: All Dagster metadata stored in SQLite files (no separate database)
 - **DuckDB Volume**: Persistent storage for metrics data
 
 ### Key Simplifications
+- ✅ **No gRPC Code Server**: User code loaded directly as Python module (eliminates network overhead and reliability issues)
 - ✅ **No PostgreSQL**: Uses SQLite for simpler deployment
 - ✅ **No Docker Socket**: DefaultRunLauncher runs jobs in same container
 - ✅ **Local Builds**: All images built locally (no Docker Hub dependency)
-- ✅ **Fewer Resources**: Reduced memory and complexity
+- ✅ **Fewer Resources**: Reduced memory and complexity with consolidated architecture
 
 ## Quick Start
 
@@ -26,38 +26,31 @@ Anomstack uses a **simplified Docker architecture** with local image building an
 make docker
 
 # Access services
-# - Dagster UI: http://localhost:3000
+# - Dagster UI: http://localhost:3000 (with embedded user code)
 # - Dashboard: http://localhost:5001
-# - PostgreSQL: localhost:5432 (if port forwarding enabled)
 ```
 
 ## Services
 
-### 1. Code Server (`anomstack_code`)
-- **Image**: Built locally from `docker/Dockerfile.anomstack_code`
-- **Purpose**: Runs Dagster user code via gRPC
-- **Port**: 4000 (internal)
-- **Restart Policy**: `always`
+### 1. Dagster Webserver + User Code (`anomstack_webserver`)
+- **Image**: Built locally from `docker/Dockerfile.dagster`
+- **Purpose**: Web interface and user code execution using direct Python module loading (no gRPC server needed)
+- **Port**: 3000 (external)
+- **Restart Policy**: `on-failure`
+- **Access**: http://localhost:3000
+- **Storage**: Uses SQLite files in mounted dagster_home volume
 - **Volumes**:
   - `./tmp:/opt/dagster/app/tmp` (temporary files)
   - `anomstack_metrics_duckdb:/data` (DuckDB data)
   - `./dagster_home:/opt/dagster/dagster_home` (Dagster storage - includes SQLite)
 
-### 2. Dagster UI (`anomstack_webserver`)
-- **Image**: Built locally from `docker/Dockerfile.dagster`
-- **Purpose**: Web interface for pipeline management  
-- **Port**: 3000 (external)
-- **Restart Policy**: `on-failure`
-- **Access**: http://localhost:3000
-- **Storage**: Uses SQLite files in mounted dagster_home volume
-
-### 3. Dagster Daemon (`anomstack_daemon`) 
+### 2. Dagster Daemon (`anomstack_daemon`) 
 - **Image**: Built locally from `docker/Dockerfile.dagster`
 - **Purpose**: Background process for scheduling and run execution
 - **Restart Policy**: `on-failure`
 - **Run Launcher**: DefaultRunLauncher (runs jobs in same container process)
 
-### 4. Dashboard (`anomstack_dashboard`)
+### 3. Dashboard (`anomstack_dashboard`)
 - **Image**: Built locally from `docker/Dockerfile.anomstack_dashboard`
 - **Purpose**: FastHTML-based metrics dashboard
 - **Port**: 5001 (external) → 8080 (internal)
@@ -120,23 +113,22 @@ make docker-smart             # Build and start services (recommended)
 ### Debugging
 ```bash
 make docker-logs              # View all container logs
-make docker-logs-code         # View code server logs
-make docker-logs-dagit        # View Dagster UI logs
+make docker-logs-webserver    # View consolidated webserver logs (with embedded user code)
 make docker-logs-daemon       # View daemon logs
 make docker-logs-dashboard    # View dashboard logs
 ```
 
 ### Shell Access
 ```bash
-make docker-shell-code        # Shell into code server
-make docker-shell-dagit       # Shell into Dagster UI container
+make docker-shell-webserver   # Shell into consolidated webserver container
+make docker-shell-daemon      # Shell into daemon container
 make docker-shell-dashboard   # Shell into dashboard container
 ```
 
 ### Service Management
 ```bash
 make docker-restart-dashboard # Restart dashboard only
-make docker-restart-code      # Restart code server only
+make docker-restart-webserver # Restart webserver (with embedded user code) only
 ```
 
 ### Cleanup
@@ -197,9 +189,6 @@ docker run --rm -v anomstack_metrics_duckdb:/data -v $(pwd):/backup alpine tar c
 docker run --rm -v anomstack_metrics_duckdb:/data -v $(pwd):/backup alpine tar xzf /backup/duckdb-backup.tar.gz -C /
 ```
 
-### PostgreSQL Database
-- **Backup**: Use standard PostgreSQL backup tools
-- **Data**: Stored in Docker volume (not explicitly named)
 
 ## Networking
 
@@ -208,9 +197,8 @@ All services run on the `anomstack_network` bridge network:
 - **External access**: Only specific ports are exposed to host
 
 ### Port Mapping
-- **3000**: Dagster UI
+- **3000**: Dagster UI (with embedded user code)
 - **5001**: Dashboard
-- **5432**: PostgreSQL (if enabled)
 
 ## Troubleshooting
 
@@ -268,14 +256,15 @@ make docker-clean
 - Check for port conflicts (5001)
 
 #### Dagster UI Not Accessible
-- Verify dagit container is running
-- Check if code server is accessible
-- Review workspace.yaml configuration
+- Verify webserver container is running (now includes embedded user code)
+- Review workspace.yaml configuration for direct Python module loading
+- Check if user code is properly embedded in consolidated container
 
-#### Code Server Issues
-- Check if all dependencies are installed
+#### User Code Issues
+- Check if all dependencies are installed in consolidated container
 - Verify environment variables are set
 - Check DuckDB volume mount
+- Ensure Python module loading is working (no gRPC server needed)
 
 ## Production Considerations
 
@@ -297,8 +286,7 @@ make docker-clean
 ## Building Images
 
 All images are built locally from their respective Dockerfiles:
-- `anomstack_code_image` - Built from `docker/Dockerfile.anomstack_code`
-- `anomstack_dagster_image` - Built from `docker/Dockerfile.dagster`  
+- `anomstack_dagster_image` - Built from `docker/Dockerfile.dagster` (includes both webserver and user code)
 - `anomstack_dashboard_image` - Built from `docker/Dockerfile.anomstack_dashboard`
 
 ### Building Images

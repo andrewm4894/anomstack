@@ -10,9 +10,10 @@ primary_region = "ord"  # Chicago - you can change this to your preferred region
 # Environment variables
 [env]
   DAGSTER_HOME = "/opt/dagster/dagster_home"
-  DAGSTER_CODE_SERVER_HOST = "localhost"
   DAGSTER_WEBSERVER_HOST = "0.0.0.0"
   DAGSTER_WEBSERVER_PORT = "3000"
+  # Force workspace reload to eliminate cached gRPC configuration
+  DAGSTER_WORKSPACE_FORCE_RELOAD = "true"
   ANOMSTACK_DUCKDB_PATH = "/data/anomstack.db"
   ANOMSTACK_MODEL_PATH = "local:///data/models"
   ANOMSTACK_TABLE_KEY = "metrics"
@@ -52,11 +53,11 @@ primary_region = "ord"  # Chicago - you can change this to your preferred region
   destination = "/data"
   source = "anomstack_data"
 
-# VM configuration - Cost-optimized for demo usage
+# VM configuration - Performance-optimized for responsive demo
 [[vm]]
-  memory = "8192"  # 8GB RAM to prevent OOM crashes
-  cpu_kind = "shared"  # Shared CPUs are cheaper and more available
-  cpus = 4  # 4 shared vCPUs required to allow 8GB memory per Fly sizing rules
+  memory = "8192"  # 8GB RAM needed for consolidated Dagster + dashboard + daemon
+  cpu_kind = "performance"  # Dedicated performance CPUs for better responsiveness  
+  cpus = 4  # 4 performance vCPUs for handling multiple services
 
 # Auto-scaling
 [scaling]

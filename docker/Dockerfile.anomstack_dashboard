@@ -20,6 +20,7 @@ COPY dashboard /opt/dagster/app/dashboard
 # Copy minimal anomstack components needed for dashboard
 COPY anomstack/__init__.py /opt/dagster/app/anomstack/
 COPY anomstack/config.py /opt/dagster/app/anomstack/
+COPY anomstack/version.py /opt/dagster/app/anomstack/
 COPY anomstack/external /opt/dagster/app/anomstack/external
 COPY anomstack/jinja /opt/dagster/app/anomstack/jinja
 COPY anomstack/sql /opt/dagster/app/anomstack/sql
@@ -31,6 +32,12 @@ COPY scripts/maintenance /opt/dagster/app/scripts/maintenance
 
 # Add current directory to Python path for anomstack imports
 ENV PYTHONPATH=/opt/dagster/app:$PYTHONPATH
+
+# Add build information
+ARG ANOMSTACK_BUILD_HASH="unknown"
+ARG ANOMSTACK_BUILD_TIME="unknown"
+ENV ANOMSTACK_BUILD_HASH=$ANOMSTACK_BUILD_HASH
+ENV ANOMSTACK_BUILD_TIME=$ANOMSTACK_BUILD_TIME
 
 COPY .example.env .env
 

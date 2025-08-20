@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Anomstack Startup Script for Fly.io with improved gRPC connectivity
-# Removed 'set -e' to allow script to continue even if some services fail
+# Anomstack Startup Script for Fly.io - No gRPC Code Server (Embedded Approach)
+# Uses direct Python module loading instead of separate gRPC server
 
 echo "🚀 Starting Anomstack services..."
 
@@ -24,21 +24,21 @@ ADMIN_PASSWORD="${ANOMSTACK_ADMIN_PASSWORD:-anomstack2024}"
 htpasswd -bc /etc/nginx/.htpasswd "$ADMIN_USERNAME" "$ADMIN_PASSWORD"
 echo "✅ Authentication configured for user: $ADMIN_USERNAME"
 
-# Function to check if code server is healthy
-check_code_server_health() {
+# Function to check if webserver is healthy (replaces code server health check)
+check_webserver_health() {
     local retries=0
-    local max_retries=10  # Reduced from 30 to fail faster
+    local max_retries=10
     while [ $retries -lt $max_retries ]; do
-        if dagster api grpc-health-check -p 4000 >/dev/null 2>&1; then
-            echo "✅ Code server is healthy"
+        if curl -f http://localhost:3000/server_info >/dev/null 2>&1; then
+            echo "✅ Webserver is healthy"
             return 0
         fi
-        echo "⏳ Waiting for code server to be ready... (attempt $((retries + 1))/$max_retries)"
-        sleep 2
+        echo "⏳ Waiting for webserver to be ready... (attempt $((retries + 1))/$max_retries)"
+        sleep 3
         retries=$((retries + 1))
     done
-    echo "⚠️ Code server health check timed out, but continuing startup..."
-    return 0  # Changed from return 1 to continue startup even if health check fails
+    echo "⚠️ Webserver health check timed out, but continuing startup..."
+    return 0
 }
 
 # Function to start process with retry logic
@@ -72,23 +72,15 @@ start_process_with_retry() {
     return 1
 }
 
-echo "🔧 Starting code server..."
-CODE_SERVER_PID=$(start_process_with_retry "Code Server" "dagster code-server start -h 0.0.0.0 -p 4000 -f anomstack/main.py" "/tmp/code_server.log")
+echo "🌐 Starting webserver (with embedded code)..."
+WEBSERVER_PID=$(start_process_with_retry "Webserver" "dagster-webserver -h 0.0.0.0 -p 3000 -w /opt/dagster/dagster_home/workspace.yaml" "/tmp/webserver.log")
 if [ $? -ne 0 ]; then
-    echo "❌ Failed to start code server, exiting"
+    echo "❌ Failed to start webserver, exiting"
     exit 1
 fi
 
-echo "⏳ Waiting for code server to be ready..."
-check_code_server_health
-echo "✅ Proceeding with startup (health check may have timed out but that's OK)"
-
-echo "🌐 Starting webserver..."
-WEBSERVER_PID=$(start_process_with_retry "Webserver" "dagster-webserver -h 0.0.0.0 -p 3000 -w /opt/dagster/dagster_home/workspace.yaml" "/tmp/webserver.log")
-if [ $? -ne 0 ]; then
-    echo "⚠️ Failed to start webserver, but continuing..."
-    WEBSERVER_PID=""
-fi
+echo "⏳ Waiting for webserver to be ready..."
+check_webserver_health
 
 echo "⚙️ Starting daemon..."
 DAEMON_PID=$(start_process_with_retry "Daemon" "dagster-daemon run -w /opt/dagster/dagster_home/workspace.yaml" "/tmp/daemon.log")
@@ -115,8 +107,7 @@ else
 fi
 
 echo "✅ All services started successfully!"
-echo "Code Server PID: $CODE_SERVER_PID"
-echo "Webserver PID: $WEBSERVER_PID"
+echo "Webserver PID: $WEBSERVER_PID (with embedded code)"
 echo "Daemon PID: $DAEMON_PID"
 echo "Dashboard PID: $DASHBOARD_PID"
 echo "Nginx PID: $NGINX_PID"
@@ -124,7 +115,7 @@ echo "Nginx PID: $NGINX_PID"
 # Function to handle shutdown gracefully
 cleanup() {
     echo "🛑 Shutting down services..."
-    for pid in $DASHBOARD_PID $DAEMON_PID $WEBSERVER_PID $CODE_SERVER_PID $NGINX_PID; do
+    for pid in $DASHBOARD_PID $DAEMON_PID $WEBSERVER_PID $NGINX_PID; do
         if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
             kill "$pid" 2>/dev/null || true
         fi
@@ -139,13 +130,8 @@ trap cleanup SIGTERM SIGINT
 # Monitor processes and restart if they crash
 while true; do
     # Check if critical processes are still running
-    if [ -n "$CODE_SERVER_PID" ] && ! kill -0 $CODE_SERVER_PID 2>/dev/null; then
-        echo "❌ Code server crashed, restarting..."
-        CODE_SERVER_PID=$(start_process_with_retry "Code Server" "dagster code-server start -h 0.0.0.0 -p 4000 -f anomstack/main.py" "/tmp/code_server.log")
-    fi
-
     if [ -n "$WEBSERVER_PID" ] && ! kill -0 $WEBSERVER_PID 2>/dev/null; then
-        echo "❌ Webserver crashed, restarting..."
+        echo "❌ Webserver (with embedded code) crashed, restarting..."
         WEBSERVER_PID=$(start_process_with_retry "Webserver" "dagster-webserver -h 0.0.0.0 -p 3000 -w /opt/dagster/dagster_home/workspace.yaml" "/tmp/webserver.log")
     fi
 

@@ -51,8 +51,7 @@ docker-dev:
 
 # build docker images locally
 docker-build:
-	docker build -f docker/Dockerfile.anomstack_code -t anomstack_code_image .
-	docker build -f docker/Dockerfile.dagster -t anomstack_dagster_image .
+	docker build -f docker/Dockerfile.dagster_consolidated -t anomstack_consolidated_image .
 	docker build -f docker/Dockerfile.anomstack_dashboard -t anomstack_dashboard_image .
 
 # build docker images for development
@@ -93,8 +92,8 @@ docker-logs:
 	docker compose logs -f
 
 # view logs for specific service
-docker-logs-code:
-	docker compose logs -f anomstack_code
+docker-logs-webserver:
+	docker compose logs -f anomstack_webserver
 
 docker-logs-dagit:
 	docker compose logs -f anomstack_dagit
@@ -106,8 +105,8 @@ docker-logs-dashboard:
 	docker compose logs -f anomstack_dashboard
 
 # get shell access to running containers
-docker-shell-code:
-	docker compose exec anomstack_code /bin/bash
+docker-shell-webserver:
+	docker compose exec anomstack_webserver /bin/bash
 
 docker-shell-dagit:
 	docker compose exec anomstack_dagit /bin/bash
@@ -119,8 +118,11 @@ docker-shell-dashboard:
 docker-restart-dashboard:
 	docker compose restart anomstack_dashboard
 
-docker-restart-code:
-	docker compose restart anomstack_code
+docker-restart-webserver:
+	docker compose restart anomstack_webserver
+
+docker-restart-daemon:
+	docker compose restart anomstack_daemon
 
 # restart all containers (useful for .env changes)
 docker-restart:
@@ -379,23 +381,26 @@ kill-dashboardd:
 pre-commit:
 	pre-commit run --all-files --config .pre-commit-config.yaml
 
-# run tests
+# run tests (includes documentation link checking)
 tests:
-	pytest -v
+	source venv/bin/activate && pytest -v
+	@echo ""
+	@echo "🔍 Running documentation link tests..."
+	@$(MAKE) docs-test
 
 # run only example ingest function tests
 test-examples:
-	pytest -v tests/test_examples.py
+	source venv/bin/activate && pytest -v tests/test_examples.py
 
 # run tests with coverage report
 coverage:
-	pytest -v --cov=anomstack --cov-report=term-missing
+	source venv/bin/activate && pytest -v --cov=anomstack --cov-report=term-missing
 
 # =============================================================================
 # DOCUMENTATION
 # =============================================================================
 
-.PHONY: docs docs-start docs-build docs-serve docs-clear docs-install
+.PHONY: docs docs-start docs-build docs-serve docs-clear docs-install docs-test
 
 # start documentation development server (alias for docs-start)
 docs:
@@ -409,9 +414,16 @@ docs-install:
 docs-start:
 	cd docs && npm start
 
-# build static documentation site
+# build static documentation site (includes broken link checking)
 docs-build:
 	cd docs && npm run build
+
+# test documentation for broken links (uses Docusaurus native link checking)
+docs-test:
+	@echo "🔍 Testing documentation for broken links..."
+	@echo "Using Docusaurus native broken link detection (onBrokenLinks: 'throw')"
+	@$(MAKE) docs-build
+	@echo "✅ Documentation build succeeded - no broken links found!"
 
 # serve built documentation locally
 docs-serve:

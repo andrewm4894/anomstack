@@ -4,15 +4,15 @@ This directory contains Dockerfiles for the Anomstack project components.
 
 ## Dockerfiles
 
-### `Dockerfile.anomstack_code`
-- **Purpose**: Runs the Dagster user code server
-- **Image**: `andrewm4894/anomstack_code:latest`
-- **Port**: 4000 (internal gRPC)
+### `Dockerfile.fly`
+- **Purpose**: Consolidated Dagster services (webserver, daemon, user code) for Fly.io deployment
+- **Architecture**: gRPC-free with direct Python module loading
+- **Ports**: 3000 (Dagster UI), 8080 (dashboard), 80 (nginx proxy)
 
 ### `Dockerfile.dagster`
-- **Purpose**: Runs Dagster UI (dagit) and daemon
+- **Purpose**: Runs Dagster webserver and daemon for docker-compose setup
 - **Image**: `andrewm4894/anomstack_dagster:latest`
-- **Port**: 3000 (dagit UI)
+- **Port**: 3000 (Dagster UI)
 
 ### `Dockerfile.anomstack_dashboard`
 - **Purpose**: Runs the FastHTML dashboard
@@ -28,10 +28,10 @@ make docker-build
 
 ### Build Individual Images
 ```bash
-# Code server
-docker build -f docker/Dockerfile.anomstack_code -t anomstack_code_image .
+# Fly.io deployment (consolidated services)
+docker build -f docker/Dockerfile.fly -t anomstack_fly_image .
 
-# Dagster services
+# Dagster services (for docker-compose)
 docker build -f docker/Dockerfile.dagster -t anomstack_dagster_image .
 
 # Dashboard

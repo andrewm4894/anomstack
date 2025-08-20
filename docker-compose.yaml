@@ -1,56 +1,15 @@
 services:
   # PostgreSQL service removed - now using SQLite for simpler deployment
 
-  # This service runs the gRPC server that loads your user code, in both the webserver
-  # and dagster-daemon. By setting DAGSTER_CURRENT_IMAGE to its own image, we tell the
-  # run launcher to use this same image when launching runs in a new container as well.
-  # Multiple containers like this can be deployed separately - each just needs to run on
-  # its own port, and have its own entry in the workspace.yaml file that's loaded by the webserver.
-  anomstack_code:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.anomstack_code
-    image: anomstack_code_image
-    container_name: anomstack_code
-    restart: always
-    expose:
-      - "4000"
-    volumes:
-      - ./tmp:/opt/dagster/app/tmp
-      - anomstack_metrics_duckdb:/data
-      - ./dagster_home:/opt/dagster/dagster_home
-      - ./dagster_docker.yaml:/opt/dagster/dagster_home/dagster.yaml
-      - ./metrics:/opt/dagster/app/metrics  # 🔥 ENABLES HOT CONFIG UPDATES
-    env_file:
-      - .env
-    environment:
-      DAGSTER_CODE_SERVER_HOST: "${DAGSTER_CODE_SERVER_HOST:-anomstack_code}"
-      ANOMSTACK_DUCKDB_PATH: "/data/anomstack.db"
-      DAGSTER_HOME: "/opt/dagster/dagster_home"
-    networks:
-      - anomstack_network
-    healthcheck:
-      test: ["CMD", "dagster", "api", "grpc-health-check", "-p", "4000"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    deploy:
-      resources:
-        limits:
-          memory: 2G
-          cpus: '1.0'
-        reservations:
-          memory: 512M
-          cpus: '0.25'
-
-  # This service runs dagster-webserver, which loads your user code from the user code container.
-  # Since our instance uses the QueuedRunCoordinator, any runs submitted from the webserver will be put on
-  # a queue and later dequeued and launched by dagster-daemon.
+  # This service runs dagster-webserver with user code loaded directly as a Python module.
+  # No separate gRPC code server needed - simpler and more reliable.
   anomstack_webserver:
     build:
       context: .
       dockerfile: docker/Dockerfile.dagster
+      args:
+        ANOMSTACK_BUILD_HASH: ${ANOMSTACK_BUILD_HASH:-unknown}
+        ANOMSTACK_BUILD_TIME: ${ANOMSTACK_BUILD_TIME:-unknown}
     image: anomstack_dagster_image
     entrypoint:
       - dagster-webserver
@@ -70,6 +29,7 @@ services:
       - .env
     environment:
       DAGSTER_HOME: "/opt/dagster/dagster_home"
+      ANOMSTACK_DUCKDB_PATH: "/data/anomstack.db"
     volumes:
       - ./tmp:/opt/dagster/app/tmp
       - anomstack_metrics_duckdb:/data
@@ -78,8 +38,6 @@ services:
       - ./metrics:/opt/dagster/app/metrics  # 🔥 ENABLES HOT CONFIG UPDATES
     networks:
       - anomstack_network
-    depends_on:
-      - anomstack_code
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/server_info"]
       interval: 30s
@@ -101,6 +59,9 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.dagster
+      args:
+        ANOMSTACK_BUILD_HASH: ${ANOMSTACK_BUILD_HASH:-unknown}
+        ANOMSTACK_BUILD_TIME: ${ANOMSTACK_BUILD_TIME:-unknown}
     image: anomstack_dagster_image
     entrypoint:
       - dagster-daemon
@@ -111,6 +72,7 @@ services:
       - .env
     environment:
       DAGSTER_HOME: "/opt/dagster/dagster_home"
+      ANOMSTACK_DUCKDB_PATH: "/data/anomstack.db"
     volumes:
       - ./tmp:/opt/dagster/app/tmp
       - anomstack_metrics_duckdb:/data
@@ -119,8 +81,6 @@ services:
       - ./metrics:/opt/dagster/app/metrics  # 🔥 ENABLES HOT CONFIG UPDATES
     networks:
       - anomstack_network
-    depends_on:
-      - anomstack_code
     healthcheck:
       test: ["CMD", "dagster-daemon", "liveness-check"]
       interval: 30s
@@ -141,6 +101,9 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.anomstack_dashboard
+      args:
+        ANOMSTACK_BUILD_HASH: ${ANOMSTACK_BUILD_HASH:-unknown}
+        ANOMSTACK_BUILD_TIME: ${ANOMSTACK_BUILD_TIME:-unknown}
     image: anomstack_dashboard_image
     container_name: anomstack_dashboard
     restart: on-failure

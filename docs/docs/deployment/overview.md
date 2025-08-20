@@ -6,6 +6,12 @@ sidebar_position: 1
 
 Anomstack offers flexible deployment options to fit different organizational needs and infrastructure requirements. This page helps you choose the right deployment pattern for your use case.
 
+:::info Architecture Simplification
+🎉 **Anomstack now uses gRPC-free architecture by default!** This means simpler deployment, better reliability, and no separate code server needed. User code is loaded directly as Python modules within the Dagster webserver.
+
+For advanced use cases requiring separate gRPC code servers, see our [Architecture documentation](https://github.com/andrewm4894/anomstack/blob/main/ARCHITECTURE.md#advanced-grpc-code-server-optional) for optional configuration.
+:::
+
 ## Deployment Modes
 
 ### 🎯 Full Stack Deployment
@@ -22,12 +28,11 @@ graph TB
 
         subgraph "Application Layer"
             DASH[📊 FastHTML Dashboard<br/>Port 8080]
-            DAGSTER[⚙️ Dagster UI<br/>Port 3000]
-            CODE[📦 Code Server<br/>Port 4000]
+            DAGSTER[⚙️ Dagster Webserver + User Code<br/>Port 3000<br/><i>Direct Python Module Loading</i>]
         end
 
         subgraph "Data Layer"
-            DB[(🗄️ PostgreSQL<br/>Metadata)]
+            DB[(🗄️ SQLite/PostgreSQL<br/>Metadata)]
             DUCKDB[(🦆 DuckDB<br/>Metrics)]
             MODELS[📁 Model Storage<br/>Local/S3/GCS]
         end
@@ -41,14 +46,13 @@ graph TB
 
     USERS --> DASH
     ADMIN --> DAGSTER
-    DAGSTER --> CODE
-    DASH --> CODE
-    CODE --> DB
-    CODE --> DUCKDB
-    CODE --> MODELS
-    CODE --> EMAIL
-    CODE --> SLACK
-    CODE --> SOURCES
+    DAGSTER --> DB
+    DAGSTER --> DUCKDB
+    DAGSTER --> MODELS
+    DAGSTER --> EMAIL
+    DAGSTER --> SLACK
+    DAGSTER --> SOURCES
+    DASH --> DUCKDB
 ```
 
 **✅ Best for:**

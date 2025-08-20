@@ -42,9 +42,8 @@ graph TB
 
     subgraph "Fly.io VM Container"
         DASH[📊 Dashboard<br/>Port 8080<br/><i>Public</i>]
-        WEB[⚙️ Dagster Webserver<br/>Port 3000<br/><i>Protected</i>]
+        WEB[⚙️ Dagster Webserver + User Code<br/>Port 3000<br/><i>Protected</i><br/><i>Direct Python Module Loading</i>]
         DAEMON[🔄 Dagster Daemon<br/>Background Jobs]
-        CODE[📦 Code Server<br/>Port 4000<br/>Internal]
     end
 
     subgraph "Fly.io Services"
@@ -55,11 +54,8 @@ graph TB
     ADMIN --> PROXY
     PROXY -->|"/ (no auth)"| DASH
     PROXY -->|"/dagster (basic auth)"| WEB
-    WEB --> CODE
-    DAEMON --> CODE
     WEB --> VOL
     DAEMON --> VOL
-    CODE --> VOL
 ```
 
 ### Security Model
@@ -706,7 +702,6 @@ The deployment script intelligently handles your `.env` file with smart filterin
 - `ANOMSTACK_MODEL_PATH=./tmp/...` - Local model storage
 - `ANOMSTACK_HOME=.` - Current directory reference
 - `ANOMSTACK_POSTGRES_FORWARD_PORT` - Local port forwarding
-- `DAGSTER_CODE_SERVER_HOST=anomstack_code` - Docker Compose specific
 - `ANOMSTACK_DASHBOARD_PORT` - Local dashboard port
 
 **Variables that are DEPLOYED:**
@@ -723,12 +718,12 @@ These values are automatically set for Fly.io deployment (regardless of your `.e
 
 ```bash
 DAGSTER_HOME="/opt/dagster/dagster_home"
-DAGSTER_CODE_SERVER_HOST="localhost"
 ANOMSTACK_DUCKDB_PATH="/data/anomstack.db"           # Persistent volume
 ANOMSTACK_MODEL_PATH="local:///data/models"          # Persistent volume  
 ANOMSTACK_TABLE_KEY="metrics"                        # Simplified table key
 ANOMSTACK_IGNORE_EXAMPLES="no"                       # Enable examples
 PYTHONPATH="/opt/dagster/app"                        # Container path
+DAGSTER_WORKSPACE_FORCE_RELOAD="true"                # Force fresh workspace loading
 ```
 
 ### 🔐 Security Features

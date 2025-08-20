@@ -1,7 +1,7 @@
 FROM python:3.12-slim
 
 # Cache busting argument (set during build to force fresh layers)
-ARG CACHEBUST=1
+ARG CACHEBUST=4
 
 # Use CACHEBUST to invalidate cache when needed (this layer changes when CACHEBUST changes)
 RUN echo "Cache bust: $CACHEBUST" > /tmp/cachebust
@@ -30,9 +30,9 @@ COPY anomstack ./anomstack
 COPY dashboard ./dashboard
 COPY metrics ./metrics
 
-# Copy configuration files
+# Copy configuration files  
 COPY dagster_fly.yaml ./dagster_home/dagster.yaml
-COPY dagster_home/workspace.yaml ./dagster_home/workspace.yaml
+COPY workspace.yaml ./dagster_home/workspace.yaml
 # Copy startup scripts (use CACHEBUST arg above to ensure fresh copy when needed)
 COPY scripts/deployment/start.sh /opt/dagster/start.sh
 COPY scripts/deployment/debug_grpc.sh /opt/dagster/debug_grpc.sh
@@ -45,8 +45,10 @@ RUN ls -la ./dagster_home/ && \
     chmod +x /opt/dagster/start.sh && \
     chmod +x /opt/dagster/debug_grpc.sh
 
-# Create necessary directories for SQLite storage and artifacts
-RUN mkdir -p /data/models /data/dagster_storage /data/artifacts /tmp/dagster/compute_logs
+# Create necessary directories for SQLite storage and artifacts  
+# Clear any existing Dagster storage to force fresh workspace loading
+RUN mkdir -p /data/models /data/dagster_storage /data/artifacts /tmp/dagster/compute_logs && \
+    rm -rf /data/dagster_storage/* 2>/dev/null || true
 
 # Environment setup
 ENV DAGSTER_HOME=/opt/dagster/dagster_home

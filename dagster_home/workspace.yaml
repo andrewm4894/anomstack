@@ -1,9 +1,5 @@
 load_from:
-  # Each entry here corresponds to a service in the docker-compose file that exposes user code.
-  # For Fly.io deployment, DAGSTER_CODE_SERVER_HOST=localhost
-  # For Docker Compose, DAGSTER_CODE_SERVER_HOST=anomstack_code (default)
-  - grpc_server:
-      host:
-        env: DAGSTER_CODE_SERVER_HOST
-      port: 4000
-      location_name: "anomstack_code"
+  # Load user code directly as a Python module (no gRPC server needed)
+  - python_module:
+      module_name: anomstack.main
+      location_name: "anomstack"
