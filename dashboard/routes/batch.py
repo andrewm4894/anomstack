@@ -8,6 +8,7 @@ This module contains the route for the batch view.
 """
 
 from fasthtml.common import H4, Div, P, Request, Safe, Script, Style, Table, Td, Th, Tr
+from fastcore.xml import to_xml
 from monsterui.all import Button, ButtonT, Card, DivLAligned, UkIcon
 import pandas as pd
 
@@ -137,7 +138,15 @@ def get(batch_name: str, chart_index: int):
     if chart_index not in app.state.chart_cache[batch_name]:
         df_metric = df[df["metric_name"] == metric_name]
         df_metric = extract_metadata(df_metric, "anomaly_explanation")
-        fig = ChartManager.create_chart(df_metric, chart_index)
+        fig = ChartManager.create_chart(
+            df_metric, 
+            chart_index,
+            small_charts=app.state.small_charts,
+            dark_mode=app.state.dark_mode,
+            show_markers=app.state.show_markers,
+            line_width=app.state.line_width,
+            show_legend=app.state.show_legend
+        )
         app.state.chart_cache[batch_name][chart_index] = fig
 
     modal_id = f"modal-{batch_name}-{chart_index}"
@@ -194,7 +203,7 @@ def get(batch_name: str, chart_index: int):
                 }
             """
             ),
-            Safe(app.state.chart_cache[batch_name][chart_index]),
+            Safe(to_xml(app.state.chart_cache[batch_name][chart_index], indent=False)),
             # Expand button overlay positioned on entire card
             Button(
                 UkIcon("expand", height=16, width=16),
@@ -288,10 +297,16 @@ def get_expanded_chart(batch_name: str, chart_index: int):
     df_metric = extract_metadata(df_metric, "anomaly_explanation")
     
     # Create expanded chart with enhanced configuration
-    expanded_fig = ChartManager.create_expanded_chart(df_metric, chart_index)
+    expanded_fig = ChartManager.create_expanded_chart(
+        df_metric, 
+        chart_index,
+        dark_mode=app.state.dark_mode,
+        show_markers=app.state.show_markers,
+        line_width=app.state.line_width
+    )
     
     return Div(
-        Safe(expanded_fig),
+        Safe(to_xml(expanded_fig, indent=False)),
         cls="w-full"
     )
 
@@ -319,7 +334,7 @@ def refresh_batch(batch_name: str):
 
 
 @rt("/batch/{batch_name}/anomalies")
-def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 50):
+def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 20):
     """Get the anomaly list view for a batch.
 
     Args:
@@ -360,14 +375,16 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 50):
     # Create table rows and modals
     rows = []
     modals = []
-    for _, row in df_page.iterrows():
+    for row_idx, (_, row) in enumerate(df_page.iterrows(), start=1):
         metric_name = row["metric_name"]
         timestamp = row["metric_timestamp"]
 
         # Get the metric data for this anomaly
         df_metric = df[df["metric_name"] == metric_name].copy()
         df_metric = df_metric.sort_values("metric_timestamp")
-        fig = ChartManager.create_sparkline(df_metric, anomaly_timestamp=timestamp)
+        log.info(f"Creating sparkline for {metric_name} with {len(df_metric)} data points")
+        fig = ChartManager.create_sparkline(df_metric, anomaly_timestamp=timestamp, dark_mode=app.state.dark_mode)
+        log.info(f"Sparkline created: {type(fig)}")
 
         # Create safe feedback key by replacing problematic characters
         safe_metric = (
@@ -409,68 +426,74 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 50):
         # Create unique modal ID for this anomaly
         anomaly_modal_id = f"anomaly-modal-{feedback_key}"
         
-        rows.append(
-            Tr(
-                Td(
-                    Div(
-                        metric_name,
-                        cls="truncate max-w-[120px] sm:max-w-[180px] mx-auto",
-                        uk_tooltip=metric_name,
-                    ),
-                    cls="font-medium text-center w-full",
-                ),
-                Td(
-                    timestamp.strftime("%Y-%m-%d %H:%M:%S"),
-                    cls="text-muted-foreground text-center sm:w-[160px] w-[100px] hidden md:table-cell",
-                ),
-                Td(
-                    Div(
-                        Safe(fig),
-                        Style(
-                            "svg { display: block; margin: auto; height: 100% !important; width: 100% !important; }"
-                        ),
-                        cls="absolute inset-0 flex justify-center items-center h-full w-full p-0 m-0",
-                    ),
-                    cls="w-[300px] h-[50px] text-center p-0 m-0 relative overflow-hidden",
-                ),
-                Td(
-                    DivLAligned(
-                        Button(
-                            UkIcon("thumbs-up", cls="sm:w-5 sm:h-5 w-4 h-4"),
-                            hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-up",
-                            hx_target=f"#feedback-{feedback_key}",
-                            hx_swap="outerHTML",
-                            cls=(ButtonT.primary if feedback == "positive" else ButtonT.secondary)
-                            + " sm:p-2 p-1",
-                            id=f"feedback-{feedback_key}-positive",
-                        ),
-                        Button(
-                            UkIcon("thumbs-down", cls="sm:w-5 sm:h-5 w-4 h-4"),
-                            hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-down",
-                            hx_target=f"#feedback-{feedback_key}",
-                            hx_swap="outerHTML",
-                            cls=(ButtonT.primary if feedback == "negative" else ButtonT.secondary)
-                            + " sm:p-2 p-1",
-                            id=f"feedback-{feedback_key}-negative",
-                        ),
-                        cls="space-x-1 sm:space-x-2 justify-center",
-                        id=f"feedback-{feedback_key}",
-                    ),
-                    cls="w-[120px] text-center",
-                ),
-                Td(
+        # Build cells directly so they can be placed into a single parent grid
+        row_cells = [
+            # Metric name
+            Div(
+                metric_name,
+                cls="text-xs font-medium text-center px-1 overflow-hidden h-10 flex items-center justify-center border-b",
+                uk_tooltip=metric_name,
+                style="white-space: nowrap; text-overflow: ellipsis;",
+            ),
+            # Timestamp (hidden on mobile)
+            Div(
+                timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+                cls="text-xs text-muted-foreground text-center h-10 items-center justify-center border-b invisible md:visible md:flex",
+            ),
+            # Sparkline
+            Div(
+                fig,
+                cls="sparkline-cell relative flex justify-center items-center h-10 border-b overflow-hidden",
+            ),
+            # Feedback buttons
+            Div(
+                DivLAligned(
                     Button(
-                        UkIcon("expand", height=16, width=16),
-                        cls="bg-white/90 border border-gray-300 rounded-md p-2 hover:bg-white hover:shadow-md hover:border-gray-400 transition-all duration-200",
-                        uk_toggle=f"target: #{anomaly_modal_id}",
-                        title="Expand chart",
-                        type="button",
-                        style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"
+                        UkIcon("thumbs-up", cls="w-3 h-3"),
+                        hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-up",
+                        hx_target=f"#feedback-{feedback_key}",
+                        hx_swap="outerHTML",
+                        cls=(ButtonT.primary if feedback == "positive" else ButtonT.secondary)
+                        + " px-2 py-1 text-xs",
+                        id=f"feedback-{feedback_key}-positive",
                     ),
-                    cls="w-[60px] text-center align-middle",
-                    style="vertical-align: middle; padding: 8px;"
+                    Button(
+                        UkIcon("thumbs-down", cls="w-3 h-3"),
+                        hx_post=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/thumbs-down",
+                        hx_target=f"#feedback-{feedback_key}",
+                        hx_swap="outerHTML",
+                        cls=(ButtonT.primary if feedback == "negative" else ButtonT.secondary)
+                        + " px-2 py-1 text-xs",
+                        id=f"feedback-{feedback_key}-negative",
+                    ),
+                    cls="space-x-1 justify-center",
+                    id=f"feedback-{feedback_key}",
                 ),
-                cls="hover:bg-muted/50 transition-colors",
+                cls="h-10 flex items-center justify-center border-b",
+            ),
+            # Expand button
+                Div(
+                    Button(
+                    UkIcon("expand", height=12, width=12),
+                    cls="bg-white/90 border border-gray-300 rounded-md p-1 hover:bg-white hover:shadow-md hover:border-gray-400 transition-all duration-200",
+                        uk_toggle=f"target: #{anomaly_modal_id}",
+                        hx_get=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/expanded",
+                        hx_target=f"#expanded-anomaly-chart-{feedback_key}",
+                        hx_swap="innerHTML",
+                    title="Expand chart",
+                    type="button",
+                    style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;"
+                ),
+                cls="h-10 flex items-center justify-center border-b",
+            ),
+        ]
+
+        # Wrap the 5 cells into a single grid row to avoid layout drift
+        rows.append(
+            Div(
+                *row_cells,
+                cls="grid grid-cols-[1fr_1fr_2fr_1fr_1fr] gap-2 px-2 items-center justify-items-center place-items-center",
+                **{"data-metric": metric_name, "data-ts": timestamp.strftime("%Y-%m-%d %H:%M:%S"), "data-row": str(row_idx)},
             )
         )
         
@@ -516,11 +539,9 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 50):
                     style="position: relative; padding: 20px 160px 20px 20px;"
                 ),
                 Div(
-                    # Expanded chart will be loaded here
+                    # Expanded chart will be loaded on demand when clicking expand
                     Div(
                         id=f"expanded-anomaly-chart-{feedback_key}",
-                        hx_get=f"/batch/{batch_name}/anomaly/{metric_name}/{timestamp}/expanded",
-                        hx_trigger="load",
                         cls="min-h-96"
                     ),
                     # Anomaly information
@@ -547,7 +568,7 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 50):
                 ),
                 id=anomaly_modal_id,
                 cls="uk-modal-full"
-            )
+                )
         )
 
     log.info(f"Created {len(rows)} table rows and {len(modals)} modals for page {page}")
@@ -581,34 +602,27 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 50):
         create_controls(batch_name),
         Card(
             Div(
-                Table(
-                    Tr(
-                        Th("Metric", cls="font-medium text-center sm:w-[180px] w-[120px]"),
-                        Th(
-                            "Timestamp",
-                            cls="font-medium text-center sm:w-[160px] w-[100px] hidden sm:table-cell",
-                        ),
-                        Th("Trend", cls="sm:w-[300px] w-[140px] text-center"),
-                        Th("Feedback", cls="sm:w-[120px] w-[80px] font-medium text-center"),
-                        Th("Expand", cls="w-[60px] font-medium text-center"),
-                        cls="border-b",
-                    ),
+                Div(
+                    Div("Metric", cls="font-medium text-center text-xs uppercase tracking-wide text-muted-foreground"),
+                    Div("Timestamp", cls="font-medium text-center text-xs uppercase tracking-wide text-muted-foreground"),
+                    Div("Trend", cls="font-medium text-center text-xs uppercase tracking-wide text-muted-foreground"),
+                    Div("Feedback", cls="font-medium text-center text-xs uppercase tracking-wide text-muted-foreground"),
+                    Div("Expand", cls="font-medium text-center text-xs uppercase tracking-wide text-muted-foreground"),
+                    cls="grid grid-cols-[1fr_1fr_2fr_1fr_1fr] gap-3 px-3 py-2 border-b bg-gray-50 sticky top-0 z-10",
+                ),
+                Div(
                     *rows,
-                    cls="w-full divide-y min-w-full table-fixed",
+                    cls="divide-y",
                 ),
                 cls="overflow-x-auto -mx-4 sm:mx-0",
             ),
             header=Div(
                 H4("Anomalies", cls="mb-1"),
-                P(
-                    f"Showing {len(rows)} of {total_anomalies} anomalies",
-                    cls="text-sm text-muted-foreground",
-                ),
+                P(f"Showing {len(rows)} of {total_anomalies} anomalies", cls="text-sm text-muted-foreground"),
             ),
             cls="mb-4",
         ),
         pagination,
-        # Add all the modals
         *modals,
         id="anomaly-list",
     )
@@ -935,9 +949,9 @@ def get_expanded_anomaly_chart(batch_name: str, metric_name: str, timestamp: str
     df_metric = extract_metadata(df_metric, "anomaly_explanation")
     
     # Create expanded view with full time series but only highlight the single clicked anomaly
-    expanded_fig = ChartManager.create_single_anomaly_expanded_chart(df_metric, anomaly_timestamp)
+    expanded_fig = ChartManager.create_single_anomaly_expanded_chart(df_metric, anomaly_timestamp, dark_mode=app.state.dark_mode)
     
     return Div(
-        Safe(expanded_fig),
+        Safe(to_xml(expanded_fig, indent=False)),
         cls="w-full"
     )
