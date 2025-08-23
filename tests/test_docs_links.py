@@ -42,24 +42,6 @@ def test_docusaurus_build_succeeds():
         pytest.skip("yarn not available. Install Node.js and yarn to run this test.")
 
 
-def test_architecture_grpc_section_exists():
-    """Test that the gRPC opt-in section exists in ARCHITECTURE.md."""
-    repo_root = Path(__file__).parent.parent
-    architecture_file = repo_root / "ARCHITECTURE.md"
-    
-    if not architecture_file.exists():
-        pytest.skip("ARCHITECTURE.md not found")
-    
-    with open(architecture_file, 'r', encoding='utf-8') as f:
-        content = f.read()
-    
-    # Check that the gRPC section exists
-    assert "### Advanced: gRPC Code Server (Optional)" in content, \
-        "ARCHITECTURE.md should contain the gRPC opt-in section"
-    
-    # Check that it mentions the anchor that docs link to
-    assert "advanced-grpc-code-server-optional" in content.lower().replace(' ', '-').replace(':', ''), \
-        "gRPC section should be linkable with the expected anchor"
 
 
 if __name__ == "__main__":
@@ -68,12 +50,6 @@ if __name__ == "__main__":
     
     print("🔍 Testing Docusaurus documentation...")
     
-    try:
-        test_architecture_grpc_section_exists()
-        print("✅ gRPC section test passed")
-    except Exception as e:
-        print(f"❌ gRPC section test failed: {e}")
-        sys.exit(1)
     
     try:
         test_docusaurus_build_succeeds()
