@@ -45,19 +45,19 @@ load_env_with_custom_path()
 
 log = logging.getLogger("anomstack_dashboard")
 
-# Get PostHog API key from environment
-posthog_api_key = os.getenv("POSTHOG_API_KEY")
+# Get PostHog frontend API key for analytics tracking (separate from POSTHOG_API_KEY used for metrics ingestion)
+posthog_api_key = os.getenv("POSTHOG_FRONTEND_API_KEY")
+posthog_script = None
 if posthog_api_key:
     from dashboard.constants import POSTHOG_SCRIPT
-
-    POSTHOG_SCRIPT = POSTHOG_SCRIPT.replace("window.POSTHOG_API_KEY || ''", f"'{posthog_api_key}'")
+    posthog_script = POSTHOG_SCRIPT.replace("window.POSTHOG_API_KEY || ''", f"'{posthog_api_key}'")
 
 # Define the app
 app, rt = fast_app(
     hdrs=(
         Theme.blue.headers(),
         Script(src="https://cdn.plot.ly/plotly-2.32.0.min.js"),
-        Script(POSTHOG_SCRIPT) if posthog_api_key else None,
+        Script(posthog_script) if posthog_script else None,
         Link(
             rel="icon",
             type="image/svg+xml",
