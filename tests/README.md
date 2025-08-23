@@ -19,7 +19,7 @@ pytest tests/test_ml.py -v
 
 - **Total Tests:** 134 tests across 17 test files
 - **Runtime:** ~40 seconds for full suite
-- **Coverage:** 56% overall code coverage
+- **Coverage:** 55% overall code coverage
 - **Scope:** ML, jobs, data validation, SQL, alerts, plotting, and configuration
 
 ## Test Files
