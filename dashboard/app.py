@@ -45,12 +45,24 @@ load_env_with_custom_path()
 
 log = logging.getLogger("anomstack_dashboard")
 
-# Get PostHog frontend API key for analytics tracking (separate from POSTHOG_API_KEY used for metrics ingestion)
-posthog_api_key = os.getenv("POSTHOG_FRONTEND_API_KEY")
-posthog_script = None
-if posthog_api_key:
-    from dashboard.constants import POSTHOG_SCRIPT
-    posthog_script = POSTHOG_SCRIPT.replace("window.POSTHOG_API_KEY || ''", f"'{posthog_api_key}'")
+# PostHog script generation function (lazy loading to ensure env vars are available)
+def get_posthog_script():
+    """Generate PostHog script with API key if available."""
+    posthog_api_key = os.getenv("POSTHOG_FRONTEND_API_KEY")
+    if posthog_api_key:
+        from dashboard.constants import POSTHOG_SCRIPT
+        return POSTHOG_SCRIPT.replace("window.POSTHOG_API_KEY || ''", f"'{posthog_api_key}'")
+    return None
+
+# Get PostHog script at import time (will be None if env var not available yet)
+posthog_script = get_posthog_script()
+
+# If PostHog script is not available at import time, try again after a short delay
+# This handles cases where environment variables aren't fully loaded during module import
+if not posthog_script:
+    import time
+    time.sleep(0.1)  # Brief delay to allow env vars to load
+    posthog_script = get_posthog_script()
 
 # Define the app
 app, rt = fast_app(
