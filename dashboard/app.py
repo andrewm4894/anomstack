@@ -63,6 +63,7 @@ if not posthog_script:
     import time
     time.sleep(0.1)  # Brief delay to allow env vars to load
     posthog_script = get_posthog_script()
+    # Cache bust comment - force fresh deployment
 
 # Define the app
 app, rt = fast_app(
