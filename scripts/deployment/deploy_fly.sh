@@ -234,6 +234,15 @@ rm fly.toml.bak
 # Deploy the application (force rebuild to ensure latest files are included)
 echo "🚀 Deploying application..."
 
+# Capture git commit hash for version tracking
+GIT_COMMIT_HASH=""
+if git rev-parse --short HEAD >/dev/null 2>&1; then
+    GIT_COMMIT_HASH=$(git rev-parse --short HEAD)
+    echo "📝 Git commit hash: $GIT_COMMIT_HASH"
+else
+    echo "⚠️  Could not determine git commit hash (not in a git repository or git not available)"
+fi
+
 if [[ "$FORCE_REBUILD" == "true" ]]; then
     # Generate unique cache busting value with timestamp + random
     CACHEBUST_VALUE="$(date +%s)-$(openssl rand -hex 4 2>/dev/null || echo $RANDOM)"
@@ -243,15 +252,20 @@ if [[ "$FORCE_REBUILD" == "true" ]]; then
     # Use multiple cache busting strategies:
     # 1. --no-cache: Skip Docker layer cache
     # 2. CACHEBUST build arg: Force rebuild of layers that use it
-    # 3. --dockerfile: Explicit dockerfile path to avoid confusion
+    # 3. ANOMSTACK_BUILD_HASH build arg: Include git commit hash in container
+    # 4. --dockerfile: Explicit dockerfile path to avoid confusion
     fly deploy \
         --no-cache \
         --build-arg CACHEBUST="$CACHEBUST_VALUE" \
+        --build-arg ANOMSTACK_BUILD_HASH="$GIT_COMMIT_HASH" \
         --dockerfile docker/Dockerfile.fly \
         -a "$APP_NAME"
 else
     echo "⚡ Standard deployment (with caching)..."
-    fly deploy --dockerfile docker/Dockerfile.fly -a "$APP_NAME"
+    fly deploy \
+        --build-arg ANOMSTACK_BUILD_HASH="$GIT_COMMIT_HASH" \
+        --dockerfile docker/Dockerfile.fly \
+        -a "$APP_NAME"
 fi
 
 # Show the status

@@ -239,7 +239,9 @@ fly-deploy-development-fresh:
 # test fly.io build locally before deploying (helps catch issues early)
 fly-build-test:
 	@echo "🧪 Testing Fly.io build locally..."
-	docker build --no-cache -f docker/Dockerfile.fly -t anomstack-fly-test .
+	@GIT_COMMIT_HASH=$$(git rev-parse --short HEAD 2>/dev/null || echo "unknown") && \
+	echo "📝 Git commit hash: $$GIT_COMMIT_HASH" && \
+	docker build --no-cache -f docker/Dockerfile.fly --build-arg ANOMSTACK_BUILD_HASH="$$GIT_COMMIT_HASH" -t anomstack-fly-test .
 	@echo "✅ Build successful! Testing container startup..."
 	@echo "🚀 Starting container on port 3001 (http://localhost:3001)..."
 	@echo "Press Ctrl+C to stop the test container"

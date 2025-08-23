@@ -30,6 +30,10 @@ COPY anomstack ./anomstack
 COPY dashboard ./dashboard
 COPY metrics ./metrics
 
+# Capture git commit hash for version info
+ARG ANOMSTACK_BUILD_HASH
+ENV ANOMSTACK_BUILD_HASH=${ANOMSTACK_BUILD_HASH}
+
 # Copy configuration files  
 COPY dagster_fly.yaml ./dagster_home/dagster.yaml
 COPY workspace.yaml ./dagster_home/workspace.yaml
