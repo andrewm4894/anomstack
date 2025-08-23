@@ -36,10 +36,10 @@ def load_env_with_custom_path():
         else:
             print(f"❌ Custom environment file not found: {env_file_path}")
             print("📄 Falling back to default .env file")
-            load_dotenv(override=True)
+            load_dotenv(override=False)
     else:
-        # Standard .env loading
-        load_dotenv(override=True)
+        # Standard .env loading (don't override system env vars with empty placeholders)
+        load_dotenv(override=False)
 
 load_env_with_custom_path()
 
@@ -63,7 +63,7 @@ if not posthog_script:
     import time
     time.sleep(0.1)  # Brief delay to allow env vars to load
     posthog_script = get_posthog_script()
-    # Cache bust comment - force fresh deployment
+    # Cache bust comment - force fresh deployment v2
 
 # Define the app
 app, rt = fast_app(
