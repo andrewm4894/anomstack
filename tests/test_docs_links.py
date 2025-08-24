@@ -20,6 +20,22 @@ def test_docusaurus_build_succeeds():
     if not (docs_dir / "node_modules").exists():
         pytest.skip("Node modules not installed. Run 'cd docs && yarn install' first.")
     
+    # Check Node.js version compatibility
+    try:
+        node_result = subprocess.run(
+            ["node", "--version"],
+            capture_output=True,
+            text=True,
+            timeout=10
+        )
+        if node_result.returncode == 0:
+            node_version = node_result.stdout.strip().lstrip('v')
+            major_version = int(node_version.split('.')[0])
+            if major_version < 20:
+                pytest.skip(f"Node.js version {node_version} is incompatible. Docusaurus requires Node.js >=20.0")
+    except (subprocess.TimeoutExpired, FileNotFoundError, ValueError):
+        pytest.skip("Could not check Node.js version. Install Node.js >=20.0 to run this test.")
+    
     # Run docusaurus build which includes built-in link checking
     try:
         result = subprocess.run(
@@ -50,10 +66,11 @@ if __name__ == "__main__":
     
     print("🔍 Testing Docusaurus documentation...")
     
-    
     try:
         test_docusaurus_build_succeeds()
         print("✅ Docusaurus build test passed")
+    except pytest.skip.Exception as e:
+        print(f"⏭️  Docusaurus build test skipped: {e}")
     except Exception as e:
         print(f"❌ Docusaurus build test failed: {e}")
         sys.exit(1)
