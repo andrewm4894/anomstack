@@ -1,11 +1,5 @@
 FROM python:3.12-slim
 
-# Cache busting argument (set during build to force fresh layers)
-ARG CACHEBUST=4
-
-# Use CACHEBUST to invalidate cache when needed (this layer changes when CACHEBUST changes)
-RUN echo "Cache bust: $CACHEBUST" > /tmp/cachebust
-
 # Install system dependencies including nginx
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
@@ -20,17 +14,24 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /opt/dagster/app
 
-# Copy requirements and install Python dependencies
+# Copy requirements and install Python dependencies (these change less frequently)
 COPY requirements.txt requirements-dashboard.txt ./
 RUN pip install --no-cache-dir -r requirements.txt && \
     pip install --no-cache-dir -r requirements-dashboard.txt
 
-# Copy application code
+# Cache busting argument (set during build to force fresh layers)
+ARG CACHEBUST=5
+
+# Use CACHEBUST to invalidate cache when needed (this layer changes when CACHEBUST changes)
+# This must come BEFORE copying application code to ensure fresh code on force rebuild
+RUN echo "Cache bust: $CACHEBUST" > /tmp/cachebust
+
+# Copy application code (this will now be invalidated by CACHEBUST when force rebuilding)
 COPY anomstack ./anomstack
 COPY dashboard ./dashboard
 COPY metrics ./metrics
 
-# Capture git commit hash for version info
+# Capture git commit hash for version info (must be after code copy to track the right version)
 ARG ANOMSTACK_BUILD_HASH
 ENV ANOMSTACK_BUILD_HASH=${ANOMSTACK_BUILD_HASH}
 
