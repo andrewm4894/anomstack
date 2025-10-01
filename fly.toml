@@ -53,11 +53,11 @@ primary_region = "ord"  # Chicago - you can change this to your preferred region
   destination = "/data"
   source = "anomstack_data"
 
-# VM configuration - Performance-optimized for responsive demo
+# VM configuration - Cost-optimized for demo (disabled high-frequency jobs)
 [[vm]]
-  memory = "8192"  # 8GB RAM needed for consolidated Dagster + dashboard + daemon
-  cpu_kind = "performance"  # Dedicated performance CPUs for better responsiveness  
-  cpus = 4  # 4 performance vCPUs for handling multiple services
+  memory = "4096"  # 4GB RAM for consolidated Dagster + dashboard + daemon
+  cpu_kind = "performance"  # Dedicated performance CPUs for better responsiveness
+  cpus = 2  # 2 performance vCPUs (scaled down after disabling Prometheus/Netdata)
 
 # Auto-scaling
 [scaling]
