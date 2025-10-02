@@ -213,6 +213,12 @@ if [[ -n "$TEMP_ENV_FILE" && -f "$TEMP_ENV_FILE" ]]; then
     echo "🧹 Cleaned up temporary configuration file"
 fi
 
+# Always ensure ANOMSTACK_BUILD_HASH is set correctly
+if [[ -n "$GIT_COMMIT_HASH" ]]; then
+    all_secrets+=("ANOMSTACK_BUILD_HASH=$GIT_COMMIT_HASH")
+    echo "🏷️  Adding build hash to secrets: $GIT_COMMIT_HASH"
+fi
+
 # Set all secrets in one command to minimize releases
 if [[ ${#all_secrets[@]} -gt 0 ]]; then
     echo "🔐 Setting ${#all_secrets[@]} environment variables as Fly secrets in single operation..."
@@ -249,8 +255,8 @@ if [[ "$FORCE_REBUILD" == "true" ]]; then
     echo "🔄 Force rebuild enabled - using aggressive cache busting..."
     echo "🎯 Cache bust value: $CACHEBUST_VALUE"
 
-    # Use multiple cache busting strategies:
-    # 1. --no-cache: Skip Docker layer cache
+    # Force rebuild with multiple strategies:
+    # 1. --no-cache: Skip Docker layer cache entirely
     # 2. CACHEBUST build arg: Force rebuild of layers that use it
     # 3. ANOMSTACK_BUILD_HASH build arg: Include git commit hash in container
     # 4. --dockerfile: Explicit dockerfile path to avoid confusion
@@ -260,6 +266,10 @@ if [[ "$FORCE_REBUILD" == "true" ]]; then
         --build-arg ANOMSTACK_BUILD_HASH="$GIT_COMMIT_HASH" \
         --dockerfile docker/Dockerfile.fly \
         -a "$APP_NAME"
+    
+    # After deployment, manually update the secret to ensure consistency
+    echo "🔄 Updating ANOMSTACK_BUILD_HASH secret to match deployed version..."
+    fly secrets set ANOMSTACK_BUILD_HASH="$GIT_COMMIT_HASH" -a "$APP_NAME"
 else
     echo "⚡ Standard deployment (with caching)..."
     fly deploy \

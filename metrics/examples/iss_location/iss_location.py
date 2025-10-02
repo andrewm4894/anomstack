@@ -7,9 +7,16 @@ def ingest():
     res = requests.get(url, timeout=10).json()
     ts = pd.to_datetime(int(res["timestamp"]), unit="s")
     pos = res["iss_position"]
+    
+    lat = float(pos["latitude"])
+    lon = float(pos["longitude"])
+    
     metrics = [
-        ["iss_latitude", float(pos["latitude"])],
-        ["iss_longitude", float(pos["longitude"])],
+        ["iss_latitude", lat],
+        ["iss_longitude", lon],
+        ["latlong_avg", (lat + lon) / 2],
+        ["latlong_sum", lat + lon],
+        ["latlong_diff", lat - lon],
     ]
     df = pd.DataFrame(metrics, columns=["metric_name", "metric_value"])
     df["metric_timestamp"] = ts
