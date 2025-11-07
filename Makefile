@@ -271,6 +271,139 @@ fly-ssh:
 	fly ssh console -a $$FLY_APP
 
 # =============================================================================
+# RENDER.COM DEPLOYMENT
+# =============================================================================
+#
+# Render deployment commands using Blueprint (render.yaml)
+#
+# Prerequisites:
+# - GitHub repo URL updated in render.yaml
+# - Render CLI installed (https://render.com/docs/cli)
+# - ANOMSTACK_ADMIN_PASSWORD secret set in Render Dashboard
+#
+# Usage:
+# - make render-validate         Check render.yaml syntax
+# - make render-deploy           Deploy using Blueprint
+# - make render-services         List all Render services
+# - make render-logs             View service logs
+# - make render-shell            SSH into running service
+#
+# Notes:
+# - Blueprint deploys require render.yaml in repo root
+# - Persistent disk persists at /data across deploys
+# - Health checks use /nginx-health endpoint
+# - See render.yaml for full configuration
+#
+
+.PHONY: render-validate render-deploy render-demo-deploy render-production-deploy render-development-deploy render-services render-logs render-shell
+
+# validate render.yaml configuration
+render-validate:
+	@echo "🔍 Validating render.yaml..."
+	@if ! command -v render &> /dev/null; then \
+		echo "❌ Render CLI not found. Install from: https://render.com/docs/cli"; \
+		exit 1; \
+	fi
+	@if [ ! -f render.yaml ]; then \
+		echo "❌ render.yaml not found in current directory"; \
+		exit 1; \
+	fi
+	@echo "✅ render.yaml found"
+	@echo "⚠️  Note: Update the 'repo' field in render.yaml with your GitHub URL"
+	@echo "⚠️  Note: Set ANOMSTACK_ADMIN_PASSWORD as a secret in Render Dashboard"
+
+# deploy to Render using Blueprint (requires GitHub commit)
+render-deploy:
+	@echo "🚀 Deploying to Render using Blueprint (render.yaml)..."
+	@if ! command -v render &> /dev/null; then \
+		echo "❌ Render CLI not found. Install from: https://render.com/docs/cli"; \
+		exit 1; \
+	fi
+	@if [ ! -f render.yaml ]; then \
+		echo "❌ render.yaml not found"; \
+		exit 1; \
+	fi
+	@echo "📝 Commit and push render.yaml to your GitHub repo first"
+	@echo "🌐 Then create a new Blueprint in Render Dashboard:"
+	@echo "   1. Go to https://dashboard.render.com/blueprints"
+	@echo "   2. Click 'New Blueprint Instance'"
+	@echo "   3. Connect your GitHub repo"
+	@echo "   4. Render will detect render.yaml and deploy automatically"
+	@echo ""
+	@echo "⚙️  Alternative: Use render CLI (if available):"
+	@echo "   render blueprint deploy"
+
+# deploy demo instance via Render API (no GitHub commit needed)
+render-demo-deploy:
+	@echo "🚀 Deploying Anomstack demo to Render via API..."
+	@if [ ! -f .env ]; then \
+		echo "⚠️  No .env file found, using environment variables"; \
+	else \
+		echo "📋 Loading RENDER_API_KEY from .env..."; \
+		export $$(grep -v '^#' .env | grep RENDER_API_KEY | xargs); \
+	fi
+	./scripts/deployment/deploy_render_api.sh --profile demo
+
+# deploy production instance via Render API
+render-production-deploy:
+	@echo "🚀 Deploying Anomstack production to Render via API..."
+	@if [ ! -f .env ]; then \
+		echo "⚠️  No .env file found, using environment variables"; \
+	else \
+		echo "📋 Loading RENDER_API_KEY from .env..."; \
+		export $$(grep -v '^#' .env | grep RENDER_API_KEY | xargs); \
+	fi
+	./scripts/deployment/deploy_render_api.sh --profile production
+
+# deploy development instance via Render API
+render-development-deploy:
+	@echo "🚀 Deploying Anomstack development to Render via API..."
+	@if [ ! -f .env ]; then \
+		echo "⚠️  No .env file found, using environment variables"; \
+	else \
+		echo "📋 Loading RENDER_API_KEY from .env..."; \
+		export $$(grep -v '^#' .env | grep RENDER_API_KEY | xargs); \
+	fi
+	./scripts/deployment/deploy_render_api.sh --profile development
+
+# list all Render services
+render-services:
+	@echo "📋 Listing Render services..."
+	@if ! command -v render &> /dev/null; then \
+		echo "❌ Render CLI not found. Install from: https://render.com/docs/cli"; \
+		exit 1; \
+	fi
+	render services list
+
+# view Render service logs (set RENDER_SERVICE_ID env var)
+render-logs:
+	@if [ -z "$$RENDER_SERVICE_ID" ]; then \
+		echo "❌ Set RENDER_SERVICE_ID environment variable"; \
+		echo "   Get it from: render services list"; \
+		exit 1; \
+	fi
+	@echo "📋 Viewing logs for service: $$RENDER_SERVICE_ID"
+	@if ! command -v render &> /dev/null; then \
+		echo "❌ Render CLI not found. Install from: https://render.com/docs/cli"; \
+		exit 1; \
+	fi
+	render logs $$RENDER_SERVICE_ID
+
+# ssh into Render service (set RENDER_SERVICE_ID env var)
+render-shell:
+	@if [ -z "$$RENDER_SERVICE_ID" ]; then \
+		echo "❌ Set RENDER_SERVICE_ID environment variable"; \
+		echo "   Get it from: render services list"; \
+		exit 1; \
+	fi
+	@echo "🔌 Connecting to service: $$RENDER_SERVICE_ID"
+	@if ! command -v render &> /dev/null; then \
+		echo "❌ Render CLI not found. Install from: https://render.com/docs/cli"; \
+		exit 1; \
+	fi
+	render shell $$RENDER_SERVICE_ID
+
+# =============================================================================
 # RESET OPERATIONS
 # =============================================================================
 

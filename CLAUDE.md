@@ -79,6 +79,29 @@ Anomstack is an open-source anomaly detection system built on Dagster and FastHT
 - `make fly-logs` - View Fly.io app logs (requires FLY_APP env var)
 - `make fly-ssh` - SSH into Fly.io app (requires FLY_APP env var)
 
+### Render.com Deployment Commands
+
+**API Deployment** (no GitHub commit needed):
+- `make render-demo-deploy` - Deploy demo instance via Render API
+- `make render-production-deploy` - Deploy production instance via Render API
+- `make render-development-deploy` - Deploy development instance via Render API
+
+**Blueprint Deployment** (requires GitHub commit):
+- `make render-validate` - Validate render.yaml configuration
+- `make render-deploy` - Deploy using Blueprint (shows deployment instructions)
+
+**Management**:
+- `make render-services` - List all Render services
+- `make render-logs` - View service logs (requires RENDER_SERVICE_ID env var)
+- `make render-shell` - SSH into running service (requires RENDER_SERVICE_ID env var)
+
+**Quick Start (API Deployment):**
+1. Get API key: https://dashboard.render.com/u/settings#api-keys
+2. Add to .env: `RENDER_API_KEY=rnd_xxx...`
+3. Run: `make render-demo-deploy`
+4. Set `ANOMSTACK_ADMIN_PASSWORD` secret in Render Dashboard
+5. See `docs/render-deployment.md` for detailed instructions
+
 ## Architecture
 
 ### Container Architecture
@@ -187,6 +210,7 @@ ANOMSTACK__PYTHON_INGEST_SIMPLE__ALERT_METHODS=email
 - Local Python environment
 - Docker Compose (recommended for development)
 - Fly.io (production deployment)
+- Render.com (production deployment with Blueprint)
 - Dagster Cloud (serverless)
 - GitHub Codespaces
 

@@ -1,0 +1,260 @@
+services:
+  - type: web
+    runtime: docker
+    name: anomstack-demo
+    repo: https://github.com/andrewm4894/anomstack.git
+    branch: main
+    region: oregon  # Choose: oregon, frankfurt, singapore, ohio, virginia
+    plan: starter  # starter, standard, pro, pro_plus (upgrade as needed)
+    dockerfilePath: ./docker/Dockerfile.fly
+    dockerContext: ./
+    numInstances: 1
+
+    # Persistent disk for DuckDB and ML models
+    disk:
+      name: anomstack-data
+      mountPath: /data
+      sizeGB: 10  # Increase if needed
+
+    # Environment variables (same as Fly.io demo config)
+    envVars:
+      # Core Dagster configuration
+      - key: DAGSTER_HOME
+        value: /opt/dagster/dagster_home
+      - key: DAGSTER_WEBSERVER_HOST
+        value: 0.0.0.0
+      - key: DAGSTER_WEBSERVER_PORT
+        value: "3000"
+      - key: DAGSTER_WORKSPACE_FORCE_RELOAD
+        value: "true"
+
+      # Storage paths
+      - key: ANOMSTACK_DUCKDB_PATH
+        value: /data/anomstack.db
+      - key: ANOMSTACK_MODEL_PATH
+        value: local:///data/models
+      - key: ANOMSTACK_TABLE_KEY
+        value: metrics
+
+      # Python path
+      - key: PYTHONPATH
+        value: /opt/dagster/app
+
+      # Demo configuration
+      - key: ANOMSTACK_IGNORE_EXAMPLES
+        value: "no"
+      - key: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG
+        value: "900"
+
+      # Admin authentication (use secrets for production)
+      - key: ANOMSTACK_ADMIN_USERNAME
+        value: admin
+      - key: ANOMSTACK_ADMIN_PASSWORD
+        sync: false  # Mark as secret - set via Render Dashboard
+
+      # PostHog frontend tracking
+      - key: POSTHOG_FRONTEND_API_KEY
+        value: phc_TudOaC1O5X0Ycl3GtIR0A2cjREW6B6Zp3xDd6c8qxUM
+
+      # Disable high-frequency/CPU-intensive metric batches
+      - key: ANOMSTACK__NETDATA__INGEST_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+      - key: ANOMSTACK__NETDATA__TRAIN_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+      - key: ANOMSTACK__NETDATA__SCORE_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+      - key: ANOMSTACK__NETDATA__ALERT_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+      - key: ANOMSTACK__NETDATA__CHANGE_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+      - key: ANOMSTACK__NETDATA__DELETE_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+      - key: ANOMSTACK__NETDATA__LLMALERT_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+
+      - key: ANOMSTACK__NETDATA_HTTPCHECK__INGEST_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+      - key: ANOMSTACK__NETDATA_HTTPCHECK__TRAIN_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+      - key: ANOMSTACK__NETDATA_HTTPCHECK__SCORE_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+      - key: ANOMSTACK__NETDATA_HTTPCHECK__ALERT_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+      - key: ANOMSTACK__NETDATA_HTTPCHECK__CHANGE_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+      - key: ANOMSTACK__NETDATA_HTTPCHECK__DELETE_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+      - key: ANOMSTACK__NETDATA_HTTPCHECK__LLMALERT_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+
+      - key: ANOMSTACK__PROMETHEUS__INGEST_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+      - key: ANOMSTACK__PROMETHEUS__TRAIN_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+      - key: ANOMSTACK__PROMETHEUS__SCORE_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+      - key: ANOMSTACK__PROMETHEUS__ALERT_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+      - key: ANOMSTACK__PROMETHEUS__CHANGE_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+      - key: ANOMSTACK__PROMETHEUS__DELETE_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+      - key: ANOMSTACK__PROMETHEUS__LLMALERT_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+
+      # Enable demo metric batches
+      - key: ANOMSTACK__GITHUB__INGEST_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__GITHUB__TRAIN_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__GITHUB__SCORE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__GITHUB__ALERT_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__GITHUB__CHANGE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__GITHUB__DELETE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__GITHUB__LLMALERT_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+
+      - key: ANOMSTACK__CURRENCY__INGEST_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__CURRENCY__TRAIN_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__CURRENCY__SCORE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__CURRENCY__ALERT_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__CURRENCY__CHANGE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__CURRENCY__DELETE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__CURRENCY__LLMALERT_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+
+      - key: ANOMSTACK__YFINANCE__INGEST_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__YFINANCE__TRAIN_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__YFINANCE__SCORE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__YFINANCE__ALERT_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__YFINANCE__CHANGE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__YFINANCE__DELETE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__YFINANCE__LLMALERT_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+
+      - key: ANOMSTACK__HACKERNEWS__INGEST_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__HACKERNEWS__TRAIN_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__HACKERNEWS__SCORE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__HACKERNEWS__ALERT_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__HACKERNEWS__CHANGE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__HACKERNEWS__DELETE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__HACKERNEWS__LLMALERT_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+
+      - key: ANOMSTACK__COINDESK__INGEST_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__COINDESK__TRAIN_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__COINDESK__SCORE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__COINDESK__ALERT_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__COINDESK__CHANGE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__COINDESK__DELETE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__COINDESK__LLMALERT_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+
+      - key: ANOMSTACK__WEATHER__INGEST_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__WEATHER__TRAIN_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__WEATHER__SCORE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__WEATHER__ALERT_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__WEATHER__CHANGE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__WEATHER__DELETE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__WEATHER__LLMALERT_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+
+      - key: ANOMSTACK__EIRGRID__INGEST_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__EIRGRID__TRAIN_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__EIRGRID__SCORE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__EIRGRID__ALERT_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__EIRGRID__CHANGE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__EIRGRID__DELETE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__EIRGRID__LLMALERT_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+
+      - key: ANOMSTACK__POSTHOG__INGEST_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__POSTHOG__TRAIN_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__POSTHOG__SCORE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__POSTHOG__ALERT_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__POSTHOG__CHANGE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__POSTHOG__DELETE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__POSTHOG__LLMALERT_DEFAULT_SCHEDULE_STATUS
+        value: STOPPED
+
+      - key: ANOMSTACK__EARTHQUAKE__INGEST_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__EARTHQUAKE__TRAIN_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__EARTHQUAKE__SCORE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__EARTHQUAKE__ALERT_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__EARTHQUAKE__CHANGE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__EARTHQUAKE__DELETE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__EARTHQUAKE__LLMALERT_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+
+      - key: ANOMSTACK__ISS_LOCATION__INGEST_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__ISS_LOCATION__TRAIN_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__ISS_LOCATION__SCORE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__ISS_LOCATION__ALERT_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__ISS_LOCATION__CHANGE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__ISS_LOCATION__DELETE_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+      - key: ANOMSTACK__ISS_LOCATION__LLMALERT_DEFAULT_SCHEDULE_STATUS
+        value: RUNNING
+
+    # Health check configuration
+    healthCheckPath: /nginx-health
+
+    # Auto-deploy configuration
+    autoDeploy: true
