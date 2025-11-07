@@ -137,20 +137,22 @@ PAYLOAD=$(cat <<EOF
   "branch": "$BRANCH",
   "region": "$REGION",
   "plan": "$PLAN",
-  "runtime": "docker",
   "numInstances": 1,
+  "autoDeploy": "yes",
   "serviceDetails": {
-    "dockerfilePath": "./docker/Dockerfile.fly",
-    "dockerContext": "./",
+    "env": "docker",
     "healthCheckPath": "/nginx-health",
     "disk": {
       "name": "anomstack-data",
       "mountPath": "/data",
       "sizeGB": $DISK_SIZE_GB
     },
-    "env": "docker",
-    "envVars": $ENV_VARS,
-    "autoDeploy": "yes"
+    "envSpecificDetails": {
+      "dockerfilePath": "./docker/Dockerfile.fly",
+      "dockerContext": ".",
+      "dockerCommand": ""
+    },
+    "envVars": $ENV_VARS
   }
 }
 EOF
@@ -158,7 +160,7 @@ EOF
 
 echo ""
 echo -e "${YELLOW}📦 Service Configuration:${NC}"
-echo "$PAYLOAD" | jq '{name, region, plan, runtime, dockerfilePath: .serviceDetails.dockerfilePath, disk: .serviceDetails.disk, envVarCount: (.serviceDetails.envVars | length)}'
+echo "$PAYLOAD" | jq '{name, region, plan, dockerfilePath: .serviceDetails.envSpecificDetails.dockerfilePath, disk: .serviceDetails.disk, envVarCount: (.serviceDetails.envVars | length)}'
 echo ""
 
 echo -e "${YELLOW}⚠️  This will create a NEW service on Render${NC}"
