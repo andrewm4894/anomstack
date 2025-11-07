@@ -23,7 +23,7 @@ REGION="oregon"
 PLAN="starter"
 DISK_SIZE_GB=10
 GITHUB_REPO="https://github.com/andrewm4894/anomstack"
-BRANCH="main"
+BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")
 CONFIRM=false
 
 # Parse arguments
@@ -44,6 +44,7 @@ echo -e "${BLUE}╚════════════════════�
 echo ""
 echo "  Service Name: $SERVICE_NAME"
 echo "  Profile:      $PROFILE"
+echo "  Branch:       $BRANCH"
 echo "  Region:       $REGION"
 echo "  Plan:         $PLAN"
 echo "  Disk Size:    ${DISK_SIZE_GB}GB"
@@ -78,6 +79,21 @@ if [ -z "$OWNER_ID" ] || [ "$OWNER_ID" = "null" ]; then
 fi
 
 echo -e "${GREEN}✅ Owner ID: $OWNER_ID${NC}"
+
+# Check if service already exists
+echo -e "${BLUE}🔍 Checking if service '$SERVICE_NAME' already exists...${NC}"
+EXISTING_SERVICE=$(curl -s -H "Authorization: Bearer $RENDER_API_KEY" \
+    "https://api.render.com/v1/services" | jq -r ".[] | select(.service.name == \"$SERVICE_NAME\") | .service.id")
+
+if [ -n "$EXISTING_SERVICE" ]; then
+    echo -e "${YELLOW}⚠️  Service '$SERVICE_NAME' already exists (ID: $EXISTING_SERVICE)${NC}"
+    echo -e "${YELLOW}⚠️  Will update existing service instead of creating new one${NC}"
+    SERVICE_ID="$EXISTING_SERVICE"
+    UPDATE_MODE=true
+else
+    echo -e "${GREEN}✅ Service does not exist, will create new service${NC}"
+    UPDATE_MODE=false
+fi
 
 # Load profile environment variables
 PROFILE_FILE="$PROJECT_ROOT/profiles/${PROFILE}.env"
@@ -148,7 +164,7 @@ PAYLOAD=$(cat <<EOF
       "sizeGB": $DISK_SIZE_GB
     },
     "envSpecificDetails": {
-      "dockerfilePath": "./docker/Dockerfile.fly",
+      "dockerfilePath": "./docker/Dockerfile.render",
       "dockerContext": ".",
       "dockerCommand": ""
     },
@@ -174,52 +190,110 @@ else
 fi
 
 echo ""
-echo -e "${BLUE}🚀 Creating service...${NC}"
 
-# Create service via API
-RESPONSE=$(curl -s -w "\n%{http_code}" \
-    -X POST "https://api.render.com/v1/services" \
-    -H "Authorization: Bearer $RENDER_API_KEY" \
-    -H "Content-Type: application/json" \
-    -H "Accept: application/json" \
-    -d "$PAYLOAD")
+if [ "$UPDATE_MODE" = true ]; then
+    echo -e "${BLUE}🔄 Updating existing service...${NC}"
 
-HTTP_CODE=$(echo "$RESPONSE" | tail -n 1)
-BODY=$(echo "$RESPONSE" | sed '$d')
+    # Update service via API (PATCH)
+    UPDATE_PAYLOAD=$(echo "$PAYLOAD" | jq 'del(.type, .ownerId, .name)')
 
-if [ "$HTTP_CODE" = "201" ] || [ "$HTTP_CODE" = "200" ]; then
-    echo -e "${GREEN}✅ Service created successfully!${NC}"
-    echo ""
+    RESPONSE=$(curl -s -w "\n%{http_code}" \
+        -X PATCH "https://api.render.com/v1/services/$SERVICE_ID" \
+        -H "Authorization: Bearer $RENDER_API_KEY" \
+        -H "Content-Type: application/json" \
+        -H "Accept: application/json" \
+        -d "$UPDATE_PAYLOAD")
 
-    SERVICE_ID=$(echo "$BODY" | jq -r '.service.id // .id' 2>/dev/null)
-    SERVICE_URL=$(echo "$BODY" | jq -r '.service.serviceDetails.url // .serviceDetails.url // empty' 2>/dev/null)
+    HTTP_CODE=$(echo "$RESPONSE" | tail -n 1)
+    BODY=$(echo "$RESPONSE" | sed '$d')
 
-    echo -e "${GREEN}Service Details:${NC}"
-    echo "  Service ID: $SERVICE_ID"
-    [ -n "$SERVICE_URL" ] && echo "  URL: https://$SERVICE_URL"
-    echo ""
+    if [ "$HTTP_CODE" = "200" ]; then
+        echo -e "${GREEN}✅ Service updated successfully!${NC}"
+        echo ""
 
-    echo -e "${BLUE}📋 Next Steps:${NC}"
-    echo "  1. View deployment: https://dashboard.render.com/web/$SERVICE_ID"
-    echo "  2. Set ANOMSTACK_ADMIN_PASSWORD secret:"
-    echo "     - Go to service → Environment"
-    echo "     - Mark ANOMSTACK_ADMIN_PASSWORD as secret"
-    echo "     - Set your admin password"
-    echo "  3. Wait for build to complete (~5-10 minutes)"
-    echo "  4. Access dashboard: https://$SERVICE_URL"
-    echo ""
+        SERVICE_URL=$(echo "$BODY" | jq -r '.service.serviceDetails.url // .serviceDetails.url // empty' 2>/dev/null)
 
-    echo -e "${BLUE}💡 View logs:${NC}"
-    echo "  export RENDER_SERVICE_ID=$SERVICE_ID"
-    echo "  make render-logs"
-    echo ""
+        echo -e "${GREEN}Service Details:${NC}"
+        echo "  Service ID: $SERVICE_ID"
+        [ -n "$SERVICE_URL" ] && echo "  URL: https://$SERVICE_URL"
+        echo ""
+
+        # Trigger new deploy after update
+        echo -e "${BLUE}🚀 Triggering new deployment...${NC}"
+        DEPLOY_RESPONSE=$(curl -s -X POST "https://api.render.com/v1/services/$SERVICE_ID/deploys" \
+            -H "Authorization: Bearer $RENDER_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"clearCache": "do_not_clear"}')
+
+        DEPLOY_ID=$(echo "$DEPLOY_RESPONSE" | jq -r '.id')
+        echo -e "${GREEN}✅ Deploy triggered (ID: $DEPLOY_ID)${NC}"
+    else
+        echo -e "${RED}❌ Failed to update service (HTTP $HTTP_CODE)${NC}"
+        echo ""
+        echo "Response:"
+        echo "$BODY" | jq '.' 2>/dev/null || echo "$BODY"
+        echo ""
+        exit 1
+    fi
 else
-    echo -e "${RED}❌ Failed to create service (HTTP $HTTP_CODE)${NC}"
-    echo ""
-    echo "Response:"
-    echo "$BODY" | jq '.' 2>/dev/null || echo "$BODY"
-    echo ""
-    exit 1
+    echo -e "${BLUE}🚀 Creating new service...${NC}"
+
+    # Create service via API
+    RESPONSE=$(curl -s -w "\n%{http_code}" \
+        -X POST "https://api.render.com/v1/services" \
+        -H "Authorization: Bearer $RENDER_API_KEY" \
+        -H "Content-Type: application/json" \
+        -H "Accept: application/json" \
+        -d "$PAYLOAD")
+
+    HTTP_CODE=$(echo "$RESPONSE" | tail -n 1)
+    BODY=$(echo "$RESPONSE" | sed '$d')
+
+    if [ "$HTTP_CODE" = "201" ] || [ "$HTTP_CODE" = "200" ]; then
+        echo -e "${GREEN}✅ Service created successfully!${NC}"
+        echo ""
+
+        SERVICE_ID=$(echo "$BODY" | jq -r '.service.id // .id' 2>/dev/null)
+        SERVICE_URL=$(echo "$BODY" | jq -r '.service.serviceDetails.url // .serviceDetails.url // empty' 2>/dev/null)
+
+        echo -e "${GREEN}Service Details:${NC}"
+        echo "  Service ID: $SERVICE_ID"
+        [ -n "$SERVICE_URL" ] && echo "  URL: https://$SERVICE_URL"
+        echo ""
+
+        # Trigger initial deploy
+        echo -e "${BLUE}🚀 Triggering initial deployment...${NC}"
+        DEPLOY_RESPONSE=$(curl -s -X POST "https://api.render.com/v1/services/$SERVICE_ID/deploys" \
+            -H "Authorization: Bearer $RENDER_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"clearCache": "do_not_clear"}')
+
+        DEPLOY_ID=$(echo "$DEPLOY_RESPONSE" | jq -r '.id')
+        echo -e "${GREEN}✅ Deploy triggered (ID: $DEPLOY_ID)${NC}"
+    else
+        echo -e "${RED}❌ Failed to create service (HTTP $HTTP_CODE)${NC}"
+        echo ""
+        echo "Response:"
+        echo "$BODY" | jq '.' 2>/dev/null || echo "$BODY"
+        echo ""
+        exit 1
+    fi
 fi
+
+echo ""
+echo -e "${BLUE}📋 Next Steps:${NC}"
+echo "  1. View deployment: https://dashboard.render.com/web/$SERVICE_ID"
+echo "  2. Set ANOMSTACK_ADMIN_PASSWORD secret (if not already set):"
+echo "     - Go to service → Environment"
+echo "     - Mark ANOMSTACK_ADMIN_PASSWORD as secret"
+echo "     - Set your admin password"
+echo "  3. Wait for build to complete (~5-10 minutes)"
+echo "  4. Access dashboard: https://anomstack-demo.onrender.com"
+echo ""
+
+echo -e "${BLUE}💡 View logs:${NC}"
+echo "  export RENDER_SERVICE_ID=$SERVICE_ID"
+echo "  make render-logs"
+echo ""
 
 echo -e "${GREEN}✅ Deployment initiated successfully!${NC}"

@@ -6,7 +6,7 @@ services:
     branch: main
     region: oregon  # Choose: oregon, frankfurt, singapore, ohio, virginia
     plan: starter  # starter, standard, pro, pro_plus (upgrade as needed)
-    dockerfilePath: ./docker/Dockerfile.fly
+    dockerfilePath: ./docker/Dockerfile.render
     dockerContext: ./
     numInstances: 1
 

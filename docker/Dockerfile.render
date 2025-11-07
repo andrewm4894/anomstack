@@ -1,0 +1,95 @@
+FROM python:3.12-slim
+
+# Cache busting argument (set during build to force fresh layers)
+ARG CACHEBUST=4
+
+# Use CACHEBUST to invalidate cache when needed (this layer changes when CACHEBUST changes)
+RUN echo "Cache bust: $CACHEBUST" > /tmp/cachebust
+
+# Install system dependencies including nginx
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    build-essential \
+    curl \
+    cmake \
+    nginx \
+    apache2-utils \
+    net-tools \
+    netcat-openbsd \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /opt/dagster/app
+
+# Copy requirements and install Python dependencies
+COPY requirements.txt requirements-dashboard.txt ./
+RUN pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir -r requirements-dashboard.txt
+
+# Copy application code
+COPY anomstack ./anomstack
+COPY dashboard ./dashboard
+COPY metrics ./metrics
+
+# Capture git commit hash for version info
+ARG ANOMSTACK_BUILD_HASH
+ENV ANOMSTACK_BUILD_HASH=${ANOMSTACK_BUILD_HASH}
+
+# Copy configuration files  
+COPY dagster_fly.yaml ./dagster_home/dagster.yaml
+COPY workspace.yaml ./dagster_home/workspace.yaml
+# Copy startup scripts (use CACHEBUST arg above to ensure fresh copy when needed)
+COPY scripts/deployment/start.sh /opt/dagster/start.sh
+COPY scripts/deployment/debug_grpc.sh /opt/dagster/debug_grpc.sh
+
+# Verify files were copied and create any missing directories
+RUN ls -la ./dagster_home/ && \
+    mkdir -p /opt/dagster/dagster_home && \
+    cp -r ./dagster_home/* /opt/dagster/dagster_home/ && \
+    ls -la /opt/dagster/dagster_home/ && \
+    chmod +x /opt/dagster/start.sh && \
+    chmod +x /opt/dagster/debug_grpc.sh
+
+# Create necessary directories for SQLite storage and artifacts  
+# Clear any existing Dagster storage to force fresh workspace loading
+RUN mkdir -p /data/models /data/dagster_storage /data/artifacts /tmp/dagster/compute_logs && \
+    rm -rf /data/dagster_storage/* 2>/dev/null || true
+
+# Environment setup
+ENV DAGSTER_HOME=/opt/dagster/dagster_home
+ENV PYTHONPATH=/opt/dagster/app
+ENV ANOMSTACK_DUCKDB_PATH=/data/anomstack.db
+ENV ANOMSTACK_MODEL_PATH=local:///data/models
+ENV ANOMSTACK_TABLE_KEY=metrics
+
+# Copy example environment file
+COPY .example.env .env
+
+# Health check script
+RUN echo '#!/bin/bash\n\
+if curl -f http://localhost:3000/server_info 2>/dev/null; then\n\
+    echo "Dagster webserver healthy"\n\
+    exit 0\n\
+else\n\
+    echo "Dagster webserver not responding"\n\
+    exit 1\n\
+fi' > /usr/local/bin/health-check.sh && chmod +x /usr/local/bin/health-check.sh
+
+# Setup nginx
+COPY nginx.conf /etc/nginx/nginx.conf
+# Password file will be created at runtime from environment variables
+
+# Create nginx directories
+RUN mkdir -p /var/log/nginx && \
+    chown -R www-data:www-data /var/log/nginx && \
+    ln -sf /dev/stdout /var/log/nginx/access.log && \
+    ln -sf /dev/stderr /var/log/nginx/error.log
+
+# Expose ports (nginx will handle routing)
+EXPOSE 80
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD /usr/local/bin/health-check.sh
+
+# Use simple startup script
+CMD ["/opt/dagster/start.sh"]
