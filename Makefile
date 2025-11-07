@@ -336,35 +336,35 @@ render-deploy:
 # deploy demo instance via Render API (no GitHub commit needed)
 render-demo-deploy:
 	@echo "🚀 Deploying Anomstack demo to Render via API..."
-	@if [ ! -f .env ]; then \
-		echo "⚠️  No .env file found, using environment variables"; \
-	else \
+	@if [ -f .env ]; then \
 		echo "📋 Loading RENDER_API_KEY from .env..."; \
-		export $$(grep -v '^#' .env | grep RENDER_API_KEY | xargs); \
+		export $$(grep -v '^#' .env | grep RENDER_API_KEY | xargs) && \
+		./scripts/deployment/deploy_render_api.sh --profile demo --yes; \
+	else \
+		./scripts/deployment/deploy_render_api.sh --profile demo --yes; \
 	fi
-	./scripts/deployment/deploy_render_api.sh --profile demo
 
 # deploy production instance via Render API
 render-production-deploy:
 	@echo "🚀 Deploying Anomstack production to Render via API..."
-	@if [ ! -f .env ]; then \
-		echo "⚠️  No .env file found, using environment variables"; \
-	else \
+	@if [ -f .env ]; then \
 		echo "📋 Loading RENDER_API_KEY from .env..."; \
-		export $$(grep -v '^#' .env | grep RENDER_API_KEY | xargs); \
+		export $$(grep -v '^#' .env | grep RENDER_API_KEY | xargs) && \
+		./scripts/deployment/deploy_render_api.sh --profile production --yes; \
+	else \
+		./scripts/deployment/deploy_render_api.sh --profile production --yes; \
 	fi
-	./scripts/deployment/deploy_render_api.sh --profile production
 
 # deploy development instance via Render API
 render-development-deploy:
 	@echo "🚀 Deploying Anomstack development to Render via API..."
-	@if [ ! -f .env ]; then \
-		echo "⚠️  No .env file found, using environment variables"; \
-	else \
+	@if [ -f .env ]; then \
 		echo "📋 Loading RENDER_API_KEY from .env..."; \
-		export $$(grep -v '^#' .env | grep RENDER_API_KEY | xargs); \
+		export $$(grep -v '^#' .env | grep RENDER_API_KEY | xargs) && \
+		./scripts/deployment/deploy_render_api.sh --profile development --yes; \
+	else \
+		./scripts/deployment/deploy_render_api.sh --profile development --yes; \
 	fi
-	./scripts/deployment/deploy_render_api.sh --profile development
 
 # list all Render services
 render-services:

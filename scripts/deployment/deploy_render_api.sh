@@ -24,6 +24,7 @@ PLAN="starter"
 DISK_SIZE_GB=10
 GITHUB_REPO="https://github.com/andrewm4894/anomstack"
 BRANCH="main"
+CONFIRM=false
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -32,6 +33,7 @@ while [[ $# -gt 0 ]]; do
         --service-name) SERVICE_NAME="$2"; shift 2 ;;
         --region) REGION="$2"; shift 2 ;;
         --plan) PLAN="$2"; shift 2 ;;
+        --yes|-y) CONFIRM=true; shift ;;
         *) echo "Unknown option: $1"; exit 1 ;;
     esac
 done
@@ -136,30 +138,38 @@ PAYLOAD=$(cat <<EOF
   "region": "$REGION",
   "plan": "$PLAN",
   "runtime": "docker",
-  "dockerfilePath": "./docker/Dockerfile.fly",
-  "dockerContext": "./",
   "numInstances": 1,
-  "envVars": $ENV_VARS,
-  "disk": {
-    "name": "anomstack-data",
-    "mountPath": "/data",
-    "sizeGB": $DISK_SIZE_GB
-  },
-  "healthCheckPath": "/nginx-health",
-  "autoDeploy": "yes"
+  "serviceDetails": {
+    "dockerfilePath": "./docker/Dockerfile.fly",
+    "dockerContext": "./",
+    "healthCheckPath": "/nginx-health",
+    "disk": {
+      "name": "anomstack-data",
+      "mountPath": "/data",
+      "sizeGB": $DISK_SIZE_GB
+    },
+    "env": "docker",
+    "envVars": $ENV_VARS,
+    "autoDeploy": "yes"
+  }
 }
 EOF
 )
 
 echo ""
 echo -e "${YELLOW}📦 Service Configuration:${NC}"
-echo "$PAYLOAD" | jq '{name, region, plan, runtime, dockerfilePath, disk, envVarCount: (.envVars | length)}'
+echo "$PAYLOAD" | jq '{name, region, plan, runtime, dockerfilePath: .serviceDetails.dockerfilePath, disk: .serviceDetails.disk, envVarCount: (.serviceDetails.envVars | length)}'
 echo ""
 
 echo -e "${YELLOW}⚠️  This will create a NEW service on Render${NC}"
 echo -e "${YELLOW}⚠️  Set ANOMSTACK_ADMIN_PASSWORD as secret after creation${NC}"
 echo ""
-read -p "Press Enter to continue or Ctrl+C to cancel... "
+
+if [ "$CONFIRM" = false ]; then
+    read -p "Press Enter to continue or Ctrl+C to cancel... "
+else
+    echo "Auto-confirming deployment (--yes flag)"
+fi
 
 echo ""
 echo -e "${BLUE}🚀 Creating service...${NC}"
@@ -172,8 +182,8 @@ RESPONSE=$(curl -s -w "\n%{http_code}" \
     -H "Accept: application/json" \
     -d "$PAYLOAD")
 
-HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
-BODY=$(echo "$RESPONSE" | head -n-1)
+HTTP_CODE=$(echo "$RESPONSE" | tail -n 1)
+BODY=$(echo "$RESPONSE" | sed '$d')
 
 if [ "$HTTP_CODE" = "201" ] || [ "$HTTP_CODE" = "200" ]; then
     echo -e "${GREEN}✅ Service created successfully!${NC}"
