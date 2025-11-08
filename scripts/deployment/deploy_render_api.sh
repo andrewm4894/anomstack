@@ -20,7 +20,7 @@ NC='\033[0m'
 PROFILE="demo"
 SERVICE_NAME="anomstack-demo"
 REGION="oregon"
-PLAN="starter"
+PLAN="standard"  # 2GB RAM (starter=512MB is too small for Dagster+daemon+dashboard+nginx)
 DISK_SIZE_GB=10
 GITHUB_REPO="https://github.com/andrewm4894/anomstack"
 BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")

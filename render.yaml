@@ -5,7 +5,7 @@ services:
     repo: https://github.com/andrewm4894/anomstack.git
     branch: main
     region: oregon  # Choose: oregon, frankfurt, singapore, ohio, virginia
-    plan: starter  # starter, standard, pro, pro_plus (upgrade as needed)
+    plan: standard  # standard (2GB) required - starter (512MB) causes OOM
     dockerfilePath: ./docker/Dockerfile.render
     dockerContext: ./
     numInstances: 1
