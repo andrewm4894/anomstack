@@ -101,7 +101,7 @@ fi
 # Create persistent volume for data storage
 echo "💾 Setting up persistent volume..."
 if ! fly volumes list -a "$APP_NAME" | grep -q "anomstack_data"; then
-    fly volumes create anomstack_data --region ord --size 10 -a "$APP_NAME"
+    fly volumes create anomstack_data --region ord --size 10 -a "$APP_NAME" -y
     echo "✅ Created 10GB persistent volume"
 else
     echo "✅ Volume anomstack_data already exists"

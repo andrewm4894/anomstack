@@ -22,6 +22,7 @@ oscrypto
 pandas
 pandas-gbq
 plotly
+posthog
 pyod
 python-dotenv
 python-fasthtml
