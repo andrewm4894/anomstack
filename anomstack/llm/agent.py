@@ -3,7 +3,10 @@ import pandas as pd
 
 
 def detect_anomalies(
-    df: pd.DataFrame, detection_prompt: str | None = None, verification_prompt: str | None = None
+    df: pd.DataFrame,
+    detection_prompt: str | None = None,
+    verification_prompt: str | None = None,
+    include_plot: bool = False,
 ) -> pd.DataFrame:
     """
     Detect anomalies using the AnomalyAgent.
@@ -14,12 +17,14 @@ def detect_anomalies(
             If None, uses anomaly-agent's default.
         verification_prompt (str, optional): The verification prompt for the AnomalyAgent.
             If None, uses anomaly-agent's default.
+        include_plot (bool, optional): If True, include a plot image in the LLM prompt
+            for multimodal analysis. Defaults to False.
 
     Returns:
         pd.DataFrame: A DataFrame containing the detected anomalies.
     """
     # Build AnomalyAgent kwargs, only including non-None values
-    agent_kwargs = {}
+    agent_kwargs = {"include_plot": include_plot}
     if detection_prompt is not None:
         agent_kwargs["detection_prompt"] = detection_prompt
     if verification_prompt is not None:
