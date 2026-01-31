@@ -6,7 +6,7 @@ ARG CACHEBUST=4
 # Use CACHEBUST to invalidate cache when needed (this layer changes when CACHEBUST changes)
 RUN echo "Cache bust: $CACHEBUST" > /tmp/cachebust
 
-# Install system dependencies including nginx
+# Install system dependencies including nginx and chromium for kaleido (plotly image export)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     build-essential \
@@ -16,7 +16,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apache2-utils \
     net-tools \
     netcat-openbsd \
+    chromium \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Set Chrome path for kaleido (plotly image export for multimodal LLM alerts)
+ENV CHROME_BIN=/usr/bin/chromium
 
 WORKDIR /opt/dagster/app
 
