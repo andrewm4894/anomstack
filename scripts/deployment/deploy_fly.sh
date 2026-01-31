@@ -184,8 +184,9 @@ if [[ -f "$ENV_FILE" ]]; then
         [[ ! "$line" =~ = ]] && continue
 
         # Extract variable name and value
+        # Only trim spaces from name, preserve spaces in value (important for cron expressions)
         var_name=$(echo "$line" | cut -d'=' -f1 | tr -d ' ')
-        var_value=$(echo "$line" | cut -d'=' -f2- | tr -d ' ')
+        var_value=$(echo "$line" | cut -d'=' -f2-)
 
         # Skip empty values
         [[ -z "$var_value" ]] && continue
