@@ -1,4 +1,4 @@
-anomaly-agent>=0.11.0
+anomaly-agent>=0.11.1
 boto3
 clickhouse-connect
 dagit
