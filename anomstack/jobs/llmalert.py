@@ -71,6 +71,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
     )
     verification_prompt = spec.get("llmalert_anomaly_agent_verification_prompt")
     include_plot = spec.get("llmalert_include_plot", False)
+    model_name = spec.get("llmalert_model", "gpt-5-mini")
 
     @job(
         name=f"{metric_batch}_llmalert_job",
@@ -137,7 +138,11 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
 
                 # logger.debug(f"detection_prompt: \n{detection_prompt}")
                 df_detected_anomalies = detect_anomalies(
-                    df_prompt, detection_prompt, verification_prompt, include_plot
+                    df_prompt,
+                    detection_prompt,
+                    verification_prompt,
+                    include_plot,
+                    model_name,
                 )
                 logger.debug(
                     f"Raw anomaly detection output columns: {df_detected_anomalies.columns.tolist()}"

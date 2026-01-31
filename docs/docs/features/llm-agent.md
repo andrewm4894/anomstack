@@ -8,7 +8,7 @@ The LLM (Large Language Model) agent in Anomstack provides AI-powered anomaly de
 
 ## Features
 
-- **LLM-Powered Detection**: Uses OpenAI models (gpt-4o-mini by default) for intelligent anomaly identification
+- **LLM-Powered Detection**: Uses OpenAI models (gpt-5-mini by default) for intelligent anomaly identification
 - **Multimodal Analysis**: Optionally includes time series plots for visual pattern recognition
 - **Two-Stage Pipeline**: Detection and verification phases to reduce false positives
 - **Natural Language Explanations**: Get human-readable descriptions of detected anomalies
@@ -24,6 +24,7 @@ disable_llmalert: False
 llmalert_default_schedule_status: 'RUNNING'
 
 # LLM alert parameters
+llmalert_model: "gpt-5-mini"                  # OpenAI model to use for LLM alerts
 llmalert_recent_n: 5                          # Number of recent observations to analyze
 llmalert_smooth_n: 0                          # Smoothing applied before analysis
 llmalert_metric_rounding: -1                  # Decimal places for rounding (-1 = no rounding)
@@ -41,7 +42,7 @@ When `llmalert_include_plot: True` (default), Anomstack generates a matplotlib v
 - More context-aware anomaly descriptions
 - Better detection of patterns that may not be obvious in raw numbers
 
-The plot is encoded as base64 PNG and works with any multimodal-capable model (gpt-4o-mini, gpt-4o, etc.).
+The plot is encoded as base64 PNG and works with any multimodal-capable model (gpt-5-mini, gpt-4o-mini, gpt-4o, etc.).
 
 ### Custom Prompts
 
@@ -67,17 +68,15 @@ Required environment variables for LLM alerts:
 # Required: OpenAI API key
 OPENAI_API_KEY=your-openai-api-key
 
-# Optional: Model selection (defaults to gpt-4o-mini)
-ANOMSTACK_OPENAI_MODEL=gpt-4o-mini
-
 # Optional: PostHog for LLM analytics tracking
 POSTHOG_API_KEY=your-posthog-api-key
 POSTHOG_ENABLED=true
 ```
 
-You can also override llmalert settings per metric batch:
+You can override llmalert settings per metric batch using the standard override pattern:
 
 ```bash
+ANOMSTACK__MY_BATCH__LLMALERT_MODEL=gpt-4o
 ANOMSTACK__MY_BATCH__LLMALERT_INCLUDE_PLOT=True
 ANOMSTACK__MY_BATCH__DISABLE_LLMALERT=False
 ```

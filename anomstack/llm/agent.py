@@ -7,6 +7,7 @@ def detect_anomalies(
     detection_prompt: str | None = None,
     verification_prompt: str | None = None,
     include_plot: bool = False,
+    model_name: str = "gpt-5-mini",
 ) -> pd.DataFrame:
     """
     Detect anomalies using the AnomalyAgent.
@@ -19,12 +20,14 @@ def detect_anomalies(
             If None, uses anomaly-agent's default.
         include_plot (bool, optional): If True, include a plot image in the LLM prompt
             for multimodal analysis. Defaults to False.
+        model_name (str, optional): The OpenAI model to use for anomaly detection.
+            Defaults to "gpt-4o-mini".
 
     Returns:
         pd.DataFrame: A DataFrame containing the detected anomalies.
     """
     # Build AnomalyAgent kwargs, only including non-None values
-    agent_kwargs = {"include_plot": include_plot}
+    agent_kwargs = {"include_plot": include_plot, "model_name": model_name}
     if detection_prompt is not None:
         agent_kwargs["detection_prompt"] = detection_prompt
     if verification_prompt is not None:
