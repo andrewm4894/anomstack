@@ -12,6 +12,20 @@ export PYTHONPATH="/opt/dagster/app"
 # Change to the app directory
 cd /opt/dagster/app
 
+# Write environment variables to .env file for Dagster multiprocess executor
+# This ensures subprocesses can access secrets via python-dotenv
+echo "📝 Writing environment variables to .env file..."
+cat > /opt/dagster/app/.env << EOF
+# Auto-generated from Fly secrets at container startup
+OPENAI_API_KEY=${OPENAI_API_KEY:-}
+POSTHOG_API_KEY=${POSTHOG_API_KEY:-}
+POSTHOG_HOST=${POSTHOG_HOST:-https://us.i.posthog.com}
+POSTHOG_ENABLED=${POSTHOG_ENABLED:-true}
+ANOMSTACK_DUCKDB_PATH=${ANOMSTACK_DUCKDB_PATH:-/data/anomstack.db}
+ANOMSTACK_MODEL_PATH=${ANOMSTACK_MODEL_PATH:-local:///data/models}
+EOF
+echo "✅ Environment variables written to .env"
+
 echo "📁 Checking files..."
 ls -la /opt/dagster/dagster_home/
 
