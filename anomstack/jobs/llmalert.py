@@ -71,7 +71,9 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
     )
     verification_prompt = spec.get("llmalert_anomaly_agent_verification_prompt")
     include_plot = spec.get("llmalert_include_plot", False)
-    model_name = spec.get("llmalert_model", "gpt-5-mini")
+    # Use specific model from config, or set to "random" to A/B test across models
+    # When "random", uses ANOMSTACK_LLMALERT_MODELS env var for model list
+    model_name = spec.get("llmalert_model", "gpt-4o-mini")
 
     @job(
         name=f"{metric_batch}_llmalert_job",
