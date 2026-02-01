@@ -23,7 +23,7 @@ pandas
 pandas-gbq
 plotly
 posthog
-pyod>=2.0.6
+pyod @ git+https://github.com/yzhao062/pyod.git@master
 python-dotenv
 python-fasthtml
 pyyaml

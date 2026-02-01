@@ -29,6 +29,7 @@ def ingest():
         "apache/airflow",
         "stanfordnlp/dspy",
         "scikit-learn/scikit-learn",
+        "posthog/posthog",
     ]
 
     # Define the headline metric keys to extract from each repository's JSON.
