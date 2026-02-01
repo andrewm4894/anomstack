@@ -8,6 +8,7 @@ def detect_anomalies(
     verification_prompt: str | None = None,
     include_plot: bool = False,
     model_name: str = "gpt-5-mini",
+    posthog_metadata: dict | None = None,
 ) -> pd.DataFrame:
     """
     Detect anomalies using the AnomalyAgent.
@@ -22,6 +23,8 @@ def detect_anomalies(
             for multimodal analysis. Defaults to False.
         model_name (str, optional): The OpenAI model to use for anomaly detection.
             Defaults to "gpt-4o-mini".
+        posthog_metadata (dict, optional): Custom metadata to include in PostHog traces.
+            Useful for linking LLM traces to metric batches and Dagster runs.
 
     Returns:
         pd.DataFrame: A DataFrame containing the detected anomalies.
@@ -32,6 +35,8 @@ def detect_anomalies(
         agent_kwargs["detection_prompt"] = detection_prompt
     if verification_prompt is not None:
         agent_kwargs["verification_prompt"] = verification_prompt
+    if posthog_metadata is not None:
+        agent_kwargs["posthog_metadata"] = posthog_metadata
 
     anomaly_agent = AnomalyAgent(**agent_kwargs)
     anomalies = anomaly_agent.detect_anomalies(df, timestamp_col="metric_timestamp")

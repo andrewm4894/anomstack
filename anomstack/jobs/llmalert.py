@@ -137,12 +137,19 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                     df_prompt = df_prompt.round(llmalert_metric_rounding)
 
                 # logger.debug(f"detection_prompt: \n{detection_prompt}")
+                # Build PostHog metadata for linking traces to metric batches
+                posthog_metadata = {
+                    "metric_batch": metric_batch,
+                    "metric_name": metric_name,
+                    "dagster_run_id": str(context.run_id),
+                }
                 df_detected_anomalies = detect_anomalies(
                     df_prompt,
                     detection_prompt,
                     verification_prompt,
                     include_plot,
                     model_name,
+                    posthog_metadata,
                 )
                 logger.debug(
                     f"Raw anomaly detection output columns: {df_detected_anomalies.columns.tolist()}"
