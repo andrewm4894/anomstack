@@ -23,7 +23,7 @@ pandas
 pandas-gbq
 plotly
 posthog
-pyod
+pyod>=2.0.6
 python-dotenv
 python-fasthtml
 pyyaml
