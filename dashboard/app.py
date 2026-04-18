@@ -68,7 +68,12 @@ if not posthog_script:
 # Define the app
 app, rt = fast_app(
     hdrs=(
-        Theme.blue.headers(),
+        Theme.blue.headers(
+            mode="auto",
+            radii=ThemeRadii.lg,
+            shadows=ThemeShadows.md,
+            font=ThemeFont.default,
+        ),
         Script(src="https://cdn.plot.ly/plotly-2.32.0.min.js"),
         Script(posthog_script) if posthog_script else None,
         Link(
@@ -76,8 +81,10 @@ app, rt = fast_app(
             type="image/svg+xml",
             href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNoYXJ0LWxpbmUiPjxwYXRoIGQ9Ik0zIDN2MTZhMiAyIDAgMCAwIDIgMmgxNiIvPjxwYXRoIGQ9Im0xOSA5LTUgNS00LTQtMyAzIi8+PC9zdmc+",
         ),
-        Link(rel="stylesheet", href="dashboard/static/styles.css"),
+        Link(rel="stylesheet", href="/dashboard/static/styles.css"),
     ),
+    title="Anomstack",
+    bodykw={"class": "antialiased"},
     debug=os.getenv("ANOMSTACK_DASHBOARD_DEBUG", "false").lower() == "true",
     log=log,
 )

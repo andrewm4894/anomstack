@@ -7,7 +7,7 @@ This module contains the components for the toolbar.
 
 """
 
-from fasthtml.common import Div
+from fasthtml.common import Div, P
 from monsterui.all import Button, ButtonT, DivLAligned, UkIcon
 
 from .batch import create_batches_dropdown
@@ -25,39 +25,57 @@ def create_toolbar_buttons(batch_name: str) -> Div:
     """
     return Div(
         Button(
-            DivLAligned(UkIcon("home")),
+            DivLAligned(
+                UkIcon("home"),
+                P("Home", cls="hidden xl:inline"),
+                cls="space-x-2",
+            ),
             hx_get="/",
             hx_push_url="/",
             hx_target="#main-content",
-            cls=ButtonT.secondary,
+            hx_indicator="#loading",
+            cls=(ButtonT.secondary, "toolbar-btn"),
             uk_tooltip="Return to homepage",
+            aria_label="Return to homepage",
         ),
         Button(
             DivLAligned(UkIcon("menu")),
-            cls=ButtonT.secondary,
+            cls=(ButtonT.secondary, "toolbar-btn"),
             uk_tooltip="Select metric batch to display",
+            aria_label="Open metric batch selector",
         ),
         create_batches_dropdown(batch_name),
         Button(
             DivLAligned(UkIcon("settings")),
-            cls=ButtonT.secondary,
+            cls=(ButtonT.secondary, "toolbar-btn"),
             uk_tooltip="Customize chart display settings",
+            aria_label="Open chart display settings",
         ),
         create_settings_dropdown(batch_name),
         Button(
-            DivLAligned(UkIcon("refresh-ccw")),
+            DivLAligned(
+                UkIcon("refresh-ccw"),
+                P("Refresh", cls="hidden xl:inline"),
+                cls="space-x-2",
+            ),
             hx_get=f"/batch/{batch_name}/refresh",
             hx_target="#main-content",
-            cls=ButtonT.secondary,
+            cls=(ButtonT.secondary, "toolbar-btn"),
             uk_tooltip="Refresh metrics data from source",
+            aria_label="Refresh metrics data",
         ),
         Button(
-            DivLAligned(UkIcon("alert-circle")),
+            DivLAligned(
+                UkIcon("alert-circle"),
+                P("Anomalies", cls="hidden xl:inline"),
+                cls="space-x-2",
+            ),
             hx_get=f"/batch/{batch_name}/anomalies",
             hx_push_url=f"/batch/{batch_name}/anomalies",
             hx_target="#main-content",
-            cls=ButtonT.secondary,
+            cls=(ButtonT.secondary, "toolbar-btn"),
             uk_tooltip="View anomaly list",
+            aria_label="View anomaly list",
         ),
-        cls="flex items-center space-x-2 flex-wrap",
+        cls="toolbar-stack",
     )

@@ -7,11 +7,28 @@ This module contains the common components for the dashboard.
 
 """
 
-from fasthtml.common import Div
-from monsterui.all import Card, DivFullySpaced
+from fasthtml.common import Div, P
+from monsterui.all import Card, CodeSpan, DivFullySpaced, H2, Subtitle
 
+from dashboard.app import app
+from dashboard.presentation import format_batch_name, get_filtered_metric_stats
 from .search import create_last_n_form, create_search_form
 from .toolbar import create_toolbar_buttons
+
+
+def create_controls_summary(batch_name: str, hx_swap_oob: str | None = None) -> Div:
+    """Create the summary pills shown above the batch filters."""
+    total_metrics = len(app.state.stats_cache.get(batch_name, []))
+    visible_metrics = len(get_filtered_metric_stats(batch_name))
+    current_window = app.state.last_n.get(batch_name, "90n")
+
+    return Div(
+        P(f"{visible_metrics} of {total_metrics} metrics shown", cls="dashboard-pill"),
+        P(f"Window {current_window}", cls="dashboard-pill"),
+        cls="controls-pills",
+        id=f"controls-summary-{batch_name}",
+        hx_swap_oob=hx_swap_oob,
+    )
 
 
 def create_controls(batch_name: str) -> Card:
@@ -24,21 +41,32 @@ def create_controls(batch_name: str) -> Card:
         Card: The card.
     """
     return Card(
-        DivFullySpaced(
+        Div(
+            DivFullySpaced(
+                Div(
+                    CodeSpan(batch_name),
+                    H2(format_batch_name(batch_name), cls="mt-3 mb-1 text-2xl"),
+                    Subtitle("Browse metrics, adjust the chart window, and inspect anomalies."),
+                    cls="space-y-1",
+                ),
+                create_toolbar_buttons(batch_name),
+                cls="controls-header",
+            ),
+            create_controls_summary(batch_name),
             Div(
                 Div(
-                    Div(
-                        create_toolbar_buttons(batch_name),
-                        Div(
-                            create_search_form(batch_name),
-                            create_last_n_form(batch_name),
-                            cls="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4 mt-4",
-                        ),
-                        cls="flex flex-col w-full",
-                    ),
+                    P("Filter metrics", cls="controls-label"),
+                    create_search_form(batch_name),
+                    cls="space-y-2 min-w-0",
                 ),
-                cls="w-full",
+                Div(
+                    P("Time window", cls="controls-label"),
+                    create_last_n_form(batch_name),
+                    cls="space-y-2",
+                ),
+                cls="controls-form-grid",
             ),
+            cls="space-y-5",
         ),
-        cls="mb-4 uk-padding-small py-2 shadow-sm",
+        cls="controls-card mb-5",
     )

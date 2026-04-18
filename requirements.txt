@@ -16,7 +16,7 @@ google-cloud-bigquery
 Jinja2
 libsql-experimental
 matplotlib
-MonsterUI
+MonsterUI>=1.0.46
 numpy
 oscrypto
 pandas
@@ -25,7 +25,7 @@ plotly
 posthog
 pyod @ git+https://github.com/yzhao062/pyod.git@master
 python-dotenv
-python-fasthtml
+python-fasthtml>=0.13.4
 pyyaml
 seaborn
 slack_sdk
