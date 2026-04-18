@@ -7,6 +7,8 @@ This module contains the components for the dashboard header.
 
 """
 
+from __future__ import annotations
+
 from fasthtml.common import H2, A, Div, P
 from monsterui.all import DivLAligned, TextPresets, UkIcon
 

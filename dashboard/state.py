@@ -70,7 +70,7 @@ class AppState:
         self.small_charts = True
         self.dark_mode = False
         self.two_columns = True
-        self.show_markers = True
+        self.show_markers = False
         self.last_n = {}
         self.line_width = 2
         self.show_legend = False

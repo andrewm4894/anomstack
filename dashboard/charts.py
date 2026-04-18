@@ -7,6 +7,8 @@ This module contains the ChartManager class, which is responsible for creating c
 
 """
 
+from __future__ import annotations
+
 from fasthtml.common import Div, P
 from monsterui.all import Card, DivLAligned, Loading, LoadingT, TextPresets
 import pandas as pd
@@ -40,6 +42,7 @@ class ChartManager:
             "responsive": True,
             "scrollZoom": False,
             "staticPlot": False,
+            "doubleClick": "reset",
         }
 
     @staticmethod
@@ -72,13 +75,13 @@ class ChartManager:
             "modeBarButtonsToRemove": [
                 "select2d",
                 "lasso2d",
+                "toggleSpikelines",
             ],
             "responsive": True,
             "scrollZoom": True,
             "staticPlot": False,
             "fillFrame": True,
             "displaylogo": False,
-            "modeBarButtonsToAdd": [],
             "toImageButtonOptions": {
                 "format": "png",
                 "filename": f"metric_chart_{chart_index}",
@@ -150,6 +153,7 @@ class ChartManager:
             str: The HTML for the sparkline.
         """
         colors = ChartStyle.get_colors(app.state.dark_mode)
+        line_shape = ChartStyle.get_line_shape(df_metric)
         fig = make_subplots(specs=[[{"secondary_y": True}]])
 
         # Add the main line
@@ -161,8 +165,12 @@ class ChartManager:
                 mode="lines",
                 line=dict(
                     color=colors["primary"],
-                    width=1,
+                    width=1.5,
+                    shape=line_shape,
+                    smoothing=0.7 if line_shape == "spline" else 0,
                 ),
+                fill="tozeroy" if df_metric["metric_value"].min() >= 0 else None,
+                fillcolor=colors["primary_fill"],
                 showlegend=False,
                 connectgaps=True,
             ),
@@ -180,6 +188,8 @@ class ChartManager:
                     color=colors["secondary"],
                     width=1,
                     dash="dot",
+                    shape=line_shape,
+                    smoothing=0.7 if line_shape == "spline" else 0,
                 ),
                 showlegend=False,
                 connectgaps=True,
@@ -207,6 +217,7 @@ class ChartManager:
                             color=alert_color,
                             size=8,
                             symbol="diamond",
+                            line=dict(width=1.5, color=colors["background_solid"]),
                         ),
                         showlegend=False,
                     ),
@@ -214,9 +225,8 @@ class ChartManager:
                 )
 
         fig.update_layout(
-            height=50,
-            width=200,
-            margin=dict(l=0, r=0, t=0, b=0),
+            height=72,
+            margin=dict(l=0, r=0, t=4, b=0),
             xaxis=dict(
                 showgrid=False,
                 showticklabels=False,
@@ -235,6 +245,12 @@ class ChartManager:
             ),
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
+            hovermode="x unified",
+            hoverlabel=dict(
+                bgcolor=colors["background_solid"],
+                bordercolor=colors["border"],
+                font=dict(color=colors["text"], size=11),
+            ),
             modebar=dict(
                 remove=[
                     "zoom",
@@ -267,6 +283,7 @@ class ChartManager:
             str: The HTML for the expanded sparkline.
         """
         colors = ChartStyle.get_colors(app.state.dark_mode)
+        line_shape = ChartStyle.get_line_shape(df_metric)
         fig = make_subplots(specs=[[{"secondary_y": True}]])
 
         # Add the main line
@@ -279,11 +296,16 @@ class ChartManager:
                 line=dict(
                     color=colors["primary"],
                     width=3,
+                    shape=line_shape,
+                    smoothing=0.7 if line_shape == "spline" else 0,
                 ),
                 marker=dict(
-                    size=4,
+                    size=5,
                     color=colors["primary"],
+                    line=dict(width=1.5, color=colors["background_solid"]),
                 ),
+                fill="tozeroy" if df_metric["metric_value"].min() >= 0 else None,
+                fillcolor=colors["primary_fill"],
                 showlegend=True,
                 connectgaps=True,
             ),
@@ -301,6 +323,8 @@ class ChartManager:
                     color=colors["secondary"],
                     width=2,
                     dash="dot",
+                    shape=line_shape,
+                    smoothing=0.7 if line_shape == "spline" else 0,
                 ),
                 showlegend=True,
                 connectgaps=True,
@@ -321,9 +345,9 @@ class ChartManager:
                         mode="markers",
                         marker=dict(
                             size=12,
-                            color="red",
-                            symbol="circle",
-                            line=dict(width=2, color="white"),
+                            color=colors["alert"],
+                            symbol="diamond",
+                            line=dict(width=2, color=colors["background_solid"]),
                         ),
                         showlegend=True,
                     ),
@@ -341,8 +365,9 @@ class ChartManager:
                     mode="markers",
                     marker=dict(
                         size=8,
-                        color="orange",
+                        color=colors["alert"],
                         symbol="diamond",
+                        line=dict(width=1.5, color=colors["background_solid"]),
                     ),
                     showlegend=True,
                 ),
@@ -360,8 +385,9 @@ class ChartManager:
                     mode="markers",
                     marker=dict(
                         size=8,
-                        color="purple",
+                        color=colors["llmalert"],
                         symbol="star",
+                        line=dict(width=1.5, color=colors["background_solid"]),
                     ),
                     showlegend=True,
                 ),
@@ -391,18 +417,27 @@ class ChartManager:
             paper_bgcolor=colors["background"],
             plot_bgcolor=colors["background"],
             font=dict(color=colors["text"]),
+            hovermode="x unified",
             legend=dict(
                 orientation="h",
                 yanchor="bottom",
                 y=1.02,
-                xanchor="right",
-                x=1
+                xanchor="left",
+                x=0,
+                bgcolor=colors["background_solid"],
+                bordercolor=colors["border"],
+                borderwidth=1,
             ),
             title=dict(
                 text="Anomaly Detail View",
                 x=0.5,
                 font=dict(size=16)
-            )
+            ),
+            hoverlabel=dict(
+                bgcolor=colors["background_solid"],
+                bordercolor=colors["border"],
+                font=dict(color=colors["text"]),
+            ),
         )
 
         # Enhanced config for expanded view
@@ -411,6 +446,7 @@ class ChartManager:
             "modeBarButtonsToRemove": [
                 "select2d",
                 "lasso2d",
+                "toggleSpikelines",
             ],
             "responsive": True,
             "scrollZoom": True,
@@ -443,6 +479,7 @@ class ChartManager:
             str: The HTML for the expanded chart.
         """
         colors = ChartStyle.get_colors(app.state.dark_mode)
+        line_shape = ChartStyle.get_line_shape(df_metric)
         fig = make_subplots(specs=[[{"secondary_y": True}]])
 
         # Add the main line (full time series)
@@ -455,11 +492,16 @@ class ChartManager:
                 line=dict(
                     color=colors["primary"],
                     width=3,
+                    shape=line_shape,
+                    smoothing=0.7 if line_shape == "spline" else 0,
                 ),
                 marker=dict(
-                    size=4,
+                    size=5,
                     color=colors["primary"],
+                    line=dict(width=1.5, color=colors["background_solid"]),
                 ),
+                fill="tozeroy" if df_metric["metric_value"].min() >= 0 else None,
+                fillcolor=colors["primary_fill"],
                 showlegend=True,
                 connectgaps=True,
             ),
@@ -477,6 +519,8 @@ class ChartManager:
                     color=colors["secondary"],
                     width=2,
                     dash="dot",
+                    shape=line_shape,
+                    smoothing=0.7 if line_shape == "spline" else 0,
                 ),
                 showlegend=True,
                 connectgaps=True,
@@ -511,7 +555,7 @@ class ChartManager:
                             size=15,
                             color=marker_color,
                             symbol=marker_symbol,
-                            line=dict(width=3, color="white"),
+                            line=dict(width=3, color=colors["background_solid"]),
                         ),
                         showlegend=True,
                     ),
@@ -541,18 +585,27 @@ class ChartManager:
             paper_bgcolor=colors["background"],
             plot_bgcolor=colors["background"],
             font=dict(color=colors["text"]),
+            hovermode="x unified",
             legend=dict(
                 orientation="h",
                 yanchor="bottom",
                 y=1.02,
-                xanchor="right",
-                x=1
+                xanchor="left",
+                x=0,
+                bgcolor=colors["background_solid"],
+                bordercolor=colors["border"],
+                borderwidth=1,
             ),
             title=dict(
                 text="Single Anomaly Detail View",
                 x=0.5,
                 font=dict(size=16)
-            )
+            ),
+            hoverlabel=dict(
+                bgcolor=colors["background_solid"],
+                bordercolor=colors["border"],
+                font=dict(color=colors["text"]),
+            ),
         )
 
         # Enhanced config for expanded view
@@ -561,6 +614,7 @@ class ChartManager:
             "modeBarButtonsToRemove": [
                 "select2d",
                 "lasso2d",
+                "toggleSpikelines",
             ],
             "responsive": True,
             "scrollZoom": True,
@@ -589,30 +643,57 @@ class ChartStyle:
     def get_colors(dark_mode: bool) -> dict:
         """Return theme-based colors."""
         return {
-            "background": "#1a1a1a" if dark_mode else "white",
-            "text": "#e5e7eb" if dark_mode else "#64748b",
-            "grid": "rgba(255,255,255,0.1)" if dark_mode else "rgba(0,0,0,0.1)",
-            "primary": "#3b82f6" if dark_mode else "#2563eb",
-            "secondary": "#9ca3af" if dark_mode else "#64748b",
-            "alert": "#ef4444" if dark_mode else "#dc2626",
-            "llmalert": "#f97316" if dark_mode else "#fb923c",
-            "change": "#fb923c" if dark_mode else "#f97316",
+            "background": "rgba(15,23,42,0.0)" if dark_mode else "rgba(255,255,255,0.0)",
+            "background_solid": "#111827" if dark_mode else "#ffffff",
+            "text": "#dbe4f0" if dark_mode else "#334155",
+            "muted_text": "#94a3b8" if dark_mode else "#64748b",
+            "grid": "rgba(148,163,184,0.12)" if dark_mode else "rgba(148,163,184,0.12)",
+            "border": "rgba(148,163,184,0.22)" if dark_mode else "rgba(148,163,184,0.18)",
+            "primary": "#60a5fa" if dark_mode else "#2563eb",
+            "primary_fill": "rgba(96,165,250,0.14)" if dark_mode else "rgba(37,99,235,0.12)",
+            "primary_glow": "rgba(96,165,250,0.24)" if dark_mode else "rgba(37,99,235,0.18)",
+            "secondary": "rgba(148,163,184,0.92)" if dark_mode else "rgba(71,85,105,0.72)",
+            "alert": "#f43f5e" if dark_mode else "#e11d48",
+            "llmalert": "#f59e0b" if dark_mode else "#d97706",
+            "change": "#14b8a6" if dark_mode else "#0f766e",
         }
 
     @staticmethod
-    def get_common_styling(colors: dict) -> tuple:
+    def get_common_styling(colors: dict, compact: bool = False) -> tuple:
         """Return common styling configurations."""
-        common_font = dict(size=10, color=colors["text"])
-        common_title_font = dict(size=12, color=colors["text"])
+        common_font = dict(size=9 if compact else 10, color=colors["muted_text"])
+        common_title_font = dict(size=11 if compact else 12, color=colors["text"])
         common_grid = dict(
             showgrid=True,
-            gridwidth=1,
+            gridwidth=0.8,
             gridcolor=colors["grid"],
             zeroline=False,
             tickfont=common_font,
             title_font=common_title_font,
+            linecolor=colors["border"],
+            tickcolor=colors["border"],
+            automargin=True,
         )
         return common_font, common_title_font, common_grid
+
+    @staticmethod
+    def get_line_shape(df: pd.DataFrame) -> str:
+        """Return a smoother line shape for denser time series."""
+        return "spline" if len(df) >= 12 else "linear"
+
+    @staticmethod
+    def get_marker_mode(
+        df: pd.DataFrame,
+        show_markers: bool,
+        small_charts: bool,
+        base_mode: str = "lines",
+    ) -> str:
+        """Keep compact charts clean by only showing dense point markers when useful."""
+        if not show_markers:
+            return base_mode
+        if small_charts and len(df) > 32:
+            return base_mode
+        return f"{base_mode}+markers"
 
 
 def plot_time_series(
@@ -639,105 +720,138 @@ def plot_time_series(
     """
     df["metric_llmalert"] = df["metric_llmalert"].clip(upper=1)
     colors = ChartStyle.get_colors(dark_mode)
-    _, _, common_grid = ChartStyle.get_common_styling(colors)
+    _, _, common_grid = ChartStyle.get_common_styling(colors, compact=small_charts)
 
     # Define height based on size toggle
-    height = 250 if small_charts else 400
+    height = 230 if small_charts else 400
 
     # Create figure with secondary y-axis
     fig = make_subplots(specs=[[{"secondary_y": True}]])
 
     # Add main metric value trace
-    _add_main_metric_trace(fig, df, colors, show_markers, line_width, show_legend)
+    _add_main_metric_trace(fig, df, colors, show_markers, line_width, show_legend, small_charts)
 
     # Add metric score trace
-    _add_score_trace(fig, df, colors, line_width, show_legend)
+    _add_score_trace(fig, df, colors, line_width, show_legend, small_charts)
 
     # Add alert and change markers if they exist
-    _add_condition_traces(fig, df, colors, line_width, show_legend)
+    _add_condition_traces(fig, df, colors, line_width, show_legend, small_charts)
+
+    # Add a subtle endpoint marker so the latest value anchors the eye.
+    _add_latest_value_trace(fig, df, colors, small_charts)
 
     # Update axes
-    _update_axes_and_layout(fig, common_grid, colors, show_legend, height)
+    _update_axes_and_layout(fig, common_grid, colors, show_legend, height, small_charts)
 
     return fig
 
 
-def _add_main_metric_trace(fig, df, colors, show_markers, line_width, show_legend):
+def _add_main_metric_trace(fig, df, colors, show_markers, line_width, show_legend, small_charts):
     """Add the main metric value trace to the figure."""
+    line_shape = ChartStyle.get_line_shape(df)
+    allow_fill = df["metric_value"].min() >= 0
+    marker_mode = ChartStyle.get_marker_mode(df, show_markers, small_charts)
+    marker_size = max(line_width + (1 if small_charts else 2), 4 if small_charts else 5)
     fig.add_trace(
         go.Scatter(
             x=df["metric_timestamp"],
             y=df["metric_value"],
             name="Value",
-            mode="lines" + ("+markers" if show_markers else ""),
-            line=dict(color=colors["primary"], width=line_width),
+            mode=marker_mode,
+            line=dict(
+                color=colors["primary"],
+                width=line_width + (0.35 if small_charts else 0.7),
+                shape=line_shape,
+                smoothing=0.55 if line_shape == "spline" else 0,
+            ),
             marker=(
-                dict(size=line_width + 4, color=colors["primary"], symbol="circle")
-                if show_markers
+                dict(
+                    size=marker_size,
+                    color=colors["primary"],
+                    symbol="circle",
+                    opacity=0.72 if small_charts else 0.82,
+                    line=dict(width=1.1, color=colors["background_solid"]),
+                )
+                if marker_mode.endswith("+markers")
                 else None
             ),
+            fill="tozeroy" if allow_fill else None,
+            fillcolor=colors["primary_fill"] if allow_fill else None,
             showlegend=show_legend,
             connectgaps=True,
             hovertemplate=(
-                f'<span style="color: {colors["primary"]}"><b>Value</b>: %{{y:.2f}}<br>'
-                f"Time: %{{x}}</span><extra></extra>"
+                "<b>Value</b> %{y:.2f}<br>"
+                "%{x|%b %d, %Y %H:%M}<extra></extra>"
             ),
         ),
         secondary_y=False,
     )
 
 
-def _add_score_trace(fig, df, colors, line_width, show_legend):
+def _add_score_trace(fig, df, colors, line_width, show_legend, small_charts):
     """Add the metric score trace to the figure."""
+    line_shape = ChartStyle.get_line_shape(df)
     fig.add_trace(
         go.Scatter(
             x=df["metric_timestamp"],
             y=df["metric_score"],
             name="Score",
-            line=dict(color=colors["secondary"], width=line_width, dash="dot"),
+            mode="lines",
+            line=dict(
+                color=colors["secondary"],
+                width=max(line_width - 0.5, 1.1 if small_charts else 1.5),
+                dash="solid",
+                shape=line_shape,
+                smoothing=0.45 if line_shape == "spline" else 0,
+            ),
             showlegend=show_legend,
             connectgaps=True,
             hovertemplate=(
-                f'<span style="color: {colors["secondary"]}"><b>Score</b>: %{{y:.1%}}<br>'
-                f"Time: %{{x}}</span><extra></extra>"
+                "<b>Score</b> %{y:.1%}<br>"
+                "%{x|%b %d, %Y %H:%M}<extra></extra>"
             ),
         ),
         secondary_y=True,
     )
 
 
-def _add_condition_traces(fig, df, colors, line_width, show_legend):
+def _add_condition_traces(fig, df, colors, line_width, show_legend, small_charts):
     """Add alert and change markers to the figure."""
+    explanation_data = (
+        df["anomaly_explanation"].fillna("")
+        if "anomaly_explanation" in df.columns
+        else pd.Series([""] * len(df), index=df.index)
+    )
     for condition, props in {
         "metric_alert": dict(
             name="Alert",
             color=colors["alert"],
+            symbol="diamond",
             hovertemplate=(
-                f'<span style="color: {colors["alert"]}">'
-                f"<b>Alert</b><br>"
-                "Time: %{x}"
-                "</span><extra></extra>"
+                "<b>Alert</b><br>"
+                "Value %{y:.2f}<br>"
+                "%{x|%b %d, %Y %H:%M}<extra></extra>"
             ),
         ),
         "metric_llmalert": dict(
             name="LLM Alert",
             color=colors["llmalert"],
+            symbol="star-diamond",
             hovertemplate=(
-                f'<span style="color: {colors["llmalert"]}">'
-                f"<b>LLM Alert</b><br>"
-                "Time: %{x}<br>"
-                "<b>Details</b>: %{customdata}"
-                "</span><extra></extra>"
+                "<b>LLM Alert</b><br>"
+                "Value %{y:.2f}<br>"
+                "%{x|%b %d, %Y %H:%M}<br>"
+                "%{customdata}<extra></extra>"
             ),
         ),
         "metric_change": dict(
             name="Change",
             color=colors["change"],
+            symbol="diamond-open",
             hovertemplate=(
-                f'<span style="color: {colors["change"]}">'
-                f"<b>Change</b><br>"
-                "Time: %{x}"
-                "</span><extra></extra>"
+                "<b>Change</b><br>"
+                "Value %{y:.2f}<br>"
+                "%{x|%b %d, %Y %H:%M}<extra></extra>"
             ),
         ),
     }.items():
@@ -746,57 +860,141 @@ def _add_condition_traces(fig, df, colors, line_width, show_legend):
             fig.add_trace(
                 go.Scatter(
                     x=condition_df["metric_timestamp"],
-                    y=condition_df[condition],
+                    y=condition_df["metric_value"],
                     mode="markers",
                     name=props["name"],
-                    marker=dict(color=props["color"], size=line_width + 4, symbol="circle"),
+                    marker=dict(
+                        color=props["color"],
+                        size=line_width + (6 if small_charts else 7),
+                        symbol=props["symbol"],
+                        line=dict(width=1.5, color=colors["background_solid"]),
+                    ),
                     showlegend=show_legend,
-                    customdata=condition_df["anomaly_explanation"],
+                    customdata=explanation_data.loc[condition_df.index],
                     hovertemplate=props["hovertemplate"],
                 ),
-                secondary_y=True,
+                secondary_y=False,
             )
 
 
-def _update_axes_and_layout(fig, common_grid, colors, show_legend, height):
+def _add_latest_value_trace(fig, df, colors, small_charts):
+    """Highlight the latest unflagged datapoint with a subtle halo."""
+    latest_value = df.dropna(subset=["metric_value"]).tail(1)
+    if latest_value.empty:
+        return
+
+    latest_row = latest_value.iloc[0]
+    is_flagged = any(
+        latest_row.get(flag, 0) == 1 for flag in ("metric_alert", "metric_llmalert", "metric_change")
+    )
+    if is_flagged:
+        return
+
+    x = [latest_row["metric_timestamp"]]
+    y = [latest_row["metric_value"]]
+    halo_size = 14 if small_charts else 16
+    point_size = 5 if small_charts else 6
+    fig.add_trace(
+        go.Scatter(
+            x=x,
+            y=y,
+            mode="markers",
+            hoverinfo="skip",
+            showlegend=False,
+            marker=dict(size=halo_size, color=colors["primary_glow"], symbol="circle"),
+        ),
+        secondary_y=False,
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=x,
+            y=y,
+            mode="markers",
+            hovertemplate=(
+                "<b>Latest value</b> %{y:.2f}<br>"
+                "%{x|%b %d, %Y %H:%M}<extra></extra>"
+            ),
+            showlegend=False,
+            marker=dict(
+                size=point_size,
+                color=colors["primary"],
+                symbol="circle",
+                line=dict(width=1.2, color=colors["background_solid"]),
+            ),
+        ),
+        secondary_y=False,
+    )
+
+
+def _update_axes_and_layout(fig, common_grid, colors, show_legend, height, small_charts):
     """Update axes and layout of the figure."""
+    compact_grid = {**common_grid, "showgrid": False}
+    x_grid = compact_grid if small_charts else common_grid
+
     # Update axes
-    fig.update_xaxes(**common_grid)
-    fig.update_yaxes(title_text="Value", secondary_y=False, **common_grid)
+    fig.update_xaxes(
+        **x_grid,
+        showspikes=True,
+        spikemode="across",
+        spikesnap="cursor",
+        spikecolor=colors["grid"],
+        spikethickness=1,
+        showline=False,
+        title_text=None if small_charts else "Time",
+        showticklabels=True,
+        nticks=5 if small_charts else 8,
+    )
     fig.update_yaxes(
-        title_text="Score",
+        title_text=None if small_charts else "Value",
+        secondary_y=False,
+        **common_grid,
+        showline=False,
+        showticklabels=not small_charts,
+        nticks=4 if not small_charts else 3,
+    )
+    fig.update_yaxes(
+        title_text=None if small_charts else "Score",
         secondary_y=True,
         showgrid=False,
         range=[0, 1.05],
         tickformat=".0%",
-        **{k: v for k, v in common_grid.items() if k != "showgrid"},
+        showticklabels=not small_charts,
+        **{k: v for k, v in common_grid.items() if k not in {"showgrid", "gridwidth", "gridcolor"}},
     )
 
     # Update layout
     fig.update_layout(
         plot_bgcolor=colors["background"],
         paper_bgcolor=colors["background"],
-        hovermode="closest",
-        hoverdistance=100,
+        hovermode="x unified",
+        hoverdistance=60,
+        spikedistance=1000,
         showlegend=show_legend,
         legend=(
             dict(
                 orientation="h",
                 yanchor="bottom",
-                y=1.02,
-                xanchor="left",
-                x=0,
-                bgcolor=colors["background"],
+                y=1.02 if not small_charts else 1.01,
+                xanchor="right" if small_charts else "left",
+                x=1 if small_charts else 0,
+                bgcolor=colors["background_solid"],
+                bordercolor=colors["border"],
+                borderwidth=1,
                 font=dict(color=colors["text"]),
             )
             if show_legend
             else None
         ),
-        margin=dict(t=5, b=5, l=5, r=5),
+        margin=dict(
+            t=12 if small_charts else 18,
+            b=24 if small_charts else 40,
+            l=14 if small_charts else 44,
+            r=12 if small_charts else 34,
+        ),
         height=height,
         hoverlabel=dict(
-            bgcolor="white",
-            bordercolor="white",
-            font=dict(size=12),
+            bgcolor=colors["background_solid"],
+            bordercolor=colors["border"],
+            font=dict(size=11 if small_charts else 12, color=colors["text"]),
         ),
     )

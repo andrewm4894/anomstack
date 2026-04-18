@@ -12,8 +12,16 @@ from monsterui.all import Button, ButtonT
 
 from dashboard.app import app, rt
 from dashboard.data import get_data
+from dashboard.presentation import get_filtered_metric_stats
 
-from .batch import DEFAULT_LOAD_N_CHARTS, ChartManager
+from .batch import DEFAULT_LOAD_N_CHARTS, ChartManager, get_chart_grid_classes
+
+
+def _controls_summary(batch_name: str):
+    """Import the controls summary lazily to avoid component import cycles."""
+    from dashboard.components.common import create_controls_summary
+
+    return create_controls_summary(batch_name, hx_swap_oob="outerHTML")
 
 
 @rt("/batch/{batch_name}/search")
@@ -27,78 +35,57 @@ def get(batch_name: str, search: str = "") -> FT:
     Returns:
         FT: The search results container with out-of-band load more button.
     """
-    import re
-
-    app.state.search_term[batch_name] = search
+    app.state.search_term[batch_name] = search.strip()
 
     if batch_name not in app.state.stats_cache:
         app.state.calculate_metric_stats(batch_name)
 
-    try:
-        pattern = re.compile(search, re.IGNORECASE) if search else None
-        filtered_stats_with_indices = [
-            (i, stat)
-            for i, stat in enumerate(app.state.stats_cache[batch_name])
-            if not pattern or pattern.search(stat["metric_name"])
-        ]
+    filtered_stats_with_indices = get_filtered_metric_stats(batch_name)
 
-        if not filtered_stats_with_indices:
-            return Div(
-                P("No matching metrics found", cls="text-muted-foreground p-4 text-center"),
-                # Add out-of-band load more container
-                Div(
-                    id="load-more-container",
-                    hx_swap_oob="true",
-                ),
-                id="charts-container",
-                cls=f"grid grid-cols-{2 if app.state.two_columns else 1} gap-4",
-            )
-
-        remaining_metrics = len(filtered_stats_with_indices) - DEFAULT_LOAD_N_CHARTS
-        load_next = min(DEFAULT_LOAD_N_CHARTS, remaining_metrics)
-
-        # Create chart placeholders
-        chart_placeholders = [
-            ChartManager.create_chart_placeholder(stat["metric_name"], original_index, batch_name)
-            for original_index, stat in filtered_stats_with_indices[:DEFAULT_LOAD_N_CHARTS]
-        ]
-
-        # Create load more button if needed
-        load_more_button = Div(
-            Button(
-                f"Load next {load_next} of {remaining_metrics}",
-                hx_get=f"/batch/{batch_name}/load-more/{DEFAULT_LOAD_N_CHARTS}",
-                hx_target="#charts-container",
-                hx_swap="beforeend",
-                hx_indicator="#loading",
-                cls=ButtonT.secondary,
-                style="width: 100%; margin-top: 1rem;",
-                disabled=remaining_metrics <= 0,
-            )
-            if remaining_metrics > 0
-            else "",
-            id="load-more-container",
-            hx_swap_oob="true",
-        )
-
+    if not filtered_stats_with_indices:
         return Div(
-            *chart_placeholders,
-            load_more_button,
-            id="charts-container",
-            cls=f"grid grid-cols-{2 if app.state.two_columns else 1} gap-4",
-        )
-
-    except re.error:
-        return Div(
-            P("Invalid search pattern", cls="text-red-500 p-4 text-center"),
-            # Add out-of-band load more container
+            P("No matching metrics found", cls="text-muted-foreground p-4 text-center"),
+            _controls_summary(batch_name),
             Div(
                 id="load-more-container",
                 hx_swap_oob="true",
             ),
             id="charts-container",
-            cls=f"grid grid-cols-{2 if app.state.two_columns else 1} gap-4",
+            cls=get_chart_grid_classes(),
         )
+
+    remaining_metrics = max(len(filtered_stats_with_indices) - DEFAULT_LOAD_N_CHARTS, 0)
+    load_next = min(DEFAULT_LOAD_N_CHARTS, remaining_metrics) if remaining_metrics else 0
+
+    chart_placeholders = [
+        ChartManager.create_chart_placeholder(stat["metric_name"], original_index, batch_name)
+        for original_index, stat in filtered_stats_with_indices[:DEFAULT_LOAD_N_CHARTS]
+    ]
+
+    load_more_button = Div(
+        Button(
+            f"Load next {load_next} of {remaining_metrics}",
+            hx_get=f"/batch/{batch_name}/load-more/{DEFAULT_LOAD_N_CHARTS}",
+            hx_target="#charts-container",
+            hx_swap="beforeend",
+            hx_indicator="#loading",
+            cls=ButtonT.secondary,
+            style="width: 100%; margin-top: 1rem;",
+            disabled=remaining_metrics <= 0,
+        )
+        if remaining_metrics > 0
+        else "",
+        id="load-more-container",
+        hx_swap_oob="true",
+    )
+
+    return Div(
+        *chart_placeholders,
+        _controls_summary(batch_name),
+        load_more_button,
+        id="charts-container",
+        cls=get_chart_grid_classes(),
+    )
 
 
 @rt("/batch/{batch_name}/load-more/{start_index}")
@@ -112,17 +99,14 @@ def get(batch_name: str, start_index: int):
     Returns:
         list: The list of charts.
     """
-    metric_stats = app.state.stats_cache[batch_name]
-    remaining_metrics = len(metric_stats) - (start_index + 10)
-    load_next = min(10, remaining_metrics)
+    metric_stats = get_filtered_metric_stats(batch_name)
+    remaining_metrics = max(len(metric_stats) - (start_index + DEFAULT_LOAD_N_CHARTS), 0)
+    load_next = min(DEFAULT_LOAD_N_CHARTS, remaining_metrics) if remaining_metrics else 0
 
     return [
         *[
-            ChartManager.create_chart_placeholder(stat["metric_name"], i, batch_name)
-            for i, stat in enumerate(
-                metric_stats[start_index : start_index + 10],
-                start=start_index,
-            )
+            ChartManager.create_chart_placeholder(stat["metric_name"], original_index, batch_name)
+            for original_index, stat in metric_stats[start_index : start_index + DEFAULT_LOAD_N_CHARTS]
         ],
         Div(
             Button(
@@ -131,7 +115,7 @@ def get(batch_name: str, start_index: int):
                     if remaining_metrics > 0
                     else "No more metrics"
                 ),
-                hx_get=f"/batch/{batch_name}/load-more/{start_index + 10}",
+                hx_get=f"/batch/{batch_name}/load-more/{start_index + DEFAULT_LOAD_N_CHARTS}",
                 hx_target="#charts-container",
                 hx_swap="beforeend",
                 hx_indicator="#loading",
@@ -169,19 +153,20 @@ def post(batch_name: str, last_n: str = "90n"):
         app.state.calculate_metric_stats(batch_name)
 
         # Return only the charts container content
-        metric_stats = app.state.stats_cache[batch_name]
-        remaining_metrics = len(metric_stats) - DEFAULT_LOAD_N_CHARTS
-        load_next = min(DEFAULT_LOAD_N_CHARTS, remaining_metrics)
+        metric_stats = get_filtered_metric_stats(batch_name)
+        remaining_metrics = max(len(metric_stats) - DEFAULT_LOAD_N_CHARTS, 0)
+        load_next = min(DEFAULT_LOAD_N_CHARTS, remaining_metrics) if remaining_metrics else 0
 
         return [
             Div(
                 *[
-                    ChartManager.create_chart_placeholder(stat["metric_name"], i, batch_name)
-                    for i, stat in enumerate(metric_stats[:DEFAULT_LOAD_N_CHARTS])
+                    ChartManager.create_chart_placeholder(stat["metric_name"], original_index, batch_name)
+                    for original_index, stat in metric_stats[:DEFAULT_LOAD_N_CHARTS]
                 ],
                 id="charts-container",
-                cls=f"grid grid-cols-{2 if app.state.two_columns else 1} gap-4",
+                cls=get_chart_grid_classes(),
             ),
+            _controls_summary(batch_name),
             Div(
                 Button(
                     f"Load next {load_next} of {remaining_metrics}",

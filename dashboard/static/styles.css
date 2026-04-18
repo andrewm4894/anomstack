@@ -360,3 +360,613 @@ body.dark-mode .uk-toggle-switch::before {
     align-items: center;
     justify-content: center;
 }
+
+.dashboard-shell {
+    padding-bottom: 2rem;
+}
+
+.dashboard-hero-card {
+    padding: 1.25rem;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background:
+        radial-gradient(circle at top right, rgba(59, 130, 246, 0.12), transparent 30%),
+        linear-gradient(180deg, rgba(248, 250, 252, 0.92), rgba(255, 255, 255, 0.98));
+}
+
+.homepage-hero-header {
+    gap: 1rem;
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+}
+
+.dashboard-overview-grid {
+    margin-top: 0.5rem;
+}
+
+.overview-card {
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    min-height: 100%;
+}
+
+.overview-label,
+.controls-label,
+.batch-stat-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.overview-value {
+    font-size: 1.875rem;
+    line-height: 1.1;
+    margin: 0.25rem 0;
+}
+
+.dashboard-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    width: fit-content;
+    padding: 0.35rem 0.75rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: rgba(241, 245, 249, 0.9);
+    color: #334155;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.empty-batches-card {
+    padding: 1.1rem;
+    border: 1px dashed rgba(148, 163, 184, 0.4);
+    background: rgba(248, 250, 252, 0.85);
+}
+
+.no-data-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 1rem;
+}
+
+.batch-card {
+    height: 100%;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    transition:
+        transform 0.18s ease,
+        border-color 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.batch-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(37, 99, 235, 0.4);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+}
+
+.batch-card-link {
+    display: block;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+}
+
+.batch-card-link:hover,
+.batch-card-link:focus,
+.batch-card-link:active {
+    color: inherit;
+    text-decoration: none;
+}
+
+.batch-card-link:hover .batch-card,
+.batch-card-link:focus-visible .batch-card {
+    transform: translateY(-2px);
+    border-color: rgba(37, 99, 235, 0.4);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+}
+
+.batch-card-link:focus-visible .batch-card {
+    outline: 2px solid rgba(37, 99, 235, 0.45);
+    outline-offset: 3px;
+}
+
+.batch-card-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem;
+}
+
+.batch-stat-block {
+    padding: 0.85rem;
+    border-radius: 0.9rem;
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    background: rgba(248, 250, 252, 0.85);
+}
+
+.batch-stat-value {
+    margin-top: 0.35rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.batch-card-footer {
+    width: 100%;
+    font-weight: 600;
+    color: #2563eb;
+}
+
+.controls-card {
+    padding: 1.1rem;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.controls-header {
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.controls-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.controls-form-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1rem;
+    align-items: end;
+}
+
+.toolbar-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.toolbar-btn {
+    min-height: 40px;
+}
+
+.chart-summary {
+    display: flex;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+}
+
+.chart-stat-pill {
+    margin: 0;
+    padding: 0.3rem 0.65rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(248, 250, 252, 0.92);
+    color: #475569;
+    font-size: 0.8rem;
+}
+
+.chart-card-container {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
+}
+
+.chart-card-container .uk-card-header,
+.chart-card-container .uk-card-body {
+    padding: 1rem;
+}
+
+.chart-figure {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.1rem;
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    padding: 0.45rem 0.55rem 0.35rem;
+    background:
+        radial-gradient(circle at top right, rgba(59, 130, 246, 0.08), transparent 28%),
+        linear-gradient(180deg, rgba(248, 250, 252, 0.96), rgba(255, 255, 255, 0.98));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.75),
+        0 8px 18px rgba(15, 23, 42, 0.04);
+}
+
+.chart-figure-expanded {
+    padding: 0.7rem 0.8rem 0.55rem;
+}
+
+.chart-figure .js-plotly-plot,
+.chart-figure .plot-container,
+.chart-figure .svg-container {
+    width: 100% !important;
+}
+
+.chart-figure .svg-container,
+.chart-figure .main-svg {
+    border-radius: 0.9rem;
+}
+
+.chart-figure .modebar {
+    top: 0.75rem !important;
+    right: 0.75rem !important;
+    padding: 0.2rem !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(148, 163, 184, 0.22) !important;
+    background: rgba(255, 255, 255, 0.88) !important;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+}
+
+.chart-figure .modebar-group {
+    display: flex !important;
+    gap: 0.15rem;
+    padding: 0 !important;
+}
+
+.chart-figure .modebar-btn {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 999px !important;
+    color: #475569 !important;
+}
+
+.chart-figure .modebar-btn:hover {
+    background: rgba(37, 99, 235, 0.08) !important;
+    color: #0f172a !important;
+}
+
+.chart-expand-btn {
+    position: absolute;
+    top: 0.85rem;
+    right: 0.85rem;
+    z-index: 20;
+    min-width: 38px;
+    min-height: 38px;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        border-color 0.18s ease,
+        background-color 0.18s ease;
+}
+
+.chart-expand-btn:hover {
+    transform: translateY(-1px);
+    border-color: rgba(37, 99, 235, 0.35);
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.16);
+}
+
+.anomaly-list-shell {
+    padding: 0.5rem;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.anomaly-empty-card {
+    padding: 1.2rem;
+}
+
+.anomaly-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.anomaly-row-card {
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    transition:
+        transform 0.18s ease,
+        border-color 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.anomaly-row-card:hover {
+    transform: translateY(-1px);
+    border-color: rgba(37, 99, 235, 0.24);
+    box-shadow: 0 16px 32px rgba(15, 23, 42, 0.06);
+}
+
+.anomaly-row-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(320px, 2.2fr) minmax(180px, auto);
+    gap: 1rem 1.25rem;
+    align-items: center;
+}
+
+.anomaly-meta-stack {
+    min-width: 0;
+}
+
+.anomaly-inline-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-bottom: 0.75rem;
+}
+
+.anomaly-inline-pill,
+.anomaly-type-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    padding: 0.28rem 0.68rem;
+    border-radius: 9999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.anomaly-inline-pill {
+    background: rgba(248, 250, 252, 0.92);
+    color: #475569;
+}
+
+.anomaly-type-alert {
+    background: rgba(225, 29, 72, 0.08);
+    color: #be123c;
+    border-color: rgba(225, 29, 72, 0.18);
+}
+
+.anomaly-type-llm {
+    background: rgba(217, 119, 6, 0.08);
+    color: #b45309;
+    border-color: rgba(217, 119, 6, 0.18);
+}
+
+.anomaly-type-change {
+    background: rgba(15, 118, 110, 0.08);
+    color: #0f766e;
+    border-color: rgba(15, 118, 110, 0.18);
+}
+
+.anomaly-metric-name {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: #0f172a;
+    overflow-wrap: anywhere;
+}
+
+.anomaly-metric-time {
+    margin-top: 0.35rem;
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.anomaly-sparkline-panel {
+    min-width: 0;
+}
+
+.anomaly-sparkline-shell {
+    min-height: 92px;
+    padding: 0.55rem 0.65rem 0.45rem;
+}
+
+.anomaly-sparkline-shell svg {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.anomaly-feedback-panel,
+.anomaly-actions-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.anomaly-section-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.anomaly-feedback-panel > div {
+    justify-content: flex-start;
+}
+
+.anomaly-expand-btn {
+    min-height: 42px;
+}
+
+.anomaly-pagination {
+    gap: 1rem;
+    align-items: center;
+}
+
+.anomaly-pagination-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+    min-width: 170px;
+}
+
+@media (max-width: 1024px) {
+    .controls-header {
+        flex-direction: column;
+    }
+
+    .toolbar-stack {
+        justify-content: flex-start;
+    }
+
+    .anomaly-row-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .anomaly-feedback-panel > div {
+        justify-content: center;
+    }
+
+    .anomaly-actions-panel {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-hero-card,
+    .controls-card,
+    .empty-batches-card {
+        padding: 1rem;
+    }
+
+    .chart-expand-btn {
+        top: 0.7rem;
+        right: 0.7rem;
+        min-width: 40px;
+        min-height: 40px;
+    }
+
+    .batch-card-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .controls-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .overview-value {
+        font-size: 1.55rem;
+    }
+
+    .anomaly-list-shell {
+        padding: 0.25rem;
+    }
+
+    .anomaly-sparkline-shell {
+        min-height: 86px;
+    }
+
+    .anomaly-pagination {
+        gap: 0.75rem;
+    }
+}
+
+body.dark-mode .dashboard-hero-card,
+body.dark-mode .overview-card,
+body.dark-mode .controls-card,
+body.dark-mode .batch-card,
+body.dark-mode .chart-card-container,
+body.dark-mode .chart-figure,
+body.dark-mode .anomaly-list-shell,
+body.dark-mode .anomaly-row-card,
+body.dark-mode .batch-stat-block,
+body.dark-mode .empty-batches-card,
+body.dark-mode .chart-stat-pill,
+body.dark-mode .dashboard-pill {
+    border-color: rgba(71, 85, 105, 0.55);
+}
+
+body.dark-mode .dashboard-hero-card {
+    background:
+        radial-gradient(circle at top right, rgba(96, 165, 250, 0.12), transparent 30%),
+        linear-gradient(180deg, rgba(15, 23, 42, 0.94), rgba(15, 23, 42, 0.98));
+}
+
+body.dark-mode .overview-card,
+body.dark-mode .controls-card,
+body.dark-mode .batch-card,
+body.dark-mode .anomaly-list-shell,
+body.dark-mode .anomaly-row-card,
+body.dark-mode .batch-stat-block,
+body.dark-mode .empty-batches-card,
+body.dark-mode .chart-stat-pill,
+body.dark-mode .dashboard-pill {
+    background: rgba(15, 23, 42, 0.82);
+    color: #e2e8f0;
+}
+
+body.dark-mode .chart-card-container {
+    box-shadow: 0 16px 32px rgba(2, 6, 23, 0.34);
+}
+
+body.dark-mode .anomaly-row-card:hover {
+    border-color: rgba(96, 165, 250, 0.28);
+    box-shadow: 0 16px 32px rgba(2, 6, 23, 0.24);
+}
+
+body.dark-mode .chart-figure {
+    background:
+        radial-gradient(circle at top right, rgba(96, 165, 250, 0.08), transparent 30%),
+        linear-gradient(180deg, rgba(15, 23, 42, 0.76), rgba(2, 6, 23, 0.9));
+    box-shadow:
+        inset 0 1px 0 rgba(148, 163, 184, 0.08),
+        0 10px 20px rgba(2, 6, 23, 0.24);
+}
+
+body.dark-mode .chart-figure .modebar {
+    background: rgba(15, 23, 42, 0.84) !important;
+    border-color: rgba(71, 85, 105, 0.7) !important;
+}
+
+body.dark-mode .chart-figure .modebar-btn {
+    color: #cbd5e1 !important;
+}
+
+body.dark-mode .chart-figure .modebar-btn:hover {
+    background: rgba(96, 165, 250, 0.12) !important;
+    color: #f8fafc !important;
+}
+
+body.dark-mode .chart-expand-btn {
+    background: rgba(15, 23, 42, 0.86);
+    border-color: rgba(71, 85, 105, 0.7);
+    color: #e2e8f0;
+}
+
+body.dark-mode .chart-expand-btn:hover {
+    background: rgba(15, 23, 42, 0.96);
+}
+
+body.dark-mode .anomaly-inline-pill {
+    background: rgba(15, 23, 42, 0.72);
+    color: #cbd5e1;
+}
+
+body.dark-mode .anomaly-type-alert {
+    background: rgba(244, 63, 94, 0.14);
+    color: #fda4af;
+    border-color: rgba(244, 63, 94, 0.26);
+}
+
+body.dark-mode .anomaly-type-llm {
+    background: rgba(245, 158, 11, 0.14);
+    color: #fcd34d;
+    border-color: rgba(245, 158, 11, 0.26);
+}
+
+body.dark-mode .anomaly-type-change {
+    background: rgba(20, 184, 166, 0.14);
+    color: #5eead4;
+    border-color: rgba(20, 184, 166, 0.26);
+}
+
+body.dark-mode .batch-stat-value,
+body.dark-mode .overview-value,
+body.dark-mode .anomaly-metric-name {
+    color: #f8fafc;
+}
+
+body.dark-mode .overview-label,
+body.dark-mode .controls-label,
+body.dark-mode .batch-stat-label,
+body.dark-mode .anomaly-section-label,
+body.dark-mode .anomaly-metric-time {
+    color: #94a3b8;
+}

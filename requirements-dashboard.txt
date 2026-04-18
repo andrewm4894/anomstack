@@ -7,8 +7,8 @@ duckdb
 pandas
 plotly
 jinja2
-python-fasthtml
-MonsterUI
+python-fasthtml>=0.13.3
+MonsterUI>=1.0.45
 sqlglot
 requests
 dagster

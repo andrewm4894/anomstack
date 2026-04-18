@@ -326,7 +326,7 @@ dagster-cleanup-menu:
 # DASHBOARD OPERATIONS
 # =============================================================================
 
-.PHONY: dashboard dashboardd dashboard-uvicorn dashboardd-uvicorn dashboard-local-dev kill-dashboardd seed-local-db
+.PHONY: dashboard dashboardd dashboard-uvicorn dashboardd-uvicorn dashboard-local-dev kill-dashboardd seed-local-db seed-local-db-all seed-local-db-custom
 
 # start dashboard locally
 dashboard:
@@ -371,7 +371,14 @@ dashboard-local-dev:
 
 # kill any running dashboard process
 kill-dashboardd:
-	kill $(shell ps aux | grep dashboard/app.py | grep -v grep | awk '{print $$2}') $(shell lsof -ti :5000)
+	@pids="$$(pgrep -f 'dashboard/app.py' 2>/dev/null) $$(pgrep -f 'uvicorn dashboard.app:app' 2>/dev/null) $$(lsof -ti :5003 2>/dev/null) $$(lsof -ti :8080 2>/dev/null) $$(lsof -ti :5000 2>/dev/null)"; \
+	pids="$$(printf '%s\n' $$pids | tr ' ' '\n' | sed '/^$$/d' | sort -u | tr '\n' ' ')"; \
+	if [ -n "$$pids" ]; then \
+		echo "🛑 Stopping dashboard processes: $$pids"; \
+		kill $$pids; \
+	else \
+		echo "No dashboard processes found"; \
+	fi
 
 # =============================================================================
 # TESTING & QUALITY

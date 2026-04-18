@@ -7,20 +7,26 @@ This module contains the components for the batch view.
 
 """
 
+from __future__ import annotations
+
 from fasthtml.common import A, Div, Li, P
 from monsterui.all import (
     Button,
     ButtonT,
     Card,
+    CodeSpan,
     DividerLine,
     DivLAligned,
     DropDownNavContainer,
+    H3,
     NavHeaderLi,
+    Subtitle,
     TextPresets,
     UkIcon,
 )
 
 from dashboard.app import app
+from dashboard.presentation import format_batch_name, format_metric_count
 
 
 def create_batches_dropdown(batch_name: str) -> DropDownNavContainer:
@@ -37,7 +43,7 @@ def create_batches_dropdown(batch_name: str) -> DropDownNavContainer:
         *[
             Li(
                 A(
-                    name,
+                    format_batch_name(name),
                     hx_get=f"/batch/{name}",
                     hx_push_url=f"/batch/{name}",
                     hx_target="#main-content",
@@ -51,7 +57,7 @@ def create_batches_dropdown(batch_name: str) -> DropDownNavContainer:
     )
 
 
-def create_batch_card(batch_name: str, stats: dict) -> Card:
+def create_batch_card(batch_name: str, stats: dict):
     """Create a card displaying batch information.
 
     Args:
@@ -59,47 +65,47 @@ def create_batch_card(batch_name: str, stats: dict) -> Card:
         stats (dict): The statistics for the batch.
 
     Returns:
-        Card: The card.
+        A linked batch card.
     """
-    metric_info = [
-        (UkIcon("activity", cls="text-blue-500"), f"{stats['unique_metrics']} metrics"),
-        (UkIcon("clock", cls="text-green-500"), f"{stats['latest_timestamp']}"),
-        (
-            UkIcon("bar-chart", cls="text-purple-500"),
-            f"Avg Score: {stats['avg_score']:.1%}",
-        ),
-        (UkIcon("alert-circle", cls="text-red-500"), f"{stats['alert_count']} alerts"),
+    stat_blocks = [
+        ("Metrics", format_metric_count(stats["unique_metrics"]), UkIcon("activity")),
+        ("Freshness", stats["latest_timestamp"], UkIcon("clock")),
+        ("Avg score", f"{stats['avg_score']:.1%}", UkIcon("bar-chart")),
+        ("Alerts", f"{int(stats['alert_count'])}", UkIcon("alert-circle")),
     ]
 
     metric_divs = [
-        DivLAligned(
-            icon,
-            P(text, cls=TextPresets.muted_sm),
-            cls="space-x-2",
+        Div(
+            DivLAligned(icon, P(label, cls="batch-stat-label"), cls="space-x-2"),
+            P(value, cls="batch-stat-value"),
+            cls="batch-stat-block",
         )
-        for icon, text in metric_info
+        for label, value, icon in stat_blocks
     ]
 
-    return Card(
-        DivLAligned(
+    return A(
+        Card(
             Div(
-                Button(
-                    batch_name,
-                    hx_get=f"/batch/{batch_name}",
-                    hx_push_url=f"/batch/{batch_name}",
-                    hx_target="#main-content",
-                    hx_indicator="#loading",
-                    cls=(ButtonT.primary, "w-full"),
-                ),
-                DividerLine(),
-                DivLAligned(
-                    Div(*metric_divs, cls="space-y-1"),
-                ),
+                CodeSpan(batch_name),
+                H3(format_batch_name(batch_name), cls="mt-3 mb-1"),
+                Subtitle("Metrics, freshness, and recent anomaly activity"),
+                Div(DividerLine(), cls="my-4"),
+                Div(*metric_divs, cls="batch-card-stats"),
                 cls="w-full",
             ),
-            cls="w-full",
+            footer=DivLAligned(
+                P("Open batch"),
+                UkIcon("arrow-right"),
+                cls="space-x-2 justify-center batch-card-footer",
+            ),
+            cls="batch-card",
         ),
-        cls="px-2 py-0.5 hover:border-primary transition-colors duration-200",
+        href=f"/batch/{batch_name}",
+        hx_get=f"/batch/{batch_name}",
+        hx_push_url=f"/batch/{batch_name}",
+        hx_target="#main-content",
+        hx_indicator="#loading",
+        cls="batch-card-link",
     )
 
 

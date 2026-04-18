@@ -12,6 +12,7 @@ It is built with FastHTML and MonsterUI.
 
 import logging
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 from fasthtml.common import Link, Script, fast_app, serve
@@ -19,12 +20,11 @@ from monsterui.all import *
 
 from dashboard.constants import POSTHOG_SCRIPT
 from dashboard.state import AppState
+from anomstack.version import get_git_commit_hash
 
 # load the environment variables with custom env file support
 def load_env_with_custom_path():
     """Load environment variables from custom path or default .env file."""
-    from pathlib import Path
-    
     env_file_path = os.getenv("ANOMSTACK_ENV_FILE_PATH")
     
     if env_file_path:
@@ -44,6 +44,8 @@ def load_env_with_custom_path():
 load_env_with_custom_path()
 
 log = logging.getLogger("anomstack_dashboard")
+STYLESHEET_PATH = Path(__file__).parent / "static" / "styles.css"
+STYLESHEET_VERSION = f"{get_git_commit_hash()}-{int(STYLESHEET_PATH.stat().st_mtime)}"
 
 # PostHog script generation function (lazy loading to ensure env vars are available)
 def get_posthog_script():
@@ -68,7 +70,12 @@ if not posthog_script:
 # Define the app
 app, rt = fast_app(
     hdrs=(
-        Theme.blue.headers(),
+        Theme.blue.headers(
+            mode="auto",
+            radii=ThemeRadii.lg,
+            shadows=ThemeShadows.md,
+            font=ThemeFont.default,
+        ),
         Script(src="https://cdn.plot.ly/plotly-2.32.0.min.js"),
         Script(posthog_script) if posthog_script else None,
         Link(
@@ -76,8 +83,13 @@ app, rt = fast_app(
             type="image/svg+xml",
             href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNoYXJ0LWxpbmUiPjxwYXRoIGQ9Ik0zIDN2MTZhMiAyIDAgMCAwIDIgMmgxNiIvPjxwYXRoIGQ9Im0xOSA5LTUgNS00LTQtMyAzIi8+PC9zdmc+",
         ),
-        Link(rel="stylesheet", href="dashboard/static/styles.css"),
+        Link(
+            rel="stylesheet",
+            href=f"/dashboard/static/styles.css?v={STYLESHEET_VERSION}",
+        ),
     ),
+    title="Anomstack",
+    bodykw={"class": "antialiased"},
     debug=os.getenv("ANOMSTACK_DASHBOARD_DEBUG", "false").lower() == "true",
     log=log,
 )
