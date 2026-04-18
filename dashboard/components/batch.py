@@ -57,7 +57,7 @@ def create_batches_dropdown(batch_name: str) -> DropDownNavContainer:
     )
 
 
-def create_batch_card(batch_name: str, stats: dict) -> Card:
+def create_batch_card(batch_name: str, stats: dict):
     """Create a card displaying batch information.
 
     Args:
@@ -65,7 +65,7 @@ def create_batch_card(batch_name: str, stats: dict) -> Card:
         stats (dict): The statistics for the batch.
 
     Returns:
-        Card: The card.
+        A linked batch card.
     """
     stat_blocks = [
         ("Metrics", format_metric_count(stats["unique_metrics"]), UkIcon("activity")),
@@ -83,28 +83,29 @@ def create_batch_card(batch_name: str, stats: dict) -> Card:
         for label, value, icon in stat_blocks
     ]
 
-    return Card(
-        Div(
-            CodeSpan(batch_name),
-            H3(format_batch_name(batch_name), cls="mt-3 mb-1"),
-            Subtitle("Metrics, freshness, and recent anomaly activity"),
-            Div(DividerLine(), cls="my-4"),
-            Div(*metric_divs, cls="batch-card-stats"),
-            cls="w-full",
-        ),
-        footer=Button(
-            DivLAligned(
+    return A(
+        Card(
+            Div(
+                CodeSpan(batch_name),
+                H3(format_batch_name(batch_name), cls="mt-3 mb-1"),
+                Subtitle("Metrics, freshness, and recent anomaly activity"),
+                Div(DividerLine(), cls="my-4"),
+                Div(*metric_divs, cls="batch-card-stats"),
+                cls="w-full",
+            ),
+            footer=DivLAligned(
                 P("Open batch"),
                 UkIcon("arrow-right"),
-                cls="space-x-2 justify-center",
+                cls="space-x-2 justify-center batch-card-footer",
             ),
-            hx_get=f"/batch/{batch_name}",
-            hx_push_url=f"/batch/{batch_name}",
-            hx_target="#main-content",
-            hx_indicator="#loading",
-            cls=(ButtonT.primary, "w-full"),
+            cls="batch-card",
         ),
-        cls="batch-card",
+        href=f"/batch/{batch_name}",
+        hx_get=f"/batch/{batch_name}",
+        hx_push_url=f"/batch/{batch_name}",
+        hx_target="#main-content",
+        hx_indicator="#loading",
+        cls="batch-card-link",
     )
 
 
