@@ -7,6 +7,8 @@ This module contains the components for the batch view.
 
 """
 
+from __future__ import annotations
+
 from fasthtml.common import A, Div, Li, P
 from monsterui.all import (
     Button,

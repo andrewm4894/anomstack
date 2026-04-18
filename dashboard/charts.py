@@ -7,6 +7,8 @@ This module contains the ChartManager class, which is responsible for creating c
 
 """
 
+from __future__ import annotations
+
 from fasthtml.common import Div, P
 from monsterui.all import Card, DivLAligned, Loading, LoadingT, TextPresets
 import pandas as pd

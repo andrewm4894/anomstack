@@ -7,6 +7,8 @@ This module contains the routes for handling toggle functionality.
 
 """
 
+from __future__ import annotations
+
 from fasthtml.common import Div, Request, Script
 
 from dashboard.app import app, rt

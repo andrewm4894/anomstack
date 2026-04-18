@@ -7,6 +7,8 @@ This module contains the components for the settings dropdown menu.
 
 """
 
+from __future__ import annotations
+
 from fasthtml.common import A, Li
 from monsterui.all import DropDownNavContainer, NavDividerLi, NavHeaderLi
 

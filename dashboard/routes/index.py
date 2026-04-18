@@ -7,6 +7,8 @@ This module contains the route for the index page.
 
 """
 
+from __future__ import annotations
+
 import logging
 
 from fasthtml.common import H2, A, Div, P, Request, Safe, Script, Title

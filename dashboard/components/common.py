@@ -7,6 +7,8 @@ This module contains the common components for the dashboard.
 
 """
 
+from __future__ import annotations
+
 from fasthtml.common import Div, P
 from monsterui.all import Card, CodeSpan, DivFullySpaced, H2, Subtitle
 

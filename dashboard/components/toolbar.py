@@ -7,6 +7,8 @@ This module contains the components for the toolbar.
 
 """
 
+from __future__ import annotations
+
 from fasthtml.common import Div, P
 from monsterui.all import Button, ButtonT, DivLAligned, UkIcon
 
