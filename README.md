@@ -13,7 +13,7 @@
 <a href="https://github.com/andrewm4894/anomstack/stargazers">![GitHub Repo stars](https://img.shields.io/github/stars/andrewm4894/anomstack?style=social)</a>
 <a href="https://github.com/andrewm4894/anomstack/releases">![GitHub release (latest by date)](https://img.shields.io/github/v/release/andrewm4894/anomstack?label=Release)</a>
 <a href="https://andrewm4894.github.io/anomstack/">![Docs](https://img.shields.io/badge/Docs-andrewm4894.github.io%2Fanomstack%2F-blue)</a>
-<a href="https://anomstack-demo.fly.dev/">![Dashboard Demo](https://img.shields.io/badge/Dashboard_Demo-anomstack--demo.fly.dev-blue?link=https://anomstack-demo.fly.dev/)</a>
+<a href="https://anomstack-live-demo.fly.dev/">![Dashboard Demo](https://img.shields.io/badge/Dashboard_Demo-anomstack--live--demo.fly.dev-blue?link=https://anomstack-live-demo.fly.dev/)</a>
 <a href="https://github.com/andrewm4894/anomstack/blob/main/LICENSE">![License](https://img.shields.io/badge/License-MIT-yellow.svg)</a>
 <a href="https://github.com/andrewm4894/anomstack/actions/workflows/pytest.yaml">![GitHub PyTest Workflow Status](https://img.shields.io/github/actions/workflow/status/andrewm4894/anomstack/pytest.yaml?label=Tests)</a>
 <a href="https://github.com/andrewm4894/anomstack/actions/workflows/pre-commit.yaml">![GitHub Pre-Commit Workflow Status](https://img.shields.io/github/actions/workflow/status/andrewm4894/anomstack/pre-commit.yaml?label=Pre-Commit)</a>
@@ -27,7 +27,7 @@ Painless open source anomaly detection for your metrics! 📈📉🚀
 
 > _Note: If you are already using Airflow then also checkout the [`airflow-provider-anomaly-detection`](https://github.com/andrewm4894/airflow-provider-anomaly-detection) package._
 
-App screenshots ([live demo](https://anomstack-demo.fly.dev/)):
+App screenshots ([live demo](https://anomstack-live-demo.fly.dev/)):
 
 Homepage:
 ![homepage](./docs/img/dashboard-home.png)
@@ -465,7 +465,7 @@ You can then manage you metrics via PR's in your GitHub repo ([here](https://git
 
 Deploy to [Fly.io](https://fly.io) for production-ready, globally distributed anomaly detection.
 
-**🚀 Live Demo**: https://anomstack-demo.fly.dev
+**🚀 Live Demo**: https://anomstack-live-demo.fly.dev
 
 ```bash
 # New! Automatic .env integration 🎉
@@ -616,7 +616,7 @@ This makes it easy to manage config via environment variables for different depl
 
 You can run Anomstack in a sort of "headless mode" with no UI (if for example you want to use your existing analytics tools etc.).
 
-That said, there is also a fancy [FastHTML](https://fastht.ml/) + [MonsterUI](https://github.com/AnswerDotAI/MonsterUI) (❤️) based dashboard that you can use to visualize your metrics and anomaly scores too (See the demo at https://anomstack-demo.replit.app/).
+That said, there is also a fancy [FastHTML](https://fastht.ml/) + [MonsterUI](https://github.com/AnswerDotAI/MonsterUI) (❤️) based dashboard that you can use to visualize your metrics and anomaly scores too (See the demo at https://anomstack-live-demo.fly.dev/).
 
 Dashboard code lives in [`./dashboard/app.py`](./dashboard/app.py)), use `make dashboard` or `make dashboardd` (to run as a daemon) to start it.
 

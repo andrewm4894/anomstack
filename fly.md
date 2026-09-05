@@ -1,11 +1,11 @@
 # Anomstack Fly.io Deployment - Quick Start
 
-**🚀 Live Demo**: https://anomstack-demo.fly.dev
+**🚀 Live Demo**: https://anomstack-live-demo.fly.dev
 
 ## Current Architecture
 
-- **📊 Public Dashboard**: https://anomstack-demo.fly.dev/ (no authentication)
-- **🔐 Protected Dagster**: https://anomstack-demo.fly.dev/dagster (configurable admin credentials)
+- **📊 Public Dashboard**: https://anomstack-live-demo.fly.dev/ (no authentication)
+- **🔐 Protected Dagster**: https://anomstack-live-demo.fly.dev/dagster (configurable admin credentials)
 - **🌐 nginx Reverse Proxy**: Routes and protects services
 - **🗄️ SQLite Storage**: Simple, reliable file-based storage on persistent volume
 - **📦 Persistent Volume**: 10GB for DuckDB and models

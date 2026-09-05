@@ -34,7 +34,7 @@ Customize your dashboard through:
 
 ## Examples
 
-You can explore a live demo of the Anomstack dashboard at [https://anomstack-demo.replit.app/](https://anomstack-demo.replit.app/). This demo instance showcases various features including:
+You can explore a live demo of the Anomstack dashboard at [https://anomstack-live-demo.fly.dev/](https://anomstack-live-demo.fly.dev/). This demo instance showcases various features including:
 - Real-time metric monitoring
 - Anomaly detection visualization
 - Alert management

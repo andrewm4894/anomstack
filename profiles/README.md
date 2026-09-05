@@ -159,7 +159,7 @@ cp .example.env .env
 # Deploy to different environments with different profiles
 ./scripts/deployment/deploy_fly.sh --profile development anomstack-dev
 ./scripts/deployment/deploy_fly.sh --profile production anomstack-prod  
-./scripts/deployment/deploy_fly.sh --profile demo anomstack-demo
+./scripts/deployment/deploy_fly.sh --profile demo anomstack-live-demo
 ```
 
 ### Custom Company Setup

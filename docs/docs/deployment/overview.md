@@ -227,7 +227,7 @@ graph TB
 flowchart TD
     START[👋 Welcome to Anomstack!] --> NEED{What do you need?}
 
-    NEED -->|Quick demo/POC| DEMO[🚀 Try Fly.io Demo<br/>anomstack-demo.fly.dev]
+    NEED -->|Quick demo/POC| DEMO[🚀 Try Fly.io Demo<br/>anomstack-live-demo.fly.dev]
     NEED -->|Full experience| FULL{Infrastructure preference?}
     NEED -->|Just anomaly detection| HEADLESS{Integration needs?}
 
@@ -238,7 +238,7 @@ flowchart TD
     HEADLESS -->|Existing data platform| PLATFORM[🏢 Headless + Your DB<br/>BigQuery/Snowflake/etc]
     HEADLESS -->|Simple integration| MINIMAL[🤖 Docker headless<br/>+ webhooks/API]
 
-    DEMO --> DEMO_LINK[<a href='https://anomstack-demo.fly.dev'>View Live Demo</a>]
+    DEMO --> DEMO_LINK[<a href='https://anomstack-live-demo.fly.dev'>View Live Demo</a>]
     CLOUD --> CLOUD_DOCS[<a href='https://docs.dagster.io/dagster-cloud'>Dagster Cloud Setup</a>]
     DOCKER --> DOCKER_DOCS[<a href='./docker'>Docker Guide</a>]
     LOCAL --> LOCAL_DOCS[<a href='../quickstart'>Quickstart Guide</a>]
@@ -275,7 +275,7 @@ ANOMSTACK_ALERT_WEBHOOK_URL=https://api.company.com/alerts
 
 ### Getting Started
 
-1. **🚀 Quick Demo**: Visit [anomstack-demo.fly.dev](https://anomstack-demo.fly.dev) to see Anomstack in action
+1. **🚀 Quick Demo**: Visit [anomstack-live-demo.fly.dev](https://anomstack-live-demo.fly.dev) to see Anomstack in action
 2. **📖 Follow Guides**: Choose your deployment method from the guides below
 3. **⚙️ Configure Metrics**: Set up your first metric batch
 4. **🔔 Test Alerts**: Configure and test your alerting channels

@@ -571,7 +571,7 @@ make kill-long-runs
 - Requires `FLY_APP` environment variable
 
 ```bash
-export FLY_APP=anomstack-demo
+export FLY_APP=anomstack-live-demo
 make fly-cleanup-preview
 ```
 
@@ -583,7 +583,7 @@ make fly-cleanup-preview
 - Reports disk usage before/after
 
 ```bash
-export FLY_APP=anomstack-demo
+export FLY_APP=anomstack-live-demo
 make fly-cleanup
 ```
 
@@ -595,7 +595,7 @@ make fly-cleanup
 - More thorough than normal cleanup
 
 ```bash
-export FLY_APP=anomstack-demo
+export FLY_APP=anomstack-live-demo
 make fly-cleanup-aggressive
 ```
 
