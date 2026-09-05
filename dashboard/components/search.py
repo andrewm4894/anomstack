@@ -25,7 +25,7 @@ def create_search_form(batch_name: str) -> Form:
     current_search = app.state.search_term.get(batch_name, "")
 
     return Form(
-        Label("Search metrics", fr="metric-search", cls="text-sm font-medium"),
+        Label("Search metrics", fr="metric-search", cls="block text-sm font-medium mb-1"),
         Input(
             id="metric-search",
             type="search",
@@ -62,7 +62,7 @@ def create_last_n_form(batch_name: str) -> Form:
     current_last_n = app.state.last_n.get(batch_name, "90n")
 
     return Form(
-        Label("Time window", fr="time-window", cls="text-sm font-medium"),
+        Label("Time window", fr="time-window", cls="block text-sm font-medium mb-1"),
         DivLAligned(
             Input(
                 id="time-window",

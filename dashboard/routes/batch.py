@@ -577,6 +577,22 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 50):
                     cls="w-full divide-y min-w-full table-fixed",
                 ),
                 cls="overflow-x-auto -mx-4 sm:mx-0",
+            )
+            if total_anomalies
+            else Div(
+                P(
+                    "No anomaly records in this time window.",
+                    role="status",
+                    cls="text-muted-foreground mb-4",
+                ),
+                Button(
+                    "Return to metrics",
+                    hx_get=f"/batch/{batch_name}",
+                    hx_push_url=f"/batch/{batch_name}",
+                    hx_target="#main-content",
+                    cls=ButtonT.secondary,
+                ),
+                cls="p-4 text-center",
             ),
             header=Div(
                 H4("Anomalies", cls="mb-1"),
@@ -587,7 +603,7 @@ def get_anomaly_list(batch_name: str, page: int = 1, per_page: int = 50):
             ),
             cls="mb-4",
         ),
-        pagination,
+        pagination if total_anomalies else None,
         # Add all the modals
         *modals,
         id="anomaly-list",
