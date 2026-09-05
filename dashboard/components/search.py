@@ -7,7 +7,7 @@ This module contains the components for the search and filtering functionality.
 
 """
 
-# from fasthtml.common import Input
+from fasthtml.common import Div, Label, P
 from monsterui.all import DivLAligned, Form, Input
 
 from dashboard.app import app
@@ -25,13 +25,15 @@ def create_search_form(batch_name: str) -> Form:
     current_search = app.state.search_term.get(batch_name, "")
 
     return Form(
+        Label("Search metrics", fr="metric-search", cls="text-sm font-medium"),
         Input(
+            id="metric-search",
             type="search",
             name="search",
-            placeholder="Search metrics...",
+            placeholder="Name or regular expression…",
             value=current_search,
             cls="uk-input uk-form-small rounded-md border-gray-200 w-full md:w-[220px]",
-            uk_tooltip="Filter metrics by name",
+            uk_tooltip="Filter metric names with a case-insensitive regular expression",
             autocomplete="off",
             aria_label="Search metrics",
             hx_get=f"/batch/{batch_name}/search",
@@ -60,8 +62,11 @@ def create_last_n_form(batch_name: str) -> Form:
     current_last_n = app.state.last_n.get(batch_name, "90n")
 
     return Form(
+        Label("Time window", fr="time-window", cls="text-sm font-medium"),
         DivLAligned(
             Input(
+                id="time-window",
+                aria_describedby="time-window-help",
                 type="text",
                 name="last_n",
                 value=current_last_n,
@@ -78,6 +83,12 @@ def create_last_n_form(batch_name: str) -> Form:
             ),
             cls="space-x-2",
         ),
+        P(
+            "90n = 90 points · 24h = 24 hours · 7d = 7 days",
+            id="time-window-help",
+            cls="text-xs text-muted-foreground mt-1",
+        ),
+        Div(id="window-error"),
         id=f"last-n-form-{batch_name}",
         onsubmit="return false;",
     )

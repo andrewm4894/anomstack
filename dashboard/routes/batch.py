@@ -17,6 +17,7 @@ from dashboard.charts import ChartManager
 from dashboard.components import create_controls
 from dashboard.constants import DEFAULT_LAST_N, DEFAULT_LOAD_N_CHARTS
 from dashboard.data import get_data
+from dashboard.metric_results import metric_results
 
 
 def get_batch_data(batch_name: str) -> pd.DataFrame:
@@ -54,9 +55,6 @@ def get_batch_view(batch_name: str, initial_load: int = DEFAULT_LOAD_N_CHARTS):
         app.state.df_cache[batch_name] = get_batch_data(batch_name)
         app.state.calculate_metric_stats(batch_name)
 
-    metric_stats = app.state.stats_cache[batch_name]
-    remaining_metrics = len(metric_stats) - initial_load
-
     script = Script(
         f"""
         document.querySelectorAll('.top-nav li').forEach(li => {{
@@ -85,32 +83,9 @@ def get_batch_view(batch_name: str, initial_load: int = DEFAULT_LOAD_N_CHARTS):
     """
     )
 
-    load_next = min(DEFAULT_LOAD_N_CHARTS, remaining_metrics)
     return Div(
         create_controls(batch_name),
-        Div(
-            *[
-                ChartManager.create_chart_placeholder(stat["metric_name"], i, batch_name)
-                for i, stat in enumerate(metric_stats[:initial_load])
-            ],
-            id="charts-container",
-            cls=f"grid grid-cols-{2 if app.state.two_columns else 1} gap-4",
-        ),
-        Div(
-            Button(
-                f"Load next {load_next} of {remaining_metrics}"
-                if remaining_metrics > 0
-                else "No more metrics",
-                hx_get=f"/batch/{batch_name}/load-more/{initial_load}",
-                hx_target="#charts-container",
-                hx_swap="beforeend",
-                hx_indicator="#loading",
-                cls=ButtonT.secondary,
-                style="width: 100%; margin-top: 1rem;",
-                disabled=remaining_metrics <= 0,
-            ),
-            id="load-more-container",
-        ),
+        *metric_results(app.state, batch_name, limit=initial_load, oob=False),
         script,
     )
 

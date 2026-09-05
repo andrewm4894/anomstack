@@ -31,17 +31,20 @@ def create_toolbar_buttons(batch_name: str) -> Div:
             hx_target="#main-content",
             cls=ButtonT.secondary,
             uk_tooltip="Return to homepage",
+            aria_label="Home",
         ),
         Button(
             DivLAligned(UkIcon("menu")),
             cls=ButtonT.secondary,
             uk_tooltip="Select metric batch to display",
+            aria_label="Metric batches",
         ),
         create_batches_dropdown(batch_name),
         Button(
             DivLAligned(UkIcon("settings")),
             cls=ButtonT.secondary,
             uk_tooltip="Customize chart display settings",
+            aria_label="Chart settings",
         ),
         create_settings_dropdown(batch_name),
         Button(
@@ -50,6 +53,7 @@ def create_toolbar_buttons(batch_name: str) -> Div:
             hx_target="#main-content",
             cls=ButtonT.secondary,
             uk_tooltip="Refresh metrics data from source",
+            aria_label="Refresh metrics",
         ),
         Button(
             DivLAligned(UkIcon("alert-circle")),
@@ -58,6 +62,7 @@ def create_toolbar_buttons(batch_name: str) -> Div:
             hx_target="#main-content",
             cls=ButtonT.secondary,
             uk_tooltip="View anomaly list",
+            aria_label="View anomalies",
         ),
         cls="flex items-center space-x-2 flex-wrap",
     )
