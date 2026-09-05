@@ -76,11 +76,7 @@ ingest_fn: 'hn_top_stories_scores.py'  # Custom Python function
 
 The ingest function returns a pandas DataFrame with:
 ```python
-{
-    'metric_timestamp': datetime.now(),
-    'metric_name': 'hn_top_story_score_max',
-    'metric_value': 486.0
-}
+{"metric_timestamp": datetime.now(), "metric_name": "hn_top_story_score_max", "metric_value": 486.0}
 ```
 
 ## Anomaly Detection Scenarios

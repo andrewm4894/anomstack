@@ -66,18 +66,18 @@ The example monitors these major cryptocurrency pairs by default:
    ```python
    # Monitor your preferred cryptocurrency pairs
    CRYPTO_INSTRUMENTS = [
-       'BTC-USD',   # Bitcoin
-       'ETH-USD',   # Ethereum
-       'ADA-USD',   # Cardano
-       'SOL-USD',   # Solana
-       'MATIC-USD'  # Polygon
+       "BTC-USD",  # Bitcoin
+       "ETH-USD",  # Ethereum
+       "ADA-USD",  # Cardano
+       "SOL-USD",  # Solana
+       "MATIC-USD",  # Polygon
    ]
    ```
 
 3. **Configure markets**: Adjust the market parameter:
    ```python
    # Different markets available
-   MARKET = 'cadli'  # Default market
+   MARKET = "cadli"  # Default market
    # Other options: 'coinbase', 'kraken', 'binance'
    ```
 
@@ -96,21 +96,13 @@ The example monitors these major cryptocurrency pairs by default:
 The ingest function returns cryptocurrency data like:
 ```python
 [
+    {"metric_timestamp": datetime.now(), "metric_name": "BTC_USD_price", "metric_value": 43250.50},
+    {"metric_timestamp": datetime.now(), "metric_name": "ETH_USD_price", "metric_value": 2650.75},
     {
-        'metric_timestamp': datetime.now(),
-        'metric_name': 'BTC_USD_price',
-        'metric_value': 43250.50
+        "metric_timestamp": datetime.now(),
+        "metric_name": "BTC_USD_change_24h",
+        "metric_value": 3.45,  # Percentage change
     },
-    {
-        'metric_timestamp': datetime.now(),
-        'metric_name': 'ETH_USD_price',
-        'metric_value': 2650.75
-    },
-    {
-        'metric_timestamp': datetime.now(),
-        'metric_name': 'BTC_USD_change_24h',
-        'metric_value': 3.45  # Percentage change
-    }
 ]
 ```
 
@@ -220,12 +212,12 @@ https://data-api.coindesk.com/index/cc/v1/latest/tick?market=cadli&instruments=B
 ```python
 # Compare prices across different markets
 def get_cross_exchange_data():
-    markets = ['cadli', 'coinbase', 'kraken']
+    markets = ["cadli", "coinbase", "kraken"]
     prices = {}
 
     for market in markets:
-        data = get_coindesk_data(market, 'BTC-USD')
-        prices[market] = data['price']
+        data = get_coindesk_data(market, "BTC-USD")
+        prices[market] = data["price"]
 
     # Calculate price spreads and arbitrage opportunities
     max_price = max(prices.values())
@@ -233,9 +225,9 @@ def get_cross_exchange_data():
     spread = (max_price - min_price) / min_price * 100
 
     return {
-        'metric_timestamp': datetime.now(),
-        'metric_name': 'BTC_USD_cross_exchange_spread',
-        'metric_value': spread
+        "metric_timestamp": datetime.now(),
+        "metric_name": "BTC_USD_cross_exchange_spread",
+        "metric_value": spread,
     }
 ```
 
@@ -252,9 +244,9 @@ def calculate_crypto_volatility(price_history, window=24):
     volatility = np.std(returns[-window:]) if len(returns) >= window else 0
 
     return {
-        'metric_timestamp': datetime.now(),
-        'metric_name': 'BTC_USD_volatility_24h',
-        'metric_value': volatility
+        "metric_timestamp": datetime.now(),
+        "metric_name": "BTC_USD_volatility_24h",
+        "metric_value": volatility,
     }
 ```
 
@@ -267,15 +259,15 @@ def calculate_market_metrics(btc_price, eth_price, total_market_cap):
 
     return [
         {
-            'metric_timestamp': datetime.now(),
-            'metric_name': 'BTC_market_dominance',
-            'metric_value': btc_dominance
+            "metric_timestamp": datetime.now(),
+            "metric_name": "BTC_market_dominance",
+            "metric_value": btc_dominance,
         },
         {
-            'metric_timestamp': datetime.now(),
-            'metric_name': 'ETH_BTC_ratio',
-            'metric_value': eth_btc_ratio
-        }
+            "metric_timestamp": datetime.now(),
+            "metric_name": "ETH_BTC_ratio",
+            "metric_value": eth_btc_ratio,
+        },
     ]
 ```
 
@@ -288,11 +280,11 @@ def safe_crypto_request(instruments, retries=3):
             response = requests.get(
                 f"{COINDESK_BASE_URL}/latest/tick",
                 params={
-                    'market': 'cadli',
-                    'instruments': ','.join(instruments),
-                    'apply_mapping': 'true'
+                    "market": "cadli",
+                    "instruments": ",".join(instruments),
+                    "apply_mapping": "true",
                 },
-                timeout=10
+                timeout=10,
             )
             response.raise_for_status()
             return response.json()
@@ -300,7 +292,7 @@ def safe_crypto_request(instruments, retries=3):
             if attempt == retries - 1:
                 logger.error(f"Failed to get crypto data: {e}")
                 return None
-            time.sleep(2 ** attempt)  # Exponential backoff
+            time.sleep(2**attempt)  # Exponential backoff
 ```
 
 ## Crypto Market Considerations

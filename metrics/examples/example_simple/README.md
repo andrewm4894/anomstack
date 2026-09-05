@@ -119,15 +119,15 @@ The ingest generates data like:
 ```python
 [
     {
-        'metric_timestamp': '2024-01-15 10:00:00',
-        'metric_name': 'dummy_metric_0',
-        'metric_value': 42.7
+        "metric_timestamp": "2024-01-15 10:00:00",
+        "metric_name": "dummy_metric_0",
+        "metric_value": 42.7,
     },
     {
-        'metric_timestamp': '2024-01-15 10:00:00',
-        'metric_name': 'dummy_metric_1',
-        'metric_value': 78.1
-    }
+        "metric_timestamp": "2024-01-15 10:00:00",
+        "metric_name": "dummy_metric_1",
+        "metric_value": 78.1,
+    },
 ]
 ```
 

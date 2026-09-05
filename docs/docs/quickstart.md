@@ -158,12 +158,13 @@ WHERE created_at >= CURRENT_TIMESTAMP - INTERVAL '1 hour'
 import pandas as pd
 from datetime import datetime
 
+
 def ingest():
     # Your custom logic here
     data = {
-        'metric_timestamp': [datetime.now()],
-        'metric_name': ['my_metric'],
-        'metric_value': [42]
+        "metric_timestamp": [datetime.now()],
+        "metric_name": ["my_metric"],
+        "metric_value": [42],
     }
     return pd.DataFrame(data)
 ```

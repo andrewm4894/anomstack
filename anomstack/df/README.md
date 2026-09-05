@@ -58,11 +58,7 @@ The typical data processing flow uses these utilities in sequence:
 from anomstack.df.wrangle import clean_metric_data
 
 # Clean and standardize metric dataframe
-df_clean = clean_metric_data(
-    df_raw,
-    timestamp_col='ts',
-    value_col='metric_value'
-)
+df_clean = clean_metric_data(df_raw, timestamp_col="ts", value_col="metric_value")
 ```
 
 ### Time Series Resampling
@@ -70,11 +66,7 @@ df_clean = clean_metric_data(
 from anomstack.df.resample import resample_metrics
 
 # Aggregate to hourly frequency
-df_hourly = resample_metrics(
-    df_clean,
-    freq='1H',
-    agg_method='mean'
-)
+df_hourly = resample_metrics(df_clean, freq="1H", agg_method="mean")
 ```
 
 ### Data Validation

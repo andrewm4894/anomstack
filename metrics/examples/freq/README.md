@@ -228,9 +228,9 @@ preprocess_params:
 **Before Aggregation** (minute-level data):
 ```python
 [
-    {'metric_timestamp': '2024-01-15 10:01:00', 'metric_value': 42.1},
-    {'metric_timestamp': '2024-01-15 10:02:00', 'metric_value': 43.5},
-    {'metric_timestamp': '2024-01-15 10:03:00', 'metric_value': 41.8},
+    {"metric_timestamp": "2024-01-15 10:01:00", "metric_value": 42.1},
+    {"metric_timestamp": "2024-01-15 10:02:00", "metric_value": 43.5},
+    {"metric_timestamp": "2024-01-15 10:03:00", "metric_value": 41.8},
     # ... 57 more minutes
 ]
 ```
@@ -238,7 +238,7 @@ preprocess_params:
 **After Aggregation** (hourly data with mean):
 ```python
 [
-    {'metric_timestamp': '2024-01-15 10:00:00', 'metric_value': 42.47},  # Average of hour
+    {"metric_timestamp": "2024-01-15 10:00:00", "metric_value": 42.47},  # Average of hour
 ]
 ```
 

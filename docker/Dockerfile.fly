@@ -25,9 +25,9 @@ ENV CHROME_BIN=/usr/bin/chromium
 WORKDIR /opt/dagster/app
 
 # Copy requirements and install Python dependencies
-COPY requirements.txt requirements-dashboard.txt ./
-RUN pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir -r requirements-dashboard.txt
+COPY requirements.txt requirements-dashboard.txt constraints.txt ./
+RUN pip install --no-cache-dir -c constraints.txt -r requirements.txt && \
+    pip install --no-cache-dir -c constraints.txt -r requirements-dashboard.txt
 
 # Copy application code
 COPY anomstack ./anomstack
@@ -38,7 +38,7 @@ COPY metrics ./metrics
 ARG ANOMSTACK_BUILD_HASH
 ENV ANOMSTACK_BUILD_HASH=${ANOMSTACK_BUILD_HASH}
 
-# Copy configuration files  
+# Copy configuration files
 COPY dagster_fly.yaml ./dagster_home/dagster.yaml
 COPY workspace.yaml ./dagster_home/workspace.yaml
 # Copy startup scripts (use CACHEBUST arg above to ensure fresh copy when needed)
@@ -53,7 +53,7 @@ RUN ls -la ./dagster_home/ && \
     chmod +x /opt/dagster/start.sh && \
     chmod +x /opt/dagster/debug_grpc.sh
 
-# Create necessary directories for SQLite storage and artifacts  
+# Create necessary directories for SQLite storage and artifacts
 # Clear any existing Dagster storage to force fresh workspace loading
 RUN mkdir -p /data/models /data/dagster_storage /data/artifacts /tmp/dagster/compute_logs && \
     rm -rf /data/dagster_storage/* 2>/dev/null || true

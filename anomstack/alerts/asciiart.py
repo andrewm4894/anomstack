@@ -510,7 +510,7 @@ def make_alert_message(
             if i <= 1:
                 message += "\n" + line
             else:
-                message += "\n" + f"t={0-i+2}".ljust(6, " ") + line
+                message += "\n" + f"t={0 - i + 2}".ljust(6, " ") + line
         message += f"""
         <pre><code>{message}</code></pre>
         """

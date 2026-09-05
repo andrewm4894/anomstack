@@ -117,4 +117,4 @@ Change the port in the make command or set `ANOMSTACK_DASHBOARD_PORT` environmen
 ```bash
 source venv/bin/activate
 pip install -r requirements.txt
-``` 
+```

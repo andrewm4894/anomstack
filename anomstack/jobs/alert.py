@@ -40,11 +40,11 @@ def build_alert_job(spec: dict) -> JobDefinition:
     if spec.get("disable_alerts"):
 
         @job(
-            name=f'{spec["metric_batch"]}_alerts_disabled',
+            name=f"{spec['metric_batch']}_alerts_disabled",
             tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
         )
         def _dummy_job():
-            @op(name=f'{spec["metric_batch"]}_noop')
+            @op(name=f"{spec['metric_batch']}_noop")
             def noop():
                 pass
 

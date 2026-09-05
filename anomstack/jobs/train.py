@@ -41,11 +41,11 @@ def build_train_job(spec: dict) -> JobDefinition:
     if spec.get("disable_train"):
 
         @job(
-            name=f'{spec["metric_batch"]}_train_disabled',
+            name=f"{spec['metric_batch']}_train_disabled",
             tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
         )
         def _dummy_job():
-            @op(name=f'{spec["metric_batch"]}_noop')
+            @op(name=f"{spec['metric_batch']}_noop")
             def noop():
                 pass
 
@@ -115,10 +115,7 @@ def build_train_job(spec: dict) -> JobDefinition:
                     logger.debug(f"X:\n{X.head()}")
                     if len(X) > 0:
                         logger.info(
-                            (
-                                f"training {metric_name} in {metric_batch} train job. "
-                                f"len(X)={len(X)}"
-                            )
+                            (f"training {metric_name} in {metric_batch} train job. len(X)={len(X)}")
                         )
                         for model_config in model_configs:
                             model_name = model_config["model_name"]

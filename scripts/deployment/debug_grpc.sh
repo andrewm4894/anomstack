@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Debug script for Dagster gRPC connectivity issues in Fly.io deployment
-# 
+#
 # NOTE: By default, Anomstack uses direct Python module loading (no gRPC server).
 # This script is useful if you have configured optional gRPC code servers.
 # See ARCHITECTURE.md for information about enabling gRPC setup.

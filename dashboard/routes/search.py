@@ -66,7 +66,9 @@ def get(batch_name: str, search: str = "") -> FT:
         # Create load more button if needed
         load_more_button = Div(
             Button(
-                f"Load next {load_next} of {remaining_metrics}",
+                f"Load next {load_next} of {remaining_metrics}"
+                if remaining_metrics > 0
+                else "No more metrics",
                 hx_get=f"/batch/{batch_name}/load-more/{DEFAULT_LOAD_N_CHARTS}",
                 hx_target="#charts-container",
                 hx_swap="beforeend",
@@ -184,7 +186,9 @@ def post(batch_name: str, last_n: str = "90n"):
             ),
             Div(
                 Button(
-                    f"Load next {load_next} of {remaining_metrics}",
+                    f"Load next {load_next} of {remaining_metrics}"
+                    if remaining_metrics > 0
+                    else "No more metrics",
                     hx_get=f"/batch/{batch_name}/load-more/{DEFAULT_LOAD_N_CHARTS}",
                     hx_target="#charts-container",
                     hx_swap="beforeend",

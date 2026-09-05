@@ -140,11 +140,8 @@ from anomstack.sql.read import execute_sql
 # Execute a SQL query
 df = execute_sql(
     sql_file="metrics/sales/daily_revenue.sql",
-    params={
-        "start_date": "2023-12-01",
-        "end_date": "2023-12-31"
-    },
-    data_source="bigquery"
+    params={"start_date": "2023-12-01", "end_date": "2023-12-31"},
+    data_source="bigquery",
 )
 ```
 
@@ -153,10 +150,7 @@ df = execute_sql(
 from anomstack.sql.utils import validate_sql
 
 # Validate SQL syntax
-is_valid = validate_sql(
-    sql_content=sql_query,
-    dialect="bigquery"
-)
+is_valid = validate_sql(sql_content=sql_query, dialect="bigquery")
 ```
 
 ### Dialect Translation
@@ -165,9 +159,7 @@ from anomstack.sql.translate import translate_query
 
 # Translate query between dialects
 postgres_query = translate_query(
-    sql_query=bigquery_sql,
-    source_dialect="bigquery",
-    target_dialect="postgresql"
+    sql_query=bigquery_sql, source_dialect="bigquery", target_dialect="postgresql"
 )
 ```
 
@@ -205,7 +197,8 @@ For Anomstack compatibility, SQL queries should:
 Enable SQL debugging:
 ```python
 import logging
-logging.getLogger('anomstack.sql').setLevel(logging.DEBUG)
+
+logging.getLogger("anomstack.sql").setLevel(logging.DEBUG)
 ```
 
 This will log all executed queries and their parameters for troubleshooting.

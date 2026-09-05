@@ -3,6 +3,7 @@
 Test script to verify anomaly-agent PostHog integration.
 Run this on the Fly.io instance to check if LLM events are emitted to PostHog.
 """
+
 import os
 import sys
 
@@ -19,6 +20,7 @@ print(f"OPENAI_API_KEY set: {bool(os.getenv('OPENAI_API_KEY'))}")
 # Check anomaly-agent version
 try:
     import anomaly_agent
+
     print(f"anomaly-agent version: {anomaly_agent.__version__}")
 except Exception as e:
     print(f"anomaly-agent import error: {e}")
@@ -26,14 +28,18 @@ except Exception as e:
 # Check posthog version
 try:
     import posthog
+
     print(f"posthog version: {posthog.VERSION}")
 except Exception as e:
     print(f"posthog import error: {e}")
 
 # Check posthog callback handler
 try:
-    from posthog import Posthog
-    from posthog.ai.langchain import CallbackHandler
+    from posthog import Posthog  # noqa: F401 - verify optional integration import
+    from posthog.ai.langchain import (
+        CallbackHandler,  # noqa: F401 - verify optional integration import
+    )
+
     print("PostHog CallbackHandler import: OK")
 except ImportError as e:
     print(f"PostHog CallbackHandler import error: {e}")
@@ -44,19 +50,35 @@ print("=" * 60)
 print("Running Anomaly Agent Test")
 print("=" * 60)
 
-import pandas as pd
-from anomaly_agent import AnomalyAgent
+from anomaly_agent import AnomalyAgent  # noqa: E402 - diagnostics run before the test
+import pandas as pd  # noqa: E402 - diagnostics run before the test
 
 # Create test data with an obvious anomaly
-dates = pd.date_range(start='2026-01-01', periods=20, freq='h')
-values = [10, 11, 10, 9, 10, 11, 10, 9, 10, 11,
-          500,  # Obvious anomaly
-          10, 11, 10, 9, 10, 11, 10, 9, 10]
+dates = pd.date_range(start="2026-01-01", periods=20, freq="h")
+values = [
+    10,
+    11,
+    10,
+    9,
+    10,
+    11,
+    10,
+    9,
+    10,
+    11,
+    500,  # Obvious anomaly
+    10,
+    11,
+    10,
+    9,
+    10,
+    11,
+    10,
+    9,
+    10,
+]
 
-df = pd.DataFrame({
-    'metric_timestamp': dates,
-    'metric_value': values
-})
+df = pd.DataFrame({"metric_timestamp": dates, "metric_value": values})
 
 print(f"Test data shape: {df.shape}")
 print(f"Test data values: {values}")
@@ -68,7 +90,7 @@ agent = AnomalyAgent()
 
 print("Running detect_anomalies...")
 try:
-    anomalies = agent.detect_anomalies(df, timestamp_col='metric_timestamp')
+    anomalies = agent.detect_anomalies(df, timestamp_col="metric_timestamp")
     df_anomalies = agent.get_anomalies_df(anomalies)
 
     print()
@@ -88,5 +110,6 @@ try:
 except Exception as e:
     print(f"ERROR: {type(e).__name__}: {e}")
     import traceback
+
     traceback.print_exc()
     sys.exit(1)

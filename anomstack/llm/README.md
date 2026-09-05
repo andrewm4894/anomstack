@@ -207,7 +207,8 @@ agent_cost_per_call = total_cost / total_calls
 Enable LLM debugging:
 ```python
 import logging
-logging.getLogger('anomstack.llm').setLevel(logging.DEBUG)
+
+logging.getLogger("anomstack.llm").setLevel(logging.DEBUG)
 ```
 
 This will log all agent interactions for troubleshooting.

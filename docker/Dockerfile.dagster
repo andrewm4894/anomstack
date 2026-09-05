@@ -10,20 +10,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     cmake \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Dagster libraries
-RUN pip install \
-    dagster \
-    dagster-graphql \
-    dagster-webserver \
-    dagster-postgres \
-    dagster-docker
-
 # Set working directory for user code
 WORKDIR /opt/dagster/app
 
 # Copy and install user code requirements
 COPY requirements.txt /opt/dagster/app/requirements.txt
-RUN pip install -r requirements.txt
+COPY constraints.txt /opt/dagster/app/constraints.txt
+RUN pip install -c constraints.txt -r requirements.txt
 
 # Copy user code
 COPY anomstack /opt/dagster/app/anomstack
@@ -43,7 +36,7 @@ COPY workspace.yaml $DAGSTER_HOME
 COPY .example.env .env
 
 # Set Python path to include user code
-ENV PYTHONPATH=/opt/dagster/app:$PYTHONPATH
+ENV PYTHONPATH=/opt/dagster/app
 
 # Add build information
 ARG ANOMSTACK_BUILD_HASH="unknown"

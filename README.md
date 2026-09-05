@@ -1,3 +1,5 @@
+> Returning to the project? See [Local development](LOCAL_DEVELOPMENT.md) for reproducible setup and a local stack with sample data.
+
 # Anomstack
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/andrewm4894/anomstack)

@@ -42,11 +42,11 @@ def build_score_job(spec: dict) -> JobDefinition:
     if spec.get("disable_score"):
 
         @job(
-            name=f'{spec["metric_batch"]}_score_disabled',
+            name=f"{spec['metric_batch']}_score_disabled",
             tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
         )
         def _dummy_job():
-            @op(name=f'{spec["metric_batch"]}_noop')
+            @op(name=f"{spec['metric_batch']}_noop")
             def noop():
                 pass
 
@@ -131,13 +131,13 @@ def build_score_job(spec: dict) -> JobDefinition:
                     except NotFound as e:
                         logger.warning(e)
                         logger.warning(
-                            f"model not found for {metric_name} in " f"{metric_batch} score job."
+                            f"model not found for {metric_name} in {metric_batch} score job."
                         )
                         continue
                     except Exception as e:
                         logger.warning(e)
                         logger.warning(
-                            f"model failed for {metric_name} in " f"{metric_batch} score job."
+                            f"model failed for {metric_name} in {metric_batch} score job."
                         )
                         continue
 
@@ -149,7 +149,7 @@ def build_score_job(spec: dict) -> JobDefinition:
                     scores = pd.DataFrame(scores).min(axis=1).values
                 else:
                     raise ValueError(
-                        f"model_combination_method {model_combination_method} " f"not supported."
+                        f"model_combination_method {model_combination_method} not supported."
                     )
 
                 # create initial df_score

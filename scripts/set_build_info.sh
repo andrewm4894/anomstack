@@ -5,7 +5,7 @@
 # Get current git commit hash
 HASH=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 
-# Get current timestamp 
+# Get current timestamp
 TIME=$(date -u "+%Y-%m-%d %H:%M:%S UTC")
 
 # Export for use in docker-compose or other scripts

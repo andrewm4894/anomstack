@@ -165,8 +165,9 @@ Example lifecycle policy:
 Enable debug logging:
 ```python
 import logging
-logging.getLogger('boto3').setLevel(logging.DEBUG)
-logging.getLogger('botocore').setLevel(logging.DEBUG)
+
+logging.getLogger("boto3").setLevel(logging.DEBUG)
+logging.getLogger("botocore").setLevel(logging.DEBUG)
 ```
 
 ### Performance Monitoring

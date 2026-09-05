@@ -45,16 +45,16 @@ class TestExampleIngests:
         timestamp_col = df["metric_timestamp"]
         is_datetime = pd.api.types.is_datetime64_any_dtype(timestamp_col)
         is_string = timestamp_col.dtype == "object"
-        assert (
-            is_datetime or is_string
-        ), f"{example_name}: metric_timestamp should be datetime or string (got {timestamp_col.dtype})"
+        assert is_datetime or is_string, (
+            f"{example_name}: metric_timestamp should be datetime or string (got {timestamp_col.dtype})"
+        )
 
-        assert (
-            df["metric_name"].dtype == "object"
-        ), f"{example_name}: metric_name should be string/object"
-        assert pd.api.types.is_numeric_dtype(
-            df["metric_value"]
-        ), f"{example_name}: metric_value should be numeric"
+        assert df["metric_name"].dtype == "object", (
+            f"{example_name}: metric_name should be string/object"
+        )
+        assert pd.api.types.is_numeric_dtype(df["metric_value"]), (
+            f"{example_name}: metric_value should be numeric"
+        )
 
         # Check no null values in required columns
         for col in required_columns:
@@ -76,9 +76,9 @@ class TestExampleIngests:
             "hn_top_5_total_score",
         }
         actual_metrics = set(df["metric_name"])
-        assert (
-            expected_metrics == actual_metrics
-        ), f"Expected {expected_metrics}, got {actual_metrics}"
+        assert expected_metrics == actual_metrics, (
+            f"Expected {expected_metrics}, got {actual_metrics}"
+        )
 
     @patch("requests.get")
     def test_hackernews_ingest_mocked(self, mock_get):
@@ -141,9 +141,9 @@ class TestExampleIngests:
         self.validate_dataframe(df, "coindesk")
 
         # Check that all metric names contain CURRENT_HOUR (as per the filtering logic)
-        assert all(
-            "CURRENT_HOUR" in name for name in df["metric_name"]
-        ), "All metrics should contain CURRENT_HOUR"
+        assert all("CURRENT_HOUR" in name for name in df["metric_name"]), (
+            "All metrics should contain CURRENT_HOUR"
+        )
 
     @pytest.mark.skipif("CI" in os.environ, reason="Requires internet access")
     def test_iss_location_ingest(self):

@@ -16,17 +16,18 @@ import os
 from dotenv import load_dotenv
 from fasthtml.common import Link, Script, fast_app, serve
 from monsterui.all import *
+from plotly.offline import get_plotlyjs_version
 
-from dashboard.constants import POSTHOG_SCRIPT
 from dashboard.state import AppState
+
 
 # load the environment variables with custom env file support
 def load_env_with_custom_path():
     """Load environment variables from custom path or default .env file."""
     from pathlib import Path
-    
+
     env_file_path = os.getenv("ANOMSTACK_ENV_FILE_PATH")
-    
+
     if env_file_path:
         env_path = Path(env_file_path)
         if env_path.exists():
@@ -41,9 +42,11 @@ def load_env_with_custom_path():
         # Standard .env loading (don't override system env vars with empty placeholders)
         load_dotenv(override=False)
 
+
 load_env_with_custom_path()
 
 log = logging.getLogger("anomstack_dashboard")
+
 
 # PostHog script generation function (lazy loading to ensure env vars are available)
 def get_posthog_script():
@@ -51,8 +54,10 @@ def get_posthog_script():
     posthog_api_key = os.getenv("POSTHOG_FRONTEND_API_KEY")
     if posthog_api_key:
         from dashboard.constants import POSTHOG_SCRIPT
+
         return POSTHOG_SCRIPT.replace("window.POSTHOG_API_KEY || ''", f"'{posthog_api_key}'")
     return None
+
 
 # Get PostHog script at import time (will be None if env var not available yet)
 posthog_script = get_posthog_script()
@@ -61,6 +66,7 @@ posthog_script = get_posthog_script()
 # This handles cases where environment variables aren't fully loaded during module import
 if not posthog_script:
     import time
+
     time.sleep(0.1)  # Brief delay to allow env vars to load
     posthog_script = get_posthog_script()
     # Cache bust comment - force fresh deployment v2
@@ -69,7 +75,7 @@ if not posthog_script:
 app, rt = fast_app(
     hdrs=(
         Theme.blue.headers(),
-        Script(src="https://cdn.plot.ly/plotly-2.32.0.min.js"),
+        Script(src=f"https://cdn.plot.ly/plotly-{get_plotlyjs_version()}.min.js"),
         Script(posthog_script) if posthog_script else None,
         Link(
             rel="icon",
@@ -99,6 +105,7 @@ def version_info():
     """Version information endpoint."""
     try:
         from anomstack.version import get_version_info
+
         return get_version_info()
     except Exception as e:
         return {"error": str(e), "service": "anomstack-dashboard"}

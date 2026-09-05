@@ -72,10 +72,10 @@ def cleanup_artifacts(dry_run=False, aggressive=False):
                         )
 
                         if dry_run:
-                            print(f"Would remove: {item} ({size/(1024**2):.1f}MB)")
+                            print(f"Would remove: {item} ({size / (1024**2):.1f}MB)")
                         else:
                             shutil.rmtree(item_path)
-                            print(f"Removed: {item} ({size/(1024**2):.1f}MB)")
+                            print(f"Removed: {item} ({size / (1024**2):.1f}MB)")
 
                         removed_count += 1
                         freed_bytes += size
@@ -84,7 +84,9 @@ def cleanup_artifacts(dry_run=False, aggressive=False):
                         print(f"⚠️  Failed to process {item}: {e}")
 
         action = "Would free" if dry_run else "Freed"
-        print(f"✅ {action} {freed_bytes/(1024**2):.1f}MB by removing {removed_count} directories")
+        print(
+            f"✅ {action} {freed_bytes / (1024**2):.1f}MB by removing {removed_count} directories"
+        )
 
     except Exception as e:
         print(f"❌ Error during artifact cleanup: {e}")
@@ -124,7 +126,7 @@ def cleanup_logs(dry_run=False, aggressive=False):
                                 size = os.path.getsize(file_path)
 
                                 if dry_run:
-                                    print(f"Would remove: {file_path} ({size/(1024**2):.1f}MB)")
+                                    print(f"Would remove: {file_path} ({size / (1024**2):.1f}MB)")
                                 else:
                                     os.remove(file_path)
 
@@ -137,7 +139,7 @@ def cleanup_logs(dry_run=False, aggressive=False):
             print(f"⚠️  Error in {log_dir}: {e}")
 
     action = "Would free" if dry_run else "Freed"
-    print(f"✅ {action} {freed_bytes/(1024**2):.1f}MB by removing {removed_count} log files")
+    print(f"✅ {action} {freed_bytes / (1024**2):.1f}MB by removing {removed_count} log files")
 
     return removed_count, freed_bytes
 
@@ -252,7 +254,7 @@ def main():
     print(f"   {action} {total_files_removed} files/directories")
     print(f"   {action} {db_count} database records")
     action2 = "Would free" if args.dry_run else "Freed"
-    print(f"   {action2} {total_bytes_freed/(1024**2):.1f}MB of disk space")
+    print(f"   {action2} {total_bytes_freed / (1024**2):.1f}MB of disk space")
 
     if not args.dry_run and usage and usage["usage_percent"] > 90:
         print()

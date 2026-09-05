@@ -41,8 +41,8 @@ def validate_df(df: pd.DataFrame) -> pd.DataFrame:
     # metric_value is numeric
     assert pd.api.types.is_numeric_dtype(df["metric_value"]), "metric_value is not numeric"
     # metric_timestamp is timestamp
-    assert pd.api.types.is_datetime64_any_dtype(
-        df["metric_timestamp"]
-    ), "metric_timestamp is not timestamp"
+    assert pd.api.types.is_datetime64_any_dtype(df["metric_timestamp"]), (
+        "metric_timestamp is not timestamp"
+    )
 
     return df

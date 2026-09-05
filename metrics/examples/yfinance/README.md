@@ -70,7 +70,7 @@ The example monitors these popular tickers by default:
 
 3. **Customize your portfolio**: Edit `yfinance.py` to track your stocks:
    ```python
-   tickers = ['AAPL', 'GOOGL', 'YOUR_STOCK', 'BTC-USD', '^GSPC']
+   tickers = ["AAPL", "GOOGL", "YOUR_STOCK", "BTC-USD", "^GSPC"]
    ```
 
 4. **Enable in Dagster**: The jobs will appear in your Dagster UI
@@ -88,21 +88,13 @@ The example monitors these popular tickers by default:
 The ingest function returns stock data like:
 ```python
 [
+    {"metric_timestamp": datetime.now(), "metric_name": "AAPL_price", "metric_value": 185.42},
+    {"metric_timestamp": datetime.now(), "metric_name": "AAPL_volume", "metric_value": 45682300},
     {
-        'metric_timestamp': datetime.now(),
-        'metric_name': 'AAPL_price',
-        'metric_value': 185.42
+        "metric_timestamp": datetime.now(),
+        "metric_name": "AAPL_change_percent",
+        "metric_value": 2.45,
     },
-    {
-        'metric_timestamp': datetime.now(),
-        'metric_name': 'AAPL_volume',
-        'metric_value': 45682300
-    },
-    {
-        'metric_timestamp': datetime.now(),
-        'metric_name': 'AAPL_change_percent',
-        'metric_value': 2.45
-    }
 ]
 ```
 
@@ -177,9 +169,9 @@ INCLUDE_PREMARKET=false
 ```python
 # Monitor same stock at different frequencies
 tickers = {
-    'AAPL_1min': {'symbol': 'AAPL', 'interval': '1m'},
-    'AAPL_1hour': {'symbol': 'AAPL', 'interval': '1h'},
-    'AAPL_daily': {'symbol': 'AAPL', 'interval': '1d'}
+    "AAPL_1min": {"symbol": "AAPL", "interval": "1m"},
+    "AAPL_1hour": {"symbol": "AAPL", "interval": "1h"},
+    "AAPL_daily": {"symbol": "AAPL", "interval": "1d"},
 }
 ```
 
@@ -190,8 +182,9 @@ def calculate_rsi(prices, period=14):
     # RSI calculation
     return rsi_value
 
+
 def calculate_macd(prices):
-    # MACD calculation  
+    # MACD calculation
     return macd_line, signal_line
 ```
 

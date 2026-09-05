@@ -4,10 +4,12 @@ Version information for Anomstack.
 Provides build/deployment version tracking.
 """
 
-import os
-import subprocess
 from datetime import datetime
+import os
 from pathlib import Path
+import subprocess
+
+from anomstack import __version__
 
 
 def get_git_commit_hash() -> str:
@@ -24,7 +26,7 @@ def get_git_commit_hash() -> str:
             return result.stdout.strip()
     except Exception:
         pass
-    
+
     # Fallback to environment variable if set (useful for Docker builds)
     return os.getenv("ANOMSTACK_BUILD_HASH", "unknown")
 
@@ -35,7 +37,7 @@ def get_build_time() -> str:
     build_time = os.getenv("ANOMSTACK_BUILD_TIME")
     if build_time:
         return build_time
-    
+
     # Fallback to current time
     return datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
 
@@ -43,6 +45,7 @@ def get_build_time() -> str:
 def get_version_info() -> dict:
     """Get complete version information."""
     return {
+        "version": __version__,
         "commit_hash": get_git_commit_hash(),
         "build_time": get_build_time(),
         "architecture": "3-container (gRPC-free)",

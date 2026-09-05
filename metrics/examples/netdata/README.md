@@ -71,25 +71,22 @@ This example uses Netdata's public demo servers by default:
    NETDATA_HOSTS = [
        "http://server1:19999",
        "http://server2:19999",
-       "http://monitoring.company.com:19999"
+       "http://monitoring.company.com:19999",
    ]
    # Or keep demo servers for testing
-   NETDATA_HOSTS = [
-       "https://london.my-netdata.io",
-       "https://atlanta.my-netdata.io"
-   ]
+   NETDATA_HOSTS = ["https://london.my-netdata.io", "https://atlanta.my-netdata.io"]
    ```
 
 3. **Customize metrics to monitor**: Edit the charts in `netdata.py`:
    ```python
    CHARTS_TO_MONITOR = [
-       'system.cpu',      # CPU utilization
-       'system.ram',      # Memory usage
-       'system.net',      # Network traffic
-       'system.io',       # Disk I/O
-       'system.load',     # System load
-       'apps.cpu',        # Per-app CPU usage
-       'users.cpu'        # Per-user CPU usage
+       "system.cpu",  # CPU utilization
+       "system.ram",  # Memory usage
+       "system.net",  # Network traffic
+       "system.io",  # Disk I/O
+       "system.load",  # System load
+       "apps.cpu",  # Per-app CPU usage
+       "users.cpu",  # Per-user CPU usage
    ]
    ```
 
@@ -103,51 +100,43 @@ NETDATA_HOSTS = [
     "http://web01.company.com:19999",
     "http://web02.company.com:19999",
     "http://web03.company.com:19999",
-    "http://load-balancer.company.com:19999"
+    "http://load-balancer.company.com:19999",
 ]
 
 CHARTS_TO_MONITOR = [
-    'system.cpu',
-    'system.ram',
-    'nginx.requests',
-    'nginx.connections',
-    'web_log.response_codes'
+    "system.cpu",
+    "system.ram",
+    "nginx.requests",
+    "nginx.connections",
+    "web_log.response_codes",
 ]
 ```
 
 #### Monitor Database Cluster
 ```python
-NETDATA_HOSTS = [
-    "http://db-master:19999",
-    "http://db-replica1:19999",
-    "http://db-replica2:19999"
-]
+NETDATA_HOSTS = ["http://db-master:19999", "http://db-replica1:19999", "http://db-replica2:19999"]
 
 CHARTS_TO_MONITOR = [
-    'mysql.queries',
-    'mysql.connections',
-    'mysql.innodb_io',
-    'system.cpu',
-    'system.ram',
-    'system.io'
+    "mysql.queries",
+    "mysql.connections",
+    "mysql.innodb_io",
+    "system.cpu",
+    "system.ram",
+    "system.io",
 ]
 ```
 
 #### Monitor Kubernetes Nodes
 ```python
-NETDATA_HOSTS = [
-    "http://k8s-node01:19999",
-    "http://k8s-node02:19999",
-    "http://k8s-node03:19999"
-]
+NETDATA_HOSTS = ["http://k8s-node01:19999", "http://k8s-node02:19999", "http://k8s-node03:19999"]
 
 CHARTS_TO_MONITOR = [
-    'k8s.cluster_cpu_usage',
-    'k8s.cluster_memory_usage',
-    'k8s.pods_running',
-    'k8s.containers_running',
-    'system.cpu',
-    'system.ram'
+    "k8s.cluster_cpu_usage",
+    "k8s.cluster_memory_usage",
+    "k8s.pods_running",
+    "k8s.containers_running",
+    "system.cpu",
+    "system.ram",
 ]
 ```
 
@@ -157,20 +146,20 @@ The ingest function returns Netdata metrics like:
 ```python
 [
     {
-        'metric_timestamp': datetime.now(),
-        'metric_name': 'london_system_cpu_user',
-        'metric_value': 45.2
+        "metric_timestamp": datetime.now(),
+        "metric_name": "london_system_cpu_user",
+        "metric_value": 45.2,
     },
     {
-        'metric_timestamp': datetime.now(),
-        'metric_name': 'london_system_ram_used_percent',
-        'metric_value': 78.5
+        "metric_timestamp": datetime.now(),
+        "metric_name": "london_system_ram_used_percent",
+        "metric_value": 78.5,
     },
     {
-        'metric_timestamp': datetime.now(),
-        'metric_name': 'atlanta_system_net_received_mbps',
-        'metric_value': 125.7
-    }
+        "metric_timestamp": datetime.now(),
+        "metric_name": "atlanta_system_net_received_mbps",
+        "metric_value": 125.7,
+    },
 ]
 ```
 
@@ -286,9 +275,9 @@ def aggregate_metrics(hosts, chart):
             host_count += 1
 
     return {
-        'metric_timestamp': datetime.now(),
-        'metric_name': f'cluster_avg_{chart}',
-        'metric_value': total_cpu / host_count if host_count > 0 else 0
+        "metric_timestamp": datetime.now(),
+        "metric_name": f"cluster_avg_{chart}",
+        "metric_value": total_cpu / host_count if host_count > 0 else 0,
     }
 ```
 
@@ -301,8 +290,9 @@ def discover_charts(netdata_host):
 
     # Filter for interesting charts
     system_charts = [
-        chart_id for chart_id, chart_info in charts['charts'].items()
-        if chart_id.startswith(('system.', 'apps.', 'users.'))
+        chart_id
+        for chart_id, chart_info in charts["charts"].items()
+        if chart_id.startswith(("system.", "apps.", "users."))
     ]
 
     return system_charts
@@ -313,12 +303,7 @@ def discover_charts(netdata_host):
 # Handle Netdata authentication if enabled
 def get_netdata_data(host, chart, auth=None):
     url = f"{host}/api/v1/data"
-    params = {
-        'chart': chart,
-        'after': -600,
-        'before': 0,
-        'points': 1
-    }
+    params = {"chart": chart, "after": -600, "before": 0, "points": 1}
 
     if auth:
         response = requests.get(url, params=params, auth=auth)
@@ -336,8 +321,8 @@ def safe_netdata_request(host, chart, retries=3):
         try:
             response = requests.get(
                 f"{host}/api/v1/data",
-                params={'chart': chart, 'after': -300, 'points': 1},
-                timeout=10
+                params={"chart": chart, "after": -300, "points": 1},
+                timeout=10,
             )
             response.raise_for_status()
             return response.json()
@@ -345,7 +330,7 @@ def safe_netdata_request(host, chart, retries=3):
             if attempt == retries - 1:
                 logger.error(f"Failed to get data from {host}: {e}")
                 return None
-            time.sleep(2 ** attempt)  # Exponential backoff
+            time.sleep(2**attempt)  # Exponential backoff
 ```
 
 ## Netdata Configuration Optimization
