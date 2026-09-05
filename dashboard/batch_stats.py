@@ -68,11 +68,9 @@ def format_time_ago(timestamp: str) -> str:
     now = datetime.now(timezone.utc)
     delta = now - dt
 
-    if delta.days > 0:
-        return f"{delta.days} days ago"
-    elif delta.seconds > 3600:
-        return f"{delta.seconds // 3600} hours ago"
-    elif delta.seconds > 60:
-        return f"{delta.seconds // 60} minutes ago"
-    else:
-        return "just now"
+    seconds = max(0, int(delta.total_seconds()))
+    for unit, duration in (("day", 86400), ("hour", 3600), ("minute", 60)):
+        if seconds >= duration:
+            count = seconds // duration
+            return f"{count} {unit}{'s' if count != 1 else ''} ago"
+    return "just now"

@@ -68,7 +68,7 @@ def create_batch_card(batch_name: str, stats: dict) -> Card:
             UkIcon("bar-chart", cls="text-purple-500"),
             f"Avg Score: {stats['avg_score']:.1%}",
         ),
-        (UkIcon("alert-circle", cls="text-red-500"), f"{stats['alert_count']} alerts"),
+        (UkIcon("alert-circle", cls="text-red-500"), f"{int(stats['alert_count'])} alerts"),
     ]
 
     metric_divs = [

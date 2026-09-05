@@ -85,3 +85,47 @@ def test_app_state_cache_management_and_stats():
     assert batch not in state.df_cache
     assert batch not in state.chart_cache
     assert batch not in state.stats_cache
+
+
+def test_time_ago_singular_and_future():
+    now = datetime.now(timezone.utc)
+    assert format_time_ago(now - timedelta(hours=1)) == "1 hour ago"
+    assert format_time_ago(now - timedelta(minutes=1)) == "1 minute ago"
+    assert format_time_ago(now + timedelta(minutes=1)) == "just now"
+
+
+def test_filtered_pagination_retains_chart_indices():
+    from fasthtml.common import to_xml
+
+    from dashboard.metric_results import metric_results
+
+    state = AppState()
+    state.stats_cache["demo"] = [
+        {"metric_name": f"{'london' if i % 2 else 'paris'}_{i}"} for i in range(50)
+    ]
+    state.search_term["demo"] = "LONDON"
+    html = to_xml(metric_results(state, "demo", start=10, append=True))
+    assert "london_21" in html
+    assert "london_39" in html
+    assert "/chart/21" in html
+    assert "paris_" not in html
+    assert "london_1<" not in html
+    assert "Load next 5 of 5" in html
+    final = to_xml(metric_results(state, "demo", start=20, append=True))
+    assert "25 matching metrics" in final
+    assert "load-more/30" not in final
+
+
+def test_search_empty_and_invalid_patterns():
+    from fasthtml.common import to_xml
+
+    from dashboard.metric_results import metric_results
+
+    state = AppState()
+    state.stats_cache["demo"] = [{"metric_name": "cpu"}]
+    state.search_term["demo"] = "missing"
+    assert "No matching metrics" in to_xml(metric_results(state, "demo"))
+    state.search_term["demo"] = "["
+    assert "Invalid search pattern" in to_xml(metric_results(state, "demo"))
+    state.search_term["demo"] = ""
+    assert "/chart/0" in to_xml(metric_results(state, "demo"))

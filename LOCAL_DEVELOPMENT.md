@@ -21,6 +21,28 @@ Dashboard code is loaded from the working tree. Restart `make stack` after chang
 For the existing environment and full metric configuration, the older `make local`
 and dashboard targets remain available.
 
+## More dashboard data
+
+Stop `make stack`, then seed additional isolated fixtures and restart:
+
+```sh
+.venv/bin/python scripts/development/seed_stack_data.py --public
+make stack
+```
+
+This adds `demo_netdata` (51 metrics) and `demo_currency` (85 metrics), each
+with seven days of hourly synthetic values, simulated scores, and alerts.
+The `--public` option also adds `public_earthquake`: seven days of hourly,
+rolling 24-hour earthquake counts and magnitudes reconstructed from the USGS
+monthly event feed. Those are real observations with no fabricated anomaly
+scores. Omit `--public` for an entirely offline seed.
+
+Rerunning replaces only these fixture tables. The original example and Dagster
+history are preserved. Fixture configs and the database stay under ignored
+`tmpdata/local-stack/`; they are dashboard fixtures, not scheduled Dagster jobs.
+Public data requires an internet connection but no API key. Source information
+is stored in each row's metadata.
+
 ## Validation and dependency updates
 
 ```sh

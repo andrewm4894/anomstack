@@ -360,3 +360,9 @@ body.dark-mode .uk-toggle-switch::before {
     align-items: center;
     justify-content: center;
 }
+
+/* Keep chart columns readable on phones, including after settings changes. */
+@media (max-width: 640px) {
+    #charts-container { grid-template-columns: minmax(0, 1fr); }
+    .homepage-grid { grid-template-columns: minmax(0, 1fr); }
+}
