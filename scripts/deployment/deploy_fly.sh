@@ -34,7 +34,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Set default app name if not provided
-APP_NAME="${APP_NAME:-anomstack-demo}"
+APP_NAME="${APP_NAME:-anomstack-live-demo}"
 
 # Check if fly CLI is installed and user is logged in
 if ! command -v fly &> /dev/null; then

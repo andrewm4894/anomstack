@@ -25,7 +25,7 @@ function HomepageHeader() {
           </Link>
           <Link
             className="button button--outline button--secondary button--lg"
-            href="https://anomstack-demo.replit.app/"
+            href="https://anomstack-live-demo.fly.dev/"
             target="_blank"
             style={{marginRight: '10px'}}>
             View Demo

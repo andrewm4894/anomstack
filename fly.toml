@@ -1,4 +1,4 @@
-app = "anomstack-demo"
+app = "anomstack-live-demo"
 primary_region = "ord"  # Chicago - you can change this to your preferred region
 
 [experimental]

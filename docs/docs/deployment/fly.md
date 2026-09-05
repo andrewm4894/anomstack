@@ -7,10 +7,10 @@ sidebar_position: 3
 Deploy Anomstack to Fly.io for a production-ready, scalable anomaly detection platform in the cloud.
 
 :::tip Live Demo
-🚀 **See it in action**: [https://anomstack-demo.fly.dev](https://anomstack-demo.fly.dev)
+🚀 **See it in action**: [https://anomstack-live-demo.fly.dev](https://anomstack-live-demo.fly.dev)
 
 - **📊 Public Dashboard**: Try the Anomstack interface (no login required)
-- **🔐 Admin Interface**: [/dagster](https://anomstack-demo.fly.dev/dagster) (configurable admin credentials)
+- **🔐 Admin Interface**: [/dagster](https://anomstack-live-demo.fly.dev/dagster) (configurable admin credentials)
 :::
 
 ## Overview
