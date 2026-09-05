@@ -88,6 +88,12 @@ app, rt = fast_app(
     log=log,
 )
 
+from anomstack.observability import ObservabilityMiddleware, configure_observability
+
+telemetry = configure_observability()
+if telemetry is not None:
+    app.add_middleware(ObservabilityMiddleware, client=telemetry)
+
 # Set the app state
 app.state = AppState()
 

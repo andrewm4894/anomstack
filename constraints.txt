@@ -289,6 +289,7 @@ googleapis-common-protos==1.75.3
     # via
     #   google-api-core
     #   grpcio-status
+    #   opentelemetry-exporter-otlp-proto-http
 gql==4.0.0
     # via dagster-graphql
 graphene==3.4.3
@@ -604,7 +605,28 @@ oauthlib==3.3.1
 openai==3.8.0
     # via langchain-openai
 opentelemetry-api==1.44.0
-    # via google-api-core
+    # via
+    #   google-api-core
+    #   opentelemetry-exporter-otlp-proto-http
+    #   opentelemetry-sdk
+    #   opentelemetry-semantic-conventions
+opentelemetry-exporter-otlp-proto-common==1.44.0
+    # via opentelemetry-exporter-otlp-proto-http
+opentelemetry-exporter-otlp-proto-http==1.44.0
+    # via
+    #   -r requirements.txt
+    #   anomstack
+opentelemetry-proto==1.44.0
+    # via
+    #   opentelemetry-exporter-otlp-proto-common
+    #   opentelemetry-exporter-otlp-proto-http
+opentelemetry-sdk==1.44.0
+    # via
+    #   -r requirements.txt
+    #   anomstack
+    #   opentelemetry-exporter-otlp-proto-http
+opentelemetry-semantic-conventions==0.65b0
+    # via opentelemetry-sdk
 orjson==3.12.0
     # via
     #   langgraph-sdk
@@ -714,6 +736,7 @@ protobuf==6.33.6
     #   googleapis-common-protos
     #   grpcio-health-checking
     #   grpcio-status
+    #   opentelemetry-proto
     #   proto-plus
     #   streamlit
 psutil==7.2.2
@@ -892,6 +915,7 @@ requests==2.34.2
     #   gql
     #   jupyterlab-server
     #   langsmith
+    #   opentelemetry-exporter-otlp-proto-http
     #   posthog
     #   requests-oauthlib
     #   requests-toolbelt
@@ -1068,6 +1092,9 @@ typing-extensions==4.16.0
     #   langsmith
     #   openai
     #   opentelemetry-api
+    #   opentelemetry-exporter-otlp-proto-http
+    #   opentelemetry-sdk
+    #   opentelemetry-semantic-conventions
     #   posthog
     #   pydantic
     #   pydantic-core
