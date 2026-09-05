@@ -220,6 +220,7 @@ from dotenv import load_dotenv
 import pandas as pd
 from your_integration import ingest_function
 
+
 def main():
     """Main function with proper error handling."""
     try:
@@ -234,6 +235,7 @@ def main():
     except Exception as e:
         print(f"❌ Integration failed: {e}")
         print("Check your configuration and credentials")
+
 
 if __name__ == "__main__":
     main()

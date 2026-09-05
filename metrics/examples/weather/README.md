@@ -83,16 +83,8 @@ The example monitors these cities by default:
 The ingest function returns temperature data for each city:
 ```python
 [
-    {
-        'metric_timestamp': datetime.now(),
-        'metric_name': 'temperature_dublin',
-        'metric_value': 12.5
-    },
-    {
-        'metric_timestamp': datetime.now(),
-        'metric_name': 'temperature_london',
-        'metric_value': 15.2
-    }
+    {"metric_timestamp": datetime.now(), "metric_name": "temperature_dublin", "metric_value": 12.5},
+    {"metric_timestamp": datetime.now(), "metric_name": "temperature_london", "metric_value": 15.2},
 ]
 ```
 

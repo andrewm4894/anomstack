@@ -73,7 +73,7 @@ def send_alert_slack(
     slack_token = os.environ.get("ANOMSTACK_SLACK_BOT_TOKEN")
     if not slack_token:
         raise ValueError(
-            ("Slack bot token not found in environment variable " "ANOMSTACK_SLACK_BOT_TOKEN")
+            ("Slack bot token not found in environment variable ANOMSTACK_SLACK_BOT_TOKEN")
         )
 
     client = WebClient(token=slack_token)

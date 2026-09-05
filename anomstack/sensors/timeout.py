@@ -65,12 +65,12 @@ def kill_long_running_runs(context: SensorEvaluationContext):
                 killed += 1
             except DagsterUserCodeUnreachableError as exc:
                 context.log.warning(
-                    (f"Could not terminate run {run.run_id}: {exc}. " "Marking as failed.")
+                    (f"Could not terminate run {run.run_id}: {exc}. Marking as failed.")
                 )
                 instance.report_run_failed(run)
             except Exception as exc:
                 context.log.error(
-                    (f"Unexpected error terminating run {run.run_id}: {exc}. " "Marking as failed.")
+                    (f"Unexpected error terminating run {run.run_id}: {exc}. Marking as failed.")
                 )
                 instance.report_run_failed(run)
     if killed == 0:

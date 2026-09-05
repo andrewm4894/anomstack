@@ -1,0 +1,3 @@
+include requirements.txt
+recursive-include anomstack *.sql *.jinja *.jinja2 *.yaml
+recursive-include dashboard/static *

@@ -43,11 +43,11 @@ def build_ingest_job(spec: Dict) -> JobDefinition:
     if spec.get("disable_ingest"):
 
         @job(
-            name=f'{spec["metric_batch"]}_ingest_disabled',
+            name=f"{spec['metric_batch']}_ingest_disabled",
             tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
         )
         def _dummy_job():
-            @op(name=f'{spec["metric_batch"]}_noop')
+            @op(name=f"{spec['metric_batch']}_noop")
             def noop():
                 pass
 

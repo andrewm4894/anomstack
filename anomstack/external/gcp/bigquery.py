@@ -62,7 +62,7 @@ def pandas_save_df_bigquery(
         table_key_parts = [project_id] + table_key_parts
 
     assert len(table_key_parts) == 3, (
-        f"Invalid table_key: {table_key}, should be " f"<project_id>.<dataset_id>.<table_id>"
+        f"Invalid table_key: {table_key}, should be <project_id>.<dataset_id>.<table_id>"
     )
 
     project_id = table_key_parts[0]
@@ -109,9 +109,9 @@ def save_df_bigquery(
         )
         table_key_parts = [project_id] + table_key_parts
 
-    assert (
-        len(table_key_parts) == 3
-    ), "Invalid table_key, should be <project_id>.<dataset_id>.<table_id>"
+    assert len(table_key_parts) == 3, (
+        "Invalid table_key, should be <project_id>.<dataset_id>.<table_id>"
+    )
 
     project_id, dataset_id, table_id = table_key_parts
 
@@ -137,10 +137,7 @@ def save_df_bigquery(
         except (TooManyRequests, Forbidden):
             wait_time = 2**attempt + random.uniform(0, 1)  # Exponential backoff with jitter
             get_dagster_logger().warning(
-                (
-                    f"Exceeded rate limits on attempt {attempt+1}. "
-                    f"Retrying in {wait_time} seconds."
-                )
+                (f"Exceeded rate limits on attempt {attempt + 1}. Retrying in {wait_time} seconds.")
             )
             time.sleep(wait_time)
     else:

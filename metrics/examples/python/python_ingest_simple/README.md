@@ -71,6 +71,7 @@ Your custom ingest function must:
 import pandas as pd
 from datetime import datetime
 
+
 def ingest():
     """
     Custom ingest function that returns a pandas DataFrame
@@ -81,13 +82,16 @@ def ingest():
 
     # Example: Generate some metrics
     for i in range(3):
-        data.append({
-            'metric_timestamp': datetime.now(),
-            'metric_name': f'python_metric_{i}',
-            'metric_value': some_calculation(i)
-        })
+        data.append(
+            {
+                "metric_timestamp": datetime.now(),
+                "metric_name": f"python_metric_{i}",
+                "metric_value": some_calculation(i),
+            }
+        )
 
     return pd.DataFrame(data)
+
 
 def some_calculation(x):
     # Your business logic
@@ -101,17 +105,20 @@ def some_calculation(x):
 import requests
 import pandas as pd
 
+
 def ingest():
-    response = requests.get('https://api.example.com/data')
+    response = requests.get("https://api.example.com/data")
     data = response.json()
 
     metrics = []
     for item in data:
-        metrics.append({
-            'metric_timestamp': datetime.now(),
-            'metric_name': f"api_metric_{item['type']}",
-            'metric_value': item['value']
-        })
+        metrics.append(
+            {
+                "metric_timestamp": datetime.now(),
+                "metric_name": f"api_metric_{item['type']}",
+                "metric_value": item["value"],
+            }
+        )
 
     return pd.DataFrame(metrics)
 ```
@@ -121,16 +128,15 @@ def ingest():
 import pandas as pd
 import os
 
+
 def ingest():
     # Process CSV files
-    df = pd.read_csv('data/metrics.csv')
+    df = pd.read_csv("data/metrics.csv")
 
     # Transform to required format
-    return df.rename(columns={
-        'timestamp': 'metric_timestamp',
-        'name': 'metric_name',
-        'value': 'metric_value'
-    })
+    return df.rename(
+        columns={"timestamp": "metric_timestamp", "name": "metric_name", "value": "metric_value"}
+    )
 ```
 
 ### Complex Calculations
@@ -138,22 +144,27 @@ def ingest():
 import numpy as np
 import pandas as pd
 
+
 def ingest():
     # Complex statistical calculations
     data = fetch_raw_data()  # Your data source
 
     metrics = []
-    metrics.append({
-        'metric_timestamp': datetime.now(),
-        'metric_name': 'moving_average',
-        'metric_value': np.mean(data[-30:])  # 30-day moving average
-    })
+    metrics.append(
+        {
+            "metric_timestamp": datetime.now(),
+            "metric_name": "moving_average",
+            "metric_value": np.mean(data[-30:]),  # 30-day moving average
+        }
+    )
 
-    metrics.append({
-        'metric_timestamp': datetime.now(),
-        'metric_name': 'volatility',
-        'metric_value': np.std(data[-30:])  # 30-day volatility
-    })
+    metrics.append(
+        {
+            "metric_timestamp": datetime.now(),
+            "metric_name": "volatility",
+            "metric_value": np.std(data[-30:]),  # 30-day volatility
+        }
+    )
 
     return pd.DataFrame(metrics)
 ```
@@ -169,7 +180,7 @@ def ingest():
     except Exception as e:
         print(f"Error in ingest function: {e}")
         # Return empty DataFrame on error
-        return pd.DataFrame(columns=['metric_timestamp', 'metric_name', 'metric_value'])
+        return pd.DataFrame(columns=["metric_timestamp", "metric_name", "metric_value"])
 ```
 
 ## Environment Variables
@@ -178,12 +189,13 @@ Access environment variables for configuration:
 ```python
 import os
 
+
 def ingest():
-    api_key = os.getenv('MY_API_KEY')
-    endpoint = os.getenv('MY_API_ENDPOINT', 'https://default-api.com')
+    api_key = os.getenv("MY_API_KEY")
+    endpoint = os.getenv("MY_API_ENDPOINT", "https://default-api.com")
 
     # Use in your function
-    response = requests.get(endpoint, headers={'Authorization': f'Bearer {api_key}'})
+    response = requests.get(endpoint, headers={"Authorization": f"Bearer {api_key}"})
 ```
 
 ## Integration with Anomstack Features

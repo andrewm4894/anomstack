@@ -61,6 +61,7 @@ Here's a complete example that fetches metrics from HackerNews top stories:
 import pandas as pd
 import requests
 
+
 def ingest(top_n=10) -> pd.DataFrame:
     # Hacker News API endpoint for top stories
     url = "https://hacker-news.firebaseio.com/v0/topstories.json"

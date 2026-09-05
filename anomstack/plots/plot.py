@@ -79,7 +79,7 @@ def make_alert_plot(
     ax2.axhline(threshold, color="lightgrey", linestyle="-.", label=f"threshold ({threshold})")
     ax2.xaxis.set_major_locator(plt.MaxNLocator(n))
     ax2.set_xticklabels(
-        [f'{item.strftime("%Y-%m-%d %H:%M")}' for item in df_plot.index.tolist()],
+        [f"{item.strftime('%Y-%m-%d %H:%M')}" for item in df_plot.index.tolist()],
         rotation=45,
     )
     ax2.set_ylabel(score_title)

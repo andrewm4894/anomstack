@@ -44,7 +44,7 @@ make docker
   - `anomstack_metrics_duckdb:/data` (DuckDB data)
   - `./dagster_home:/opt/dagster/dagster_home` (Dagster storage - includes SQLite)
 
-### 2. Dagster Daemon (`anomstack_daemon`) 
+### 2. Dagster Daemon (`anomstack_daemon`)
 - **Image**: Built locally from `docker/Dockerfile.dagster`
 - **Purpose**: Background process for scheduling and run execution
 - **Restart Policy**: `on-failure`

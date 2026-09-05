@@ -88,8 +88,11 @@ def save_df_duckdb(df: pd.DataFrame, table_key: str) -> pd.DataFrame:
                 schema, _ = table_key.split(".")
                 query(connection=conn, query=f"CREATE SCHEMA IF NOT EXISTS {schema}")
             # Use explicit column names to avoid position-based mapping issues
-            columns = ', '.join(df.columns)
-            query(connection=conn, query=f"INSERT INTO {table_key} ({columns}) SELECT {columns} FROM df")
+            columns = ", ".join(df.columns)
+            query(
+                connection=conn,
+                query=f"INSERT INTO {table_key} ({columns}) SELECT {columns} FROM df",
+            )
         except Exception:
             query(connection=conn, query=f"CREATE TABLE {table_key} AS SELECT * FROM df")
         return df
@@ -104,8 +107,11 @@ def save_df_duckdb(df: pd.DataFrame, table_key: str) -> pd.DataFrame:
                     schema, _ = table_key.split(".")
                     query(connection=conn, query=f"CREATE SCHEMA IF NOT EXISTS {schema}")
                 # Use explicit column names to avoid position-based mapping issues
-                columns = ', '.join(df.columns)
-                query(connection=conn, query=f"INSERT INTO {table_key} ({columns}) SELECT {columns} FROM df")
+                columns = ", ".join(df.columns)
+                query(
+                    connection=conn,
+                    query=f"INSERT INTO {table_key} ({columns}) SELECT {columns} FROM df",
+                )
             except Exception:
                 query(connection=conn, query=f"CREATE TABLE {table_key} AS SELECT * FROM df")
             return df

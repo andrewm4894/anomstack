@@ -73,10 +73,10 @@ This example uses the [Prometheus Labs Demo Server](https://demo.promlabs.com) b
 3. **Customize metrics to monitor**: Edit the queries in `prometheus.py`:
    ```python
    queries = [
-       'node_cpu_seconds_total',
-       'node_memory_MemAvailable_bytes',
-       'prometheus_http_requests_total',
-       'your_custom_metric_name'
+       "node_cpu_seconds_total",
+       "node_memory_MemAvailable_bytes",
+       "prometheus_http_requests_total",
+       "your_custom_metric_name",
    ]
    ```
 
@@ -88,32 +88,32 @@ This example uses the [Prometheus Labs Demo Server](https://demo.promlabs.com) b
 ```python
 queries = [
     'node_cpu_seconds_total{mode="idle"}',
-    'node_memory_MemAvailable_bytes',
+    "node_memory_MemAvailable_bytes",
     'node_filesystem_avail_bytes{mountpoint="/"}',
-    'node_network_receive_bytes_total',
-    'node_load1'
+    "node_network_receive_bytes_total",
+    "node_load1",
 ]
 ```
 
 #### Monitor Application Metrics
 ```python
 queries = [
-    'http_requests_total',
-    'http_request_duration_seconds',
-    'database_connections_active',
-    'queue_size',
-    'error_rate'
+    "http_requests_total",
+    "http_request_duration_seconds",
+    "database_connections_active",
+    "queue_size",
+    "error_rate",
 ]
 ```
 
 #### Monitor Kubernetes Cluster
 ```python
 queries = [
-    'kube_pod_status_ready',
-    'kube_deployment_status_replicas',
-    'container_cpu_usage_seconds_total',
-    'container_memory_usage_bytes',
-    'kube_node_status_condition'
+    "kube_pod_status_ready",
+    "kube_deployment_status_replicas",
+    "container_cpu_usage_seconds_total",
+    "container_memory_usage_bytes",
+    "kube_node_status_condition",
 ]
 ```
 
@@ -123,20 +123,20 @@ The ingest function returns Prometheus data like:
 ```python
 [
     {
-        'metric_timestamp': datetime.now(),
-        'metric_name': 'demo_memory_usage_bytes',
-        'metric_value': 8589934592.0
+        "metric_timestamp": datetime.now(),
+        "metric_name": "demo_memory_usage_bytes",
+        "metric_value": 8589934592.0,
     },
     {
-        'metric_timestamp': datetime.now(),
-        'metric_name': 'demo_cpu_usage_ratio',
-        'metric_value': 0.75
+        "metric_timestamp": datetime.now(),
+        "metric_name": "demo_cpu_usage_ratio",
+        "metric_value": 0.75,
     },
     {
-        'metric_timestamp': datetime.now(),
-        'metric_name': 'demo_disk_usage_bytes',
-        'metric_value': 42949672960.0
-    }
+        "metric_timestamp": datetime.now(),
+        "metric_name": "demo_disk_usage_bytes",
+        "metric_value": 42949672960.0,
+    },
 ]
 ```
 
@@ -212,7 +212,7 @@ query = "node_cpu_seconds_total"
 # Aggregated query
 query = "avg(node_cpu_seconds_total) by (instance)"
 
-# Rate calculation  
+# Rate calculation
 query = "rate(http_requests_total[5m])"
 
 # Complex PromQL
@@ -225,9 +225,9 @@ query = "100 - (avg(node_memory_MemAvailable_bytes) / avg(node_memory_MemTotal_b
 ```python
 # Application-specific SLI monitoring
 queries = {
-    'availability_sli': '(sum(rate(http_requests_total{status!~"5.."}[5m])) / sum(rate(http_requests_total[5m]))) * 100',
-    'latency_sli': 'histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))',
-    'error_budget': '(1 - (sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])))) * 100'
+    "availability_sli": '(sum(rate(http_requests_total{status!~"5.."}[5m])) / sum(rate(http_requests_total[5m]))) * 100',
+    "latency_sli": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))",
+    "error_budget": '(1 - (sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])))) * 100',
 }
 ```
 
@@ -236,20 +236,18 @@ queries = {
 # Handle Prometheus labels and dimensions
 def process_prometheus_response(response):
     metrics = []
-    for result in response['data']['result']:
-        labels = result['metric']
-        value = float(result['value'][1])
+    for result in response["data"]["result"]:
+        labels = result["metric"]
+        value = float(result["value"][1])
 
         # Create metric name from labels
         metric_name = f"{labels.get('__name__', 'unknown')}"
-        if 'instance' in labels:
+        if "instance" in labels:
             metric_name += f"_{labels['instance'].replace('.', '_').replace(':', '_')}"
 
-        metrics.append({
-            'metric_timestamp': datetime.now(),
-            'metric_name': metric_name,
-            'metric_value': value
-        })
+        metrics.append(
+            {"metric_timestamp": datetime.now(), "metric_name": metric_name, "metric_value": value}
+        )
     return metrics
 ```
 
@@ -259,21 +257,20 @@ def process_prometheus_response(response):
 import requests
 from requests.auth import HTTPBasicAuth
 
+
 def query_prometheus(query, auth=None):
-    headers = {'Accept': 'application/json'}
+    headers = {"Accept": "application/json"}
 
     if auth:
         response = requests.get(
             f"{PROMETHEUS_URL}/api/v1/query",
-            params={'query': query},
-            auth=HTTPBasicAuth(auth['username'], auth['password']),
-            headers=headers
+            params={"query": query},
+            auth=HTTPBasicAuth(auth["username"], auth["password"]),
+            headers=headers,
         )
     else:
         response = requests.get(
-            f"{PROMETHEUS_URL}/api/v1/query",
-            params={'query': query},
-            headers=headers
+            f"{PROMETHEUS_URL}/api/v1/query", params={"query": query}, headers=headers
         )
 
     return response.json()

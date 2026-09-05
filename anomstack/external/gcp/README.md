@@ -130,5 +130,6 @@ ORDER BY timestamp_col
 Enable debug logging:
 ```python
 import logging
-logging.getLogger('google.cloud').setLevel(logging.DEBUG)
+
+logging.getLogger("google.cloud").setLevel(logging.DEBUG)
 ```

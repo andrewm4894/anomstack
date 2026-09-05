@@ -69,15 +69,15 @@ The example monitors these major currency pairs by default:
    ```python
    # Monitor your preferred base currencies
    BASE_CURRENCIES = [
-       'eur',  # Euro
-       'usd',  # US Dollar
-       'gbp',  # British Pound
-       'jpy',  # Japanese Yen
-       'chf'   # Swiss Franc
+       "eur",  # Euro
+       "usd",  # US Dollar
+       "gbp",  # British Pound
+       "jpy",  # Japanese Yen
+       "chf",  # Swiss Franc
    ]
 
    # Target currencies to convert to
-   TARGET_CURRENCIES = ['usd', 'eur', 'gbp', 'jpy', 'cad', 'aud']
+   TARGET_CURRENCIES = ["usd", "eur", "gbp", "jpy", "cad", "aud"]
    ```
 
 3. **Adjust scheduling**: Modify the cron schedule for your timezone:
@@ -101,21 +101,9 @@ The example monitors these major currency pairs by default:
 The ingest function returns currency data like:
 ```python
 [
-    {
-        'metric_timestamp': datetime.now(),
-        'metric_name': 'EUR_USD_rate',
-        'metric_value': 1.0925
-    },
-    {
-        'metric_timestamp': datetime.now(),
-        'metric_name': 'GBP_USD_rate',
-        'metric_value': 1.2675
-    },
-    {
-        'metric_timestamp': datetime.now(),
-        'metric_name': 'USD_JPY_rate',
-        'metric_value': 149.85
-    }
+    {"metric_timestamp": datetime.now(), "metric_name": "EUR_USD_rate", "metric_value": 1.0925},
+    {"metric_timestamp": datetime.now(), "metric_name": "GBP_USD_rate", "metric_value": 1.2675},
+    {"metric_timestamp": datetime.now(), "metric_name": "USD_JPY_rate", "metric_value": 149.85},
 ]
 ```
 
@@ -233,9 +221,9 @@ def detect_arbitrage(eur_usd, gbp_usd, eur_gbp):
     spread = abs(implied_eur_gbp - actual_eur_gbp) / actual_eur_gbp * 100
 
     return {
-        'metric_timestamp': datetime.now(),
-        'metric_name': 'EUR_GBP_arbitrage_spread',
-        'metric_value': spread
+        "metric_timestamp": datetime.now(),
+        "metric_name": "EUR_GBP_arbitrage_spread",
+        "metric_value": spread,
     }
 ```
 
@@ -243,7 +231,7 @@ def detect_arbitrage(eur_usd, gbp_usd, eur_gbp):
 ```python
 # Calculate currency strength across multiple pairs
 def calculate_currency_strength(currency_rates):
-    base_currencies = ['usd', 'eur', 'gbp', 'jpy']
+    base_currencies = ["usd", "eur", "gbp", "jpy"]
     strength_index = {}
 
     for base in base_currencies:
@@ -251,7 +239,7 @@ def calculate_currency_strength(currency_rates):
         pair_count = 0
 
         for pair, rate in currency_rates.items():
-            if pair.startswith(base + '_'):
+            if pair.startswith(base + "_"):
                 # Calculate percentage change from previous day
                 change = calculate_daily_change(pair, rate)
                 total_change += change
@@ -261,9 +249,9 @@ def calculate_currency_strength(currency_rates):
 
     return [
         {
-            'metric_timestamp': datetime.now(),
-            'metric_name': f'{currency.upper()}_strength_index',
-            'metric_value': strength
+            "metric_timestamp": datetime.now(),
+            "metric_name": f"{currency.upper()}_strength_index",
+            "metric_value": strength,
         }
         for currency, strength in strength_index.items()
     ]
@@ -284,15 +272,15 @@ def calculate_forex_volatility(rate_history, window=30):
 
     return [
         {
-            'metric_timestamp': datetime.now(),
-            'metric_name': 'EUR_USD_volatility_30d',
-            'metric_value': volatility
+            "metric_timestamp": datetime.now(),
+            "metric_name": "EUR_USD_volatility_30d",
+            "metric_value": volatility,
         },
         {
-            'metric_timestamp': datetime.now(),
-            'metric_name': 'EUR_USD_var_95',
-            'metric_value': abs(var_95)
-        }
+            "metric_timestamp": datetime.now(),
+            "metric_name": "EUR_USD_var_95",
+            "metric_value": abs(var_95),
+        },
     ]
 ```
 
@@ -310,7 +298,7 @@ def safe_currency_request(base_currency, retries=3):
             if attempt == retries - 1:
                 logger.error(f"Failed to get currency data for {base_currency}: {e}")
                 return None
-            time.sleep(2 ** attempt)  # Exponential backoff
+            time.sleep(2**attempt)  # Exponential backoff
 ```
 
 ## Forex Market Considerations

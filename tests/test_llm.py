@@ -5,12 +5,18 @@ Tests for LLM agent functionality.
 from unittest.mock import Mock, patch
 
 import pandas as pd
+import pytest
 
 from anomstack.llm.agent import detect_anomalies
 
 
 class TestDetectAnomalies:
     """Test cases for the detect_anomalies function."""
+
+    @pytest.fixture(autouse=True)
+    def deterministic_provider(self, monkeypatch):
+        monkeypatch.setenv("ANOMSTACK_LLM_PLATFORM", "openai")
+        monkeypatch.setenv("ANOMSTACK_LLMALERT_MODELS", "gpt-4o-mini")
 
     def create_sample_df(self):
         """Create a sample DataFrame for testing."""
@@ -52,7 +58,11 @@ class TestDetectAnomalies:
 
         # Assertions
         mock_anomaly_agent.assert_called_once_with(
-            detection_prompt=detection_prompt, verification_prompt=verification_prompt
+            include_plot=False,
+            model_name="gpt-4o-mini",
+            posthog_metadata={"llmalert_model": "gpt-4o-mini"},
+            detection_prompt=detection_prompt,
+            verification_prompt=verification_prompt,
         )
         mock_agent_instance.detect_anomalies.assert_called_once_with(
             df, timestamp_col="metric_timestamp"
@@ -88,7 +98,12 @@ class TestDetectAnomalies:
         detect_anomalies(df, detection_prompt)
 
         # Assertions
-        mock_anomaly_agent.assert_called_once_with(detection_prompt=detection_prompt)
+        mock_anomaly_agent.assert_called_once_with(
+            include_plot=False,
+            model_name="gpt-4o-mini",
+            posthog_metadata={"llmalert_model": "gpt-4o-mini"},
+            detection_prompt=detection_prompt,
+        )
         mock_agent_instance.detect_anomalies.assert_called_once_with(
             df, timestamp_col="metric_timestamp"
         )
@@ -121,7 +136,12 @@ class TestDetectAnomalies:
         detect_anomalies(df, verification_prompt=verification_prompt)
 
         # Assertions
-        mock_anomaly_agent.assert_called_once_with(verification_prompt=verification_prompt)
+        mock_anomaly_agent.assert_called_once_with(
+            include_plot=False,
+            model_name="gpt-4o-mini",
+            posthog_metadata={"llmalert_model": "gpt-4o-mini"},
+            verification_prompt=verification_prompt,
+        )
 
     @patch("anomstack.llm.agent.AnomalyAgent")
     def test_detect_anomalies_with_no_prompts(self, mock_anomaly_agent):
@@ -149,8 +169,12 @@ class TestDetectAnomalies:
         # Call function with no prompts
         detect_anomalies(df)
 
-        # Assertions - should be called with no arguments (uses defaults)
-        mock_anomaly_agent.assert_called_once_with()
+        # Assertions - uses the default model and metadata without prompt overrides
+        mock_anomaly_agent.assert_called_once_with(
+            include_plot=False,
+            model_name="gpt-4o-mini",
+            posthog_metadata={"llmalert_model": "gpt-4o-mini"},
+        )
 
     @patch("anomstack.llm.agent.AnomalyAgent")
     def test_detect_anomalies_with_none_prompts(self, mock_anomaly_agent):
@@ -169,8 +193,12 @@ class TestDetectAnomalies:
         # Call function with explicit None values
         detect_anomalies(df, detection_prompt=None, verification_prompt=None)
 
-        # Assertions - should be called with no arguments (None values filtered out)
-        mock_anomaly_agent.assert_called_once_with()
+        # Assertions - None prompt values are filtered out
+        mock_anomaly_agent.assert_called_once_with(
+            include_plot=False,
+            model_name="gpt-4o-mini",
+            posthog_metadata={"llmalert_model": "gpt-4o-mini"},
+        )
 
 
 class TestLLMAlertPromptExtraction:

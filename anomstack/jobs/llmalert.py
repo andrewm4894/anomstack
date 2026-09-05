@@ -43,11 +43,11 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
     if spec.get("disable_llmalert"):
 
         @job(
-            name=f'{spec["metric_batch"]}_llmalert_disabled',
+            name=f"{spec['metric_batch']}_llmalert_disabled",
             tags={MAX_RUNTIME_SECONDS_TAG: ANOMSTACK_MAX_RUNTIME_SECONDS_TAG},
         )
         def _dummy_job():
-            @op(name=f'{spec["metric_batch"]}_noop')
+            @op(name=f"{spec['metric_batch']}_noop")
             def noop():
                 pass
 
@@ -290,7 +290,7 @@ def build_llmalert_job(spec: dict) -> JobDefinition:
                 df_alerts["metric_value"] = df_alerts["metric_alert"]
                 if "anomaly_explanation" in df_alerts.columns:
                     df_alerts["metadata"] = df_alerts["anomaly_explanation"].apply(
-                        lambda x: (json.dumps({"anomaly_explanation": x}) if pd.notna(x) else None)
+                        lambda x: json.dumps({"anomaly_explanation": x}) if pd.notna(x) else None
                     )
                 else:
                     df_alerts["metadata"] = None

@@ -83,10 +83,10 @@ class ChartManager:
                 "format": "png",
                 "filename": f"metric_chart_{chart_index}",
                 "height": 600,
-                "scale": 1
-            }
+                "scale": 1,
+            },
         }
-        
+
         fig = plot_time_series(
             df_metric,
             small_charts=False,  # Always use large size for expanded view
@@ -95,14 +95,10 @@ class ChartManager:
             line_width=app.state.line_width,
             show_legend=True,  # Always show legend in expanded view
         )
-        
+
         # Update layout for expanded view with larger height and full width
-        fig.update_layout(
-            height=600,
-            autosize=True,
-            margin=dict(l=40, r=40, t=40, b=40)
-        )
-        
+        fig.update_layout(height=600, autosize=True, margin=dict(l=40, r=40, t=40, b=40))
+
         return fig.to_html(
             div_id=f"plotly-chart-expanded-{chart_index}",
             include_plotlyjs=False,
@@ -256,7 +252,9 @@ class ChartManager:
         )
 
     @staticmethod
-    def create_expanded_sparkline(df_metric: pd.DataFrame, anomaly_timestamp: pd.Timestamp = None) -> str:
+    def create_expanded_sparkline(
+        df_metric: pd.DataFrame, anomaly_timestamp: pd.Timestamp = None
+    ) -> str:
         """Create an expanded sparkline chart for a specific anomaly.
 
         Args:
@@ -391,18 +389,8 @@ class ChartManager:
             paper_bgcolor=colors["background"],
             plot_bgcolor=colors["background"],
             font=dict(color=colors["text"]),
-            legend=dict(
-                orientation="h",
-                yanchor="bottom",
-                y=1.02,
-                xanchor="right",
-                x=1
-            ),
-            title=dict(
-                text="Anomaly Detail View",
-                x=0.5,
-                font=dict(size=16)
-            )
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+            title=dict(text="Anomaly Detail View", x=0.5, font=dict(size=16)),
         )
 
         # Enhanced config for expanded view
@@ -421,8 +409,8 @@ class ChartManager:
                 "format": "png",
                 "filename": "anomaly_chart",
                 "height": 500,
-                "scale": 1
-            }
+                "scale": 1,
+            },
         }
 
         return fig.to_html(
@@ -432,7 +420,9 @@ class ChartManager:
         )
 
     @staticmethod
-    def create_single_anomaly_expanded_chart(df_metric: pd.DataFrame, anomaly_timestamp: pd.Timestamp = None) -> str:
+    def create_single_anomaly_expanded_chart(
+        df_metric: pd.DataFrame, anomaly_timestamp: pd.Timestamp = None
+    ) -> str:
         """Create an expanded chart showing full time series but highlighting only one specific anomaly.
 
         Args:
@@ -495,12 +485,12 @@ class ChartManager:
                     if anomaly_row["metric_llmalert"].iloc[0] == 1
                     else colors["alert"]
                 )
-                
+
                 # Use same symbol as sparkline (diamond)
                 marker_color = alert_color
                 marker_symbol = "diamond"
                 alert_name = "Selected Alert"
-                
+
                 fig.add_trace(
                     go.Scatter(
                         x=[anomaly_timestamp],
@@ -541,18 +531,8 @@ class ChartManager:
             paper_bgcolor=colors["background"],
             plot_bgcolor=colors["background"],
             font=dict(color=colors["text"]),
-            legend=dict(
-                orientation="h",
-                yanchor="bottom",
-                y=1.02,
-                xanchor="right",
-                x=1
-            ),
-            title=dict(
-                text="Single Anomaly Detail View",
-                x=0.5,
-                font=dict(size=16)
-            )
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+            title=dict(text="Single Anomaly Detail View", x=0.5, font=dict(size=16)),
         )
 
         # Enhanced config for expanded view
@@ -571,8 +551,8 @@ class ChartManager:
                 "format": "png",
                 "filename": "single_anomaly_chart",
                 "height": 500,
-                "scale": 1
-            }
+                "scale": 1,
+            },
         }
 
         return fig.to_html(

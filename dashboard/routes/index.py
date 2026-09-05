@@ -19,7 +19,6 @@ from dashboard.components import create_batch_card
 from dashboard.constants import DEFAULT_LAST_N
 from dashboard.data import get_data
 
-
 log = logging.getLogger("anomstack_dashboard")
 
 
@@ -175,7 +174,7 @@ def index(request: Request):
 
     script = Script(
         f"""
-        if ({'true' if app.state.dark_mode else 'false'}) {{
+        if ({"true" if app.state.dark_mode else "false"}) {{
             document.body.classList.add('dark-mode');
         }}
     """

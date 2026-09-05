@@ -12,7 +12,8 @@ WORKDIR /opt/dagster/app
 # Use lightweight dashboard-specific requirements
 COPY ../requirements-dashboard.txt /opt/dagster/app/requirements-dashboard.txt
 
-RUN pip install --no-cache-dir -r requirements-dashboard.txt
+COPY constraints.txt /opt/dagster/app/constraints.txt
+RUN pip install --no-cache-dir -c constraints.txt -r requirements-dashboard.txt
 
 # Only copy what the dashboard actually needs
 COPY dashboard /opt/dagster/app/dashboard
@@ -31,7 +32,7 @@ COPY anomstack/validate /opt/dagster/app/anomstack/validate
 COPY scripts/maintenance /opt/dagster/app/scripts/maintenance
 
 # Add current directory to Python path for anomstack imports
-ENV PYTHONPATH=/opt/dagster/app:$PYTHONPATH
+ENV PYTHONPATH=/opt/dagster/app
 
 # Add build information
 ARG ANOMSTACK_BUILD_HASH="unknown"

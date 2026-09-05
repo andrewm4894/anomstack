@@ -57,7 +57,7 @@ schedules:
   num_workers: 4  # Reasonable for Docker container
 
 sensors:
-  use_threads: true 
+  use_threads: true
   num_workers: 2  # Reasonable for Docker container
 
 compute_logs:

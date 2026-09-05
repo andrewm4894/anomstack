@@ -84,10 +84,7 @@ from anomstack.plots.plot import plot_metric_timeseries
 
 # Create a basic time series plot
 fig = plot_metric_timeseries(
-    df=metric_data,
-    title="Daily Revenue Metrics",
-    anomaly_scores=scores_df,
-    show_anomalies=True
+    df=metric_data, title="Daily Revenue Metrics", anomaly_scores=scores_df, show_anomalies=True
 )
 ```
 
@@ -97,10 +94,7 @@ from anomstack.plots.plot import create_dashboard_plot
 
 # Create interactive plot for dashboard
 plotly_fig = create_dashboard_plot(
-    df=metric_data,
-    plot_type="timeseries",
-    interactive=True,
-    height=400
+    df=metric_data, plot_type="timeseries", interactive=True, height=400
 )
 ```
 
@@ -112,7 +106,7 @@ from anomstack.plots.plot import generate_alert_plot
 alert_plot = generate_alert_plot(
     df=recent_data,
     anomaly_detected=True,
-    format="ascii"  # For email compatibility
+    format="ascii",  # For email compatibility
 )
 ```
 
@@ -133,7 +127,7 @@ custom_theme = {
     "grid_color": "#f0f0f0",
     "normal_color": "#1f77b4",
     "anomaly_color": "#d62728",
-    "threshold_color": "#ff7f0e"
+    "threshold_color": "#ff7f0e",
 }
 ```
 
@@ -184,7 +178,8 @@ Plots are designed with accessibility in mind:
 Enable plot debugging:
 ```python
 import logging
-logging.getLogger('anomstack.plots').setLevel(logging.DEBUG)
+
+logging.getLogger("anomstack.plots").setLevel(logging.DEBUG)
 ```
 
 ### Performance Optimization

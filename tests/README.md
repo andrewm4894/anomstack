@@ -122,10 +122,11 @@ def test_data_function():
     df = create_test_dataframe()
     result = function_under_test(df)
     assert isinstance(result, pd.DataFrame)
-    assert 'expected_column' in result.columns
+    assert "expected_column" in result.columns
+
 
 # Mocking external dependencies
-@patch('module.external_service')
+@patch("module.external_service")
 def test_with_mock(mock_service):
     mock_service.return_value = expected_result
     result = function_under_test()

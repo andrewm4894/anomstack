@@ -1,7 +1,6 @@
 anomaly-agent>=0.13.0
 boto3
 clickhouse-connect
-dagit
 dagster
 dagster-docker
 dagster-gcp
@@ -23,7 +22,7 @@ pandas
 pandas-gbq
 plotly
 posthog
-pyod @ git+https://github.com/yzhao062/pyod.git@master
+pyod
 python-dotenv
 python-fasthtml
 pyyaml

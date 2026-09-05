@@ -30,7 +30,7 @@ dev:
 # DOCKER OPERATIONS
 # =============================================================================
 
-.PHONY: docker docker-dev docker-smart docker-build docker-dev-build docker-clean 
+.PHONY: docker docker-dev docker-smart docker-build docker-dev-build docker-clean
 .PHONY: docker-logs docker-logs-code docker-logs-dagit docker-logs-daemon docker-logs-dashboard
 .PHONY: docker-shell-code docker-shell-dagit docker-shell-dashboard docker-restart-dashboard docker-restart-code docker-restart reload-config enable-auto-reload enable-config-watcher
 .PHONY: docker-stop docker-down docker-rm docker-prune
@@ -51,7 +51,7 @@ docker-dev:
 
 # build docker images locally
 docker-build:
-	docker build -f docker/Dockerfile.dagster_consolidated -t anomstack_consolidated_image .
+	docker build -f docker/Dockerfile.dagster -t anomstack_consolidated_image .
 	docker build -f docker/Dockerfile.anomstack_dashboard -t anomstack_dashboard_image .
 
 # build docker images for development
@@ -515,3 +515,18 @@ docker-dev-env:
 # stop docker containers
 docker-stop:
 	docker compose -f docker-compose.yaml -f docker-compose.dev.yaml down
+
+# Reproducible Python 3.12 development environment (requires uv).
+.PHONY: setup-local stack test-local update-dependencies
+setup-local:
+	uv venv --python 3.12 --allow-existing .venv
+	uv pip install --python .venv/bin/python -c constraints.txt -r requirements.txt -r requirements-dashboard.txt -r requirements-dev.txt
+
+stack:
+	.venv/bin/python scripts/development/local_stack.py
+
+test-local:
+	CI=true .venv/bin/python -m pytest tests/
+
+update-dependencies:
+	uv pip compile requirements.txt requirements-dashboard.txt requirements-dev.txt --no-emit-package anomstack --universal --upgrade --python-version 3.12 -o constraints.txt

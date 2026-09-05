@@ -34,5 +34,5 @@ def test_main_imports():
     assert len(schedules) > 0
 
 
-# Run the test
-pytest.main()
+if __name__ == "__main__":
+    pytest.main([__file__])

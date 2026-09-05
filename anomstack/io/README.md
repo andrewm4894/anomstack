@@ -46,7 +46,7 @@ from anomstack.io.load import load_model
 save_model(
     model=trained_model,
     model_path="models/my_metric/model_20231215.pkl",
-    metadata={"version": "1.0", "training_date": "2023-12-15"}
+    metadata={"version": "1.0", "training_date": "2023-12-15"},
 )
 
 # Load the model later
@@ -60,9 +60,7 @@ from anomstack.io.load import load_dataframe
 
 # Save processed metric data
 save_dataframe(
-    df=processed_metrics,
-    path="data/processed/metrics_2023_12.parquet",
-    format="parquet"
+    df=processed_metrics, path="data/processed/metrics_2023_12.parquet", format="parquet"
 )
 
 # Load the data

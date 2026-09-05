@@ -471,7 +471,7 @@ services:
     command: dagster code-server start -h 0.0.0.0 -p 4000 -f anomstack/main.py
     ports:
       - "4000:4000"
-  
+
   dagster_webserver:
     image: anomstack_dagster:latest
     depends_on:

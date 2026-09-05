@@ -10,7 +10,7 @@ cd /opt/dagster/app
 # install requirements-dev.txt if it exists
 if [ -f requirements-dev.txt ]; then
     echo "Installing requirements-dev.txt..."
-    pip install -r requirements-dev.txt
+    pip install -c constraints.txt -r requirements-dev.txt
 else
     echo "requirements-dev.txt not found, skipping..."
 fi
