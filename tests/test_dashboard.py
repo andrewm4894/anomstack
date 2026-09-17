@@ -129,3 +129,63 @@ def test_search_empty_and_invalid_patterns():
     assert "Invalid search pattern" in to_xml(metric_results(state, "demo"))
     state.search_term["demo"] = ""
     assert "/chart/0" in to_xml(metric_results(state, "demo"))
+
+
+def test_calculate_metric_stats_accepts_df_and_returns_stats():
+    state = AppState()
+    df = pd.DataFrame(
+        {
+            "metric_name": ["m1", "m1"],
+            "metric_alert": [1, 0],
+            "metric_score": [0.5, 0.7],
+            "thumbsup_sum": [1, 2],
+            "thumbsdown_sum": [0, 1],
+        }
+    )
+    # No df_cache entry: an explicit df must still produce and return the stats.
+    stats = state.calculate_metric_stats("b1", df=df)
+    assert stats == state.stats_cache["b1"]
+    assert stats[0]["metric_name"] == "m1"
+
+
+def test_chart_route_survives_cache_clear_during_render(monkeypatch):
+    """A toggle or refresh clearing the caches mid-request must not 500."""
+    import logging
+
+    from fasthtml.common import to_xml
+
+    # The batch route imports ``log`` and ``rt`` from dashboard.app; the stubbed
+    # module only supplies ``app``, so provide passthrough versions here.
+    stub_app.log = logging.getLogger("test")
+    stub_app.rt = lambda *args, **kwargs: lambda func: func
+
+    from dashboard.routes import batch as batch_route
+
+    state = AppState()
+    batch = "demo"
+    df = pd.DataFrame(
+        {
+            "metric_name": ["m1", "m1"],
+            "metric_alert": [1, 0],
+            "metric_score": [0.5, 0.7],
+            "thumbsup_sum": [1, 2],
+            "thumbsdown_sum": [0, 1],
+        }
+    )
+    state.df_cache[batch] = df
+    state.calculate_metric_stats(batch)
+    monkeypatch.setattr(batch_route.app, "state", state, raising=False)
+    monkeypatch.setattr(batch_route, "extract_metadata", lambda frame, column: frame)
+
+    def clear_everything_then_render(df_metric, chart_index):
+        # Emulate a concurrent toggle/refresh wiping the shared caches while
+        # this request is still building its chart.
+        state.df_cache.clear()
+        state.stats_cache.clear()
+        state.chart_cache.clear()
+        return "<div>chart-body</div>"
+
+    monkeypatch.setattr(batch_route.ChartManager, "create_chart", clear_everything_then_render)
+
+    html = to_xml(batch_route.get(batch, 0))
+    assert "chart-body" in html
