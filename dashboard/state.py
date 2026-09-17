@@ -171,11 +171,16 @@ class AppState:
         self.chart_cache.pop(batch_name, None)
         self.stats_cache.pop(batch_name, None)
 
-    def calculate_metric_stats(self, batch_name):
+    def calculate_metric_stats(self, batch_name, df=None):
         """
         Calculate the metric stats for a given batch name.
+
+        Reads the batch dataframe from the cache when ``df`` is not supplied.
+        Returns the metric stats so a caller can keep a local reference that a
+        concurrent cache clear cannot remove.
         """
-        df = self.df_cache[batch_name]
+        if df is None:
+            df = self.df_cache[batch_name]
         metric_stats = []
         for metric_name in df["metric_name"].unique():
             df_metric = df[df["metric_name"] == metric_name]
@@ -198,3 +203,4 @@ class AppState:
             )
         metric_stats.sort(key=lambda x: (-x["anomaly_rate"], -x["avg_score"]))
         self.stats_cache[batch_name] = metric_stats
+        return metric_stats

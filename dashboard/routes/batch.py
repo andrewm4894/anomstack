@@ -101,20 +101,27 @@ def get(batch_name: str, chart_index: int):
     Returns:
         Card: The chart.
     """
-    df = app.state.df_cache[batch_name]
-    metric_stats = app.state.stats_cache[batch_name]
+    # Read each cache once into a local. A concurrent toggle or refresh can
+    # clear these shared dicts mid-request, so rebuild on a miss instead of
+    # indexing the dict a second time.
+    df = app.state.df_cache.get(batch_name)
+    metric_stats = app.state.stats_cache.get(batch_name)
+    if df is None or metric_stats is None:
+        df = get_batch_data(batch_name)
+        app.state.df_cache[batch_name] = df
+        metric_stats = app.state.calculate_metric_stats(batch_name, df=df)
+
     metric_name = metric_stats[chart_index]["metric_name"]
     anomaly_rate = metric_stats[chart_index]["anomaly_rate"]
     avg_score = metric_stats[chart_index]["avg_score"]
 
-    if batch_name not in app.state.chart_cache:
-        app.state.chart_cache[batch_name] = {}
-
-    if chart_index not in app.state.chart_cache[batch_name]:
+    batch_charts = app.state.chart_cache.setdefault(batch_name, {})
+    fig = batch_charts.get(chart_index)
+    if fig is None:
         df_metric = df[df["metric_name"] == metric_name]
         df_metric = extract_metadata(df_metric, "anomaly_explanation")
         fig = ChartManager.create_chart(df_metric, chart_index)
-        app.state.chart_cache[batch_name][chart_index] = fig
+        batch_charts[chart_index] = fig
 
     modal_id = f"modal-{batch_name}-{chart_index}"
 
@@ -170,7 +177,7 @@ def get(batch_name: str, chart_index: int):
                 }
             """
             ),
-            Safe(app.state.chart_cache[batch_name][chart_index]),
+            Safe(fig),
             # Expand button overlay positioned on entire card
             Button(
                 UkIcon("expand", height=16, width=16),
